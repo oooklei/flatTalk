@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.weekly_plan.v1",
+  "template_key": "weekly_plan",
+  "skill_key": "meal_plan",
+  "name": "一周膳食计划卡片",
+  "cn_name": "一周膳食计划卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "weekly-plan.html",
+  "fallback_html": "weekly-plan.html",
+  "description": "展示多日膳食安排、轮换建议和采购节奏。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "weekly_plan",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/weekly_plan.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/weekly-plan.html"
+}

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>膳食调养卡片预览</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    background: #f5f8fc;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  .container { width: 100%; max-width: 860px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(74,144,217,0.08); padding: 24px 28px 36px;">
+    <div style="display: inline-block; background: #4a90d9; color: #fff; font-size: 16px; font-weight: 600; padding: 8px 36px 8px 18px; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%); margin-bottom: 18px;">膳食调养</div>
+
+    <div style="border: 1px solid #e07a7a; background: #fbfbfb; border-radius: 2px; padding: 14px 16px; margin-bottom: 8px; font-size: 14px;">
+      <p><strong>【宜食】</strong>宜食用清淡、易消化、富含优质蛋白及膳食纤维的食物，如小米、山药、莲子、百合、绿叶蔬菜、鱼类等。</p>
+      <p style="margin-top: 10px;"><strong>【忌食】</strong>忌食辛辣刺激、油腻煎炸、生冷寒凉及过甜过咸食物，如辣椒、烧烤、冰淇淋、肥肉等。</p>
+    </div>
+
+    <ul style="list-style: none;">
+      <li style="display: flex; gap: 18px; padding: 22px 0; border-bottom: 1px dashed #c5daf0; align-items: flex-start;">
+        <div style="flex-shrink: 0; width: 110px; height: 110px; border-radius: 4px; overflow: hidden; background: #eef5fb;">
+          <svg viewBox="0 0 220 220" width="110" height="110"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f8e8d0"/><stop offset="100%" stop-color="#e8c48a"/></linearGradient></defs><rect width="220" height="220" fill="url(#g1)"/><ellipse cx="110" cy="150" rx="70" ry="18" fill="#c9a06a" opacity="0.35"/><ellipse cx="110" cy="128" rx="58" ry="28" fill="#fff8ee"/><ellipse cx="110" cy="122" rx="50" ry="22" fill="#f3d5a0"/></svg>
+        </div>
+        <div style="flex: 1; min-width: 0; font-size: 14px;">
+          <h3 style="font-size: 18px; font-weight: 700; color: #2d7ec4; margin-bottom: 8px;">三花橘皮茶</h3>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <p><strong>【药材】</strong>菊花、茉莉花、玫瑰花各 3g</p>
+            <p><strong>【食材】</strong>陈皮 5g、枸杞 6粒、冰糖适量</p>
+            <p><strong>【烹饪方法】</strong>将药材与食材洗净后放入杯中，沸水冲泡 5–8 分钟</p>
+            <p><strong>【功效】</strong>疏肝理气、健脾和胃</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

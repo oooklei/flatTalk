@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.order_preview.v1",
+  "template_key": "order_preview",
+  "skill_key": "find_service",
+  "name": "服务订单预览卡片",
+  "cn_name": "服务订单预览卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "order-preview.html",
+  "fallback_html": "order-preview.html",
+  "description": "创建订单前展示关键字段和风险提示。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "order_preview",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/order_preview.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/order-preview.html"
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "meal_plan",
+  "source_template_id": "meal_plan.feedback_collect.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "feedback_collect.reuse_leftover",
+      "source_template_id": "meal_plan.feedback_collect.v1",
+      "label": "剩餐复用建议",
+      "user_prompt": "剩餐复用建议，并继续说明膳食反馈收集卡片的下一步",
+      "action_key": "meal_plan.reuse_leftover",
+      "next_template_id": "meal_plan.leftover_reuse.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "feedback_collect.festival_adjust",
+      "source_template_id": "meal_plan.feedback_collect.v1",
+      "label": "节日膳食调整",
+      "user_prompt": "节日膳食调整，并继续说明膳食反馈收集卡片的下一步",
+      "action_key": "meal_plan.festival_adjust",
+      "next_template_id": "meal_plan.festival_plan.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "feedback_collect.budget_adjust",
+      "source_template_id": "meal_plan.feedback_collect.v1",
+      "label": "预算膳食调整",
+      "user_prompt": "预算膳食调整，并继续说明膳食反馈收集卡片的下一步",
+      "action_key": "meal_plan.budget_adjust",
+      "next_template_id": "meal_plan.budget_plan.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "feedback_collect.view_status",
+      "source_template_id": "meal_plan.feedback_collect.v1",
+      "label": "查看膳食执行状态",
+      "user_prompt": "查看膳食执行状态，并继续说明膳食反馈收集卡片的下一步",
+      "action_key": "meal_plan.view_status",
+      "next_template_id": "meal_plan.status.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

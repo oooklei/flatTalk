@@ -1,0 +1,22 @@
+{
+  "template_id": "guixiaoyang_dispatch.skill_hub.v1",
+  "template_key": "skill_hub",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "桂小养技能入口卡片",
+  "cn_name": "桂小养技能入口卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "skill-hub.html",
+  "description": "用于用户意图宽泛时展示可用技能入口和建议下一步。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "hub",
+  "actions": [
+    "guixiaoyang_dispatch.route_meal_plan",
+    "guixiaoyang_dispatch.route_dispatch_manage",
+    "guixiaoyang_dispatch.collect_context"
+  ],
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/skill-hub.html"
+}

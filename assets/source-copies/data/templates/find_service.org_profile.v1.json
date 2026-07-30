@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.org_profile.v1",
+  "template_key": "org_profile",
+  "skill_key": "find_service",
+  "name": "机构画像卡片",
+  "cn_name": "机构画像卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "org-profile.html",
+  "fallback_html": "org-profile.html",
+  "description": "展示机构能力、距离、评分、服务范围和可用时段。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "org_profile",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/org_profile.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/org-profile.html"
+}

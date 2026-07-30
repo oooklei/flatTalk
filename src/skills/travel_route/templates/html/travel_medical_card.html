@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>医养配套方案卡片模板</title>
+<style>
+  :root {
+    --primary: #FF7826;
+    --primary-gradient: linear-gradient(135deg, #FF7826 0%, #FF9A5C 100%);
+    --bg: #F8EAD9;
+    --bg-white: #ffffff;
+    --ink: #3A3A3A;
+    --ink-light: #666;
+    --muted: #999999;
+    --border: #E5E5E5;
+    --divider: #F0EBE3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .chat-section-title {
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 8px; padding: 8px 12px;
+    background: linear-gradient(135deg, #FFF7E6, #FFF3E0);
+    border-radius: 8px; border-left: 3px solid var(--primary);
+  }
+  .chat-medical-card {
+    background: var(--bg-white); border: 1px solid #F0EBE3;
+    border-radius: 12px; padding: 12px; margin-bottom: 8px;
+  }
+  .chat-medical-title { font-size: 14px; font-weight: 700; color: #E65100; margin-bottom: 6px; }
+  .chat-medical-items { font-size: 13px; line-height: 1.9; color: var(--ink-light); }
+  .chat-medical-items b { color: var(--ink); }
+  .tip {
+    font-size: 12px; color: #2E7D32; background: #E8F5E9;
+    padding: 10px 12px; border-radius: 10px; line-height: 1.6; margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="chat-section-title">{{title|🏥 医养配套方案}}</div>
+
+    {{#groups}}
+    <div class="chat-medical-card">
+      <div class="chat-medical-title">{{icon|🩺}} {{name|配套项目}}</div>
+      <div class="chat-medical-items">
+        {{#items}}<div>{{bullet|•}} {{{text|说明}}}</div>{{/items}}
+      </div>
+    </div>
+    {{/groups}}
+
+    <div class="tip">{{{tip|⚠️ 温馨提示：出行请随身携带常用药与病历卡，基地可协助复诊挂号。}}}</div>
+  </div>
+
+  <script type="application/json">
+  {
+    "title": "🏥 医养配套方案（针对慢病长者定制）",
+    "groups": [
+      {
+        "icon": "💊",
+        "name": "每日用药管理",
+        "items": [
+          { "bullet": "•", "text": "基地医务室提供<b>分药盒 + 每日三次用药提醒</b>（早7:30 / 午11:30 / 晚18:00）" },
+          { "bullet": "•", "text": "药品冷藏柜可存放胰岛素等需低温药品" },
+          { "bullet": "•", "text": "常用慢病药可由基地<b>代购补药</b>（凭处方）" }
+        ]
+      },
+      {
+        "icon": "🩺",
+        "name": "健康监测服务",
+        "items": [
+          { "bullet": "•", "text": "每日晨间<b>血压/血糖免费监测</b>，异常自动通知家属" },
+          { "bullet": "•", "text": "每周1次驻点医生巡诊，可开具复诊建议" }
+        ]
+      },
+      {
+        "icon": "🚑",
+        "name": "就医应急保障",
+        "items": [
+          { "bullet": "•", "text": "距<b>防城港市第一人民医院（三甲）750米</b>，步行10分钟" },
+          { "bullet": "•", "text": "基地备24h应急车辆，突发情况5分钟送医" },
+          { "bullet": "•", "text": "房间及卫浴配<b>SOS呼叫铃</b>，直连值班医护" }
+        ]
+      }
+    ],
+    "tip": "⚠️ 温馨提示：请随身携带<b>常用药（按10天量备足）、病历卡、医保卡</b>；广西区内医保异地就医已联网直结。"
+  }
+  </script>
+</body>
+</html>

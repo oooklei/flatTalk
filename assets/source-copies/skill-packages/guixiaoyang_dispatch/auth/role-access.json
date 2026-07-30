@@ -1,0 +1,87 @@
+{
+  "schema": "guixiaoyang.auth-role-access.v1",
+  "note": "登录认证参考 AI养老-用户角色体系.xlsx；G端用户默认system_admin角色。",
+  "terminals": [
+    "C",
+    "G",
+    "B",
+    "Admin"
+  ],
+  "roles": [
+    "elder",
+    "family",
+    "system_admin",
+    "supervisor"
+  ],
+  "defaultRolesByTerminal": {
+    "C": [
+      "elder",
+      "family"
+    ],
+    "G": [
+      "system_admin"
+    ],
+    "B": [
+      "supervisor"
+    ],
+    "Admin": [
+      "system_admin"
+    ]
+  },
+  "accessRules": [
+    {
+      "terminal": "G",
+      "defaultRole": "system_admin",
+      "canDispatchAllSkills": true
+    },
+    {
+      "terminal": "Admin",
+      "defaultRole": "system_admin",
+      "canDispatchAllSkills": true
+    },
+    {
+      "terminal": "C",
+      "canDispatchSkills": [
+        "find_service",
+        "travel_route",
+        "meal_plan"
+      ]
+    },
+    {
+      "terminal": "B",
+      "canDispatchSkills": [
+        "dispatch_manage",
+        "travel_route",
+        "meal_plan"
+      ]
+    }
+  ],
+  "loginFixtures": [
+    {
+      "account": "guixiaoyang_dispatch_c_user",
+      "terminal": "C",
+      "role": "elder",
+      "authLevel": "scoped"
+    },
+    {
+      "account": "guixiaoyang_dispatch_g_user",
+      "terminal": "G",
+      "role": "system_admin",
+      "authLevel": "all"
+    },
+    {
+      "account": "guixiaoyang_dispatch_b_user",
+      "terminal": "B",
+      "role": "system_admin",
+      "authLevel": "scoped"
+    },
+    {
+      "account": "guixiaoyang_dispatch_admin_user",
+      "terminal": "Admin",
+      "role": "system_admin",
+      "authLevel": "all"
+    }
+  ],
+  "sourceWorkbookRef": "AI养老-用户角色体系.xlsx",
+  "pathPolicy": "package-relative-only-for-runtime-and-remote-deploy"
+}

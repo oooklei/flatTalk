@@ -1,0 +1,7 @@
+{
+  "id": "health_risk_rule_card",
+  "title": "风险规则命中卡",
+  "layout": "health_risk_rule_card",
+  "match": "风险规则 命中 研判 判定 等级",
+  "required": ["rules"]
+}

@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.health_safety.v1",
+  "template_key": "health_safety",
+  "skill_key": "travel_route",
+  "name": "健康安全核查卡片",
+  "cn_name": "健康安全核查卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "health-safety.html",
+  "fallback_html": "health-safety.html",
+  "description": "核查路线与老人慢病、行动能力和急救条件的匹配度。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "health_safety",
+  "actions": [
+    "travel_route.check_health_safety",
+    "travel_route.adjust_pace",
+    "travel_route.request_manual_review"
+  ],
+  "followup_suggestions": "templates/followups/health_safety.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/health-safety.html"
+}

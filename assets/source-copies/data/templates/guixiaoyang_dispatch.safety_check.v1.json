@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.safety_check.v1",
+  "template_key": "safety_check",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "安全风险核对卡片",
+  "cn_name": "安全风险核对卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "safety-check.html",
+  "fallback_html": "safety-check.html",
+  "description": "核对紧急、隐私、医疗和财务风险。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "safety_check",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/safety_check.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/safety-check.html"
+}

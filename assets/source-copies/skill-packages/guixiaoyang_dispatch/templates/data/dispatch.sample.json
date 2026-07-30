@@ -1,0 +1,464 @@
+{
+  "skill_key": "guixiaoyang_dispatch",
+  "intent_key": "meal_plan_request",
+  "summary": {
+    "badge": "桂小养已识别",
+    "title": "这更适合生成膳食方案",
+    "text": "我会带上老人档案、忌口和最近对话摘要，转给 AI 膳食技能生成可执行建议。"
+  },
+  "intent": {
+    "title": "意图：膳食计划",
+    "reason": "用户提到了饮食安排、营养建议和老人健康条件。",
+    "confidence": 0.91,
+    "confidence_label": "高可信"
+  },
+  "routes": [
+    {
+      "title": "生成膳食方案",
+      "description": "调用 meal_plan，根据老人档案输出一日或多日膳食建议。",
+      "meta": "需要老人档案",
+      "skill_key": "meal_plan",
+      "action_key": "guixiaoyang_dispatch.route_meal_plan"
+    },
+    {
+      "title": "转入自动派单",
+      "description": "调用 dispatch_manage，查看工单、候选服务方和派单状态。",
+      "meta": "需要工单上下文",
+      "skill_key": "dispatch_manage",
+      "action_key": "guixiaoyang_dispatch.route_dispatch_manage"
+    }
+  ],
+  "primary_action": {
+    "label": "生成膳食方案",
+    "action_key": "guixiaoyang_dispatch.route_meal_plan"
+  },
+  "secondary_action": {
+    "label": "先补充信息",
+    "action_key": "guixiaoyang_dispatch.clarify"
+  },
+  "handoff": {
+    "title": "交接说明",
+    "note": "跨技能交接时只传递必要上下文摘要，不传递未经确认的敏感明细。"
+  },
+  "clarify": {
+    "badge": "桂小养调度",
+    "title": "桂小养澄清卡片",
+    "summary": "在意图、角色、对象或上下文不足时引导补充。",
+    "items": [
+      "适用场景：用户表达桂小养澄清卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "status": {
+    "badge": "桂小养调度",
+    "title": "桂小养状态卡片",
+    "summary": "展示技能不可用、等待处理、失败兜底和恢复建议。",
+    "items": [
+      "适用场景：用户表达桂小养状态卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "audit": {
+    "badge": "桂小养调度",
+    "title": "桂小养调度审计卡片",
+    "summary": "展示路由依据、上下文传递和执行记录。",
+    "items": [
+      "适用场景：用户表达桂小养调度审计卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "policy": {
+    "badge": "政策答复",
+    "title": "政策申请条件初步判断",
+    "answer": "根据当前上下文，可以先核对年龄、户籍、失能等级和材料清单；缺少证明材料时建议进入人工复核。",
+    "sources": [
+      "政策知识库：养老服务补贴条件",
+      "业务知识库：办理材料与流程"
+    ]
+  },
+  "hub": {
+    "badge": "桂小养可帮您",
+    "title": "请选择要继续处理的方向",
+    "summary": "当前可进入膳食方案、自动派单、政策咨询或补充上下文。",
+    "skills": [
+      "AI膳食：生成膳食建议",
+      "自动派单：查看工单和候选服务方",
+      "政策咨询：核对申请条件"
+    ]
+  },
+  "context": {
+    "badge": "上下文核对",
+    "title": "执行前需要确认的信息",
+    "summary": "系统会在跨技能调度前核对老人档案、角色权限和关键缺失项。",
+    "items": [
+      "老人档案：已获取",
+      "用户角色：family",
+      "缺失项：服务时间"
+    ]
+  },
+  "router": {
+    "badge": "桂小养调度",
+    "title": "桂小养技能路由卡片",
+    "summary": "展示识别到的意图、目标技能和可执行入口。",
+    "items": [
+      "适用场景：用户表达桂小养技能路由卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "intent_router": {
+    "badge": "桂小养调度",
+    "title": "意图路由解释卡片",
+    "summary": "解释识别到的意图、置信度和目标技能。",
+    "items": [
+      "适用场景：用户表达意图路由解释卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "capability_intro": {
+    "badge": "桂小养调度",
+    "title": "能力介绍卡片",
+    "summary": "展示桂小养可用技能和推荐入口。",
+    "items": [
+      "适用场景：用户表达能力介绍卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "policy_screening": {
+    "badge": "桂小养调度",
+    "title": "政策资格筛查卡片",
+    "summary": "初筛补贴、材料、办理路径和缺失条件。",
+    "items": [
+      "适用场景：用户表达政策资格筛查卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "profile_missing": {
+    "badge": "桂小养调度",
+    "title": "档案缺失提醒卡片",
+    "summary": "提示老人档案、角色、地址和健康字段缺失。",
+    "items": [
+      "适用场景：用户表达档案缺失提醒卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "multi_skill_plan": {
+    "badge": "桂小养调度",
+    "title": "多技能协同计划卡片",
+    "summary": "规划膳食、找服务、派单等多技能顺序。",
+    "items": [
+      "适用场景：用户表达多技能协同计划卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "handoff_preview": {
+    "badge": "桂小养调度",
+    "title": "跨技能交接预览卡片",
+    "summary": "展示将传递给目标技能的上下文摘要。",
+    "items": [
+      "适用场景：用户表达跨技能交接预览卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "permission_block": {
+    "badge": "桂小养调度",
+    "title": "权限不足说明卡片",
+    "summary": "说明角色权限不足和可替代动作。",
+    "items": [
+      "适用场景：用户表达权限不足说明卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "knowledge_gap": {
+    "badge": "桂小养调度",
+    "title": "知识缺口卡片",
+    "summary": "展示未命中知识库和建议补充材料。",
+    "items": [
+      "适用场景：用户表达知识缺口卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "manual_review": {
+    "badge": "桂小养调度",
+    "title": "人工复核卡片",
+    "summary": "汇总需要人工处理的风险原因和角色。",
+    "items": [
+      "适用场景：用户表达人工复核卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "voice_ready": {
+    "badge": "桂小养调度",
+    "title": "语音播报准备卡片",
+    "summary": "生成适合老人听的播报摘要。",
+    "items": [
+      "适用场景：用户表达语音播报准备卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "elder_summary": {
+    "badge": "桂小养调度",
+    "title": "老人档案摘要卡片",
+    "summary": "展示与本次问题相关的老人档案摘要。",
+    "items": [
+      "适用场景：用户表达老人档案摘要卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "family_summary": {
+    "badge": "桂小养调度",
+    "title": "家属代办摘要卡片",
+    "summary": "展示家属代办身份、权限和待确认事项。",
+    "items": [
+      "适用场景：用户表达家属代办摘要卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "safety_check": {
+    "badge": "桂小养调度",
+    "title": "安全风险核对卡片",
+    "summary": "核对紧急、隐私、医疗和财务风险。",
+    "items": [
+      "适用场景：用户表达安全风险核对卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "timeline": {
+    "badge": "桂小养调度",
+    "title": "对话处理时间线卡片",
+    "summary": "展示识别、检索、路由、执行和反馈过程。",
+    "items": [
+      "适用场景：用户表达对话处理时间线卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "fallback_status": {
+    "badge": "桂小养调度",
+    "title": "桂小养兜底状态卡片",
+    "summary": "展示系统异常、技能不可用和下一步建议。",
+    "items": [
+      "适用场景：用户表达桂小养兜底状态卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "learning_feedback": {
+    "badge": "桂小养调度",
+    "title": "对话反馈学习卡片",
+    "summary": "收集用户对答案和动作建议的反馈。",
+    "items": [
+      "适用场景：用户表达对话反馈学习卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "faq_answer": {
+    "badge": "桂小养调度",
+    "title": "常见问题答复卡片",
+    "summary": "回答常见养老政策、服务和使用问题。",
+    "items": [
+      "适用场景：用户表达常见问题答复卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "task_progress": {
+    "badge": "桂小养调度",
+    "title": "任务进度卡片",
+    "summary": "展示跨技能任务的当前进度和下一步。",
+    "items": [
+      "适用场景：用户表达任务进度卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "notification_summary": {
+    "badge": "桂小养调度",
+    "title": "通知摘要卡片",
+    "summary": "展示已通知对象、渠道和状态。",
+    "items": [
+      "适用场景：用户表达通知摘要卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "session_resume": {
+    "badge": "桂小养调度",
+    "title": "会话恢复卡片",
+    "summary": "恢复上次未完成的服务、膳食或派单任务。",
+    "items": [
+      "适用场景：用户表达会话恢复卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "followup_suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "router.collect_context",
+      "source_template_id": "guixiaoyang_dispatch.router.v1",
+      "label": "补充上下文",
+      "user_prompt": "补充上下文，并继续说明桂小养技能路由卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.collect_context",
+      "next_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "clarify.clarify",
+      "source_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "label": "继续澄清",
+      "user_prompt": "继续澄清，并继续说明桂小养澄清卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.clarify",
+      "next_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "status.manual_review",
+      "source_template_id": "guixiaoyang_dispatch.status.v1",
+      "label": "转人工复核",
+      "user_prompt": "转人工复核，并继续说明桂小养状态卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.manual_review",
+      "next_template_id": "guixiaoyang_dispatch.manual_review.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "audit.route_find_service",
+      "source_template_id": "guixiaoyang_dispatch.audit.v1",
+      "label": "转入AI找服务",
+      "user_prompt": "转入AI找服务，并继续说明桂小养调度审计卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.route_find_service",
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "intent_router.route_meal_plan",
+      "source_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "label": "转入AI膳食",
+      "user_prompt": "转入AI膳食，并继续说明意图路由解释卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.route_meal_plan",
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "capability_intro.route_dispatch_manage",
+      "source_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "label": "转入自动派单",
+      "user_prompt": "转入自动派单，并继续说明能力介绍卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.route_dispatch_manage",
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

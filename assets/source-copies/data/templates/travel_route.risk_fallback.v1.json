@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.risk_fallback.v1",
+  "template_key": "risk_fallback",
+  "skill_key": "travel_route",
+  "name": "路线风险兜底卡片",
+  "cn_name": "路线风险兜底卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "risk-fallback.html",
+  "fallback_html": "risk-fallback.html",
+  "description": "展示路线生成失败、风险较高或需转人工的兜底信息。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "risk_fallback",
+  "actions": [
+    "travel_route.fallback_status",
+    "travel_route.request_manual_review",
+    "travel_route.replan"
+  ],
+  "followup_suggestions": "templates/followups/risk_fallback.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/risk-fallback.html"
+}

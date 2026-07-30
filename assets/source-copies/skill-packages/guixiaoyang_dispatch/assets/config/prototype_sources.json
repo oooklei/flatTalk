@@ -1,0 +1,17 @@
+{
+  "packageKey": "guixiaoyang_dispatch",
+  "excelName": "AI养老助手",
+  "sources": [
+    {
+      "url": "https://codebuddy.work/agents/share/lxSDZ8b5qNCYDgAlRBYqTaUDNbPwSYRZgvSwrZK1RbjcktF741lKwuDYda8lWS7e",
+      "status": "pending_crawl",
+      "capturedAt": null
+    },
+    {
+      "url": "https://www.kdocs.cn/l/cse5I3j8ApV6",
+      "status": "pending_crawl",
+      "capturedAt": null
+    }
+  ],
+  "generatedAt": "2026-07-15T03:18:53.089Z"
+}

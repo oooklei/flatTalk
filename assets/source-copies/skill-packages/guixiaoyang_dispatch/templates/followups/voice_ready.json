@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "source_template_id": "guixiaoyang_dispatch.voice_ready.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "voice_ready.submit_manual_review",
+      "source_template_id": "guixiaoyang_dispatch.voice_ready.v1",
+      "label": "提交人工复核",
+      "user_prompt": "提交人工复核，并继续说明语音播报准备卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.submit_manual_review",
+      "next_template_id": "guixiaoyang_dispatch.manual_review.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "voice_ready.prepare_voice",
+      "source_template_id": "guixiaoyang_dispatch.voice_ready.v1",
+      "label": "准备语音播报",
+      "user_prompt": "准备语音播报，并继续说明语音播报准备卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.prepare_voice",
+      "next_template_id": "guixiaoyang_dispatch.voice_ready.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "voice_ready.show_elder_summary",
+      "source_template_id": "guixiaoyang_dispatch.voice_ready.v1",
+      "label": "查看老人摘要",
+      "user_prompt": "查看老人摘要，并继续说明语音播报准备卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.show_elder_summary",
+      "next_template_id": "guixiaoyang_dispatch.elder_summary.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "voice_ready.show_timeline",
+      "source_template_id": "guixiaoyang_dispatch.voice_ready.v1",
+      "label": "查看处理时间线",
+      "user_prompt": "查看处理时间线，并继续说明语音播报准备卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.show_timeline",
+      "next_template_id": "guixiaoyang_dispatch.timeline.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--chronic_disease" data-template-id="meal_plan.chronic_disease.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{chronic_disease.badge}}</p>
+    <h3>{{chronic_disease.title}}</h3>
+    <p>{{chronic_disease.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{chronic_disease.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 慢病膳食卡片: 针对糖尿病、高血压、高血脂等慢病输出建议。 -->

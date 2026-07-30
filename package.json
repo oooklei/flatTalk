@@ -1,0 +1,25 @@
+{
+  "name": "flattalk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/*.test.js",
+    "validate:no-source-links": "node scripts/validate-no-source-links.js",
+    "validate:assets": "node scripts/validate-assets.js",
+    "assets:copy": "node scripts/copy-source-assets.js",
+    "smoke:chat": "node scripts/smoke-chat.js",
+    "check:weekly": "node scripts/check-weekly-plan.mjs",
+    "check": "npm run validate:no-source-links && npm run validate:assets && npm test"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "pg": "^8.22.0",
+    "redis": "^6.1.0"
+  },
+  "devDependencies": {
+    "mysql2": "^3.23.2",
+    "playwright": "^1.62.0"
+  }
+}

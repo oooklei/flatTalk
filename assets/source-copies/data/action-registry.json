@@ -1,0 +1,4370 @@
+{
+  "version": "gxy-action-registry.v1",
+  "actions": [
+    {
+      "action_key": "chat.queue.add",
+      "label": "稍后排队",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "description": "会话运行中时将新问题加入等待队列。",
+      "when": "同一会话已有远端任务运行，用户选择稍后处理新问题时使用。",
+      "params_schema": {
+        "conversation_id": "string",
+        "message": "string",
+        "turn_id": "string"
+      },
+      "bff_event": "chat.queue.add",
+      "next_template_id": "chat.queue_status.v1",
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ]
+    },
+    {
+      "action_key": "chat.queue.clear",
+      "label": "清空待处理",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "description": "清空当前会话等待队列。",
+      "when": "用户不再需要处理排队问题时使用。",
+      "params_schema": {
+        "conversation_id": "string"
+      },
+      "bff_event": "chat.queue.clear",
+      "next_template_id": "chat.queue_status.v1",
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ]
+    },
+    {
+      "action_key": "chat.running.merge",
+      "label": "合并补充",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "description": "将新输入作为当前运行任务的补充信息。",
+      "when": "用户的新输入明显是在补充上一轮问题的信息时使用。",
+      "params_schema": {
+        "conversation_id": "string",
+        "message": "string",
+        "turn_id": "string"
+      },
+      "bff_event": "chat.running.merge",
+      "next_template_id": "chat.merge_notice.v1",
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ]
+    },
+    {
+      "action_key": "chat.running.replace",
+      "label": "替换当前问题",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "description": "取消当前运行任务，并准备处理新问题。",
+      "when": "同一会话已有远端任务运行，用户明确要求优先处理新问题时使用。",
+      "params_schema": {
+        "conversation_id": "string",
+        "message": "string",
+        "turn_id": "string"
+      },
+      "bff_event": "chat.running.replace",
+      "next_template_id": "chat.queue_status.v1",
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ]
+    },
+    {
+      "action_key": "dispatch_manage.analyze_reject",
+      "label": "分析拒单原因",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.analyze_reject action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.analyze_reject.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.reject_reason.v1",
+      "templates": [
+        "dispatch_manage.reject_reason.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.analyze_reject"
+    },
+    {
+      "action_key": "dispatch_manage.balance_load",
+      "label": "计算负载均衡",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.balance_load action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.balance_load.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.load_balance.v1",
+      "templates": [
+        "dispatch_manage.load_balance.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.balance_load"
+    },
+    {
+      "action_key": "dispatch_manage.build_reassign_plan",
+      "label": "生成改派方案",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.build_reassign_plan action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.build_reassign_plan.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.reassign_plan.v1",
+      "templates": [
+        "dispatch_manage.reassign_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.build_reassign_plan"
+    },
+    {
+      "action_key": "dispatch_manage.check_completion",
+      "label": "核验服务完成",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.check_completion action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.check_completion.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.completion_check.v1",
+      "templates": [
+        "dispatch_manage.completion_check.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.check_completion"
+    },
+    {
+      "action_key": "dispatch_manage.collect_workorder",
+      "label": "补充工单上下文",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.collect_workorder action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.collect_workorder.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.workorder_intake.v1",
+      "templates": [
+        "dispatch_manage.workorder_intake.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.collect_workorder"
+    },
+    {
+      "action_key": "dispatch_manage.compare_orgs",
+      "label": "对比多个机构",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.compare_orgs action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.compare_orgs.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.multi_org_compare.v1",
+      "templates": [
+        "dispatch_manage.multi_org_compare.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.compare_orgs"
+    },
+    {
+      "action_key": "dispatch_manage.confirm_dispatch",
+      "label": "确认派单",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.confirm_dispatch action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.confirm_dispatch.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.status.v1",
+      "templates": [
+        "dispatch_manage.status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.confirm_dispatch"
+    },
+    {
+      "action_key": "dispatch_manage.contact_worker",
+      "label": "联系服务人员",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.contact_worker action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.contact_worker.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.worker_contact.v1",
+      "templates": [
+        "dispatch_manage.worker_contact.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.contact_worker"
+    },
+    {
+      "action_key": "dispatch_manage.enqueue_manual",
+      "label": "进入人工队列",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.enqueue_manual action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.enqueue_manual.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.manual_queue.v1",
+      "templates": [
+        "dispatch_manage.manual_queue.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.enqueue_manual"
+    },
+    {
+      "action_key": "dispatch_manage.escalate_manual",
+      "label": "转人工调度",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.escalate_manual action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.escalate_manual.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.manual_queue.v1",
+      "templates": [
+        "dispatch_manage.manual_queue.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.escalate_manual"
+    },
+    {
+      "action_key": "dispatch_manage.escalate_risk",
+      "label": "升级风险工单",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.escalate_risk action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.escalate_risk.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.risk_escalation.v1",
+      "templates": [
+        "dispatch_manage.risk_escalation.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.escalate_risk"
+    },
+    {
+      "action_key": "dispatch_manage.execute_auto_dispatch",
+      "label": "执行自动派单",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.execute_auto_dispatch action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.execute_auto_dispatch.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.auto_dispatch.v1",
+      "templates": [
+        "dispatch_manage.auto_dispatch.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.execute_auto_dispatch"
+    },
+    {
+      "action_key": "dispatch_manage.explain_score",
+      "label": "拆解候选评分",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.explain_score action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.explain_score.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.score_breakdown.v1",
+      "templates": [
+        "dispatch_manage.score_breakdown.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.explain_score"
+    },
+    {
+      "action_key": "dispatch_manage.fallback_status",
+      "label": "查看兜底状态",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.fallback_status action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.fallback_status.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.fallback_status.v1",
+      "templates": [
+        "dispatch_manage.fallback_status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.fallback_status"
+    },
+    {
+      "action_key": "dispatch_manage.notify_org",
+      "label": "补发通知",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.notify_org action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.notify_org.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.notification_trace.v1",
+      "templates": [
+        "dispatch_manage.notification_trace.v1"
+      ],
+      "roles": [
+        "service_org",
+        "grid_worker",
+        "system_admin"
+      ],
+      "required_context": [
+        "workorder_id",
+        "recipient_filter"
+      ],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.notify_org"
+    },
+    {
+      "action_key": "dispatch_manage.open_workbench",
+      "label": "打开调度工作台",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.open_workbench action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.open_workbench.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.status.v1",
+      "templates": [
+        "dispatch_manage.status.v1"
+      ],
+      "roles": [
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [
+        "workorder_id"
+      ],
+      "audit_level": "low",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.open_workbench"
+    },
+    {
+      "action_key": "dispatch_manage.reassign",
+      "label": "改派候选",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.reassign action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.reassign.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.candidate_ranking.v1",
+      "templates": [
+        "dispatch_manage.candidate_ranking.v1"
+      ],
+      "roles": [
+        "service_org",
+        "system_admin"
+      ],
+      "required_context": [
+        "workorder_id",
+        "reason"
+      ],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.reassign"
+    },
+    {
+      "action_key": "dispatch_manage.refresh_candidates",
+      "label": "刷新候选资源",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.refresh_candidates action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.refresh_candidates.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.candidate.v1",
+      "templates": [
+        "dispatch_manage.candidate.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.refresh_candidates"
+    },
+    {
+      "action_key": "dispatch_manage.retry_notification",
+      "label": "重试通知",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.retry_notification action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.retry_notification.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.notification_retry.v1",
+      "templates": [
+        "dispatch_manage.notification_retry.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.retry_notification"
+    },
+    {
+      "action_key": "dispatch_manage.run_hard_filter",
+      "label": "执行硬性过滤",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.run_hard_filter action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.run_hard_filter.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.hard_filter.v1",
+      "templates": [
+        "dispatch_manage.hard_filter.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.run_hard_filter"
+    },
+    {
+      "action_key": "dispatch_manage.show_audit_summary",
+      "label": "查看审计摘要",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.show_audit_summary action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.show_audit_summary.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.audit_summary.v1",
+      "templates": [
+        "dispatch_manage.audit_summary.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.show_audit_summary"
+    },
+    {
+      "action_key": "dispatch_manage.show_capacity_gap",
+      "label": "查看容量缺口",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.show_capacity_gap action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.show_capacity_gap.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.capacity_gap.v1",
+      "templates": [
+        "dispatch_manage.capacity_gap.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.show_capacity_gap"
+    },
+    {
+      "action_key": "dispatch_manage.show_route_map",
+      "label": "查看路线态势",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.show_route_map action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.show_route_map.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.route_map.v1",
+      "templates": [
+        "dispatch_manage.route_map.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.show_route_map"
+    },
+    {
+      "action_key": "dispatch_manage.start_sla_countdown",
+      "label": "启动SLA倒计时",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.start_sla_countdown action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.start_sla_countdown.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.sla_countdown.v1",
+      "templates": [
+        "dispatch_manage.sla_countdown.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.start_sla_countdown"
+    },
+    {
+      "action_key": "dispatch_manage.trace_family",
+      "label": "追踪家属通知",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.trace_family action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.trace_family.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.family_trace.v1",
+      "templates": [
+        "dispatch_manage.family_trace.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "dispatch_manage.trace_family"
+    },
+    {
+      "action_key": "dispatch_manage.track_arrival",
+      "label": "追踪到达",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.track_arrival action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.track_arrival.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.arrival_tracking.v1",
+      "templates": [
+        "dispatch_manage.arrival_tracking.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.track_arrival"
+    },
+    {
+      "action_key": "dispatch_manage.voice_broadcast",
+      "label": "语音播报",
+      "skill_key": "dispatch_manage",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "dispatch_manage.voice_broadcast action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.voice_broadcast.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.status.v1",
+      "templates": [
+        "dispatch_manage.status.v1"
+      ],
+      "roles": [
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [
+        "output_summary"
+      ],
+      "audit_level": "low",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "voice.broadcast"
+    },
+    {
+      "action_key": "dispatch_manage.workorder_detail",
+      "label": "查看工单详情",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "dispatch_manage.workorder_detail action for dispatch_manage.",
+      "when": "Use when the user selects dispatch_manage.workorder_detail.",
+      "params_schema": {},
+      "next_template_id": "dispatch_manage.workorder_card.v1",
+      "templates": [
+        "dispatch_manage.workorder_card.v1"
+      ],
+      "roles": [
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [
+        "workorder_id"
+      ],
+      "audit_level": "low",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "dispatch_manage.workorder_detail"
+    },
+    {
+      "action_key": "find_service.assign_org",
+      "label": "匹配服务机构",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.assign_org action for find_service.",
+      "when": "Use when the user selects find_service.assign_org.",
+      "params_schema": {},
+      "next_template_id": "find_service.order.v1",
+      "templates": [
+        "find_service.order.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.assign_org"
+    },
+    {
+      "action_key": "find_service.assist_complaint",
+      "label": "服务投诉协助",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.assist_complaint action for find_service.",
+      "when": "Use when the user selects find_service.assist_complaint.",
+      "params_schema": {},
+      "next_template_id": "find_service.complaint_assist.v1",
+      "templates": [
+        "find_service.complaint_assist.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.assist_complaint"
+    },
+    {
+      "action_key": "find_service.browse_catalog",
+      "label": "浏览服务目录",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.browse_catalog action for find_service.",
+      "when": "Use when the user selects find_service.browse_catalog.",
+      "params_schema": {},
+      "next_template_id": "find_service.catalog.v1",
+      "templates": [
+        "find_service.catalog.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.browse_catalog"
+    },
+    {
+      "action_key": "find_service.bundle_services",
+      "label": "组合服务方案",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.bundle_services action for find_service.",
+      "when": "Use when the user selects find_service.bundle_services.",
+      "params_schema": {},
+      "next_template_id": "find_service.multi_service_bundle.v1",
+      "templates": [
+        "find_service.multi_service_bundle.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.bundle_services"
+    },
+    {
+      "action_key": "find_service.cancel_or_change",
+      "label": "取消或改约",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.cancel_or_change action for find_service.",
+      "when": "Use when the user selects find_service.cancel_or_change.",
+      "params_schema": {},
+      "next_template_id": "find_service.cancel_change.v1",
+      "templates": [
+        "find_service.cancel_change.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.cancel_or_change"
+    },
+    {
+      "action_key": "find_service.check_eligibility",
+      "label": "核对服务资格",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.check_eligibility action for find_service.",
+      "when": "Use when the user selects find_service.check_eligibility.",
+      "params_schema": {},
+      "next_template_id": "find_service.eligibility_check.v1",
+      "templates": [
+        "find_service.eligibility_check.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.check_eligibility"
+    },
+    {
+      "action_key": "find_service.clarify",
+      "label": "补充服务信息",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.clarify action for find_service.",
+      "when": "Use when the user selects find_service.clarify.",
+      "params_schema": {},
+      "next_template_id": "find_service.clarify.v1",
+      "templates": [
+        "find_service.clarify.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.clarify"
+    },
+    {
+      "action_key": "find_service.collect_followup",
+      "label": "服务回访",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.collect_followup action for find_service.",
+      "when": "Use when the user selects find_service.collect_followup.",
+      "params_schema": {},
+      "next_template_id": "find_service.followup_visit.v1",
+      "templates": [
+        "find_service.followup_visit.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.collect_followup"
+    },
+    {
+      "action_key": "find_service.collect_need",
+      "label": "补充服务需求",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.collect_need action for find_service.",
+      "when": "Use when the user selects find_service.collect_need.",
+      "params_schema": {},
+      "next_template_id": "find_service.need_intake.v1",
+      "templates": [
+        "find_service.need_intake.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.collect_need"
+    },
+    {
+      "action_key": "find_service.confirm_address",
+      "label": "确认服务地址",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.confirm_address action for find_service.",
+      "when": "Use when the user selects find_service.confirm_address.",
+      "params_schema": {},
+      "next_template_id": "find_service.address_confirm.v1",
+      "templates": [
+        "find_service.address_confirm.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.confirm_address"
+    },
+    {
+      "action_key": "find_service.create_order",
+      "label": "创建服务订单",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.create_order action for find_service.",
+      "when": "Use when the user selects find_service.create_order.",
+      "params_schema": {},
+      "next_template_id": "find_service.order.v1",
+      "templates": [
+        "find_service.order.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.create_order"
+    },
+    {
+      "action_key": "find_service.dispatch_handoff",
+      "label": "派单交接",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.dispatch_handoff action for find_service.",
+      "when": "Use when the user selects find_service.dispatch_handoff.",
+      "params_schema": {},
+      "next_template_id": "find_service.order.v1",
+      "templates": [
+        "find_service.order.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.dispatch_handoff"
+    },
+    {
+      "action_key": "find_service.emergency_handoff",
+      "label": "紧急转接",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.emergency_handoff action for find_service.",
+      "when": "Use when the user selects find_service.emergency_handoff.",
+      "params_schema": {},
+      "next_template_id": "find_service.emergency.v1",
+      "templates": [
+        "find_service.emergency.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.emergency_handoff"
+    },
+    {
+      "action_key": "find_service.estimate_price",
+      "label": "预估服务费用",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.estimate_price action for find_service.",
+      "when": "Use when the user selects find_service.estimate_price.",
+      "params_schema": {},
+      "next_template_id": "find_service.price_estimate.v1",
+      "templates": [
+        "find_service.price_estimate.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.estimate_price"
+    },
+    {
+      "action_key": "find_service.explain_match",
+      "label": "解释推荐原因",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.explain_match action for find_service.",
+      "when": "Use when the user selects find_service.explain_match.",
+      "params_schema": {},
+      "next_template_id": "find_service.service_match.v1",
+      "templates": [
+        "find_service.service_match.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.explain_match"
+    },
+    {
+      "action_key": "find_service.fallback_status",
+      "label": "查看兜底状态",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.fallback_status action for find_service.",
+      "when": "Use when the user selects find_service.fallback_status.",
+      "params_schema": {},
+      "next_template_id": "find_service.fallback_status.v1",
+      "templates": [
+        "find_service.fallback_status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.fallback_status"
+    },
+    {
+      "action_key": "find_service.manual_review",
+      "label": "人工复核",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.manual_review action for find_service.",
+      "when": "Use when the user selects find_service.manual_review.",
+      "params_schema": {},
+      "next_template_id": "find_service.status.v1",
+      "templates": [
+        "find_service.status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.manual_review"
+    },
+    {
+      "action_key": "find_service.notify_family",
+      "label": "通知家属",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.notify_family action for find_service.",
+      "when": "Use when the user selects find_service.notify_family.",
+      "params_schema": {},
+      "next_template_id": "find_service.family_notify.v1",
+      "templates": [
+        "find_service.family_notify.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.notify_family"
+    },
+    {
+      "action_key": "find_service.preview_order",
+      "label": "预览服务订单",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.preview_order action for find_service.",
+      "when": "Use when the user selects find_service.preview_order.",
+      "params_schema": {},
+      "next_template_id": "find_service.order_preview.v1",
+      "templates": [
+        "find_service.order_preview.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.preview_order"
+    },
+    {
+      "action_key": "find_service.recommend_community",
+      "label": "推荐社区资源",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.recommend_community action for find_service.",
+      "when": "Use when the user selects find_service.recommend_community.",
+      "params_schema": {},
+      "next_template_id": "find_service.community_resource.v1",
+      "templates": [
+        "find_service.community_resource.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.recommend_community"
+    },
+    {
+      "action_key": "find_service.refresh_recommendation",
+      "label": "重新推荐服务",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.refresh_recommendation action for find_service.",
+      "when": "Use when the user selects find_service.refresh_recommendation.",
+      "params_schema": {},
+      "next_template_id": "find_service.recommend.v1",
+      "templates": [
+        "find_service.recommend.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.refresh_recommendation"
+    },
+    {
+      "action_key": "find_service.select_time_slot",
+      "label": "选择预约时段",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.select_time_slot action for find_service.",
+      "when": "Use when the user selects find_service.select_time_slot.",
+      "params_schema": {},
+      "next_template_id": "find_service.schedule.v1",
+      "templates": [
+        "find_service.schedule.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.select_time_slot"
+    },
+    {
+      "action_key": "find_service.show_subsidy_hint",
+      "label": "查看补贴提示",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.show_subsidy_hint action for find_service.",
+      "when": "Use when the user selects find_service.show_subsidy_hint.",
+      "params_schema": {},
+      "next_template_id": "find_service.subsidy_hint.v1",
+      "templates": [
+        "find_service.subsidy_hint.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.show_subsidy_hint"
+    },
+    {
+      "action_key": "find_service.triage_emergency",
+      "label": "紧急服务分流",
+      "skill_key": "find_service",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "find_service.triage_emergency action for find_service.",
+      "when": "Use when the user selects find_service.triage_emergency.",
+      "params_schema": {},
+      "next_template_id": "find_service.emergency_triage.v1",
+      "templates": [
+        "find_service.emergency_triage.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "find_service.triage_emergency"
+    },
+    {
+      "action_key": "find_service.view_order_status",
+      "label": "查看订单状态",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.view_order_status action for find_service.",
+      "when": "Use when the user selects find_service.view_order_status.",
+      "params_schema": {},
+      "next_template_id": "find_service.order_status.v1",
+      "templates": [
+        "find_service.order_status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.view_order_status"
+    },
+    {
+      "action_key": "find_service.view_org_profile",
+      "label": "查看机构画像",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.view_org_profile action for find_service.",
+      "when": "Use when the user selects find_service.view_org_profile.",
+      "params_schema": {},
+      "next_template_id": "find_service.org_profile.v1",
+      "templates": [
+        "find_service.org_profile.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.view_org_profile"
+    },
+    {
+      "action_key": "find_service.view_worker_profile",
+      "label": "查看服务人员画像",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.view_worker_profile action for find_service.",
+      "when": "Use when the user selects find_service.view_worker_profile.",
+      "params_schema": {},
+      "next_template_id": "find_service.worker_profile.v1",
+      "templates": [
+        "find_service.worker_profile.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.view_worker_profile"
+    },
+    {
+      "action_key": "find_service.voice_broadcast",
+      "label": "语音播报",
+      "skill_key": "find_service",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "find_service.voice_broadcast action for find_service.",
+      "when": "Use when the user selects find_service.voice_broadcast.",
+      "params_schema": {},
+      "next_template_id": "find_service.status.v1",
+      "templates": [
+        "find_service.status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "find_service.voice_broadcast"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.answer_faq",
+      "label": "回答常见问题",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.answer_faq action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.answer_faq.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.faq_answer.v1",
+      "templates": [
+        "guixiaoyang_dispatch.faq_answer.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.answer_faq"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.clarify",
+      "label": "继续澄清",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.clarify action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.clarify.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "templates": [
+        "guixiaoyang_dispatch.clarify.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.clarify"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.collect_context",
+      "label": "补充上下文",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.collect_context action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.collect_context.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "templates": [
+        "guixiaoyang_dispatch.clarify.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.collect_context"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.collect_learning_feedback",
+      "label": "提交对话反馈",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "guixiaoyang_dispatch.collect_learning_feedback action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.collect_learning_feedback.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+      "templates": [
+        "guixiaoyang_dispatch.learning_feedback.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "guixiaoyang_dispatch.collect_learning_feedback"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.explain_permission",
+      "label": "说明权限限制",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.explain_permission action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.explain_permission.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.permission_block.v1",
+      "templates": [
+        "guixiaoyang_dispatch.permission_block.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.explain_permission"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.manual_review",
+      "label": "转人工复核",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "guixiaoyang_dispatch.manual_review action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.manual_review.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.manual_review.v1",
+      "templates": [
+        "guixiaoyang_dispatch.manual_review.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "guixiaoyang_dispatch.manual_review"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.plan_multi_skill",
+      "label": "规划多技能协同",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.plan_multi_skill action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.plan_multi_skill.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.multi_skill_plan.v1",
+      "templates": [
+        "guixiaoyang_dispatch.multi_skill_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.plan_multi_skill"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.prepare_voice",
+      "label": "准备语音播报",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.prepare_voice action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.prepare_voice.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.voice_ready.v1",
+      "templates": [
+        "guixiaoyang_dispatch.voice_ready.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.prepare_voice"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.preview_handoff",
+      "label": "预览交接上下文",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.preview_handoff action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.preview_handoff.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.handoff_preview.v1",
+      "templates": [
+        "guixiaoyang_dispatch.handoff_preview.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.preview_handoff"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.report_knowledge_gap",
+      "label": "报告知识缺口",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.report_knowledge_gap action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.report_knowledge_gap.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.knowledge_gap.v1",
+      "templates": [
+        "guixiaoyang_dispatch.knowledge_gap.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.report_knowledge_gap"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.request_profile",
+      "label": "补全老人档案",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "guixiaoyang_dispatch.request_profile action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.request_profile.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.profile_missing.v1",
+      "templates": [
+        "guixiaoyang_dispatch.profile_missing.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "guixiaoyang_dispatch.request_profile"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.resume_session",
+      "label": "恢复上次会话",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.resume_session action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.resume_session.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.session_resume.v1",
+      "templates": [
+        "guixiaoyang_dispatch.session_resume.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.resume_session"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.route_dispatch_manage",
+      "label": "转入自动派单",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "skill_handoff",
+      "description": "guixiaoyang_dispatch.route_dispatch_manage action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.route_dispatch_manage.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "templates": [
+        "guixiaoyang_dispatch.intent_router.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.route_dispatch_manage"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.route_find_service",
+      "label": "转入AI找服务",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "skill_handoff",
+      "description": "guixiaoyang_dispatch.route_find_service action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.route_find_service.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "templates": [
+        "guixiaoyang_dispatch.intent_router.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.route_find_service"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.route_meal_plan",
+      "label": "转入AI膳食",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "skill_handoff",
+      "description": "guixiaoyang_dispatch.route_meal_plan action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.route_meal_plan.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "templates": [
+        "guixiaoyang_dispatch.intent_router.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.route_meal_plan"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.run_safety_check",
+      "label": "执行安全核对",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "guixiaoyang_dispatch.run_safety_check action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.run_safety_check.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.safety_check.v1",
+      "templates": [
+        "guixiaoyang_dispatch.safety_check.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "guixiaoyang_dispatch.run_safety_check"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.screen_policy",
+      "label": "筛查政策资格",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "guixiaoyang_dispatch.screen_policy action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.screen_policy.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.policy_screening.v1",
+      "templates": [
+        "guixiaoyang_dispatch.policy_screening.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "guixiaoyang_dispatch.screen_policy"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.show_capabilities",
+      "label": "查看可用能力",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.show_capabilities action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.show_capabilities.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "templates": [
+        "guixiaoyang_dispatch.capability_intro.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.show_capabilities"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.show_elder_summary",
+      "label": "查看老人摘要",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.show_elder_summary action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.show_elder_summary.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.elder_summary.v1",
+      "templates": [
+        "guixiaoyang_dispatch.elder_summary.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.show_elder_summary"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.show_fallback_status",
+      "label": "查看兜底状态",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.show_fallback_status action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.show_fallback_status.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.fallback_status.v1",
+      "templates": [
+        "guixiaoyang_dispatch.fallback_status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.show_fallback_status"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.show_family_summary",
+      "label": "查看家属代办摘要",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.show_family_summary action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.show_family_summary.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.family_summary.v1",
+      "templates": [
+        "guixiaoyang_dispatch.family_summary.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.show_family_summary"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.show_notification_summary",
+      "label": "查看通知摘要",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.show_notification_summary action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.show_notification_summary.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.notification_summary.v1",
+      "templates": [
+        "guixiaoyang_dispatch.notification_summary.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.show_notification_summary"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.show_task_progress",
+      "label": "查看任务进度",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.show_task_progress action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.show_task_progress.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.task_progress.v1",
+      "templates": [
+        "guixiaoyang_dispatch.task_progress.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.show_task_progress"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.show_timeline",
+      "label": "查看处理时间线",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.show_timeline action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.show_timeline.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.timeline.v1",
+      "templates": [
+        "guixiaoyang_dispatch.timeline.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "guixiaoyang_dispatch.show_timeline"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.submit_manual_review",
+      "label": "提交人工复核",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "guixiaoyang_dispatch.submit_manual_review action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.submit_manual_review.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.manual_review.v1",
+      "templates": [
+        "guixiaoyang_dispatch.manual_review.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "guixiaoyang_dispatch.submit_manual_review"
+    },
+    {
+      "action_key": "guixiaoyang_dispatch.voice_broadcast",
+      "label": "语音播报",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "guixiaoyang_dispatch.voice_broadcast action for guixiaoyang_dispatch.",
+      "when": "Use when the user selects guixiaoyang_dispatch.voice_broadcast.",
+      "params_schema": {},
+      "next_template_id": "guixiaoyang_dispatch.status.v1",
+      "templates": [
+        "guixiaoyang_dispatch.status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "system_admin"
+      ],
+      "required_context": [
+        "output_summary"
+      ],
+      "audit_level": "low",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "voice.broadcast"
+    },
+    {
+      "action_key": "meal_plan.adapt_chronic_disease",
+      "label": "适配慢病方案",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.adapt_chronic_disease action for meal_plan.",
+      "when": "Use when the user selects meal_plan.adapt_chronic_disease.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.chronic_disease.v1",
+      "templates": [
+        "meal_plan.chronic_disease.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.adapt_chronic_disease"
+    },
+    {
+      "action_key": "meal_plan.adapt_swallowing",
+      "label": "适配吞咽能力",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.adapt_swallowing action for meal_plan.",
+      "when": "Use when the user selects meal_plan.adapt_swallowing.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.swallowing_care.v1",
+      "templates": [
+        "meal_plan.swallowing_care.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.adapt_swallowing"
+    },
+    {
+      "action_key": "meal_plan.budget_adjust",
+      "label": "预算膳食调整",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.budget_adjust action for meal_plan.",
+      "when": "Use when the user selects meal_plan.budget_adjust.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.budget_plan.v1",
+      "templates": [
+        "meal_plan.budget_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.budget_adjust"
+    },
+    {
+      "action_key": "meal_plan.caregiver_brief",
+      "label": "生成照护员简报",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.caregiver_brief action for meal_plan.",
+      "when": "Use when the user selects meal_plan.caregiver_brief.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.caregiver_brief.v1",
+      "templates": [
+        "meal_plan.caregiver_brief.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.caregiver_brief"
+    },
+    {
+      "action_key": "meal_plan.check_risk",
+      "label": "检查膳食风险",
+      "skill_key": "meal_plan",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "meal_plan.check_risk action for meal_plan.",
+      "when": "Use when the user selects meal_plan.check_risk.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.risk_alert.v1",
+      "templates": [
+        "meal_plan.risk_alert.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "meal_plan.check_risk"
+    },
+    {
+      "action_key": "meal_plan.collect_condition",
+      "label": "补充健康条件",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.collect_condition action for meal_plan.",
+      "when": "Use when the user selects meal_plan.collect_condition.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.condition_intake.v1",
+      "templates": [
+        "meal_plan.condition_intake.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.collect_condition"
+    },
+    {
+      "action_key": "meal_plan.collect_feedback",
+      "label": "收集膳食反馈",
+      "skill_key": "meal_plan",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "meal_plan.collect_feedback action for meal_plan.",
+      "when": "Use when the user selects meal_plan.collect_feedback.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.feedback_collect.v1",
+      "templates": [
+        "meal_plan.feedback_collect.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "meal_plan.collect_feedback"
+    },
+    {
+      "action_key": "meal_plan.compare_nutrition",
+      "label": "对比营养方案",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.compare_nutrition action for meal_plan.",
+      "when": "Use when the user selects meal_plan.compare_nutrition.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.nutrition_compare.v1",
+      "templates": [
+        "meal_plan.nutrition_compare.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.compare_nutrition"
+    },
+    {
+      "action_key": "meal_plan.confirm",
+      "label": "确认采用方案",
+      "skill_key": "meal_plan",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "meal_plan.confirm action for meal_plan.",
+      "when": "Use when the user selects meal_plan.confirm.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.status.v1",
+      "templates": [
+        "meal_plan.status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "meal_plan.confirm"
+    },
+    {
+      "action_key": "meal_plan.confirm_order",
+      "label": "确认订餐",
+      "skill_key": "meal_plan",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "meal_plan.confirm_order action for meal_plan.",
+      "when": "Use when the user selects meal_plan.confirm_order.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.order_confirm.v1",
+      "templates": [
+        "meal_plan.order_confirm.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "meal_plan.confirm_order"
+    },
+    {
+      "action_key": "meal_plan.doctor_note",
+      "label": "整理专业沟通问题",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.doctor_note action for meal_plan.",
+      "when": "Use when the user selects meal_plan.doctor_note.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.doctor_note.v1",
+      "templates": [
+        "meal_plan.doctor_note.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.doctor_note"
+    },
+    {
+      "action_key": "meal_plan.explain_to_family",
+      "label": "生成家属说明",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.explain_to_family action for meal_plan.",
+      "when": "Use when the user selects meal_plan.explain_to_family.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.family_explain.v1",
+      "templates": [
+        "meal_plan.family_explain.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.explain_to_family"
+    },
+    {
+      "action_key": "meal_plan.festival_adjust",
+      "label": "节日膳食调整",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.festival_adjust action for meal_plan.",
+      "when": "Use when the user selects meal_plan.festival_adjust.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.festival_plan.v1",
+      "templates": [
+        "meal_plan.festival_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.festival_adjust"
+    },
+    {
+      "action_key": "meal_plan.generate_shopping_list",
+      "label": "生成采购清单",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.generate_shopping_list action for meal_plan.",
+      "when": "Use when the user selects meal_plan.generate_shopping_list.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.shopping_list.v1",
+      "templates": [
+        "meal_plan.shopping_list.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.generate_shopping_list"
+    },
+    {
+      "action_key": "meal_plan.generate_weekly_plan",
+      "label": "生成一周计划",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.generate_weekly_plan action for meal_plan.",
+      "when": "Use when the user selects meal_plan.generate_weekly_plan.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.weekly_plan.v1",
+      "templates": [
+        "meal_plan.weekly_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.generate_weekly_plan"
+    },
+    {
+      "action_key": "meal_plan.handoff_delivery",
+      "label": "交接配送",
+      "skill_key": "meal_plan",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "meal_plan.handoff_delivery action for meal_plan.",
+      "when": "Use when the user selects meal_plan.handoff_delivery.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.delivery_handoff.v1",
+      "templates": [
+        "meal_plan.delivery_handoff.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "meal_plan.handoff_delivery"
+    },
+    {
+      "action_key": "meal_plan.order_handoff",
+      "label": "转订餐配送",
+      "skill_key": "meal_plan",
+      "target": "business_system",
+      "type": "business_event",
+      "description": "meal_plan.order_handoff action for meal_plan.",
+      "when": "Use when the user selects meal_plan.order_handoff.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.delivery_handoff.v1",
+      "templates": [
+        "meal_plan.delivery_handoff.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "meal_plan.order_handoff"
+    },
+    {
+      "action_key": "meal_plan.regenerate",
+      "label": "重新生成膳食",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.regenerate action for meal_plan.",
+      "when": "Use when the user selects meal_plan.regenerate.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.plan.v1",
+      "templates": [
+        "meal_plan.plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.regenerate"
+    },
+    {
+      "action_key": "meal_plan.reuse_leftover",
+      "label": "剩餐复用建议",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.reuse_leftover action for meal_plan.",
+      "when": "Use when the user selects meal_plan.reuse_leftover.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.leftover_reuse.v1",
+      "templates": [
+        "meal_plan.leftover_reuse.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.reuse_leftover"
+    },
+    {
+      "action_key": "meal_plan.set_preference",
+      "label": "设置饮食偏好",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.set_preference action for meal_plan.",
+      "when": "Use when the user selects meal_plan.set_preference.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.diet_preference.v1",
+      "templates": [
+        "meal_plan.diet_preference.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.set_preference"
+    },
+    {
+      "action_key": "meal_plan.show_cooking_steps",
+      "label": "查看烹饪步骤",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.show_cooking_steps action for meal_plan.",
+      "when": "Use when the user selects meal_plan.show_cooking_steps.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.cooking_steps.v1",
+      "templates": [
+        "meal_plan.cooking_steps.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.show_cooking_steps"
+    },
+    {
+      "action_key": "meal_plan.swap_ingredient",
+      "label": "替换食材",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.swap_ingredient action for meal_plan.",
+      "when": "Use when the user selects meal_plan.swap_ingredient.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.ingredient_swap.v1",
+      "templates": [
+        "meal_plan.ingredient_swap.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.swap_ingredient"
+    },
+    {
+      "action_key": "meal_plan.view_status",
+      "label": "查看膳食执行状态",
+      "skill_key": "meal_plan",
+      "target": "bff",
+      "type": "bff_event",
+      "description": "meal_plan.view_status action for meal_plan.",
+      "when": "Use when the user selects meal_plan.view_status.",
+      "params_schema": {},
+      "next_template_id": "meal_plan.status.v1",
+      "templates": [
+        "meal_plan.status.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "meal_plan.view_status"
+    },
+    {
+      "action_key": "message.context.open",
+      "label": "打开消息上下文",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "description": "打开业务系统传入的消息、待办、订单或工单上下文。",
+      "when": "用户从业务消息进入 AI 助手，或回答需要查看当前消息上下文时使用。",
+      "params_schema": {
+        "event_id": "string",
+        "message_id": "string"
+      },
+      "bff_event": "message.context.open",
+      "next_template_id": "message.event_context.v1",
+      "roles": [
+        "elder",
+        "family",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ]
+    },
+    {
+      "action_key": "test.action",
+      "label": "测试动作",
+      "skill_key": "guixiaoyang_dispatch",
+      "target": "bff",
+      "description": "BFF 冒烟测试动作。",
+      "when": "仅系统管理员测试 BFF action 网关时使用。",
+      "params_schema": {
+        "echo": "string"
+      },
+      "bff_event": "test.action",
+      "next_template_id": "common.action_result.v1",
+      "roles": [
+        "system_admin"
+      ]
+    },
+    {
+      "action_key": "travel_route.adjust_pace",
+      "label": "调整行程节奏",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "按老人身体状态降低或调整每日活动强度。",
+      "when": "按老人身体状态降低或调整每日活动强度。",
+      "params_schema": {
+        "route_id": "string",
+        "pace_level": "string",
+        "constraints": "object"
+      },
+      "next_template_id": "travel_route.itinerary_timeline.v1",
+      "templates": [
+        "travel_route.itinerary_timeline.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.adjust_pace",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.booking_handoff",
+      "label": "提交预订交接",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "将当前旅居方案提交到业务系统或人工坐席继续预订。",
+      "when": "将当前旅居方案提交到业务系统或人工坐席继续预订。",
+      "params_schema": {
+        "route_id": "string",
+        "elder_id": "string",
+        "product_id": "string",
+        "sku_id": "string",
+        "contact_phone": "string",
+        "remark": "string"
+      },
+      "next_template_id": "travel_route.booking_handoff.v1",
+      "templates": [
+        "travel_route.booking_handoff.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.booking_handoff",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.calculate_budget",
+      "label": "测算旅居预算",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "测算住宿、交通、餐食、护理和陪同费用。",
+      "when": "测算住宿、交通、餐食、护理和陪同费用。",
+      "params_schema": {
+        "route_id": "string",
+        "people_count": "number",
+        "budget_level": "string"
+      },
+      "next_template_id": "travel_route.budget_plan.v1",
+      "templates": [
+        "travel_route.budget_plan.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.calculate_budget",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.cancel_or_change",
+      "label": "取消或改期",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "处理旅居预订取消、改期或变更诉求。",
+      "when": "处理旅居预订取消、改期或变更诉求。",
+      "params_schema": {
+        "order_id": "string",
+        "reason": "string",
+        "change_request": "object"
+      },
+      "next_template_id": "travel_route.cancellation_policy.v1",
+      "templates": [
+        "travel_route.cancellation_policy.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.cancel_or_change",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.check_accessibility",
+      "label": "检查无障碍条件",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "检查电梯、坡道、防滑、扶手等适老设施。",
+      "when": "检查电梯、坡道、防滑、扶手等适老设施。",
+      "params_schema": {
+        "base_id": "string",
+        "elder_constraints": "object"
+      },
+      "next_template_id": "travel_route.accessibility_check.v1",
+      "templates": [
+        "travel_route.accessibility_check.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.check_accessibility",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.check_health_safety",
+      "label": "检查健康安全",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "核查路线对老人慢病、行动能力和急救条件是否安全。",
+      "when": "核查路线对老人慢病、行动能力和急救条件是否安全。",
+      "params_schema": {
+        "elder_id": "string",
+        "route_id": "string",
+        "health_tags": "array"
+      },
+      "next_template_id": "travel_route.health_safety.v1",
+      "templates": [
+        "travel_route.health_safety.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.check_health_safety",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.check_policy_subsidy",
+      "label": "查询政策补贴",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "查询旅居养老、助老服务或相关补贴政策。",
+      "when": "查询旅居养老、助老服务或相关补贴政策。",
+      "params_schema": {
+        "elder_id": "string",
+        "region_code": "string",
+        "route_id": "string"
+      },
+      "next_template_id": "travel_route.policy_subsidy.v1",
+      "templates": [
+        "travel_route.policy_subsidy.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.check_policy_subsidy",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.collect_feedback",
+      "label": "收集旅居反馈",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "收集老人或家属对旅居方案和服务的反馈。",
+      "when": "收集老人或家属对旅居方案和服务的反馈。",
+      "params_schema": {
+        "route_id": "string",
+        "elder_id": "string",
+        "feedback": "object"
+      },
+      "next_template_id": "travel_route.feedback_collect.v1",
+      "templates": [
+        "travel_route.feedback_collect.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.collect_feedback",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.compare_destinations",
+      "label": "对比目的地",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "对比候选旅居目的地或康养基地。",
+      "when": "对比候选旅居目的地或康养基地。",
+      "params_schema": {
+        "route_id": "string",
+        "candidates": "array"
+      },
+      "next_template_id": "travel_route.destination_compare.v1",
+      "templates": [
+        "travel_route.destination_compare.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.compare_destinations",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.contact_base",
+      "label": "联系康养基地",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "联系康养基地确认房态、服务和特殊照护需求。",
+      "when": "联系康养基地确认房态、服务和特殊照护需求。",
+      "params_schema": {
+        "base_id": "string",
+        "route_id": "string",
+        "contact_reason": "string"
+      },
+      "next_template_id": "travel_route.care_provider_note.v1",
+      "templates": [
+        "travel_route.care_provider_note.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.contact_base",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.export_family_brief",
+      "label": "生成家属简报",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "生成便于家属理解的旅居方案说明。",
+      "when": "生成便于家属理解的旅居方案说明。",
+      "params_schema": {
+        "route_id": "string",
+        "elder_id": "string"
+      },
+      "next_template_id": "travel_route.family_brief.v1",
+      "templates": [
+        "travel_route.family_brief.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.export_family_brief",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.fallback_status",
+      "label": "查看路线兜底状态",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "展示路线生成失败、资源不足或转人工处理状态。",
+      "when": "展示路线生成失败、资源不足或转人工处理状态。",
+      "params_schema": {
+        "route_id": "string",
+        "reason": "string"
+      },
+      "next_template_id": "travel_route.risk_fallback.v1",
+      "templates": [
+        "travel_route.risk_fallback.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.fallback_status",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.fill_preferences",
+      "label": "补充出行偏好",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "补充目的地、日期、人数、预算和照护偏好。",
+      "when": "补充目的地、日期、人数、预算和照护偏好。",
+      "params_schema": {
+        "route_id": "string",
+        "preference_patch": "object",
+        "missing_slots": "array"
+      },
+      "next_template_id": "travel_route.preference_card.v1",
+      "templates": [
+        "travel_route.preference_card.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.preference_patch",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.find_nearby_medical",
+      "label": "查找附近医疗资源",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "查找基地周边医院、社区卫生服务站和急救资源。",
+      "when": "查找基地周边医院、社区卫生服务站和急救资源。",
+      "params_schema": {
+        "base_id": "string",
+        "destination_city": "string"
+      },
+      "next_template_id": "travel_route.nearby_medical.v1",
+      "templates": [
+        "travel_route.nearby_medical.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.find_nearby_medical",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.generate_packing_list",
+      "label": "生成行李清单",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "生成药品、证件、衣物、护理用品等出行清单。",
+      "when": "生成药品、证件、衣物、护理用品等出行清单。",
+      "params_schema": {
+        "route_id": "string",
+        "elder_id": "string",
+        "season": "string"
+      },
+      "next_template_id": "travel_route.packing_list.v1",
+      "templates": [
+        "travel_route.packing_list.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.generate_packing_list",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.notify_family",
+      "label": "通知家属",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "将旅居方案或预订进展同步给家属。",
+      "when": "将旅居方案或预订进展同步给家属。",
+      "params_schema": {
+        "route_id": "string",
+        "family_user_id": "string",
+        "channels": "array"
+      },
+      "next_template_id": "travel_route.family_brief.v1",
+      "templates": [
+        "travel_route.family_brief.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.notify_family",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.open_workbench",
+      "label": "打开路线工作台",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "打开旅居路线工作台继续处理。",
+      "when": "打开旅居路线工作台继续处理。",
+      "params_schema": {
+        "route_id": "string",
+        "page": "string",
+        "focus": "object"
+      },
+      "next_template_id": "travel_route.route_plan.v1",
+      "templates": [
+        "travel_route.route_plan.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.open_workbench",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.plan_transport",
+      "label": "规划交通接驳",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "规划出发地到康养基地的交通和接驳方案。",
+      "when": "规划出发地到康养基地的交通和接驳方案。",
+      "params_schema": {
+        "route_id": "string",
+        "departure_city": "string",
+        "destination_city": "string"
+      },
+      "next_template_id": "travel_route.transport_plan.v1",
+      "templates": [
+        "travel_route.transport_plan.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.plan_transport",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.preview_order",
+      "label": "预览预订订单",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "预览旅居预订订单、费用和联系人信息。",
+      "when": "预览旅居预订订单、费用和联系人信息。",
+      "params_schema": {
+        "route_id": "string",
+        "product_id": "string",
+        "contact_phone": "string"
+      },
+      "next_template_id": "travel_route.order_preview.v1",
+      "templates": [
+        "travel_route.order_preview.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.preview_order",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.recommend_season",
+      "label": "推荐适宜季节",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "根据气候、价格和老人健康情况推荐出行季节。",
+      "when": "根据气候、价格和老人健康情况推荐出行季节。",
+      "params_schema": {
+        "destination_city": "string",
+        "health_tags": "array"
+      },
+      "next_template_id": "travel_route.seasonal_recommendation.v1",
+      "templates": [
+        "travel_route.seasonal_recommendation.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.recommend_season",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.request_manual_review",
+      "label": "请求人工复核",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "将旅居方案转交人工复核。",
+      "when": "将旅居方案转交人工复核。",
+      "params_schema": {
+        "route_id": "string",
+        "reason": "string",
+        "priority": "string"
+      },
+      "next_template_id": "travel_route.risk_fallback.v1",
+      "templates": [
+        "travel_route.risk_fallback.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.request_manual_review",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.submit_payment",
+      "label": "提交付款确认",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "提交或记录旅居订单付款确认。",
+      "when": "提交或记录旅居订单付款确认。",
+      "params_schema": {
+        "order_id": "string",
+        "amount": "number",
+        "payment_channel": "string"
+      },
+      "next_template_id": "travel_route.payment_status.v1",
+      "templates": [
+        "travel_route.payment_status.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "business_action": "travel_route.submit_payment",
+      "type": "business_event"
+    },
+    {
+      "action_key": "travel_route.view_base_profile",
+      "label": "查看基地详情",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "查看康养基地资质、配套、价格和服务能力。",
+      "when": "查看康养基地资质、配套、价格和服务能力。",
+      "params_schema": {
+        "base_id": "string",
+        "product_id": "string"
+      },
+      "next_template_id": "travel_route.base_profile.v1",
+      "templates": [
+        "travel_route.base_profile.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.view_base_profile",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.view_detail",
+      "label": "查看行程详情",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "查看当前旅居路线的每日行程和服务细节。",
+      "when": "查看当前旅居路线的每日行程和服务细节。",
+      "params_schema": {
+        "route_id": "string",
+        "day": "string",
+        "product_id": "string"
+      },
+      "next_template_id": "travel_route.itinerary_timeline.v1",
+      "templates": [
+        "travel_route.itinerary_timeline.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.detail_focus",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "travel_route.view_status",
+      "label": "查看路线状态",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "查看路线规划、预订、交接或执行进度。",
+      "when": "查看路线规划、预订、交接或执行进度。",
+      "params_schema": {
+        "route_id": "string",
+        "order_id": "string"
+      },
+      "next_template_id": "travel_route.route_status.v1",
+      "templates": [
+        "travel_route.route_status.v1",
+        "travel_route.route_plan.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "travel_base",
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "travel_route.view_status",
+      "type": "bff_event"
+    },
+    {
+      "action_key": "workorder.detail",
+      "label": "查看工单详情（兼容旧action）",
+      "skill_key": "dispatch_manage",
+      "target": "business_system",
+      "description": "兼容旧 action_key，新模板使用 dispatch_manage.workorder_detail。",
+      "when": "历史入口请求工单详情时使用。",
+      "params_schema": {
+        "workorder_id": "string"
+      },
+      "business_action": "dispatch_manage.workorder_detail",
+      "next_template_id": "dispatch_manage.workorder_card.v1",
+      "templates": [
+        "dispatch_manage.workorder_card.v1",
+        "dispatch.workorder_card.v1"
+      ],
+      "status": "enabled",
+      "roles": [
+        "service_org",
+        "grid_worker",
+        "village_doctor",
+        "system_admin"
+      ]
+    },
+    {
+      "action_key": "health_risk.call_120",
+      "label": "拨打 120",
+      "skill_key": "health_risk_warning",
+      "target": "business_system",
+      "description": "提示并记录拨打 120 急救电话。",
+      "when": "老人出现意识不清、胸痛、严重出血、疑似中风、跌倒不能移动等紧急情况时使用。",
+      "params_schema": {
+        "elder_id": "string",
+        "alert_id": "string",
+        "location": "string",
+        "note": "string"
+      },
+      "next_template_id": "health_risk.emergency_service.v1",
+      "templates": [
+        "local.sos.v1",
+        "health_risk.emergency_service.v1",
+        "health_risk.first_aid_guide.v1",
+        "health_risk.help_request.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "care_worker",
+        "village_doctor",
+        "supervisor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "health_risk.call_120",
+      "type": "business_event",
+      "Count": 16,
+      "IsReadOnly": false,
+      "Keys": [
+        "action_key",
+        "label",
+        "skill_key",
+        "target",
+        "description",
+        "when",
+        "params_schema",
+        "next_template_id",
+        "templates",
+        "roles",
+        "required_context",
+        "audit_level",
+        "enabled",
+        "status",
+        "bff_event",
+        "type"
+      ],
+      "Values": [
+        "health_risk.call_120",
+        "拨打 120",
+        "health_risk_warning",
+        "business_system",
+        "提示并记录拨打 120 急救电话。",
+        "提示并记录拨打 120 急救电话。",
+        {
+          "elder_id": "string",
+          "alert_id": "string",
+          "location": "string",
+          "note": "string"
+        },
+        "health_risk.emergency_service.v1",
+        [
+          "local.sos.v1",
+          "local.abnormal.v1",
+          "health_risk.warning_card.v1",
+          "health_risk.emergency_service.v1",
+          "health_risk.first_aid_guide.v1",
+          "health_risk.help_request.v1"
+        ],
+        [
+          "elder",
+          "family",
+          "care_worker",
+          "village_doctor",
+          "supervisor",
+          "system_admin"
+        ],
+        [],
+        "high",
+        true,
+        "enabled",
+        "health_risk.call_120",
+        "business_event"
+      ],
+      "IsFixedSize": false,
+      "SyncRoot": {},
+      "IsSynchronized": false
+    },
+    {
+      "action_key": "health_risk.contact_family",
+      "label": "联系家属",
+      "skill_key": "health_risk_warning",
+      "target": "business_system",
+      "description": "通知家属或紧急联系人。",
+      "when": "需要同步老人当前风险、位置或急救进展时使用。",
+      "params_schema": {
+        "elder_id": "string",
+        "alert_id": "string",
+        "location": "string",
+        "note": "string"
+      },
+      "next_template_id": "health_risk.help_request.v1",
+      "templates": [
+        "local.sos.v1",
+        "local.abnormal.v1",
+        "health_risk.help_request.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "care_worker",
+        "village_doctor",
+        "supervisor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "health_risk.contact_family",
+      "type": "business_event",
+      "Count": 16,
+      "IsReadOnly": false,
+      "Keys": [
+        "action_key",
+        "label",
+        "skill_key",
+        "target",
+        "description",
+        "when",
+        "params_schema",
+        "next_template_id",
+        "templates",
+        "roles",
+        "required_context",
+        "audit_level",
+        "enabled",
+        "status",
+        "bff_event",
+        "type"
+      ],
+      "Values": [
+        "health_risk.contact_family",
+        "联系家属",
+        "health_risk_warning",
+        "business_system",
+        "通知家属或紧急联系人。",
+        "通知家属或紧急联系人。",
+        {
+          "elder_id": "string",
+          "alert_id": "string",
+          "location": "string",
+          "note": "string"
+        },
+        "health_risk.help_request.v1",
+        [
+          "local.sos.v1",
+          "local.abnormal.v1",
+          "health_risk.warning_card.v1",
+          "health_risk.emergency_service.v1",
+          "health_risk.first_aid_guide.v1",
+          "health_risk.help_request.v1"
+        ],
+        [
+          "elder",
+          "family",
+          "care_worker",
+          "village_doctor",
+          "supervisor",
+          "system_admin"
+        ],
+        [],
+        "high",
+        true,
+        "enabled",
+        "health_risk.contact_family",
+        "business_event"
+      ],
+      "IsFixedSize": false,
+      "SyncRoot": {},
+      "IsSynchronized": false
+    },
+    {
+      "action_key": "health_risk.dispatch_emergency",
+      "label": "派发紧急工单",
+      "skill_key": "health_risk_warning",
+      "target": "business_system",
+      "description": "转交社区、护理员或值班人员上门处理。",
+      "when": "需要线下人员立即到场核查或处置时使用。",
+      "params_schema": {
+        "elder_id": "string",
+        "alert_id": "string",
+        "location": "string",
+        "note": "string"
+      },
+      "next_template_id": "health_risk.emergency_service.v1",
+      "templates": [
+        "local.sos.v1",
+        "health_risk.emergency_service.v1",
+        "health_risk.warning_card.v1"
+      ],
+      "roles": [
+        "care_worker",
+        "village_doctor",
+        "supervisor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "health_risk.dispatch_emergency",
+      "type": "business_event",
+      "Count": 16,
+      "IsReadOnly": false,
+      "Keys": [
+        "action_key",
+        "label",
+        "skill_key",
+        "target",
+        "description",
+        "when",
+        "params_schema",
+        "next_template_id",
+        "templates",
+        "roles",
+        "required_context",
+        "audit_level",
+        "enabled",
+        "status",
+        "bff_event",
+        "type"
+      ],
+      "Values": [
+        "health_risk.dispatch_emergency",
+        "派发紧急工单",
+        "health_risk_warning",
+        "business_system",
+        "转交社区、护理员或值班人员上门处理。",
+        "转交社区、护理员或值班人员上门处理。",
+        {
+          "elder_id": "string",
+          "alert_id": "string",
+          "location": "string",
+          "note": "string"
+        },
+        "health_risk.emergency_service.v1",
+        [
+          "local.sos.v1",
+          "local.abnormal.v1",
+          "health_risk.warning_card.v1",
+          "health_risk.emergency_service.v1",
+          "health_risk.first_aid_guide.v1",
+          "health_risk.help_request.v1"
+        ],
+        [
+          "elder",
+          "family",
+          "care_worker",
+          "village_doctor",
+          "supervisor",
+          "system_admin"
+        ],
+        [],
+        "high",
+        true,
+        "enabled",
+        "health_risk.dispatch_emergency",
+        "business_event"
+      ],
+      "IsFixedSize": false,
+      "SyncRoot": {},
+      "IsSynchronized": false
+    },
+    {
+      "action_key": "health_risk.mark_safe",
+      "label": "标记已安全",
+      "skill_key": "health_risk_warning",
+      "target": "bff",
+      "description": "确认老人当前已脱险或无需继续升级。",
+      "when": "现场复核后确认当前风险解除时使用。",
+      "params_schema": {
+        "elder_id": "string",
+        "alert_id": "string",
+        "location": "string",
+        "note": "string"
+      },
+      "next_template_id": "health_risk.warning_card.v1",
+      "templates": [
+        "local.abnormal.v1",
+        "health_risk.warning_card.v1",
+        "health_risk.help_request.v1"
+      ],
+      "roles": [
+        "care_worker",
+        "village_doctor",
+        "supervisor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "health_risk.mark_safe",
+      "type": "bff_event",
+      "Count": 16,
+      "IsReadOnly": false,
+      "Keys": [
+        "action_key",
+        "label",
+        "skill_key",
+        "target",
+        "description",
+        "when",
+        "params_schema",
+        "next_template_id",
+        "templates",
+        "roles",
+        "required_context",
+        "audit_level",
+        "enabled",
+        "status",
+        "bff_event",
+        "type"
+      ],
+      "Values": [
+        "health_risk.mark_safe",
+        "标记已安全",
+        "health_risk_warning",
+        "bff",
+        "确认老人当前已脱险或无需继续升级。",
+        "确认老人当前已脱险或无需继续升级。",
+        {
+          "elder_id": "string",
+          "alert_id": "string",
+          "location": "string",
+          "note": "string"
+        },
+        "health_risk.warning_card.v1",
+        [
+          "local.sos.v1",
+          "local.abnormal.v1",
+          "health_risk.warning_card.v1",
+          "health_risk.emergency_service.v1",
+          "health_risk.first_aid_guide.v1",
+          "health_risk.help_request.v1"
+        ],
+        [
+          "elder",
+          "family",
+          "care_worker",
+          "village_doctor",
+          "supervisor",
+          "system_admin"
+        ],
+        [],
+        "normal",
+        true,
+        "enabled",
+        "health_risk.mark_safe",
+        "bff_event"
+      ],
+      "IsFixedSize": false,
+      "SyncRoot": {},
+      "IsSynchronized": false
+    },
+    {
+      "action_key": "health_risk.request_doctor_review",
+      "label": "请求医生复核",
+      "skill_key": "health_risk_warning",
+      "target": "business_system",
+      "description": "转交村医或医生复核健康风险。",
+      "when": "健康指标异常但未明确达到急救条件，需要医疗人员判断时使用。",
+      "params_schema": {
+        "elder_id": "string",
+        "alert_id": "string",
+        "location": "string",
+        "note": "string"
+      },
+      "next_template_id": "health_risk.first_aid_guide.v1",
+      "templates": [
+        "local.abnormal.v1",
+        "health_risk.first_aid_guide.v1",
+        "health_risk.warning_card.v1"
+      ],
+      "roles": [
+        "care_worker",
+        "village_doctor",
+        "supervisor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "high",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "health_risk.request_doctor_review",
+      "type": "business_event",
+      "Count": 16,
+      "IsReadOnly": false,
+      "Keys": [
+        "action_key",
+        "label",
+        "skill_key",
+        "target",
+        "description",
+        "when",
+        "params_schema",
+        "next_template_id",
+        "templates",
+        "roles",
+        "required_context",
+        "audit_level",
+        "enabled",
+        "status",
+        "bff_event",
+        "type"
+      ],
+      "Values": [
+        "health_risk.request_doctor_review",
+        "请求医生复核",
+        "health_risk_warning",
+        "business_system",
+        "转交村医或医生复核健康风险。",
+        "转交村医或医生复核健康风险。",
+        {
+          "elder_id": "string",
+          "alert_id": "string",
+          "location": "string",
+          "note": "string"
+        },
+        "health_risk.first_aid_guide.v1",
+        [
+          "local.sos.v1",
+          "local.abnormal.v1",
+          "health_risk.warning_card.v1",
+          "health_risk.emergency_service.v1",
+          "health_risk.first_aid_guide.v1",
+          "health_risk.help_request.v1"
+        ],
+        [
+          "elder",
+          "family",
+          "care_worker",
+          "village_doctor",
+          "supervisor",
+          "system_admin"
+        ],
+        [],
+        "high",
+        true,
+        "enabled",
+        "health_risk.request_doctor_review",
+        "business_event"
+      ],
+      "IsFixedSize": false,
+      "SyncRoot": {},
+      "IsSynchronized": false
+    },
+    {
+      "action_key": "health_risk.open_monitoring",
+      "label": "查看健康监测",
+      "skill_key": "health_risk_warning",
+      "target": "bff",
+      "description": "打开或追问老人近期健康监测数据。",
+      "when": "需要查看血压、血糖、心率、血氧、睡眠等近期监测趋势时使用。",
+      "params_schema": {
+        "elder_id": "string",
+        "alert_id": "string",
+        "location": "string",
+        "note": "string"
+      },
+      "next_template_id": "health_risk.warning_card.v1",
+      "templates": [
+        "local.abnormal.v1",
+        "health_risk.warning_card.v1",
+        "health_risk.help_request.v1"
+      ],
+      "roles": [
+        "elder",
+        "family",
+        "care_worker",
+        "village_doctor",
+        "supervisor",
+        "system_admin"
+      ],
+      "required_context": [],
+      "audit_level": "normal",
+      "enabled": true,
+      "status": "enabled",
+      "bff_event": "health_risk.open_monitoring",
+      "type": "bff_event",
+      "Count": 16,
+      "IsReadOnly": false,
+      "Keys": [
+        "action_key",
+        "label",
+        "skill_key",
+        "target",
+        "description",
+        "when",
+        "params_schema",
+        "next_template_id",
+        "templates",
+        "roles",
+        "required_context",
+        "audit_level",
+        "enabled",
+        "status",
+        "bff_event",
+        "type"
+      ],
+      "Values": [
+        "health_risk.open_monitoring",
+        "查看健康监测",
+        "health_risk_warning",
+        "bff",
+        "打开或追问老人近期健康监测数据。",
+        "打开或追问老人近期健康监测数据。",
+        {
+          "elder_id": "string",
+          "alert_id": "string",
+          "location": "string",
+          "note": "string"
+        },
+        "health_risk.warning_card.v1",
+        [
+          "local.sos.v1",
+          "local.abnormal.v1",
+          "health_risk.warning_card.v1",
+          "health_risk.emergency_service.v1",
+          "health_risk.first_aid_guide.v1",
+          "health_risk.help_request.v1"
+        ],
+        [
+          "elder",
+          "family",
+          "care_worker",
+          "village_doctor",
+          "supervisor",
+          "system_admin"
+        ],
+        [],
+        "normal",
+        true,
+        "enabled",
+        "health_risk.open_monitoring",
+        "bff_event"
+      ],
+      "IsFixedSize": false,
+      "SyncRoot": {},
+      "IsSynchronized": false
+    }
+  ],
+  "updatedAt": "2026-07-28T20:50:00.000+08:00"
+}

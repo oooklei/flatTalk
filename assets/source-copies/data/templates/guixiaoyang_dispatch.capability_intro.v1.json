@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.capability_intro.v1",
+  "template_key": "capability_intro",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "能力介绍卡片",
+  "cn_name": "能力介绍卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "capability-intro.html",
+  "fallback_html": "capability-intro.html",
+  "description": "展示桂小养可用技能和推荐入口。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "capability_intro",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/capability_intro.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/capability-intro.html"
+}

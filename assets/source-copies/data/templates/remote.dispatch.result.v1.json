@@ -1,0 +1,11 @@
+{
+  "template_id": "remote.dispatch.result.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "远程派单结果",
+  "description": "远程派单结果展示模板，用于女娲平台 Agent 97 返回的派单结果渲染",
+  "html": "guixiaoyang_dispatch/remote_dispatch_result.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/guixiaoyang_dispatch/remote_dispatch_result.html"
+}

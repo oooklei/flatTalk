@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--timeline" data-template-id="meal_plan.timeline.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{timeline.badge}}</p>
+    <h3>{{timeline.title}}</h3>
+    <p>{{timeline.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{timeline.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 膳食时间线模板: 按早餐、午餐、晚餐、加餐呈现执行节点。 -->

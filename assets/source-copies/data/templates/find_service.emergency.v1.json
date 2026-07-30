@@ -1,0 +1,27 @@
+{
+  "template_id": "find_service.emergency.v1",
+  "template_key": "emergency",
+  "skill_key": "find_service",
+  "name": "找服务紧急处置卡片",
+  "cn_name": "找服务紧急处置卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "emergency.html",
+  "fallback_html": "emergency.html",
+  "description": "处理跌倒、急病、走失、呼叫支援等高风险场景。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "emergency",
+  "actions": [
+    "find_service.emergency_handoff",
+    "find_service.manual_review",
+    "find_service.voice_broadcast",
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/emergency.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/emergency.html"
+}

@@ -1,0 +1,23 @@
+{
+  "template_id": "dispatch_manage.candidate_ranking.v1",
+  "template_key": "candidate_ranking",
+  "skill_key": "dispatch_manage",
+  "name": "候选服务方排序卡片",
+  "cn_name": "候选服务方排序卡片",
+  "render_mode": "html_template",
+  "html": "candidate-ranking.html",
+  "source": "AI养老助手.html#智能找服务/养老服务匹配",
+  "description": "展示候选服务方多因子评分、距离、负载、响应速度和可派单建议。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "ranking",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.reassign",
+    "dispatch_manage.confirm_dispatch"
+  ],
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/candidate-ranking.html"
+}

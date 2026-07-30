@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.permission_block.v1",
+  "template_key": "permission_block",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "权限不足说明卡片",
+  "cn_name": "权限不足说明卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "permission-block.html",
+  "fallback_html": "permission-block.html",
+  "description": "说明角色权限不足和可替代动作。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "permission_block",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/permission_block.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/permission-block.html"
+}

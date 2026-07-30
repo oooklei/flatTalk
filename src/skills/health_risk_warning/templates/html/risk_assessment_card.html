@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>风险评估</title>
+  <style>
+    :root {
+      --blue: #4a90d9;
+      --blue-deep: #3d7ec4;
+      --blue-light: #ebf4fb;
+      --blue-line: #a8c8e0;
+      --risk-high: #e54d42;
+      --risk-mid: #e8a020;
+      --risk-low: #68b032;
+      --text: #222;
+      --text-muted: #666;
+      --bg: #f5f8fc;
+      --card: #fff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px 16px 48px;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(74, 144, 217, 0.08);
+      padding: 28px 28px 36px;
+    }
+
+    .main-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .title-line {
+      height: 1px;
+      background: var(--blue);
+      margin-bottom: 20px;
+    }
+
+    .section-badge {
+      display: inline-block;
+      background: var(--blue);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 8px 36px 8px 18px;
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+      margin-bottom: 16px;
+    }
+
+    .risk-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      background: var(--blue-light);
+      border-radius: 2px;
+      padding: 12px 8px;
+      margin-bottom: 8px;
+    }
+
+    .risk-summary span {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 32px;
+      padding: 8px 4px 0;
+    }
+
+    .risk-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 4px;
+      border-bottom: 1px solid #f0f4f8;
+      font-size: 14px;
+    }
+
+    .risk-item:nth-last-child(-n+2) {
+      border-bottom: none;
+    }
+
+    .risk-name { color: var(--text); }
+
+    .risk-score,
+    .risk-label {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .risk-score { min-width: 40px; text-align: right; }
+    .risk-label { min-width: 64px; text-align: right; }
+
+    .high { color: var(--risk-high); }
+    .mid { color: var(--risk-mid); }
+    .low { color: var(--risk-low); }
+
+    /* tc-deck 支持样式 */
+    .tc-deck { box-sizing: border-box; }
+    .tc-deck[data-layout="horizontal"] { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 16px; overflow-x: auto; padding: 8px 0; }
+    .tc-deck[data-layout="vertical"] { display: flex; flex-direction: column; gap: 16px; }
+    .tc-card { flex: 0 0 auto; }
+
+    @media (max-width: 640px) {
+      .page { padding: 20px 14px 28px; }
+      .main-title { font-size: 22px; }
+      .risk-summary { grid-template-columns: 1fr; gap: 6px; }
+      .risk-grid { grid-template-columns: 1fr; gap: 0; }
+      .risk-item:nth-last-child(-n+2) { border-bottom: 1px solid #f0f4f8; }
+      .risk-item:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="tc-deck" data-layout="vertical">
+    <div class="tc-card">
+      <div class="page">
+        <h1 class="main-title">{{mainTitle|风险评估}}</h1>
+        <div class="title-line"></div>
+
+        <div class="section-badge">{{sectionBadge|易患病症}}</div>
+
+        <div class="risk-summary">
+          <span>重度风险 ({{highRiskCount|0}}项)</span>
+          <span>中度风险 ({{midRiskCount|0}}项)</span>
+          <span>轻度风险 ({{lowRiskCount|0}}项)</span>
+        </div>
+
+        <div class="risk-grid">
+          {{#risks}}
+          <div class="risk-item">
+            <span class="risk-name">{{riskName}}</span>
+            <span class="risk-score {{levelClass}}">{{riskScore}}</span>
+            <span class="risk-label {{levelClass}}">{{riskLabel}}</span>
+          </div>
+          {{/risks}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script type="application/json">
+{
+  "mainTitle": "风险评估",
+  "sectionBadge": "易患病症",
+  "highRiskCount": 1,
+  "midRiskCount": 6,
+  "lowRiskCount": 6,
+  "risks": [
+    { "riskName": "乳腺结节风险评估", "riskScore": 65.6, "riskLabel": "预警", "levelClass": "high" },
+    { "riskName": "骨质疏松症风险评估", "riskScore": 54.5, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "甲状腺结节风险评估", "riskScore": 55.8, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "月经不调风险评估", "riskScore": 61.8, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "精神压力评估", "riskScore": 69, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "肺结节风险评估", "riskScore": 74.2, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "子宫肌瘤风险评估", "riskScore": 61.9, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "中风风险评估", "riskScore": 38.3, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "心血管功能评估", "riskScore": 52, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "脂肪肝风险评估", "riskScore": 59.1, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "糖尿病风险评估", "riskScore": 41.2, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "高血压风险评估", "riskScore": 46.8, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "慢性胃炎风险评估", "riskScore": 48.5, "riskLabel": "轻度风险", "levelClass": "low" }
+  ]
+}
+</script>
+</body>
+</html>

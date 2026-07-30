@@ -1,0 +1,145 @@
+{
+  "schema": "guixiaoyang.meal-plan-page-flow.v1",
+  "skill_key": "meal_plan",
+  "canonical_template_id": "meal_plan.plan.v1",
+  "stages": [
+    {
+      "page_key": "input_form",
+      "section_ids": [
+        "input_summary",
+        "elder_brief",
+        "voice_input_section",
+        "remote_context"
+      ],
+      "next_pages": [
+        "nutrition_constraints",
+        "meal_profile",
+        "meal_recommendation"
+      ]
+    },
+    {
+      "page_key": "meal_profile",
+      "section_ids": [
+        "elder_brief",
+        "chronic_tags",
+        "nutrition_goal",
+        "diet_preferences",
+        "contraindications",
+        "remote_context"
+      ],
+      "next_pages": [
+        "nutrition_constraints",
+        "meal_recommendation"
+      ]
+    },
+    {
+      "page_key": "meal_recommendation",
+      "section_ids": [
+        "summary_card",
+        "guidelines_ref",
+        "meals_breakfast",
+        "meals_lunch",
+        "meals_dinner",
+        "nutrition_summary",
+        "suggest_questions",
+        "disclaimer"
+      ],
+      "next_pages": [
+        "review_confirm",
+        "meal_recommendation",
+        "nutrition_check",
+        "result_page"
+      ]
+    },
+    {
+      "page_key": "missing_remote_resource",
+      "section_ids": [
+        "missing_summary",
+        "missing_resources",
+        "impact_analysis",
+        "remediation_steps"
+      ],
+      "next_pages": [
+        "nutrition_constraints",
+        "meal_recommendation",
+        "input_form"
+      ]
+    },
+    {
+      "page_key": "nutrition_check",
+      "section_ids": [
+        "check_summary",
+        "nutrition_totals",
+        "violations",
+        "replacements",
+        "per_dish_check"
+      ],
+      "next_pages": [
+        "review_confirm",
+        "meal_recommendation"
+      ]
+    },
+    {
+      "page_key": "nutrition_constraints",
+      "section_ids": [
+        "constraints_summary",
+        "hard_constraints",
+        "soft_constraints",
+        "conflict_reconcile",
+        "reconciled_result"
+      ],
+      "next_pages": [
+        "meal_recommendation",
+        "meal_profile",
+        "nutrition_constraints"
+      ]
+    },
+    {
+      "page_key": "remote_gap",
+      "section_ids": [
+        "gap_summary",
+        "gap_details",
+        "gap_remediation",
+        "gap_progress"
+      ],
+      "next_pages": [
+        "meal_recommendation",
+        "remote_gap"
+      ]
+    },
+    {
+      "page_key": "result_page",
+      "section_ids": [
+        "order_confirmation",
+        "nutrition_summary_result",
+        "meals_confirmed",
+        "dietary_tips",
+        "session_summary"
+      ],
+      "next_pages": [
+        "input_form"
+      ]
+    },
+    {
+      "page_key": "review_confirm",
+      "section_ids": [
+        "plan_summary",
+        "meals_overview",
+        "nutrition_check_result",
+        "elder_health_brief",
+        "disclaimer"
+      ],
+      "next_pages": [
+        "result_page",
+        "meal_recommendation",
+        "nutrition_check"
+      ]
+    }
+  ],
+  "canonical_runtime_outputs": [
+    "voice_broadcast",
+    "template_rendering_envelope",
+    "bff_action_event"
+  ],
+  "notes": "Page-browse outputs are retired. Meal plan delivery uses in-chat HTML templates plus registered action_key events."
+}

@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.preference_card.v1",
+  "template_key": "preference_card",
+  "skill_key": "travel_route",
+  "name": "出行偏好采集卡片",
+  "cn_name": "出行偏好采集卡片",
+  "render_mode": "html_composition",
+  "layout": "chat-card",
+  "html": "preference-card.html",
+  "fallback_html": "preference-card.html",
+  "description": "采集目的地、日期、人数、预算和照护偏好。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "preference_card",
+  "actions": [
+    "travel_route.fill_preferences",
+    "travel_route.replan",
+    "travel_route.adjust_pace"
+  ],
+  "followup_suggestions": "templates/followups/preference_card.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/preference-card.html"
+}

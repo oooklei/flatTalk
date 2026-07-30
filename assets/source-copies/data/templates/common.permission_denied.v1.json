@@ -1,0 +1,11 @@
+{
+  "template_id": "common.permission_denied.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "权限不足提示",
+  "description": "权限不足时的提示模板，告知用户无权访问该功能",
+  "html": "common/permission_denied.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/common/permission_denied.html"
+}

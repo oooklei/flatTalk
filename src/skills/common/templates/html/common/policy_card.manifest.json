@@ -1,0 +1,22 @@
+{
+  "id": "policy_card",
+  "layout": "vertical",
+  "match": "养老政策、养老补贴、长护险、高龄津贴、社区居家养老、养老服务办理、养老助手使用说明等咨询卡片。",
+  "required": ["answer", "policy_items"],
+  "slots": {
+    "emoji": { "type": "string", "default": "📋" },
+    "title": { "type": "string", "default": "养老政策咨询" },
+    "skill_name": { "type": "string", "default": "政策与服务指引" },
+    "answer": { "type": "string", "required": true },
+    "policy_items": {
+      "type": "array",
+      "required": true,
+      "item_schema": {
+        "icon": { "type": "string", "default": "1" },
+        "label": { "type": "string", "required": true },
+        "detail": { "type": "string", "required": true }
+      }
+    },
+    "foot": { "type": "string", "default": "以上为一般性政策整理，具体标准以当地民政、人社部门最新规定为准。" }
+  }
+}

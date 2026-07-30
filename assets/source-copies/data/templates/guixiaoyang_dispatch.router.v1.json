@@ -1,0 +1,159 @@
+{
+  "template_id": "guixiaoyang_dispatch.router.v1",
+  "template_key": "router",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "桂小养技能路由卡片",
+  "cn_name": "桂小养技能路由卡片",
+  "render_mode": "html_composition",
+  "layout": "chat-card",
+  "html": "router.html",
+  "fallback_html": "status.html",
+  "description": "展示识别到的意图、目标技能和可执行入口。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "router",
+  "actions": [
+    "guixiaoyang_dispatch.route_meal_plan",
+    "guixiaoyang_dispatch.route_dispatch_manage",
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review",
+    "guixiaoyang_dispatch.voice_broadcast",
+    "guixiaoyang_dispatch.route_find_service",
+    "guixiaoyang_dispatch.show_capabilities",
+    "guixiaoyang_dispatch.screen_policy",
+    "guixiaoyang_dispatch.request_profile",
+    "guixiaoyang_dispatch.plan_multi_skill",
+    "guixiaoyang_dispatch.preview_handoff",
+    "guixiaoyang_dispatch.explain_permission",
+    "guixiaoyang_dispatch.report_knowledge_gap",
+    "guixiaoyang_dispatch.submit_manual_review",
+    "guixiaoyang_dispatch.prepare_voice",
+    "guixiaoyang_dispatch.show_elder_summary",
+    "guixiaoyang_dispatch.show_family_summary",
+    "guixiaoyang_dispatch.run_safety_check",
+    "guixiaoyang_dispatch.show_timeline",
+    "guixiaoyang_dispatch.show_fallback_status",
+    "guixiaoyang_dispatch.collect_learning_feedback",
+    "guixiaoyang_dispatch.answer_faq",
+    "guixiaoyang_dispatch.show_task_progress",
+    "guixiaoyang_dispatch.show_notification_summary",
+    "guixiaoyang_dispatch.resume_session"
+  ],
+  "followup_suggestions": "templates/followups/router.json",
+  "status": "enabled",
+  "slots": [
+    {
+      "slot_key": "intent-summary",
+      "file": "slots/intent-summary.html",
+      "position": "top",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": []
+    },
+    {
+      "slot_key": "route-options",
+      "file": "slots/route-options.html",
+      "position": "center",
+      "required": true,
+      "repeat": true,
+      "data_path": "routes",
+      "allowed_actions": [
+        "guixiaoyang_dispatch.route_meal_plan",
+        "guixiaoyang_dispatch.route_dispatch_manage",
+        "guixiaoyang_dispatch.collect_context"
+      ]
+    },
+    {
+      "slot_key": "action-bar",
+      "file": "slots/action-bar.html",
+      "position": "bottom",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": [
+        "guixiaoyang_dispatch.clarify",
+        "guixiaoyang_dispatch.manual_review",
+        "guixiaoyang_dispatch.voice_broadcast"
+      ]
+    },
+    {
+      "slot_key": "handoff-note",
+      "file": "slots/handoff-note.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": false,
+      "allowed_actions": []
+    }
+  ],
+  "allowed_slot_sequences": [
+    [
+      "intent-summary",
+      "route-options",
+      "action-bar"
+    ],
+    [
+      "intent-summary",
+      "route-options",
+      "handoff-note",
+      "action-bar"
+    ]
+  ],
+  "llm_selection_policy": {
+    "enabled": true,
+    "decision_schema": "skill-packages/guixiaoyang_dispatch/references/contracts/template-composition.schema.json",
+    "role": "select_registered_template_and_slots_only",
+    "default_variant": "guixiaoyang_dispatch.router.v1",
+    "allowed_variants": [
+      "guixiaoyang_dispatch.router.v1",
+      "guixiaoyang_dispatch.clarify.v1",
+      "guixiaoyang_dispatch.status.v1",
+      "guixiaoyang_dispatch.audit.v1",
+      "guixiaoyang_dispatch.policy_answer.v1",
+      "guixiaoyang_dispatch.skill_hub.v1",
+      "guixiaoyang_dispatch.context_check.v1",
+      "guixiaoyang_dispatch.intent_router.v1",
+      "guixiaoyang_dispatch.capability_intro.v1",
+      "guixiaoyang_dispatch.policy_screening.v1",
+      "guixiaoyang_dispatch.profile_missing.v1",
+      "guixiaoyang_dispatch.multi_skill_plan.v1",
+      "guixiaoyang_dispatch.handoff_preview.v1",
+      "guixiaoyang_dispatch.permission_block.v1",
+      "guixiaoyang_dispatch.knowledge_gap.v1",
+      "guixiaoyang_dispatch.manual_review.v1",
+      "guixiaoyang_dispatch.voice_ready.v1",
+      "guixiaoyang_dispatch.elder_summary.v1",
+      "guixiaoyang_dispatch.family_summary.v1",
+      "guixiaoyang_dispatch.safety_check.v1",
+      "guixiaoyang_dispatch.timeline.v1",
+      "guixiaoyang_dispatch.fallback_status.v1",
+      "guixiaoyang_dispatch.learning_feedback.v1",
+      "guixiaoyang_dispatch.faq_answer.v1",
+      "guixiaoyang_dispatch.task_progress.v1",
+      "guixiaoyang_dispatch.notification_summary.v1",
+      "guixiaoyang_dispatch.session_resume.v1"
+    ],
+    "allowed_slots": [
+      "intent-summary",
+      "route-options",
+      "action-bar",
+      "handoff-note"
+    ],
+    "required_slots": [
+      "intent-summary",
+      "route-options",
+      "action-bar"
+    ],
+    "forbidden": [
+      "raw_html",
+      "script",
+      "inline_event_handler",
+      "external_url",
+      "unregistered_template_id",
+      "unregistered_slot_key",
+      "unregistered_action_key"
+    ],
+    "bff_must_validate": true
+  },
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/router.html"
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.community_resource.v1",
+  "template_key": "community_resource",
+  "skill_key": "find_service",
+  "name": "社区资源推荐卡片",
+  "cn_name": "社区资源推荐卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "community-resource.html",
+  "fallback_html": "community-resource.html",
+  "description": "推荐社区站点、日间照料中心和便民资源。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "community_resource",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/community_resource.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/community-resource.html"
+}

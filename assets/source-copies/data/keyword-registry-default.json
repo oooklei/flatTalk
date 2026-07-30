@@ -1,0 +1,361 @@
+{
+  "version": "gxy-keyword-registry.v1",
+  "updated_at": "2026-07-27",
+  "description": "桂小养对话系统默认关键词列表。被 KeywordRegistry 加载，供 intent-router.js 等模块使用。四大分类：sos / abnormal / business / intent。",
+  "categories": [
+    {
+      "category": "sos",
+      "name": "紧急救命关键词",
+      "description": "识别老人突发紧急情况，触发本地 SOS 模板即时响应",
+      "default_intent": "LOCAL_SOS",
+      "default_skill_key": "health_risk_warning",
+      "default_priority": 100
+    },
+    {
+      "category": "abnormal",
+      "name": "异常预警关键词",
+      "description": "识别设备异常、生命体征异常、走失等预警类诉求",
+      "default_intent": "LOCAL_ABNORMAL",
+      "default_skill_key": "health_risk_warning",
+      "default_priority": 80
+    },
+    {
+      "category": "business",
+      "name": "业务关键词",
+      "description": "识别订单、工单、服务、派单等业务关键词，用于上下文增强和路由辅助",
+      "default_intent": "BUSINESS_KEYWORD",
+      "default_skill_key": "guixiaoyang_dispatch",
+      "default_priority": 50
+    },
+    {
+      "category": "intent",
+      "name": "意图关键词",
+      "description": "识别用户意图（找服务、健康咨询、政策问答等），辅助远端 Agent 调度",
+      "default_intent": "INTENT_KEYWORD",
+      "default_skill_key": "guixiaoyang_dispatch",
+      "default_priority": 30
+    }
+  ],
+  "keywords": [
+    {
+      "keyword_id": "sos_120",
+      "category": "sos",
+      "keyword": "120",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_rescue",
+      "category": "sos",
+      "keyword": "急救",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_help",
+      "category": "sos",
+      "keyword": "救命",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_chest_pain",
+      "category": "sos",
+      "keyword": "胸痛",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_heart_attack",
+      "category": "sos",
+      "keyword": "心梗",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_stroke",
+      "category": "sos",
+      "keyword": "中风",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_fall",
+      "category": "sos",
+      "keyword": "摔倒",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_coma",
+      "category": "sos",
+      "keyword": "昏迷",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_breath",
+      "category": "sos",
+      "keyword": "呼吸困难",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_sos",
+      "category": "sos",
+      "keyword": "SOS",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_cardiac",
+      "category": "sos",
+      "keyword": "心脏病",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_hemorrhage",
+      "category": "sos",
+      "keyword": "大出血",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_faint",
+      "category": "sos",
+      "keyword": "晕倒",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "sos_heart_stop",
+      "category": "sos",
+      "keyword": "心脏骤停",
+      "priority": 100,
+      "intent": "LOCAL_SOS",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_abnormal",
+      "category": "abnormal",
+      "keyword": "异常",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_alarm",
+      "category": "abnormal",
+      "keyword": "报警",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_warning",
+      "category": "abnormal",
+      "keyword": "预警",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_bp_high",
+      "category": "abnormal",
+      "keyword": "血压高",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_bs_high",
+      "category": "abnormal",
+      "keyword": "血糖高",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_lost",
+      "category": "abnormal",
+      "keyword": "走失",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_fall_down",
+      "category": "abnormal",
+      "keyword": "跌倒",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_device_fault",
+      "category": "abnormal",
+      "keyword": "设备故障",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_fever",
+      "category": "abnormal",
+      "keyword": "高烧",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "abn_bleed",
+      "category": "abnormal",
+      "keyword": "流血",
+      "priority": 80,
+      "intent": "LOCAL_ABNORMAL",
+      "skill_key": "health_risk_warning"
+    },
+    {
+      "keyword_id": "biz_order",
+      "category": "business",
+      "keyword": "订单",
+      "priority": 50,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "guixiaoyang_dispatch"
+    },
+    {
+      "keyword_id": "biz_workorder",
+      "category": "business",
+      "keyword": "工单",
+      "priority": 50,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "dispatch_manage"
+    },
+    {
+      "keyword_id": "biz_service",
+      "category": "business",
+      "keyword": "服务",
+      "priority": 50,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "find_service"
+    },
+    {
+      "keyword_id": "biz_dispatch",
+      "category": "business",
+      "keyword": "派单",
+      "priority": 50,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "dispatch_manage"
+    },
+    {
+      "keyword_id": "biz_elderly",
+      "category": "business",
+      "keyword": "老人",
+      "priority": 40,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "guixiaoyang_dispatch"
+    },
+    {
+      "keyword_id": "biz_care",
+      "category": "business",
+      "keyword": "照护",
+      "priority": 40,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "elderly_care_guide"
+    },
+    {
+      "keyword_id": "biz_meal",
+      "category": "business",
+      "keyword": "膳食",
+      "priority": 40,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "meal_plan"
+    },
+    {
+      "keyword_id": "biz_travel",
+      "category": "business",
+      "keyword": "出行",
+      "priority": 40,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "travel_route"
+    },
+    {
+      "keyword_id": "biz_refund",
+      "category": "business",
+      "keyword": "退款",
+      "priority": 50,
+      "intent": "BUSINESS_KEYWORD",
+      "skill_key": "guixiaoyang_dispatch"
+    },
+    {
+      "keyword_id": "intent_find_service",
+      "category": "intent",
+      "keyword": "找服务",
+      "priority": 30,
+      "intent": "INTENT_FIND_SERVICE",
+      "skill_key": "find_service"
+    },
+    {
+      "keyword_id": "intent_health",
+      "category": "intent",
+      "keyword": "健康咨询",
+      "priority": 30,
+      "intent": "INTENT_HEALTH_CONSULT",
+      "skill_key": "elderly_care_guide"
+    },
+    {
+      "keyword_id": "intent_policy",
+      "category": "intent",
+      "keyword": "政策问答",
+      "priority": 30,
+      "intent": "INTENT_POLICY_QA",
+      "skill_key": "policy_qa"
+    },
+    {
+      "keyword_id": "intent_dispatch",
+      "category": "intent",
+      "keyword": "派单管理",
+      "priority": 30,
+      "intent": "INTENT_DISPATCH",
+      "skill_key": "dispatch_manage"
+    },
+    {
+      "keyword_id": "intent_meal_plan",
+      "category": "intent",
+      "keyword": "膳食建议",
+      "priority": 30,
+      "intent": "INTENT_MEAL_PLAN",
+      "skill_key": "meal_plan"
+    },
+    {
+      "keyword_id": "intent_travel_route",
+      "category": "intent",
+      "keyword": "出行路线",
+      "priority": 30,
+      "intent": "INTENT_TRAVEL_ROUTE",
+      "skill_key": "travel_route"
+    },
+    {
+      "keyword_id": "intent_health_risk",
+      "category": "intent",
+      "keyword": "健康风险",
+      "priority": 30,
+      "intent": "INTENT_HEALTH_RISK",
+      "skill_key": "health_risk_warning"
+    }
+  ]
+}

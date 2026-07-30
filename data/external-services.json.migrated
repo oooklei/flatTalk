@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "天气服务",
+      "type": "rest",
+      "base_url": "https://api.weather.com/v1",
+      "openapi_url": "",
+      "owner": "system",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "医保查询",
+      "type": "rest",
+      "base_url": "https://api.medical.gov/catalog",
+      "openapi_url": "",
+      "owner": "system",
+      "status": "draft"
+    }
+  ]
+}

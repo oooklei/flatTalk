@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.fallback_status.v1",
+  "template_key": "fallback_status",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "桂小养兜底状态卡片",
+  "cn_name": "桂小养兜底状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "fallback-status.html",
+  "fallback_html": "fallback-status.html",
+  "description": "展示系统异常、技能不可用和下一步建议。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "fallback_status",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/fallback_status.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/fallback-status.html"
+}

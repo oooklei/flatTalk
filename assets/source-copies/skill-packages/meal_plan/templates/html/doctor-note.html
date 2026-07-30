@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--doctor_note" data-template-id="meal_plan.doctor_note.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{doctor_note.badge}}</p>
+    <h3>{{doctor_note.title}}</h3>
+    <p>{{doctor_note.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{doctor_note.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 医生营养师沟通卡片: 整理需要专业确认的营养风险和问题清单。 -->

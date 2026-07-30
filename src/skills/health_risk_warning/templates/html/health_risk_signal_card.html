@@ -1,0 +1,47 @@
+<div class="card health-risk-signal-card" data-template="health_risk_signal_card">
+  <div class="hw-banner hw-banner-sub">
+    <div class="hw-banner-left">
+      <div class="hw-badge">{{badge|设备信号}}</div>
+      <div class="hw-level">{{elderName|李奶奶}} 信号总览</div>
+    </div>
+    <div class="hw-banner-right">
+      <div class="hw-elder">{{assessTime|2026-07-30 18:20}}</div>
+    </div>
+  </div>
+
+  <div class="hw-block">
+    <div class="hw-section-title">📡 设备信号（{{signals_count|2}}）</div>
+    {{#signals}}
+    <div class="hw-signal-row">
+      <span class="hw-signal-type">{{type|血压}}</span>
+      <span class="hw-signal-value">{{value|148/92 mmHg}}</span>
+      <span class="hw-signal-status hw-status-{{status|abnormal}}">{{status_label|异常}}</span>
+      <span class="hw-signal-source">{{source|本地设备}}</span>
+    </div>
+    {{/signals}}
+  </div>
+
+  {{#remoteGap}}
+  <div class="hw-block hw-gap">
+    <div class="hw-section-title">⚠️ 远程数据缺口</div>
+    <div class="hw-text">{{remoteGap|远程体检指标（云诊365）暂不可用，缺失项目：血压趋势、血糖趋势。}}</div>
+  </div>
+  {{/remoteGap}}
+
+  <div class="hw-foot">来源：{{sourceLabel|本地设备信号}} · 信号异常不代表确诊，请结合临床判断</div>
+</div>
+
+<script type="application/json">
+{
+  "badge": "设备信号",
+  "elderName": "李奶奶",
+  "assessTime": "2026-07-30 18:20",
+  "signals_count": 2,
+  "signals": [
+    { "type": "血压", "value": "148/92 mmHg", "status": "abnormal", "status_label": "异常", "source": "本地设备" },
+    { "type": "血糖", "value": "6.8 mmol/L", "status": "normal", "status_label": "正常", "source": "本地设备" }
+  ],
+  "remoteGap": "",
+  "sourceLabel": "本地设备信号"
+}
+</script>

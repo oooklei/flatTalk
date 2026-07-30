@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "source_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "capability_intro.route_dispatch_manage",
+      "source_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "label": "转入自动派单",
+      "user_prompt": "转入自动派单，并继续说明能力介绍卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.route_dispatch_manage",
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "capability_intro.show_capabilities",
+      "source_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "label": "查看可用能力",
+      "user_prompt": "查看可用能力，并继续说明能力介绍卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.show_capabilities",
+      "next_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "capability_intro.screen_policy",
+      "source_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "label": "筛查政策资格",
+      "user_prompt": "筛查政策资格，并继续说明能力介绍卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.screen_policy",
+      "next_template_id": "guixiaoyang_dispatch.policy_screening.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "capability_intro.preview_handoff",
+      "source_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "label": "预览交接上下文",
+      "user_prompt": "预览交接上下文，并继续说明能力介绍卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.preview_handoff",
+      "next_template_id": "guixiaoyang_dispatch.handoff_preview.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.capacity_gap.v1",
+  "template_key": "capacity_gap",
+  "skill_key": "dispatch_manage",
+  "name": "容量缺口卡片",
+  "cn_name": "容量缺口卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "capacity-gap.html",
+  "fallback_html": "capacity-gap.html",
+  "description": "展示服务容量不足、时段紧张和资源缺口。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "capacity_gap",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/capacity_gap.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/capacity-gap.html"
+}

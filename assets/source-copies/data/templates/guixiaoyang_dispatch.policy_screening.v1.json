@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.policy_screening.v1",
+  "template_key": "policy_screening",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "政策资格筛查卡片",
+  "cn_name": "政策资格筛查卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "policy-screening.html",
+  "fallback_html": "policy-screening.html",
+  "description": "初筛补贴、材料、办理路径和缺失条件。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "policy_screening",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/policy_screening.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/policy-screening.html"
+}

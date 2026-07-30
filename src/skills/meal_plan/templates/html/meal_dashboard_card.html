@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>膳食数据仪表盘卡片模板</title>
+<style>
+  :root {
+    --bg: #eef2f7;
+    --card: #ffffff;
+    --ink: #2b2f33;
+    --ink2: #6b7280;
+    --line: #e8ecf1;
+    --accent: #2f8f5b;
+    --accent-soft: #e9f6ef;
+    --carb: #FF6B35;
+    --protein: #7CB342;
+    --fat: #42A5F5;
+    --danger: #e74c3c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 16px;
+  }
+  .page-header { text-align: center; margin-bottom: 14px; }
+  .page-header h1 { margin: 0; font-size: 22px; }
+  .page-header p { margin: 4px 0 0; color: var(--ink2); font-size: 13px; }
+
+  .dashboard { display: flex; flex-direction: column; gap: 14px; max-width: 1080px; margin: 0 auto; }
+  @media (min-width: 860px) { .dashboard { flex-direction: row; align-items: flex-start; } }
+  .sidebar { flex: 0 0 320px; display: flex; flex-direction: column; gap: 14px; }
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+
+  .card { background: var(--card); border-radius: 16px; padding: 16px; box-shadow: 0 6px 18px rgba(20, 30, 40, 0.06); border: 1px solid var(--line); }
+
+  /* 侧栏：画像卡 */
+  .profile-card { text-align: center; background: linear-gradient(135deg, #2f8f5b, #56b87f); color: #fff; }
+  .profile-card .p-name { font-size: 18px; font-weight: 700; }
+  .profile-card .p-desc { font-size: 12px; opacity: 0.95; margin-top: 6px; }
+  .profile-card .p-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .profile-card .p-stats div { background: rgba(255, 255, 255, 0.16); border-radius: 12px; padding: 8px; }
+  .profile-card .p-stats b { display: block; font-size: 18px; }
+  .profile-card .p-stats span { font-size: 11px; opacity: 0.92; }
+
+  /* 侧栏：营养环 */
+  .donut-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; text-align: center; }
+  .donut { display: flex; align-items: center; gap: 14px; }
+  .donut svg { flex: 0 0 auto; }
+  .donut-center { font-size: 22px; font-weight: 700; fill: var(--ink); }
+  .donut-center-sub { font-size: 10px; fill: var(--ink2); }
+  .donut-legend { flex: 1; }
+  .legend-row { display: flex; align-items: center; gap: 8px; font-size: 13px; margin: 6px 0; }
+  .legend-row .lg-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .legend-row .lg-name { width: 38px; }
+  .legend-row .lg-pct { width: 44px; color: var(--ink2); }
+  .legend-row .lg-kcal { flex: 1; text-align: right; color: var(--ink2); }
+
+  /* 侧栏：标签卡 */
+  .tags-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; background: #fff4e5; color: #c05621; border-radius: 999px; padding: 4px 10px; margin: 0 6px 6px 0; font-size: 13px; }
+
+  /* 主区：膳食表 */
+  .table-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .table-badge { font-size: 12px; color: var(--accent); background: var(--accent-soft); padding: 2px 10px; border-radius: 999px; }
+  .meal-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .meal-table th { text-align: left; color: var(--ink2); font-weight: 600; padding: 8px; border-bottom: 2px solid var(--line); }
+  .meal-table td { padding: 8px; border-bottom: 1px solid var(--line); }
+  .meal-table .meal-sep { background: #f7fafc; font-weight: 600; color: var(--accent); }
+  .meal-table .total-row { font-weight: 700; background: #f3f8f5; }
+  .meal-table .total-row td { border-bottom: 0; }
+
+  /* 主区：相关卡 */
+  .related-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .related-item { padding: 12px; border-radius: 12px; background: var(--accent-soft); }
+  .related-item .rel-icon { font-size: 20px; }
+  .related-item .rel-title { font-size: 13px; font-weight: 600; margin-top: 6px; }
+  .related-item .rel-desc { font-size: 12px; color: var(--ink2); margin-top: 2px; }
+</style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>{{pageTitle|📊 膳食数据仪表盘}}</h1>
+    <p>{{pageSubtitle|数据驱动式布局，适合管理端查看}}</p>
+  </div>
+
+  <div class="dashboard">
+    <!-- 侧栏 -->
+    <div class="sidebar">
+      <div class="card profile-card">
+        <div class="p-name">{{profileName|长者膳食推荐}}</div>
+        <div class="p-desc">{{{profileDesc|60岁以上 · 低盐低脂低糖<br>用盐 ≤5g/天}}}</div>
+        <div class="p-stats">
+          {{#profileStats}}
+          <div><b>{{val|0}}</b><span>{{lbl|指标}}</span></div>
+          {{/profileStats}}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="donut-title">营养结构占比</div>
+        <div class="donut">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="#f0f3f6"></circle>
+            <g transform="rotate(-90 60 60)">
+              <circle cx="60" cy="60" r="54" fill="none" stroke="var(--carb)" stroke-width="14" stroke-dasharray="293.25 565.49"></circle>
+              <circle cx="60" cy="60" r="54" fill="none" stroke="var(--protein)" stroke-width="14" stroke-dasharray="101.79 565.49" stroke-dashoffset="-293.25"></circle>
+              <circle cx="60" cy="60" r="54" fill="none" stroke="var(--fat)" stroke-width="14" stroke-dasharray="170.45 565.49" stroke-dashoffset="-395.04"></circle>
+            </g>
+            <text x="60" y="56" text-anchor="middle" class="donut-center">{{donutTotal|590}}</text>
+            <text x="60" y="72" text-anchor="middle" class="donut-center-sub">kcal</text>
+          </svg>
+          <div class="donut-legend">
+            {{#ratios}}
+            <div class="legend-row">
+              <span class="lg-dot" style="background:{{color|#999}}"></span>
+              <span class="lg-name">{{name|项目}}</span>
+              <span class="lg-pct">{{pct|0%}}</span>
+              <span class="lg-kcal">{{kcal|0kcal}}</span>
+            </div>
+            {{/ratios}}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="tags-title">⚠️ 饮食禁忌与提示</div>
+        {{#tags}}
+        <span class="tag">{{tagIcon|💡}} {{tagLabel|提示}}</span>
+        {{/tags}}
+      </div>
+    </div>
+
+    <!-- 主区 -->
+    <div class="main">
+      <div class="card">
+        <div class="table-title">🍽️ 膳食明细 <span class="table-badge">{{tableBadge|今日}}</span></div>
+        <table class="meal-table">
+          <thead><tr><th>餐次</th><th>菜品</th><th>热量</th></tr></thead>
+          <tbody>
+            {{#meals}}
+            <tr class="meal-sep"><td colspan="3">{{mealEmoji|}} {{mealName|餐次}} · 小计 {{mealTotal|0 kcal}}</td></tr>
+            {{#foods}}
+            <tr><td></td><td>{{foodName|菜品}}</td><td>{{cal|0kcal}}</td></tr>
+            {{/foods}}
+            {{/meals}}
+            <tr class="total-row"><td colspan="2">全天总计</td><td>{{grandTotal|0 kcal}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="table-title">🔗 相关膳食建议</div>
+        <div class="related-row">
+          {{#related}}
+          <div class="related-item">
+            <div class="rel-icon">{{relIcon|💡}}</div>
+            <div class="rel-title">{{relTitle|建议}}</div>
+            <div class="rel-desc">{{relDesc|说明}}</div>
+          </div>
+          {{/related}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json">
+  {
+    "pageTitle": "📊 膳食数据仪表盘",
+    "pageSubtitle": "Flow 3 — 数据驱动式布局，适合管理端查看",
+    "profileName": "长者膳食推荐",
+    "profileDesc": "60岁以上 · 低盐低脂低糖<br>用盐 ≤5g/天",
+    "profileStats": [
+      { "val": "590", "lbl": "总 kcal" },
+      { "val": "3", "lbl": "餐次" },
+      { "val": "17", "lbl": "菜品数" },
+      { "val": "5g", "lbl": "控盐量" }
+    ],
+    "donutTotal": "590",
+    "ratios": [
+      { "name": "碳水", "pct": "52%", "kcal": "307kcal", "color": "#FF6B35" },
+      { "name": "蛋白", "pct": "18%", "kcal": "106kcal", "color": "#7CB342" },
+      { "name": "脂肪", "pct": "30%", "kcal": "177kcal", "color": "#42A5F5" }
+    ],
+    "tags": [
+      { "tagIcon": "💡", "tagLabel": "糖尿病" },
+      { "tagIcon": "🧂", "tagLabel": "限盐" },
+      { "tagIcon": "🥩", "tagLabel": "少油腻" }
+    ],
+    "tableBadge": "2026-07-27",
+    "meals": [
+      { "mealName": "早餐", "mealEmoji": "🌅", "mealTotal": "173 kcal",
+        "foods": [
+          { "foodName": "小米粥", "cal": "85 kcal" },
+          { "foodName": "水煮蛋", "cal": "70 kcal" },
+          { "foodName": "凉拌菠菜", "cal": "18 kcal" }
+        ] },
+      { "mealName": "午餐", "mealEmoji": "🍚", "mealTotal": "280 kcal",
+        "foods": [
+          { "foodName": "杂粮饭", "cal": "160 kcal" },
+          { "foodName": "清蒸鱼", "cal": "90 kcal" },
+          { "foodName": "炒胡萝卜", "cal": "30 kcal" }
+        ] },
+      { "mealName": "晚餐", "mealEmoji": "🌙", "mealTotal": "137 kcal",
+        "foods": [
+          { "foodName": "蔬菜豆腐汤", "cal": "85 kcal" },
+          { "foodName": "全麦馒头", "cal": "52 kcal" }
+        ] }
+    ],
+    "grandTotal": "590 kcal",
+    "related": [
+      { "relIcon": "📋", "relTitle": "完整一周的膳食方案", "relDesc": "清单·菜谱、每日三餐搭配指南" },
+      { "relIcon": "🥗", "relTitle": "低盐低糖烹饪技巧", "relDesc": "调味替代、少油做法" },
+      { "relIcon": "🏃", "relTitle": "餐后轻运动建议", "relDesc": "散步、拉伸等安全活动" }
+    ]
+  }
+  </script>
+</body>
+</html>

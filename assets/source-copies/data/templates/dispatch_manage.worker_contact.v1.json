@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.worker_contact.v1",
+  "template_key": "worker_contact",
+  "skill_key": "dispatch_manage",
+  "name": "联系服务人员卡片",
+  "cn_name": "联系服务人员卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "worker-contact.html",
+  "fallback_html": "worker-contact.html",
+  "description": "展示可联系对象、渠道和话术摘要。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "worker_contact",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/worker_contact.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/worker-contact.html"
+}

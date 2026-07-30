@@ -1,0 +1,11 @@
+{
+  "template_id": "chat.queue_status.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "排队状态通知",
+  "description": "排队状态通知模板，用于展示当前排队位置和预计时间",
+  "html": "chat/queue_status.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/chat/queue_status.html"
+}

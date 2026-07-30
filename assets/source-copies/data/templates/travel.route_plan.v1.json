@@ -1,0 +1,13 @@
+{
+  "template_id": "travel.route_plan.v1",
+  "skill_key": "travel_route",
+  "cn_name": "路线规划",
+  "description": "AI精品路线推荐的规划结果模板，展示行程路线和景点信息",
+  "html": "route-plan.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "alias_of": "travel_route.route_plan.v1",
+  "render_mode": "html_composition",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/route-plan.html"
+}

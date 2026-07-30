@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>旅居需求总结卡片模板</title>
+<style>
+  :root {
+    --primary: #FF7826;
+    --primary-gradient: linear-gradient(135deg, #FF7826 0%, #FF9A5C 100%);
+    --bg: #F8EAD9; --bg-white: #ffffff;
+    --ink: #3A3A3A; --ink-light: #666; --muted: #999999;
+    --border: #E5E5E5; --divider: #F0EBE3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .card {
+    max-width: 640px; margin: 0 auto; background: var(--bg-white);
+    border-radius: 14px; padding: 14px; border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .chat-section-title {
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 8px; padding: 8px 12px;
+    background: linear-gradient(135deg, #FFF7E6, #FFF3E0);
+    border-radius: 8px; border-left: 3px solid var(--primary);
+  }
+  .chat-text { font-size: 15px; line-height: 1.7; }
+  .chat-need-tags { margin: 8px 0; }
+  .chat-need-cat { margin-bottom: 6px; }
+  .chat-need-cat-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+  .chat-need-cat-items { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chat-need-tag {
+    display: inline-block; padding: 3px 10px; font-size: 12px;
+    background: #E8F5E9; color: #2E7D32; border-radius: 12px; font-weight: 500;
+  }
+  .conclusion { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .conclusion strong { color: var(--primary); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="chat-section-title">{{title|🧭 为您匹配「适老化康养旅居」方案}}</div>
+    <div class="chat-text">{{{desc|根据您的出行需求，我们优先为您筛选了<strong>具备医养配套、三餐全包、电梯无障碍</strong>的康养旅居基地。}}}</div>
+    <div class="chat-need-tags">
+      {{#tags}}
+      <div class="chat-need-cat">
+        <div class="chat-need-cat-label">{{cat|分类}}</div>
+        <div class="chat-need-cat-items">
+          {{#items}}<span class="chat-need-tag">{{label|标签}}</span>{{/items}}
+        </div>
+      </div>
+      {{/tags}}
+    </div>
+    <div class="conclusion">{{{conclusion|💡 核心结论：优先推荐<strong>康养旅居基地</strong>，普通景区酒店无法满足三餐+医养配套+适老化设施的综合需求。}}}</div>
+  </div>
+
+  <script type="application/json">
+  {
+    "title": "为您匹配「医养照护型」康养方案",
+    "desc": "检测到您的家人有<strong>用药管理/慢病监测需求</strong>，我们优先推荐距三甲医院800米内、配备药品存放柜和每日提醒服务的康养基地。以下方案已重点标注周边医疗资源与基地康养配套。",
+    "tags": [
+      { "cat": "出行", "items": [ { "label": "防城港10天旅居" }, { "label": "3人出行" } ] },
+      { "cat": "人群", "items": [ { "label": "2位长者" }, { "label": "1位儿童" } ] },
+      { "cat": "医养", "items": [ { "label": "用药管理" }, { "label": "血压监测" } ] },
+      { "cat": "食宿", "items": [ { "label": "三餐全包" }, { "label": "电梯房" } ] },
+      { "cat": "行程", "items": [ { "label": "慢节奏" }, { "label": "少赶路" }, { "label": "平缓路线" } ] }
+    ],
+    "conclusion": "💡 核心结论：优先推荐<strong>康养旅居基地</strong>，普通景区酒店无法满足三餐+医养配套+适老化设施的综合需求。"
+  }
+  </script>
+</body>
+</html>

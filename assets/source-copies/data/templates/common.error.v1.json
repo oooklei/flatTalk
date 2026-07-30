@@ -1,0 +1,11 @@
+{
+  "template_id": "common.error.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "通用错误",
+  "description": "通用错误提示模板，用于展示异常或错误信息",
+  "html": "common/error.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/common/error.html"
+}

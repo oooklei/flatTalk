@@ -1,0 +1,25 @@
+{
+  "template_id": "dispatch_manage.capacity_dashboard.v1",
+  "template_key": "capacity_dashboard",
+  "skill_key": "dispatch_manage",
+  "name": "容量看板卡片",
+  "cn_name": "容量看板卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "capacity-dashboard.html",
+  "fallback_html": "capacity-dashboard.html",
+  "description": "展示各机构和人员当前容量、排班和可接单状态。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "dashboard",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.escalate_manual",
+    "dispatch_manage.open_workbench",
+    "dispatch_manage.confirm_dispatch"
+  ],
+  "followup_suggestions": "templates/followups/capacity_dashboard.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/capacity-dashboard.html"
+}

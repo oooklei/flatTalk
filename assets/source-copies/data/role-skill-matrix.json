@@ -1,0 +1,160 @@
+{
+  "version": "gxy-role-skill-matrix.v1",
+  "roles": {
+    "system_admin": [
+      "*"
+    ],
+    "admin": [
+      "*"
+    ],
+    "elder": [
+      "guixiaoyang_dispatch",
+      "find_service",
+      "travel_route",
+      "meal_plan",
+      "health_risk_warning",
+      "elder_health_profile"
+    ],
+    "family": [
+      "guixiaoyang_dispatch",
+      "find_service",
+      "travel_route",
+      "meal_plan",
+      "health_risk_warning",
+      "elder_health_profile",
+      "service_quality_eval"
+    ],
+    "org_staff": [
+      "guixiaoyang_dispatch",
+      "dispatch_manage",
+      "approval_assist",
+      "form_fill_assist",
+      "service_quality_eval",
+      "safety_supervision"
+    ],
+    "care_worker": [
+      "guixiaoyang_dispatch",
+      "dispatch_manage",
+      "health_risk_warning",
+      "elder_health_profile"
+    ],
+    "village_doctor": [
+      "guixiaoyang_dispatch",
+      "health_risk_warning",
+      "elder_health_profile",
+      "meal_plan"
+    ],
+    "provider_staff": [
+      "guixiaoyang_dispatch",
+      "find_service",
+      "dispatch_manage",
+      "service_quality_eval"
+    ],
+    "guest": [
+      "guixiaoyang_dispatch"
+    ]
+  },
+  "roles_canonical": [
+    {
+      "role": "system_admin",
+      "skills": [
+        "*"
+      ],
+      "description": ""
+    },
+    {
+      "role": "elder_family",
+      "skills": [
+        "guixiaoyang_dispatch",
+        "find_service",
+        "travel_route",
+        "meal_plan",
+        "health_risk_warning",
+        "elder_health_profile",
+        "service_quality_eval"
+      ],
+      "description": ""
+    },
+    {
+      "role": "institution_admin",
+      "skills": [
+        "guixiaoyang_dispatch",
+        "dispatch_manage",
+        "approval_assist",
+        "form_fill_assist",
+        "service_quality_eval",
+        "safety_supervision"
+      ],
+      "description": ""
+    },
+    {
+      "role": "care_worker",
+      "skills": [
+        "guixiaoyang_dispatch",
+        "dispatch_manage",
+        "health_risk_warning",
+        "elder_health_profile"
+      ],
+      "description": ""
+    },
+    {
+      "role": "village_doctor",
+      "skills": [
+        "guixiaoyang_dispatch",
+        "health_risk_warning",
+        "elder_health_profile",
+        "meal_plan"
+      ],
+      "description": ""
+    },
+    {
+      "role": "institution",
+      "skills": [
+        "guixiaoyang_dispatch",
+        "find_service",
+        "dispatch_manage",
+        "service_quality_eval"
+      ],
+      "description": ""
+    },
+    {
+      "role": "grid_worker",
+      "skills": [],
+      "description": ""
+    },
+    {
+      "role": "civil_affairs_staff",
+      "skills": [],
+      "description": ""
+    },
+    {
+      "role": "care_doctor",
+      "skills": [],
+      "description": ""
+    }
+  ],
+  "canonical_roles": [
+    "elder_family",
+    "care_worker",
+    "grid_worker",
+    "civil_affairs_staff",
+    "village_doctor",
+    "institution",
+    "institution_admin",
+    "care_doctor",
+    "system_admin"
+  ],
+  "role_crosswalk": {
+    "elder": "elder_family",
+    "family": "elder_family",
+    "guest": "elder_family",
+    "org_staff": "institution_admin",
+    "provider_staff": "institution",
+    "care_worker": "care_worker",
+    "village_doctor": "village_doctor",
+    "admin": "system_admin",
+    "system_admin": "system_admin"
+  },
+  "warnings": [],
+  "generated_canonical_at": "2026-07-28T14:01:20.572Z"
+}

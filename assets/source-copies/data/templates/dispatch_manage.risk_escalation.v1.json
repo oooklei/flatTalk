@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.risk_escalation.v1",
+  "template_key": "risk_escalation",
+  "skill_key": "dispatch_manage",
+  "name": "风险升级卡片",
+  "cn_name": "风险升级卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "risk-escalation.html",
+  "fallback_html": "risk-escalation.html",
+  "description": "展示高风险工单升级原因和处理角色。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "risk_escalation",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/risk_escalation.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/risk-escalation.html"
+}

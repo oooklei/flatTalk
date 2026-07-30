@@ -1,0 +1,46 @@
+{
+  "dateBadge": "今日推荐 — 长者清淡饮食",
+  "suitable": "70岁以上长者，低盐低脂低糖",
+  "totalCal": "约520kcal",
+  "salt": "每日≤4g（控盐勺量）",
+  "meals": [
+    {
+      "mealName": "早餐",
+      "mealEmoji": "🌅🍳",
+      "mealTotal": "150kcal",
+      "foods": [
+        { "foodIcon": "🌾", "foodName": "燕麦粥", "cal": "80kcal", "calNote": "(每200g)" },
+        { "foodIcon": "🥚", "foodName": "水煮蛋", "cal": "70kcal", "calNote": "( / 个)" }
+      ]
+    },
+    {
+      "mealName": "午餐",
+      "mealEmoji": "☀️🍱",
+      "mealTotal": "220kcal",
+      "foods": [
+        { "foodIcon": "🐟", "foodName": "清蒸鲈鱼", "cal": "110kcal", "calNote": "(每150g)" },
+        { "foodIcon": "🥦", "foodName": "清炒西兰花", "cal": "40kcal", "calNote": "(每150g)" },
+        { "foodIcon": "🍚", "foodName": "杂粮饭", "cal": "70kcal", "calNote": "(每150g)" }
+      ]
+    },
+    {
+      "mealName": "晚餐",
+      "mealEmoji": "🌙🍲",
+      "mealTotal": "150kcal",
+      "foods": [
+        { "foodIcon": "🍅", "foodName": "番茄豆腐汤", "cal": "60kcal", "calNote": "(每250ml)" },
+        { "foodIcon": "🌽", "foodName": "玉米段", "cal": "90kcal", "calNote": "(每1枚100g)" }
+      ]
+    }
+  ],
+  "ratioText": "碳水化合物：<strong>约50~55%</strong> | 蛋白质15~20% | 脂肪25~30%。符合长者代谢特点，<em>如有忌口、过敏或慢性病（如糖尿病、高血压、痛风等），请在对应框中说明，将依标自动调整食谱。</em>",
+  "tags": [
+    { "tagIcon": "💡", "tagLabel": "糖尿病" },
+    { "tagIcon": "🩺", "tagLabel": "高血压" },
+    { "tagIcon": "🦴", "tagLabel": "骨质疏松" }
+  ],
+  "related": [
+    { "relIcon": "📋", "relIconStyle": "", "relTitle": "查看完整一周的膳食方案", "relDesc": "清单·菜谱、每日三餐搭配指南" },
+    { "relIcon": "❤️", "relIconStyle": "background:linear-gradient(135deg,#FFD4E5,#FFB4C8)", "relTitle": "高血压老人饮食有什么禁忌？", "relDesc": "控盐控脂、常见误区与推荐清单" }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "template_id": "dispatch_manage.workorder_card.v1",
+  "template_key": "workorder_card",
+  "skill_key": "dispatch_manage",
+  "name": "自动派单工单卡片",
+  "cn_name": "自动派单工单卡片",
+  "render_mode": "html_composition",
+  "layout": "chat-card",
+  "html": "workorder-card.html",
+  "fallback_html": "status.html",
+  "source": "AI养老助手.html#找服务/养老服务匹配/通知协同",
+  "description": "展示工单概要、老人上下文、候选排序、派单决策和通知状态。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "slots": [
+    {
+      "slot_key": "workorder-summary",
+      "file": "slots/workorder-summary.html",
+      "position": "top",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": [
+        "dispatch_manage.workorder_detail"
+      ]
+    },
+    {
+      "slot_key": "elder-context",
+      "file": "slots/elder-context.html",
+      "position": "center",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": [
+        "dispatch_manage.open_workbench"
+      ]
+    },
+    {
+      "slot_key": "candidate-list",
+      "file": "slots/candidate-list.html",
+      "position": "center",
+      "required": true,
+      "repeat": true,
+      "data_path": "candidates",
+      "allowed_actions": [
+        "dispatch_manage.refresh_candidates",
+        "dispatch_manage.reassign"
+      ]
+    },
+    {
+      "slot_key": "dispatch-decision",
+      "file": "slots/dispatch-decision.html",
+      "position": "bottom",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": [
+        "dispatch_manage.confirm_dispatch",
+        "dispatch_manage.escalate_manual"
+      ]
+    },
+    {
+      "slot_key": "notification-trace",
+      "file": "slots/notification-trace.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": true,
+      "data_path": "notification.traces",
+      "allowed_actions": [
+        "dispatch_manage.notify_org"
+      ]
+    },
+    {
+      "slot_key": "related-questions",
+      "file": "slots/related-questions.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": true,
+      "data_path": "related.questions",
+      "allowed_actions": [
+        "dispatch_manage.refresh_candidates",
+        "dispatch_manage.confirm_dispatch",
+        "dispatch_manage.open_workbench"
+      ]
+    }
+  ],
+  "allowed_slot_sequences": [
+    [
+      "workorder-summary",
+      "elder-context",
+      "candidate-list",
+      "dispatch-decision"
+    ],
+    [
+      "workorder-summary",
+      "elder-context",
+      "candidate-list",
+      "dispatch-decision",
+      "notification-trace",
+      "related-questions"
+    ]
+  ],
+  "llm_selection_policy": {
+    "enabled": true,
+    "decision_schema": "skill-packages/dispatch_manage/references/contracts/template-composition.schema.json",
+    "role": "select_registered_template_and_slots_only",
+    "default_variant": "dispatch_manage.workorder_card.v1",
+    "allowed_variants": [
+      "dispatch_manage.workorder_card.v1",
+      "dispatch_manage.candidate_ranking.v1",
+      "dispatch_manage.dispatch_decision.v1",
+      "dispatch_manage.notification_trace.v1",
+      "dispatch_manage.capacity_dashboard.v1",
+      "dispatch_manage.exception.v1",
+      "dispatch_manage.status.v1",
+      "dispatch_manage.router.v1",
+      "dispatch_manage.candidate.v1",
+      "dispatch_manage.workorder_intake.v1",
+      "dispatch_manage.hard_filter.v1",
+      "dispatch_manage.score_breakdown.v1",
+      "dispatch_manage.route_map.v1",
+      "dispatch_manage.load_balance.v1",
+      "dispatch_manage.sla_countdown.v1",
+      "dispatch_manage.auto_dispatch.v1",
+      "dispatch_manage.manual_queue.v1",
+      "dispatch_manage.reject_reason.v1",
+      "dispatch_manage.reassign_plan.v1",
+      "dispatch_manage.notification_retry.v1",
+      "dispatch_manage.arrival_tracking.v1",
+      "dispatch_manage.completion_check.v1",
+      "dispatch_manage.risk_escalation.v1",
+      "dispatch_manage.capacity_gap.v1",
+      "dispatch_manage.multi_org_compare.v1",
+      "dispatch_manage.worker_contact.v1",
+      "dispatch_manage.family_trace.v1",
+      "dispatch_manage.audit_summary.v1",
+      "dispatch_manage.fallback_status.v1"
+    ],
+    "allowed_slots": [
+      "workorder-summary",
+      "elder-context",
+      "candidate-list",
+      "dispatch-decision",
+      "notification-trace",
+      "related-questions"
+    ],
+    "required_slots": [
+      "workorder-summary",
+      "elder-context",
+      "candidate-list",
+      "dispatch-decision"
+    ],
+    "forbidden": [
+      "raw_html",
+      "script",
+      "inline_event_handler",
+      "external_url",
+      "unregistered_template_id",
+      "unregistered_slot_key",
+      "unregistered_action_key"
+    ],
+    "bff_must_validate": true
+  },
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.reassign",
+    "dispatch_manage.notify_org",
+    "dispatch_manage.workorder_detail",
+    "dispatch_manage.escalate_manual",
+    "dispatch_manage.open_workbench",
+    "dispatch_manage.voice_broadcast",
+    "dispatch_manage.collect_workorder",
+    "dispatch_manage.run_hard_filter",
+    "dispatch_manage.explain_score",
+    "dispatch_manage.show_route_map",
+    "dispatch_manage.balance_load",
+    "dispatch_manage.start_sla_countdown",
+    "dispatch_manage.execute_auto_dispatch",
+    "dispatch_manage.enqueue_manual",
+    "dispatch_manage.analyze_reject",
+    "dispatch_manage.build_reassign_plan",
+    "dispatch_manage.retry_notification",
+    "dispatch_manage.track_arrival",
+    "dispatch_manage.check_completion",
+    "dispatch_manage.escalate_risk",
+    "dispatch_manage.show_capacity_gap",
+    "dispatch_manage.compare_orgs",
+    "dispatch_manage.contact_worker",
+    "dispatch_manage.trace_family",
+    "dispatch_manage.show_audit_summary",
+    "dispatch_manage.fallback_status"
+  ],
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/workorder-card.html"
+}

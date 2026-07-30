@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--status" data-template-id="meal_plan.status.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{status.badge}}</p>
+    <h3>{{status.title}}</h3>
+    <p>{{status.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{status.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 膳食执行状态卡片: 展示生成、确认、订餐、配送和反馈状态。 -->

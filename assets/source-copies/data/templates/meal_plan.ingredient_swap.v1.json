@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.ingredient_swap.v1",
+  "template_key": "ingredient_swap",
+  "skill_key": "meal_plan",
+  "name": "食材替换建议卡片",
+  "cn_name": "食材替换建议卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "ingredient-swap.html",
+  "fallback_html": "ingredient-swap.html",
+  "description": "提供同类食材替换、禁忌替换和采购建议。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "ingredient_swap",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/ingredient_swap.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/ingredient-swap.html"
+}

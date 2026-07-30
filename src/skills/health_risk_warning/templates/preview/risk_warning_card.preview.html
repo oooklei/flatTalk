@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>风险预警卡片预览</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    background: #f5f8fc;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  .container { width: 100%; max-width: 860px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(74,144,217,0.08); padding: 8px 28px 28px;">
+    <section style="border-top: 1.5px dashed #69b1e4; border-bottom: 1.5px solid #69b1e4; padding: 28px 4px 32px;">
+      <h1 style="font-size: 26px; font-weight: 700; color: #1a1a1a; margin-bottom: 22px; letter-spacing: 1px;">风险预警</h1>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 18px;">
+        <li style="display: flex; align-items: flex-start; gap: 12px; font-size: 16px;">
+          <span style="flex-shrink: 0; width: 20px; height: 20px; margin-top: 3px;">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5L22.5 20.5H1.5L12 2.5Z" fill="#E54D42" stroke="#E54D42" stroke-width="1.5"/><path d="M12 9V14.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.2" fill="#fff"/></svg>
+          </span>
+          <span style="flex: 1; line-height: 1.65;">提示肝胆异常。可能有睡眠不佳，情志不畅等表现。</span>
+        </li>
+        <li style="display: flex; align-items: flex-start; gap: 12px; font-size: 16px;">
+          <span style="flex-shrink: 0; width: 20px; height: 20px; margin-top: 3px;">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5L22.5 20.5H1.5L12 2.5Z" fill="#E54D42" stroke="#E54D42" stroke-width="1.5"/><path d="M12 9V14.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.2" fill="#fff"/></svg>
+          </span>
+          <span style="flex: 1; line-height: 1.65;">提示中焦郁滞或下焦壅塞。可能有腹胀，食少等表现。</span>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>
+</body>
+</html>

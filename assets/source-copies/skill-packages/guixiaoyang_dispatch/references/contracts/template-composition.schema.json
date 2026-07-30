@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "guixiaoyang_dispatch.template-composition.schema.json",
+  "type": "object",
+  "required": [
+    "template_id",
+    "slot_sequence",
+    "actions"
+  ],
+  "properties": {
+    "template_id": {
+      "enum": [
+        "guixiaoyang_dispatch.router.v1",
+        "guixiaoyang_dispatch.clarify.v1",
+        "guixiaoyang_dispatch.status.v1",
+        "guixiaoyang_dispatch.audit.v1",
+        "guixiaoyang_dispatch.policy_answer.v1",
+        "guixiaoyang_dispatch.skill_hub.v1",
+        "guixiaoyang_dispatch.context_check.v1",
+        "guixiaoyang_dispatch.intent_router.v1",
+        "guixiaoyang_dispatch.capability_intro.v1",
+        "guixiaoyang_dispatch.policy_screening.v1",
+        "guixiaoyang_dispatch.profile_missing.v1",
+        "guixiaoyang_dispatch.multi_skill_plan.v1",
+        "guixiaoyang_dispatch.handoff_preview.v1",
+        "guixiaoyang_dispatch.permission_block.v1",
+        "guixiaoyang_dispatch.knowledge_gap.v1",
+        "guixiaoyang_dispatch.manual_review.v1",
+        "guixiaoyang_dispatch.voice_ready.v1",
+        "guixiaoyang_dispatch.elder_summary.v1",
+        "guixiaoyang_dispatch.family_summary.v1",
+        "guixiaoyang_dispatch.safety_check.v1",
+        "guixiaoyang_dispatch.timeline.v1",
+        "guixiaoyang_dispatch.fallback_status.v1",
+        "guixiaoyang_dispatch.learning_feedback.v1",
+        "guixiaoyang_dispatch.faq_answer.v1",
+        "guixiaoyang_dispatch.task_progress.v1",
+        "guixiaoyang_dispatch.notification_summary.v1",
+        "guixiaoyang_dispatch.session_resume.v1"
+      ]
+    },
+    "slot_sequence": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "intent-summary",
+          "route-options",
+          "handoff-note",
+          "action-bar"
+        ]
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "guixiaoyang_dispatch.route_meal_plan",
+          "guixiaoyang_dispatch.route_dispatch_manage",
+          "guixiaoyang_dispatch.collect_context",
+          "guixiaoyang_dispatch.clarify",
+          "guixiaoyang_dispatch.manual_review",
+          "guixiaoyang_dispatch.voice_broadcast"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

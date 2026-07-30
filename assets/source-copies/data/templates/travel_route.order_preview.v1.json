@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.order_preview.v1",
+  "template_key": "order_preview",
+  "skill_key": "travel_route",
+  "name": "预订订单预览卡片",
+  "cn_name": "预订订单预览卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "order-preview.html",
+  "fallback_html": "order-preview.html",
+  "description": "展示预订订单、费用和联系人核对信息。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "order_preview",
+  "actions": [
+    "travel_route.preview_order",
+    "travel_route.booking_handoff",
+    "travel_route.submit_payment"
+  ],
+  "followup_suggestions": "templates/followups/order_preview.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/order-preview.html"
+}

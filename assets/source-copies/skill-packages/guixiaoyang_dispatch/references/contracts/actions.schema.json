@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "guixiaoyang_dispatch.actions.schema.json",
+  "type": "object",
+  "required": ["schema", "skill_key", "actions"],
+  "properties": {
+    "schema": {
+      "const": "guixiaoyang.action-map.v1"
+    },
+    "skill_key": {
+      "const": "guixiaoyang_dispatch"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action_key", "type", "target", "roles", "enabled"],
+        "properties": {
+          "action_key": {
+            "type": "string",
+            "pattern": "^guixiaoyang_dispatch\\."
+          },
+          "type": {
+            "enum": ["skill_handoff", "bff_event", "business_event"]
+          },
+          "target": {
+            "type": "object"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

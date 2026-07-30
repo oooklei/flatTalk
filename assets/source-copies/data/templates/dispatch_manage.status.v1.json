@@ -1,0 +1,27 @@
+{
+  "template_id": "dispatch_manage.status.v1",
+  "template_key": "status",
+  "skill_key": "dispatch_manage",
+  "name": "派单状态卡片",
+  "cn_name": "派单状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "status.html",
+  "fallback_html": "status.html",
+  "description": "展示派单执行、通知、接单、到达和完成状态。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "status",
+  "actions": [
+    "dispatch_manage.workorder_detail",
+    "dispatch_manage.voice_broadcast",
+    "dispatch_manage.open_workbench",
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/status.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/status.html"
+}

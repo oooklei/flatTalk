@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>桂小养移动端</title>
+
+    <!-- 服务端设备/浏览器检测注入（自动生成，请勿手动修改） -->
+    <script>
+      // 注入当前页面类型供 device-redirect.js 读取
+      window.__DEVICE_TYPE__ = 'mobile';
+    </script>
+    <!-- 设备重定向脚本（前端备用方案，优先加载） -->
+    <script src="/device-redirect.js?v=20260724"></script>
+
+    <link rel="stylesheet" href="/mobile.css?v=20260728-actionfix1" />
+
+    <style>
+      /* 设备信息徽章（移动端显示，仅调试模式） */
+      .device-badge-mobile {
+        position: fixed;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9998;
+        padding: 4px 12px;
+        background: rgba(0, 0, 0, 0.45);
+        border-radius: 12px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.85);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        backdrop-filter: blur(8px);
+        pointer-events: none;
+        white-space: nowrap;
+        max-width: 90vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: opacity 0.3s;
+      }
+
+    </style>
+  </head>
+  <body>
+    <main id="mobileRoot" class="mobile-root">
+      <div class="phone-screen">
+        <div class="mobile-loading">正在进入桂小养...</div>
+      </div>
+    </main>
+    <script src="/mobile.js?v=20260728-localizefix1" type="module"></script>
+
+    <!-- 设备信息展示徽章（仅调试模式可见） -->
+    <div id="device-badge-mobile" class="device-badge-mobile" data-debug-only style="display:none;">
+      <span id="device-badge-mobile-info">检测中...</span>
+    </div>
+
+    <!-- 设备切换按钮（仅调试模式可见） -->
+    <div id="device-switch" data-debug-only></div>
+    <script src="/device-switch.js?v=20260728"></script>
+
+    <!-- 调试模式检测脚本 -->
+    <script>
+      (function() {
+        // 判断是否为调试模式：URL包含debug=1或__DEV__
+        var isDebug = /[?&]debug=1([&#]|$)/.test(location.search) || /[?&]__DEV__([&#=]|$)/.test(location.search);
+        if (isDebug) {
+          document.body.classList.add('debug-mode');
+        }
+
+        // 设备信息徽章逻辑
+        var info = window.__DEVICE_INFO__;
+        var badge = document.getElementById('device-badge-mobile');
+        var badgeInfo = document.getElementById('device-badge-mobile-info');
+        if (isDebug && info && badge && badgeInfo) {
+          var text = info.deviceTypeName + ' · ' + info.browserName;
+          if (info.browserVersion) text += ' ' + info.browserVersion;
+          text += ' · ' + info.osName + ' ' + (info.osVersion || '');
+          badgeInfo.textContent = text;
+          badge.style.display = 'block';
+
+          // 4秒后自动淡出
+          setTimeout(function() {
+            badge.style.opacity = '0.3';
+          }, 4000);
+        }
+      })();
+    </script>
+  </body>
+</html>

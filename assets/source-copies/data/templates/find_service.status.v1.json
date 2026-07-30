@@ -1,0 +1,26 @@
+{
+  "template_id": "find_service.status.v1",
+  "template_key": "status",
+  "skill_key": "find_service",
+  "name": "找服务状态卡片",
+  "cn_name": "找服务状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "status.html",
+  "fallback_html": "status.html",
+  "description": "展示降级、失败、权限不足和等待处理状态。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "status",
+  "actions": [
+    "find_service.clarify",
+    "find_service.manual_review",
+    "find_service.voice_broadcast",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/status.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/status.html"
+}

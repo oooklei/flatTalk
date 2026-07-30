@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.shopping_list.v1",
+  "template_key": "shopping_list",
+  "skill_key": "meal_plan",
+  "name": "采购清单卡片",
+  "cn_name": "采购清单卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "shopping-list.html",
+  "fallback_html": "shopping-list.html",
+  "description": "汇总食材、份量、采购频率和保存提示。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "shopping_list",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/shopping_list.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/shopping-list.html"
+}

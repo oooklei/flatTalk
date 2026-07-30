@@ -1,0 +1,128 @@
+{
+  "schema": "guixiaoyang.slot-preferences.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "rules": [
+    {
+      "when": "confidence >= 0.75 and target_skill_available",
+      "template_id": "guixiaoyang_dispatch.router.v1",
+      "slots": [
+        "intent-summary",
+        "route-options",
+        "handoff-note",
+        "action-bar"
+      ]
+    },
+    {
+      "when": "missing_required_context or confidence < 0.75",
+      "template_id": "guixiaoyang_dispatch.clarify.v1"
+    },
+    {
+      "when": "action_requires_high_audit",
+      "template_id": "guixiaoyang_dispatch.audit.v1"
+    },
+    {
+      "when": "system_unavailable or target_skill_unavailable",
+      "template_id": "guixiaoyang_dispatch.status.v1"
+    },
+    {
+      "when": "intent_key == 'intent_router_request'",
+      "template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "followups": "intent_router.json"
+    },
+    {
+      "when": "intent_key == 'capability_intro_request'",
+      "template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "followups": "capability_intro.json"
+    },
+    {
+      "when": "intent_key == 'policy_screening_request'",
+      "template_id": "guixiaoyang_dispatch.policy_screening.v1",
+      "followups": "policy_screening.json"
+    },
+    {
+      "when": "intent_key == 'profile_missing_request'",
+      "template_id": "guixiaoyang_dispatch.profile_missing.v1",
+      "followups": "profile_missing.json"
+    },
+    {
+      "when": "intent_key == 'multi_skill_plan_request'",
+      "template_id": "guixiaoyang_dispatch.multi_skill_plan.v1",
+      "followups": "multi_skill_plan.json"
+    },
+    {
+      "when": "intent_key == 'handoff_preview_request'",
+      "template_id": "guixiaoyang_dispatch.handoff_preview.v1",
+      "followups": "handoff_preview.json"
+    },
+    {
+      "when": "intent_key == 'permission_block_request'",
+      "template_id": "guixiaoyang_dispatch.permission_block.v1",
+      "followups": "permission_block.json"
+    },
+    {
+      "when": "intent_key == 'knowledge_gap_request'",
+      "template_id": "guixiaoyang_dispatch.knowledge_gap.v1",
+      "followups": "knowledge_gap.json"
+    },
+    {
+      "when": "intent_key == 'manual_review_request'",
+      "template_id": "guixiaoyang_dispatch.manual_review.v1",
+      "followups": "manual_review.json"
+    },
+    {
+      "when": "intent_key == 'voice_ready_request'",
+      "template_id": "guixiaoyang_dispatch.voice_ready.v1",
+      "followups": "voice_ready.json"
+    },
+    {
+      "when": "intent_key == 'elder_summary_request'",
+      "template_id": "guixiaoyang_dispatch.elder_summary.v1",
+      "followups": "elder_summary.json"
+    },
+    {
+      "when": "intent_key == 'family_summary_request'",
+      "template_id": "guixiaoyang_dispatch.family_summary.v1",
+      "followups": "family_summary.json"
+    },
+    {
+      "when": "intent_key == 'safety_check_request'",
+      "template_id": "guixiaoyang_dispatch.safety_check.v1",
+      "followups": "safety_check.json"
+    },
+    {
+      "when": "intent_key == 'timeline_request'",
+      "template_id": "guixiaoyang_dispatch.timeline.v1",
+      "followups": "timeline.json"
+    },
+    {
+      "when": "intent_key == 'fallback_status_request'",
+      "template_id": "guixiaoyang_dispatch.fallback_status.v1",
+      "followups": "fallback_status.json"
+    },
+    {
+      "when": "intent_key == 'learning_feedback_request'",
+      "template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+      "followups": "learning_feedback.json"
+    },
+    {
+      "when": "intent_key == 'faq_answer_request'",
+      "template_id": "guixiaoyang_dispatch.faq_answer.v1",
+      "followups": "faq_answer.json"
+    },
+    {
+      "when": "intent_key == 'task_progress_request'",
+      "template_id": "guixiaoyang_dispatch.task_progress.v1",
+      "followups": "task_progress.json"
+    },
+    {
+      "when": "intent_key == 'notification_summary_request'",
+      "template_id": "guixiaoyang_dispatch.notification_summary.v1",
+      "followups": "notification_summary.json"
+    },
+    {
+      "when": "intent_key == 'session_resume_request'",
+      "template_id": "guixiaoyang_dispatch.session_resume.v1",
+      "followups": "session_resume.json"
+    }
+  ]
+}

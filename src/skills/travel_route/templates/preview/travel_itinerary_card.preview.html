@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>旅居行程安排卡片 - 预览</title>
+<style>
+  :root {
+    --primary: #FF7826;
+    --primary-gradient: linear-gradient(135deg, #FF7826 0%, #FF9A5C 100%);
+    --bg: #F8EAD9; --bg-white: #ffffff;
+    --ink: #3A3A3A; --ink-light: #666; --muted: #999999;
+    --border: #E5E5E5; --divider: #F0EBE3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .chat-section-title {
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 8px; padding: 8px 12px;
+    background: linear-gradient(135deg, #FFF7E6, #FFF3E0);
+    border-radius: 8px; border-left: 3px solid var(--primary);
+  }
+  .intro { font-size: 13px; color: var(--ink-light); line-height: 1.6; margin-bottom: 10px; }
+  .day-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 10px; padding: 2px 0;
+  }
+  .day-tab {
+    appearance: none; border: 1px solid var(--border);
+    background: var(--bg-white); color: var(--ink-light);
+    border-radius: 12px; padding: 5px 12px;
+    font-size: 12px; font-weight: 700; line-height: 1.2;
+    cursor: pointer; font-family: inherit;
+    transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+  }
+  .day-tab:active { transform: scale(0.97); }
+  .day-tab.is-active {
+    background: var(--primary-gradient); color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(255, 120, 38, 0.28);
+  }
+  .day-panels { position: relative; }
+  .day-card {
+    display: none;
+    background: var(--bg-white); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px;
+    animation: dayFade .22s ease;
+  }
+  .day-card.is-active { display: block; }
+  @keyframes dayFade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .day-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .day-num {
+    padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
+    background: var(--primary-gradient); color: #fff; flex-shrink: 0;
+  }
+  .day-theme { font-size: 14px; font-weight: 700; }
+  .slot { display: flex; gap: 8px; padding: 5px 0; font-size: 13px; line-height: 1.6; }
+  .slot-label {
+    flex-shrink: 0; width: 44px; font-size: 12px; font-weight: 600;
+    color: var(--primary); padding-top: 1px;
+  }
+  .slot-text { flex: 1; color: var(--ink-light); }
+  .slot-text b { color: var(--ink); }
+  .day-tip {
+    margin-top: 6px; padding: 6px 8px; border-radius: 8px;
+    background: #E8F5E9; color: #2E7D32; font-size: 12px; line-height: 1.5;
+  }
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="chat-section-title">🗓️ 10天行程安排（慢节奏 · 每日一景）</div>
+    <div class="intro">按「上午一景 + 下午休整」慢节奏编排，<b>单日车程不超过40分钟</b>，避免长者疲劳。</div>
+
+    <div class="day-tabs" role="tablist">
+      <button type="button" class="day-tab" role="tab" data-day="D1" aria-selected="false">D1</button>
+      <button type="button" class="day-tab" role="tab" data-day="D2" aria-selected="false">D2</button>
+      <button type="button" class="day-tab" role="tab" data-day="D3" aria-selected="false">D3</button>
+      <button type="button" class="day-tab" role="tab" data-day="D4" aria-selected="false">D4</button>
+      <button type="button" class="day-tab" role="tab" data-day="D5" aria-selected="false">D5</button>
+      <button type="button" class="day-tab" role="tab" data-day="D6" aria-selected="false">D6</button>
+      <button type="button" class="day-tab" role="tab" data-day="D7" aria-selected="false">D7</button>
+      <button type="button" class="day-tab" role="tab" data-day="D8" aria-selected="false">D8</button>
+      <button type="button" class="day-tab" role="tab" data-day="D9" aria-selected="false">D9</button>
+      <button type="button" class="day-tab" role="tab" data-day="D10" aria-selected="false">D10</button>
+    </div>
+
+    <div class="day-panels">
+    <div class="day-card" role="tabpanel" data-day="D1">
+      <div class="day-head">
+        <span class="day-num">D1</span>
+        <span class="day-theme">🏨 抵达安顿</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">高铁抵达防城港北站，基地<b>免费接站</b>直达入住</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">医务室建档（血压/血糖基线），熟悉餐厅与活动区</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">基地周边散步，海边看日落</span>
+      </div>
+      <div class="day-tip">💚 第一天不安排外出，帮长者适应气候与作息</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D2">
+      <div class="day-head">
+        <span class="day-num">D2</span>
+        <span class="day-theme">🚶 基地熟悉</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">基地内慢步走，认识管家与同住长者</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">参加手工 / 太极体验课，了解每日活动安排</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">长者餐厅用餐，餐后集体观影</span>
+      </div>
+      <div class="day-tip">💚 今日仍以休整为主，步行控制在 3000 步内</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D3">
+      <div class="day-head">
+        <span class="day-num">D3</span>
+        <span class="day-theme">🏖️ 白浪滩</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">包车前往白浪滩踏浪（轮椅可推行，车程 40 分钟）</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">海边午餐后午休，沙滩椅休息观海</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">返回基地，海边散步看日落</span>
+      </div>
+      <div class="day-tip">💚 防晒防风，累了随时回基地</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D4">
+      <div class="day-head">
+        <span class="day-num">D4</span>
+        <span class="day-theme">🐠 海洋公园</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">海洋文化公园慢走，观珊瑚与海洋生物</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">参加基地活动：太极 / 手工 / 儿童拾贝课</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">长者餐厅晚餐，餐后集体活动</span>
+      </div>
+      <div class="day-tip">💚 每日步行控制在 4000 步内</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D5">
+      <div class="day-head">
+        <span class="day-num">D5</span>
+        <span class="day-theme">🌿 基地休整</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">基地自由活动，图书角或棋牌室</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">午休后参加兴趣课，或与家人视频</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">基地周边散步</span>
+      </div>
+      <div class="day-tip">💚 休整日，保存体力迎接后半程</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D6">
+      <div class="day-head">
+        <span class="day-num">D6</span>
+        <span class="day-theme">🐚 簕山古渔村</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">包车前往簕山古渔村（车程 40 分钟，中途休息 1 次）</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">村中慢游，渔家风情拍照</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">渔家海鲜粥晚餐（软食可选）</span>
+      </div>
+      <div class="day-tip">💚 村医巡诊点就在村口</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D7">
+      <div class="day-head">
+        <span class="day-num">D7</span>
+        <span class="day-theme">🌊 赶海体验</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">退潮时<b>祖孙赶海拾贝</b></span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">清洗贝壳，手工制作贝壳画</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">基地休息</span>
+      </div>
+      <div class="day-tip">💚 赶海请穿防滑鞋</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D8">
+      <div class="day-head">
+        <span class="day-num">D8</span>
+        <span class="day-theme">🌅 观潮休整</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">视体力海边观潮或基地休整</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">午休后参加基地兴趣活动</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">集体观影或茶歇</span>
+      </div>
+      <div class="day-tip">💚 灵活安排，以长者舒适为准</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D9">
+      <div class="day-head">
+        <span class="day-num">D9</span>
+        <span class="day-theme">🩺 体检采买</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">基地体检小结（对比抵达基线数据），海产市场采买手信</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">自由活动，整理行李</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">傍晚</span>
+        <span class="slot-text">总结分享会</span>
+      </div>
+      <div class="day-tip">💚 返程前医务室提供 10 天健康小结报告</div>
+    </div>
+    <div class="day-card" role="tabpanel" data-day="D10">
+      <div class="day-head">
+        <span class="day-num">D10</span>
+        <span class="day-theme">🚄 返程</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">上午</span>
+        <span class="slot-text">办理退房，基地送站至防城港北站</span>
+      </div>
+      <div class="slot">
+        <span class="slot-label">下午</span>
+        <span class="slot-text">高铁返程</span>
+      </div>
+      <div class="day-tip">💚 祝一路平安，常回基地看看</div>
+    </div>
+    </div>
+
+    <div class="note">行程可随身体状况灵活调整，基地管家每晚确认次日安排。</div>
+  </div>
+
+  <script>
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.day-tab'));
+    var panels = Array.prototype.slice.call(document.querySelectorAll('.day-card'));
+    if (!tabs.length || !panels.length) return;
+
+    function activate(day) {
+      tabs.forEach(function (tab) {
+        var on = tab.getAttribute('data-day') === day;
+        tab.classList.toggle('is-active', on);
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (panel) {
+        panel.classList.toggle('is-active', panel.getAttribute('data-day') === day);
+      });
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activate(tab.getAttribute('data-day'));
+      });
+    });
+
+    activate(tabs[0].getAttribute('data-day'));
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.complaint_assist.v1",
+  "template_key": "complaint_assist",
+  "skill_key": "find_service",
+  "name": "服务投诉协助卡片",
+  "cn_name": "服务投诉协助卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "complaint-assist.html",
+  "fallback_html": "complaint-assist.html",
+  "description": "处理迟到、不满意、费用争议和安全问题。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "complaint_assist",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/complaint_assist.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/complaint-assist.html"
+}

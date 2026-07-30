@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.audit_summary.v1",
+  "template_key": "audit_summary",
+  "skill_key": "dispatch_manage",
+  "name": "派单审计摘要卡片",
+  "cn_name": "派单审计摘要卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "audit-summary.html",
+  "fallback_html": "audit-summary.html",
+  "description": "展示关键决策、动作和责任链。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "audit_summary",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/audit_summary.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/audit-summary.html"
+}

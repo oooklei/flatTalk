@@ -1,0 +1,142 @@
+{
+  "version": "gxy-bff-capability-registry.v1",
+  "capabilities": [
+    {
+      "key": "embed_bootstrap",
+      "name": "嵌入初始化与上下文注入",
+      "status": "implemented",
+      "endpoints": [
+        "GET /api/embed/bootstrap",
+        "POST /api/embed/bootstrap"
+      ]
+    },
+    {
+      "key": "chat_runtime",
+      "name": "对话运行时与远端 Agent 97 分发",
+      "status": "implemented",
+      "endpoints": [
+        "POST /api/chat/message",
+        "POST /api/open/v1/chat/completions",
+        "GET /api/bff/conversation-turns",
+        "GET /api/bff/harvest-candidates",
+        "POST /api/bff/harvest-candidates/update",
+        "POST /api/bff/harvest-candidates/delete"
+      ]
+    },
+    {
+      "key": "chat_concurrency",
+      "name": "同一会话运行锁、等待队列、合并和替换",
+      "status": "implemented",
+      "endpoints": [
+        "GET /api/chat/running",
+        "GET /api/chat/queue",
+        "POST /api/chat/queue/action"
+      ]
+    },
+    {
+      "key": "template_action_gateway",
+      "name": "模板注册与按钮 Action 网关",
+      "status": "implemented",
+      "endpoints": [
+        "GET /api/templates/registry",
+        "GET /api/bff/actions",
+        "POST /api/bff/templates/upsert",
+        "POST /api/bff/templates/delete",
+        "POST /api/bff/actions/upsert",
+        "POST /api/bff/actions/delete",
+        "POST /api/chat/action-token",
+        "POST /api/chat/action",
+        "POST /api/bff/template-orchestrate"
+      ]
+    },
+    {
+      "key": "openapi_hmac",
+      "name": "OpenAPI HMAC 鉴权与防重放",
+      "status": "implemented",
+      "endpoints": [
+        "POST /api/open/v1/session/events",
+        "POST /api/open/v1/messages/events",
+        "POST /api/open/v1/messages/publish"
+      ]
+    },
+    {
+      "key": "redis_state",
+      "name": "Redis 短期状态",
+      "status": "implemented",
+      "env": [
+        "GXY_REDIS_URL",
+        "GXY_REDIS_PREFIX"
+      ]
+    },
+    {
+      "key": "business_system_adapter",
+      "name": "业务系统 HTTP 适配器",
+      "status": "implemented",
+      "env": [
+        "GXY_BUSINESS_SYSTEM_BASE_URL",
+        "GXY_BUSINESS_SYSTEM_TOKEN"
+      ]
+    },
+    {
+      "key": "model_management",
+      "name": "大模型管理、健康检查和路由策略",
+      "status": "foundation",
+      "endpoints": [
+        "GET /api/bff/models",
+        "POST /api/bff/models/health-check",
+        "POST /api/bff/models/route-select",
+        "GET /api/bff/models/endpoints",
+        "POST /api/bff/models/endpoints/upsert",
+        "POST /api/bff/models/endpoints/delete",
+        "POST /api/bff/models/endpoints/batch-test"
+      ]
+    },
+    {
+      "key": "deployment_validation",
+      "name": "测试验证、部署发布和女娲同步验证",
+      "status": "foundation",
+      "endpoints": [
+        "GET /api/bff/validation/checklist",
+        "GET /api/bff/nuwax-sync/status",
+        "GET /api/bff/deployment-reports",
+        "POST /api/bff/deployment-reports/upsert"
+      ]
+    },
+    {
+      "key": "observability_alerts",
+      "name": "外部接口、组件、数据库、大模型和女娲平台告警",
+      "status": "implemented",
+      "endpoints": [
+        "GET /api/bff/alerts",
+        "POST /api/bff/alerts/upsert",
+        "GET /api/bff/runtime-logs",
+        "GET /api/bff/storage/status"
+      ]
+    },
+    {
+      "key": "frontend_component_governance",
+      "name": "ASR/OCR/TTS 前端组件配置与降级治理",
+      "status": "implemented",
+      "endpoints": [
+        "GET /api/bff/component-configs",
+        "POST /api/bff/component-configs/upsert"
+      ]
+    },
+    {
+      "key": "integration_checklist",
+      "name": "业务系统、标签系统、女娲平台联调事项",
+      "status": "implemented",
+      "endpoints": [
+        "GET /api/bff/integration-checklist"
+      ]
+    },
+    {
+      "key": "pc_admin",
+      "name": "BFF PC 管理后台",
+      "status": "foundation",
+      "pages": [
+        "/admin/index.html"
+      ]
+    }
+  ]
+}

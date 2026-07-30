@@ -1,0 +1,6 @@
+{
+  "id": "travel_medical_card",
+  "layout": "vertical",
+  "match": "医养配套方案卡：用药管理、健康监测、就医应急等分组说明列表，蓝色医疗风格，用于旅居途中医疗照护安排展示",
+  "required": ["title", "groups"]
+}

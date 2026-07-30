@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.nearby_medical.v1",
+  "template_key": "nearby_medical",
+  "skill_key": "travel_route",
+  "name": "周边医疗资源卡片",
+  "cn_name": "周边医疗资源卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "nearby-medical.html",
+  "fallback_html": "nearby-medical.html",
+  "description": "展示基地周边医院、卫生服务站和急救资源。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "nearby_medical",
+  "actions": [
+    "travel_route.find_nearby_medical",
+    "travel_route.check_health_safety",
+    "travel_route.open_workbench"
+  ],
+  "followup_suggestions": "templates/followups/nearby_medical.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/nearby-medical.html"
+}

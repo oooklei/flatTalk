@@ -1,0 +1,8 @@
+{
+  "packageKey": "meal_plan",
+  "businessTable": "gxy_meal_recommendation",
+  "businessKb": "meal_plan_business_kb",
+  "dialogueKb": "meal_plan_dialogue_kb",
+  "templateProfile": "findService-v2.1",
+  "pathPolicy": "package-relative-only-for-runtime-and-remote-deploy"
+}

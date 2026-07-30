@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--caregiver_brief" data-template-id="meal_plan.caregiver_brief.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{caregiver_brief.badge}}</p>
+    <h3>{{caregiver_brief.title}}</h3>
+    <p>{{caregiver_brief.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{caregiver_brief.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 照护员执行简报卡片: 给照护员输出可操作的备餐和提醒简报。 -->

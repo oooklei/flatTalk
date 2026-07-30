@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.eligibility_check.v1",
+  "template_key": "eligibility_check",
+  "skill_key": "find_service",
+  "name": "资格条件核对卡片",
+  "cn_name": "资格条件核对卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "eligibility-check.html",
+  "fallback_html": "eligibility-check.html",
+  "description": "核对补贴、政策、老人能力等级和服务资格。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "eligibility_check",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/eligibility_check.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/eligibility-check.html"
+}

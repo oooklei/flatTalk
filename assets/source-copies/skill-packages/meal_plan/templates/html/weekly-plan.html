@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--weekly_plan" data-template-id="meal_plan.weekly_plan.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{weekly_plan.badge}}</p>
+    <h3>{{weekly_plan.title}}</h3>
+    <p>{{weekly_plan.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{weekly_plan.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 一周膳食计划卡片: 展示多日膳食安排、轮换建议和采购节奏。 -->

@@ -1,0 +1,12 @@
+{
+  "packageKey": "guixiaoyang_dispatch",
+  "remoteTables": [
+    "guixiaoyang_dispatch_business"
+  ],
+  "remoteKnowledge": [
+    "guixiaoyang_dispatch_business_kb",
+    "guixiaoyang_dispatch_dialogue_kb"
+  ],
+  "requiresVectorization": true,
+  "requiresPublish": true
+}

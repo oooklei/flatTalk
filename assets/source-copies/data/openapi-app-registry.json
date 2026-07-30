@@ -1,0 +1,20 @@
+{
+  "version": "gxy-openapi-app-registry.v1",
+  "apps": [
+    {
+      "app_id": "business-web",
+      "tenant_id": "gxyl",
+      "system_id": "business-web",
+      "name": "业务系统 Web",
+      "status": "enabled",
+      "secret_ref": "GXY_OPENAPI_BUSINESS_WEB_SECRET",
+      "scopes": [
+        "chat",
+        "messages",
+        "session",
+        "skills"
+      ],
+      "created_at": "2026-07-26T00:00:00.000Z"
+    }
+  ]
+}

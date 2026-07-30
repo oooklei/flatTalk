@@ -1,0 +1,24 @@
+<section class="meal-section" data-slot="meal-section" data-repeat="meals">
+  <div class="meal-header">
+    <span class="emoji">{{meal.icon_primary}}</span>
+    <span class="emoji">{{meal.icon_secondary}}</span>
+    <span class="meal-title">{{meal.name}}</span>
+  </div>
+  <div class="food-list" data-repeat="meal.items">
+    <div class="food-item">
+      <div class="food-left">
+        <span class="food-icon">{{item.icon}}</span>
+        <span class="food-name">{{item.name}}</span>
+      </div>
+      <div class="food-right">
+        <div class="food-cal">{{item.kcal_label}}</div>
+        <div class="food-cal-sub">{{item.portion_label}}</div>
+      </div>
+    </div>
+    <div class="food-benefit">{{item.benefit}}</div>
+  </div>
+  <div class="meal-total">
+    <span class="total-label">{{meal.total_icon}} 小计</span>
+    <span class="total-cal">{{meal.total_kcal_label}}</span>
+  </div>
+</section>

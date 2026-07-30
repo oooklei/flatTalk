@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "meal_plan",
+  "source_template_id": "meal_plan.plan.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "plan.regenerate",
+      "source_template_id": "meal_plan.plan.v1",
+      "label": "重新生成膳食",
+      "user_prompt": "重新生成膳食，并继续说明膳食计划对话卡片的下一步",
+      "action_key": "meal_plan.regenerate",
+      "next_template_id": "meal_plan.plan.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "plan.confirm",
+      "source_template_id": "meal_plan.plan.v1",
+      "label": "确认采用方案",
+      "user_prompt": "确认采用方案，并继续说明膳食计划对话卡片的下一步",
+      "action_key": "meal_plan.confirm",
+      "next_template_id": "meal_plan.status.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "plan.order_handoff",
+      "source_template_id": "meal_plan.plan.v1",
+      "label": "转订餐配送",
+      "user_prompt": "转订餐配送，并继续说明膳食计划对话卡片的下一步",
+      "action_key": "meal_plan.order_handoff",
+      "next_template_id": "meal_plan.delivery_handoff.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "plan.check_risk",
+      "source_template_id": "meal_plan.plan.v1",
+      "label": "检查膳食风险",
+      "user_prompt": "检查膳食风险，并继续说明膳食计划对话卡片的下一步",
+      "action_key": "meal_plan.check_risk",
+      "next_template_id": "meal_plan.risk_alert.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

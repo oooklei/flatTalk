@@ -1,0 +1,291 @@
+{
+  "examples": [
+    {
+      "input": {
+        "intent": "meal_plan.create",
+        "data_signals": [
+          "summary",
+          "breakfast",
+          "lunch",
+          "dinner",
+          "nutrition"
+        ]
+      },
+      "output": {
+        "template_id": "meal_plan.plan.v1",
+        "reason": "The data contains a complete one-day meal plan and nutrition note."
+      }
+    },
+    {
+      "input": {
+        "intent": "meal_plan.explain_timing",
+        "data_signals": [
+          "meal_times",
+          "breakfast",
+          "lunch",
+          "dinner"
+        ]
+      },
+      "output": {
+        "template_id": "meal_plan.timeline.v1",
+        "reason": "The user focuses on meal sequence and timing."
+      }
+    },
+    {
+      "input": {
+        "intent": "meal_plan.nutrition_report",
+        "data_signals": [
+          "kcal",
+          "protein",
+          "fat",
+          "carb",
+          "sodium"
+        ]
+      },
+      "output": {
+        "template_id": "meal_plan.dashboard.v1",
+        "reason": "The user focuses on nutrition metrics and comparison."
+      }
+    },
+    {
+      "user": "我想处理AI膳食里的plan场景",
+      "intent_key": "plan_request",
+      "template_id": "meal_plan.plan.v1",
+      "followup_suggestions": "templates/followups/plan.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的overview场景",
+      "intent_key": "overview_request",
+      "template_id": "meal_plan.overview.v1",
+      "followup_suggestions": "templates/followups/overview.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的timeline场景",
+      "intent_key": "timeline_request",
+      "template_id": "meal_plan.timeline.v1",
+      "followup_suggestions": "templates/followups/timeline.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的dashboard场景",
+      "intent_key": "dashboard_request",
+      "template_id": "meal_plan.dashboard.v1",
+      "followup_suggestions": "templates/followups/dashboard.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的condition_intake场景",
+      "intent_key": "condition_intake_request",
+      "template_id": "meal_plan.condition_intake.v1",
+      "followup_suggestions": "templates/followups/condition_intake.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的diet_preference场景",
+      "intent_key": "diet_preference_request",
+      "template_id": "meal_plan.diet_preference.v1",
+      "followup_suggestions": "templates/followups/diet_preference.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的risk_alert场景",
+      "intent_key": "risk_alert_request",
+      "template_id": "meal_plan.risk_alert.v1",
+      "followup_suggestions": "templates/followups/risk_alert.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的ingredient_swap场景",
+      "intent_key": "ingredient_swap_request",
+      "template_id": "meal_plan.ingredient_swap.v1",
+      "followup_suggestions": "templates/followups/ingredient_swap.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的shopping_list场景",
+      "intent_key": "shopping_list_request",
+      "template_id": "meal_plan.shopping_list.v1",
+      "followup_suggestions": "templates/followups/shopping_list.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的cooking_steps场景",
+      "intent_key": "cooking_steps_request",
+      "template_id": "meal_plan.cooking_steps.v1",
+      "followup_suggestions": "templates/followups/cooking_steps.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的order_confirm场景",
+      "intent_key": "order_confirm_request",
+      "template_id": "meal_plan.order_confirm.v1",
+      "followup_suggestions": "templates/followups/order_confirm.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的delivery_handoff场景",
+      "intent_key": "delivery_handoff_request",
+      "template_id": "meal_plan.delivery_handoff.v1",
+      "followup_suggestions": "templates/followups/delivery_handoff.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的nutrition_compare场景",
+      "intent_key": "nutrition_compare_request",
+      "template_id": "meal_plan.nutrition_compare.v1",
+      "followup_suggestions": "templates/followups/nutrition_compare.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的weekly_plan场景",
+      "intent_key": "weekly_plan_request",
+      "template_id": "meal_plan.weekly_plan.v1",
+      "followup_suggestions": "templates/followups/weekly_plan.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的chronic_disease场景",
+      "intent_key": "chronic_disease_request",
+      "template_id": "meal_plan.chronic_disease.v1",
+      "followup_suggestions": "templates/followups/chronic_disease.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的swallowing_care场景",
+      "intent_key": "swallowing_care_request",
+      "template_id": "meal_plan.swallowing_care.v1",
+      "followup_suggestions": "templates/followups/swallowing_care.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的family_explain场景",
+      "intent_key": "family_explain_request",
+      "template_id": "meal_plan.family_explain.v1",
+      "followup_suggestions": "templates/followups/family_explain.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的feedback_collect场景",
+      "intent_key": "feedback_collect_request",
+      "template_id": "meal_plan.feedback_collect.v1",
+      "followup_suggestions": "templates/followups/feedback_collect.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的leftover_reuse场景",
+      "intent_key": "leftover_reuse_request",
+      "template_id": "meal_plan.leftover_reuse.v1",
+      "followup_suggestions": "templates/followups/leftover_reuse.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的festival_plan场景",
+      "intent_key": "festival_plan_request",
+      "template_id": "meal_plan.festival_plan.v1",
+      "followup_suggestions": "templates/followups/festival_plan.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的budget_plan场景",
+      "intent_key": "budget_plan_request",
+      "template_id": "meal_plan.budget_plan.v1",
+      "followup_suggestions": "templates/followups/budget_plan.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的caregiver_brief场景",
+      "intent_key": "caregiver_brief_request",
+      "template_id": "meal_plan.caregiver_brief.v1",
+      "followup_suggestions": "templates/followups/caregiver_brief.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的doctor_note场景",
+      "intent_key": "doctor_note_request",
+      "template_id": "meal_plan.doctor_note.v1",
+      "followup_suggestions": "templates/followups/doctor_note.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    },
+    {
+      "user": "我想处理AI膳食里的status场景",
+      "intent_key": "status_request",
+      "template_id": "meal_plan.status.v1",
+      "followup_suggestions": "templates/followups/status.json",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm"
+      ]
+    }
+  ]
+}

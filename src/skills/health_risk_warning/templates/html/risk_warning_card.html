@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>风险预警</title>
+  <style>
+    :root {
+      --blue: #4a90d9;
+      --blue-line: #69b1e4;
+      --warn-red: #e54d42;
+      --text: #1a1a1a;
+      --bg: #f5f8fc;
+      --card: #fff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 24px 16px 48px;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(74, 144, 217, 0.08);
+      padding: 8px 28px 28px;
+    }
+
+    .warning-block {
+      border-top: 1.5px dashed var(--blue-line);
+      border-bottom: 1.5px solid var(--blue-line);
+      padding: 28px 4px 32px;
+    }
+
+    .warning-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 22px;
+      letter-spacing: 1px;
+    }
+
+    .warning-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .warning-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .warn-icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      margin-top: 3px;
+    }
+
+    .warn-icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .warning-text {
+      flex: 1;
+      line-height: 1.65;
+    }
+
+    /* tc-deck 支持样式 */
+    .tc-deck { box-sizing: border-box; }
+    .tc-deck[data-layout="horizontal"] { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 16px; overflow-x: auto; padding: 8px 0; }
+    .tc-deck[data-layout="vertical"] { display: flex; flex-direction: column; gap: 16px; }
+    .tc-card { flex: 0 0 auto; }
+
+    @media (max-width: 640px) {
+      .page { padding: 8px 14px 20px; }
+      .warning-title { font-size: 22px; }
+      .warning-item { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="tc-deck" data-layout="vertical">
+    <div class="tc-card">
+      <div class="page">
+        <section class="warning-block">
+          <h1 class="warning-title">{{warningTitle|风险预警}}</h1>
+          <ul class="warning-list">
+            {{#warnings}}
+            <li class="warning-item">
+              <span class="warn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2.5L22.5 20.5H1.5L12 2.5Z" fill="#E54D42" stroke="#E54D42" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M12 9V14.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+                  <circle cx="12" cy="17.5" r="1.2" fill="#fff"/>
+                </svg>
+              </span>
+              <span class="warning-text">{{warningText}}</span>
+            </li>
+            {{/warnings}}
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+
+<script type="application/json">
+{
+  "warningTitle": "风险预警",
+  "warnings": [
+    { "warningText": "提示肝胆异常。可能有睡眠不佳，情志不畅等表现。" },
+    { "warningText": "提示中焦郁滞或下焦壅塞。可能有腹胀，食少等表现。" }
+  ]
+}
+</script>
+</body>
+</html>

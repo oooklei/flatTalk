@@ -1,0 +1,24 @@
+{
+  "template_id": "travel_route.packing_list.v1",
+  "template_key": "packing_list",
+  "skill_key": "travel_route",
+  "name": "出行行李清单卡片",
+  "cn_name": "出行行李清单卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "packing-list.html",
+  "fallback_html": "packing-list.html",
+  "description": "展示药品、证件、衣物和护理用品准备清单。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "packing_list",
+  "actions": [
+    "travel_route.generate_packing_list",
+    "travel_route.export_family_brief"
+  ],
+  "followup_suggestions": "templates/followups/packing_list.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/packing-list.html"
+}

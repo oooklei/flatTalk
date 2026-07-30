@@ -1,0 +1,13 @@
+{
+  "policy": "local_audit_only_not_for_remote_deploy",
+  "updatedAt": "2026-07-28T18:45:00.000+08:00",
+  "packageKey": "guixiaoyang_dispatch",
+  "sourceProfile": "guixiaoyang_dispatch-in-chat-template-rendering-v1",
+  "sourceFiles": {
+    "manifest": "skill-packages/guixiaoyang_dispatch/manifest.json",
+    "templateRegistry": "skill-packages/guixiaoyang_dispatch/templates/registry.json",
+    "actionMap": "skill-packages/guixiaoyang_dispatch/platform/action-map.json",
+    "businessKnowledge": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business"
+  },
+  "deployPathPolicy": "package-relative-only"
+}

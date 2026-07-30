@@ -1,0 +1,25 @@
+{
+  "template_id": "guixiaoyang_dispatch.status.v1",
+  "template_key": "status",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "桂小养状态卡片",
+  "cn_name": "桂小养状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "status.html",
+  "fallback_html": "status.html",
+  "description": "展示技能不可用、等待处理、失败兜底和恢复建议。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "status",
+  "actions": [
+    "guixiaoyang_dispatch.manual_review",
+    "guixiaoyang_dispatch.voice_broadcast",
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify"
+  ],
+  "followup_suggestions": "templates/followups/status.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/status.html"
+}

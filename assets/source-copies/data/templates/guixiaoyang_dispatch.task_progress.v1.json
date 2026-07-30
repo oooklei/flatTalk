@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.task_progress.v1",
+  "template_key": "task_progress",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "任务进度卡片",
+  "cn_name": "任务进度卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "task-progress.html",
+  "fallback_html": "task-progress.html",
+  "description": "展示跨技能任务的当前进度和下一步。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "task_progress",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/task_progress.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/task-progress.html"
+}

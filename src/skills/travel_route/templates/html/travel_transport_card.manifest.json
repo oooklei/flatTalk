@@ -1,0 +1,6 @@
+{
+  "id": "travel_transport_card",
+  "layout": "vertical",
+  "match": "交通指南卡：高铁车票样式（车次/出发到达时间/站点/票价）+包车建议+适老出行提示，用于旅居往返交通与购票方案展示",
+  "required": ["title", "tickets"]
+}

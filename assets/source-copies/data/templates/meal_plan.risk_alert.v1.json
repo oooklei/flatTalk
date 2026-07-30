@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.risk_alert.v1",
+  "template_key": "risk_alert",
+  "skill_key": "meal_plan",
+  "name": "膳食风险提醒卡片",
+  "cn_name": "膳食风险提醒卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "risk-alert.html",
+  "fallback_html": "risk-alert.html",
+  "description": "展示糖尿病、高血压、肾病、吞咽困难等风险。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "risk_alert",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/risk_alert.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/risk-alert.html"
+}

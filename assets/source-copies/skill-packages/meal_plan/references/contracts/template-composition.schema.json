@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Meal plan template composition decision",
+  "type": "object",
+  "required": [
+    "template_id",
+    "slot_sequence"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "enum": [
+        "meal_plan.plan.v1",
+        "meal_plan.overview.v1",
+        "meal_plan.timeline.v1",
+        "meal_plan.dashboard.v1",
+        "meal_plan.condition_intake.v1",
+        "meal_plan.diet_preference.v1",
+        "meal_plan.risk_alert.v1",
+        "meal_plan.ingredient_swap.v1",
+        "meal_plan.shopping_list.v1",
+        "meal_plan.cooking_steps.v1",
+        "meal_plan.order_confirm.v1",
+        "meal_plan.delivery_handoff.v1",
+        "meal_plan.nutrition_compare.v1",
+        "meal_plan.weekly_plan.v1",
+        "meal_plan.chronic_disease.v1",
+        "meal_plan.swallowing_care.v1",
+        "meal_plan.family_explain.v1",
+        "meal_plan.feedback_collect.v1",
+        "meal_plan.leftover_reuse.v1",
+        "meal_plan.festival_plan.v1",
+        "meal_plan.budget_plan.v1",
+        "meal_plan.caregiver_brief.v1",
+        "meal_plan.doctor_note.v1",
+        "meal_plan.status.v1"
+      ]
+    },
+    "slot_sequence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "summary-card",
+          "meal-section",
+          "nutrition-note",
+          "related-questions"
+        ]
+      },
+      "minItems": 3,
+      "uniqueItems": true
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "action_key"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "action_key": {
+            "type": "string",
+            "enum": [
+              "meal_plan.regenerate",
+              "meal_plan.confirm",
+              "meal_plan.order_handoff",
+              "meal_plan.collect_condition",
+              "meal_plan.set_preference",
+              "meal_plan.check_risk",
+              "meal_plan.swap_ingredient",
+              "meal_plan.generate_shopping_list",
+              "meal_plan.show_cooking_steps",
+              "meal_plan.confirm_order",
+              "meal_plan.handoff_delivery",
+              "meal_plan.compare_nutrition",
+              "meal_plan.generate_weekly_plan",
+              "meal_plan.adapt_chronic_disease",
+              "meal_plan.adapt_swallowing",
+              "meal_plan.explain_to_family",
+              "meal_plan.collect_feedback",
+              "meal_plan.reuse_leftover",
+              "meal_plan.festival_adjust",
+              "meal_plan.budget_adjust",
+              "meal_plan.caregiver_brief",
+              "meal_plan.doctor_note",
+              "meal_plan.view_status"
+            ]
+          },
+          "bind_to": {
+            "type": "string",
+            "enum": [
+              "summary-card",
+              "meal-section",
+              "nutrition-note",
+              "related-questions"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 40
+          }
+        }
+      }
+    }
+  }
+}

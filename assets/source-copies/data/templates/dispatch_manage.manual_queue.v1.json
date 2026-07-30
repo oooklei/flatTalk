@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.manual_queue.v1",
+  "template_key": "manual_queue",
+  "skill_key": "dispatch_manage",
+  "name": "人工调度队列卡片",
+  "cn_name": "人工调度队列卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "manual-queue.html",
+  "fallback_html": "manual-queue.html",
+  "description": "展示进入人工调度的工单优先级。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "manual_queue",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/manual_queue.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/manual-queue.html"
+}

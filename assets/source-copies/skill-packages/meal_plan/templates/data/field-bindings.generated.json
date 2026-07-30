@@ -1,0 +1,832 @@
+{
+  "schema": "guixiaoyang.template-field-bindings.v1",
+  "skill_key": "meal_plan",
+  "generated_from": "archived v2.1 page templates",
+  "runtime_note": "Runtime rendering must use templates/registry.json and templates/html/*.html. These bindings are retained as data-contract reference only.",
+  "pages": [
+    {
+      "page_key": "input_form",
+      "source_file": "input_form.json",
+      "title": "AI膳食建议 - 口语输入",
+      "section_ids": [
+        "input_summary",
+        "elder_brief",
+        "voice_input_section",
+        "remote_context"
+      ],
+      "bindings": [
+        "answer",
+        "elder_brief",
+        "elder_brief.age",
+        "elder_brief.chronic_tags",
+        "elder_brief.diet_tags",
+        "elder_brief.name",
+        "elder_brief.nutrition_goal",
+        "platform",
+        "platform.chronic_synced",
+        "platform.data_completeness",
+        "platform.guide_version",
+        "platform.health_profile_synced",
+        "voice_input"
+      ],
+      "intents": [
+        {
+          "id": "ai_extract",
+          "intent": "ai_extract",
+          "endpoint": "code_plugin:business_runtime.constraints_extract",
+          "next_page": "nutrition_constraints"
+        },
+        {
+          "id": "view_profile",
+          "intent": "view_profile",
+          "endpoint": "code_plugin:business_runtime.page",
+          "next_page": "meal_profile"
+        },
+        {
+          "id": "generate_directly",
+          "intent": "generate_directly",
+          "endpoint": "code_plugin:business_runtime.meal_plan_generate",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "emergency_call",
+          "intent": "emergency_call",
+          "endpoint": "tel:120",
+          "next_page": null
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    },
+    {
+      "page_key": "meal_profile",
+      "source_file": "meal_profile.json",
+      "title": "AI膳食建议 - 老人膳食画像",
+      "section_ids": [
+        "elder_brief",
+        "chronic_tags",
+        "nutrition_goal",
+        "diet_preferences",
+        "contraindications",
+        "remote_context"
+      ],
+      "bindings": [
+        "chronic_tags",
+        "constraint_type",
+        "contraindications",
+        "diagnosed_date",
+        "diet_preferences",
+        "diet_restriction",
+        "elder_brief",
+        "elder_brief.age",
+        "elder_brief.bmi",
+        "elder_brief.community",
+        "elder_brief.gender",
+        "elder_brief.name",
+        "elder_brief.weight_kg",
+        "forbidden_reason",
+        "medication",
+        "nutrition_goal",
+        "nutrition_goal.diet_tags",
+        "nutrition_goal.energy_kcal",
+        "nutrition_goal.oil_limit_g",
+        "nutrition_goal.protein_g",
+        "nutrition_goal.salt_limit_g",
+        "nutrition_goal.water_ml",
+        "preference_category",
+        "preference_strength",
+        "related_condition",
+        "remote_context",
+        "remote_context.chronic_synced",
+        "remote_context.data_completeness",
+        "remote_context.health_profile_synced",
+        "severity",
+        "substitute_suggestion"
+      ],
+      "intents": [
+        {
+          "id": "ai_extract_constraints",
+          "intent": "ai_extract_constraints",
+          "endpoint": "code_plugin:business_runtime.constraints_extract",
+          "next_page": "nutrition_constraints"
+        },
+        {
+          "id": "generate_meal_plan",
+          "intent": "generate_meal_plan",
+          "endpoint": "code_plugin:business_runtime.meal_plan_generate",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "voice_input",
+          "intent": "voice_input",
+          "endpoint": "/api/input/voice",
+          "next_page": null
+        },
+        {
+          "id": "view_history",
+          "intent": "view_history",
+          "endpoint": "/api/meal_plan/history",
+          "next_page": null
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    },
+    {
+      "page_key": "meal_recommendation",
+      "source_file": "meal_recommendation.json",
+      "title": "AI膳食建议 - 今日膳食营养方案",
+      "section_ids": [
+        "summary_card",
+        "guidelines_ref",
+        "meals_breakfast",
+        "meals_lunch",
+        "meals_dinner",
+        "nutrition_summary",
+        "suggest_questions",
+        "disclaimer"
+      ],
+      "bindings": [
+        "disclaimer",
+        "guidelines",
+        "highlight",
+        "image_url",
+        "kcal",
+        "meals.breakfast.items",
+        "meals.dinner.items",
+        "meals.lunch.items",
+        "notes",
+        "nutrition",
+        "nutrition.carb_g",
+        "nutrition.energy_kcal",
+        "nutrition.fat_g",
+        "nutrition.protein_g",
+        "nutrition.ratio_text",
+        "nutrition.sodium_mg",
+        "nutrition.target_text",
+        "portion",
+        "suggest_questions",
+        "summary_card",
+        "summary_card.applicability",
+        "summary_card.energy_text",
+        "summary_card.plan_label",
+        "summary_card.salt_limit"
+      ],
+      "intents": [
+        {
+          "id": "confirm_plan",
+          "intent": "confirm_plan",
+          "endpoint": "code_plugin:business_runtime.portal_payload",
+          "next_page": "review_confirm"
+        },
+        {
+          "id": "adjust_dish",
+          "intent": "adjust_dish",
+          "endpoint": "code_plugin:business_runtime.meal_plan_generate",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "nutrition_validate",
+          "intent": "nutrition_validate",
+          "endpoint": "code_plugin:business_runtime.nutrition_validate",
+          "next_page": "nutrition_check"
+        },
+        {
+          "id": "order_handoff",
+          "intent": "order_handoff",
+          "endpoint": "/api/meal_plan/order/handoff",
+          "next_page": "result_page"
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    },
+    {
+      "page_key": "missing_remote_resource",
+      "source_file": "missing_remote_resource.json",
+      "title": "AI膳食建议 - 远端资源缺失",
+      "section_ids": [
+        "missing_summary",
+        "missing_resources",
+        "impact_analysis",
+        "remediation_steps"
+      ],
+      "bindings": [
+        "affected_scope",
+        "estimated_time",
+        "impact_analysis",
+        "impact_analysis.affected_business",
+        "impact_analysis.affected_elders",
+        "impact_analysis.data_confidence",
+        "impact_analysis.fallback_plan",
+        "missing_reason",
+        "missing_resources",
+        "missing_summary",
+        "missing_summary.affected_flows",
+        "missing_summary.block_level",
+        "missing_summary.can_degrade",
+        "missing_summary.missing_count",
+        "remediation_method",
+        "remediation_steps",
+        "resource_type",
+        "step_action",
+        "step_order",
+        "step_owner",
+        "step_status"
+      ],
+      "intents": [
+        {
+          "id": "retry_remote",
+          "intent": "retry_remote",
+          "endpoint": "code_plugin:business_runtime.constraints_extract",
+          "next_page": "nutrition_constraints"
+        },
+        {
+          "id": "degrade_execute",
+          "intent": "degrade_execute",
+          "endpoint": "code_plugin:business_runtime.meal_plan_generate",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "contact_admin",
+          "intent": "contact_admin",
+          "endpoint": "/api/admin/contact",
+          "next_page": null
+        },
+        {
+          "id": "back_to_input",
+          "intent": "back_to_input",
+          "endpoint": "code_plugin:business_runtime.page",
+          "next_page": "input_form"
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    },
+    {
+      "page_key": "nutrition_check",
+      "source_file": "nutrition_check.json",
+      "title": "AI膳食建议 - 营养校验",
+      "section_ids": [
+        "check_summary",
+        "nutrition_totals",
+        "violations",
+        "replacements",
+        "per_dish_check"
+      ],
+      "bindings": [
+        "actual_value",
+        "check_summary",
+        "check_summary.final_verdict",
+        "check_summary.pass_flag",
+        "check_summary.replace_round",
+        "check_summary.replacement_count",
+        "check_summary.violation_count",
+        "diet_tag",
+        "energy_kcal",
+        "excess_amount",
+        "name",
+        "nutrient_name",
+        "nutrient_reduced",
+        "original_food",
+        "per_dish",
+        "reduced_amount",
+        "replacements",
+        "source",
+        "substitute_food",
+        "target_value",
+        "totals",
+        "totals.carb_g",
+        "totals.energy_kcal",
+        "totals.fat_g",
+        "totals.protein_g",
+        "totals.sodium_mg",
+        "violation_reason",
+        "violations"
+      ],
+      "intents": [
+        {
+          "id": "accept_plan",
+          "intent": "accept_plan",
+          "endpoint": "code_plugin:business_runtime.portal_payload",
+          "next_page": "review_confirm"
+        },
+        {
+          "id": "regenerate",
+          "intent": "regenerate",
+          "endpoint": "code_plugin:business_runtime.meal_plan_generate",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "manual_adjust",
+          "intent": "manual_adjust",
+          "endpoint": "/api/meal_plan/manual_adjust",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "back_to_recommendation",
+          "intent": "back_to_recommendation",
+          "endpoint": "code_plugin:business_runtime.page",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    },
+    {
+      "page_key": "nutrition_constraints",
+      "source_file": "nutrition_constraints.json",
+      "title": "AI膳食建议 - 营养约束集",
+      "section_ids": [
+        "constraints_summary",
+        "hard_constraints",
+        "soft_constraints",
+        "conflict_reconcile",
+        "reconciled_result"
+      ],
+      "bindings": [
+        "conflict_desc",
+        "conflicts",
+        "constraint_source",
+        "constraint_type",
+        "constraints_summary",
+        "constraints_summary.confidence",
+        "constraints_summary.conflict_count",
+        "constraints_summary.hard_count",
+        "constraints_summary.reconciled",
+        "constraints_summary.soft_count",
+        "diet_tag",
+        "hard_constraints",
+        "limit_value",
+        "nutrient_limit",
+        "preference_strength",
+        "priority_rule",
+        "reconciled_result",
+        "reconciled_result.final_hard_count",
+        "reconciled_result.final_soft_count",
+        "reconciled_result.recommended_energy",
+        "reconciled_result.recommended_tags",
+        "related_condition",
+        "resolved",
+        "resolved_action",
+        "soft_constraints"
+      ],
+      "intents": [
+        {
+          "id": "generate_meal_plan",
+          "intent": "generate_meal_plan",
+          "endpoint": "code_plugin:business_runtime.meal_plan_generate",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "back_to_profile",
+          "intent": "back_to_profile",
+          "endpoint": "code_plugin:business_runtime.page",
+          "next_page": "meal_profile"
+        },
+        {
+          "id": "adjust_constraints",
+          "intent": "adjust_constraints",
+          "endpoint": "code_plugin:business_runtime.constraints_extract",
+          "next_page": "nutrition_constraints"
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    },
+    {
+      "page_key": "remote_gap",
+      "source_file": "remote_gap.json",
+      "title": "AI膳食建议 - 远端数据缺口",
+      "section_ids": [
+        "gap_summary",
+        "gap_details",
+        "gap_remediation",
+        "gap_progress"
+      ],
+      "bindings": [
+        "affected_flow",
+        "estimated_completion",
+        "gap_details",
+        "gap_progress",
+        "gap_progress.completed_count",
+        "gap_progress.completion_rate",
+        "gap_progress.in_progress_count",
+        "gap_progress.pending_count",
+        "gap_remediation",
+        "gap_severity",
+        "gap_status",
+        "gap_summary",
+        "gap_summary.can_continue",
+        "gap_summary.estimated_completion",
+        "gap_summary.gap_count",
+        "gap_summary.impact_level",
+        "gap_type",
+        "owner",
+        "priority",
+        "remediation",
+        "remediation_name",
+        "remediation_status"
+      ],
+      "intents": [
+        {
+          "id": "continue_with_gap",
+          "intent": "continue_with_gap",
+          "endpoint": "code_plugin:business_runtime.meal_plan_generate",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "wait_for_remediation",
+          "intent": "wait_for_remediation",
+          "endpoint": "/api/meal_plan/wait",
+          "next_page": null
+        },
+        {
+          "id": "refresh_status",
+          "intent": "refresh_status",
+          "endpoint": "code_plugin:business_runtime.page",
+          "next_page": "remote_gap"
+        },
+        {
+          "id": "contact_admin",
+          "intent": "contact_admin",
+          "endpoint": "/api/admin/contact",
+          "next_page": null
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    },
+    {
+      "page_key": "result_page",
+      "source_file": "result_page.json",
+      "title": "AI膳食建议 - 订餐结果",
+      "section_ids": [
+        "order_confirmation",
+        "nutrition_summary_result",
+        "meals_confirmed",
+        "dietary_tips",
+        "session_summary"
+      ],
+      "bindings": [
+        "diet_tag",
+        "dietary_tips",
+        "kcal",
+        "meal_label",
+        "meals_confirmed",
+        "name",
+        "nutrition_summary",
+        "nutrition_summary.nutrition_score",
+        "nutrition_summary.ratio_text",
+        "nutrition_summary.total_carb",
+        "nutrition_summary.total_energy",
+        "nutrition_summary.total_fat",
+        "nutrition_summary.total_protein",
+        "nutrition_summary.total_sodium",
+        "order_confirmation",
+        "order_confirmation.contact_phone",
+        "order_confirmation.delivery_address",
+        "order_confirmation.delivery_time",
+        "order_confirmation.order_id",
+        "order_confirmation.order_status",
+        "order_confirmation.order_time",
+        "portion",
+        "priority",
+        "session_summary",
+        "session_summary.community_name",
+        "session_summary.completed_at",
+        "session_summary.created_at",
+        "session_summary.elder_id",
+        "session_summary.service_type",
+        "session_summary.session_id",
+        "session_summary.status",
+        "tip_category"
+      ],
+      "intents": [
+        {
+          "id": "view_history",
+          "intent": "view_history",
+          "endpoint": "/api/meal_plan/history",
+          "next_page": null
+        },
+        {
+          "id": "new_plan",
+          "intent": "new_plan",
+          "endpoint": "code_plugin:business_runtime.page",
+          "next_page": "input_form"
+        },
+        {
+          "id": "feedback",
+          "intent": "feedback",
+          "endpoint": "/api/meal_plan/feedback",
+          "next_page": null
+        },
+        {
+          "id": "emergency_call",
+          "intent": "emergency_call",
+          "endpoint": "tel:120",
+          "next_page": null
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    },
+    {
+      "page_key": "review_confirm",
+      "source_file": "review_confirm.json",
+      "title": "AI膳食建议 - 方案确认",
+      "section_ids": [
+        "plan_summary",
+        "meals_overview",
+        "nutrition_check_result",
+        "elder_health_brief",
+        "disclaimer"
+      ],
+      "bindings": [
+        "disclaimer",
+        "elder_health_brief",
+        "elder_health_brief.age",
+        "elder_health_brief.chronic_tags",
+        "elder_health_brief.contraindications",
+        "elder_health_brief.name",
+        "item_count",
+        "main_dishes",
+        "meal_label",
+        "meals_overview",
+        "nutrition_check_result",
+        "nutrition_check_result.energy_status",
+        "nutrition_check_result.pass_flag",
+        "nutrition_check_result.protein_status",
+        "nutrition_check_result.replace_round",
+        "nutrition_check_result.sodium_status",
+        "nutrition_check_result.violation_count",
+        "plan_summary",
+        "plan_summary.applicability",
+        "plan_summary.diet_tags",
+        "plan_summary.meal_distribution",
+        "plan_summary.plan_label",
+        "plan_summary.total_energy",
+        "plan_summary.validate_status",
+        "subtotal_kcal"
+      ],
+      "intents": [
+        {
+          "id": "confirm_and_order",
+          "intent": "confirm_and_order",
+          "endpoint": "/api/meal_plan/order/handoff",
+          "next_page": "result_page"
+        },
+        {
+          "id": "edit_plan",
+          "intent": "edit_plan",
+          "endpoint": "code_plugin:business_runtime.page",
+          "next_page": "meal_recommendation"
+        },
+        {
+          "id": "revalidate",
+          "intent": "revalidate",
+          "endpoint": "code_plugin:business_runtime.nutrition_validate",
+          "next_page": "nutrition_check"
+        },
+        {
+          "id": "back_to_check",
+          "intent": "back_to_check",
+          "endpoint": "code_plugin:business_runtime.page",
+          "next_page": "nutrition_check"
+        },
+        {
+          "id": "voice_broadcast",
+          "intent": "voice_broadcast",
+          "endpoint": "/api/output/speech",
+          "next_page": null
+        }
+      ]
+    }
+  ],
+  "bindings": {
+    "meal_plan.plan.v1": {
+      "plan": "plan",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.overview.v1": {
+      "overview": "overview",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.timeline.v1": {
+      "timeline": "timeline",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.dashboard.v1": {
+      "dashboard": "dashboard",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.condition_intake.v1": {
+      "condition_intake": "condition_intake",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.diet_preference.v1": {
+      "diet_preference": "diet_preference",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.risk_alert.v1": {
+      "risk_alert": "risk_alert",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.ingredient_swap.v1": {
+      "ingredient_swap": "ingredient_swap",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.shopping_list.v1": {
+      "shopping_list": "shopping_list",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.cooking_steps.v1": {
+      "cooking_steps": "cooking_steps",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.order_confirm.v1": {
+      "order_confirm": "order_confirm",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.delivery_handoff.v1": {
+      "delivery_handoff": "delivery_handoff",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.nutrition_compare.v1": {
+      "nutrition_compare": "nutrition_compare",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.weekly_plan.v1": {
+      "weekly_plan": "weekly_plan",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.chronic_disease.v1": {
+      "chronic_disease": "chronic_disease",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.swallowing_care.v1": {
+      "swallowing_care": "swallowing_care",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.family_explain.v1": {
+      "family_explain": "family_explain",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.feedback_collect.v1": {
+      "feedback_collect": "feedback_collect",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.leftover_reuse.v1": {
+      "leftover_reuse": "leftover_reuse",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.festival_plan.v1": {
+      "festival_plan": "festival_plan",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.budget_plan.v1": {
+      "budget_plan": "budget_plan",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.caregiver_brief.v1": {
+      "caregiver_brief": "caregiver_brief",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.doctor_note.v1": {
+      "doctor_note": "doctor_note",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    },
+    "meal_plan.status.v1": {
+      "status": "status",
+      "followup_suggestions": "followup_suggestions",
+      "actions": [
+        "primary_action",
+        "secondary_action"
+      ]
+    }
+  }
+}

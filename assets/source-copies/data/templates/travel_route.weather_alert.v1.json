@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.weather_alert.v1",
+  "template_key": "weather_alert",
+  "skill_key": "travel_route",
+  "name": "天气风险提醒卡片",
+  "cn_name": "天气风险提醒卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "weather-alert.html",
+  "fallback_html": "weather-alert.html",
+  "description": "展示目的地天气、季节和极端天气风险。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "weather_alert",
+  "actions": [
+    "travel_route.check_weather_risk",
+    "travel_route.replan",
+    "travel_route.fallback_status"
+  ],
+  "followup_suggestions": "templates/followups/weather_alert.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/weather-alert.html"
+}

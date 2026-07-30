@@ -1,0 +1,6 @@
+{
+  "id": "dietary_regimen_card",
+  "layout": "vertical",
+  "match": "展示膳食调养建议（宜食/忌食说明 + 食疗配方列表）的单卡片",
+  "required": ["sectionBadge", "dietaryAdvice", "recipes"]
+}

@@ -1,0 +1,7 @@
+{
+  "skill_key": "meal_plan",
+  "name": "膳食规划",
+  "version": "0.1.0",
+  "runtime": "local",
+  "default_template": "diet_card"
+}

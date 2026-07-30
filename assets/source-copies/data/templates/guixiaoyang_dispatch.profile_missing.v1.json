@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.profile_missing.v1",
+  "template_key": "profile_missing",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "档案缺失提醒卡片",
+  "cn_name": "档案缺失提醒卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "profile-missing.html",
+  "fallback_html": "profile-missing.html",
+  "description": "提示老人档案、角色、地址和健康字段缺失。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "profile_missing",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/profile_missing.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/profile-missing.html"
+}

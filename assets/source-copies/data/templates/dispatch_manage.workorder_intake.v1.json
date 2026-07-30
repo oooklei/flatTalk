@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.workorder_intake.v1",
+  "template_key": "workorder_intake",
+  "skill_key": "dispatch_manage",
+  "name": "工单上下文采集卡片",
+  "cn_name": "工单上下文采集卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "workorder-intake.html",
+  "fallback_html": "workorder-intake.html",
+  "description": "采集服务类型、地点、时间窗和风险约束。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "workorder_intake",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/workorder_intake.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/workorder-intake.html"
+}

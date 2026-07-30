@@ -1,0 +1,226 @@
+{
+  "template_id": "travel_route.route_plan.v1",
+  "template_key": "route_plan",
+  "skill_key": "travel_route",
+  "name": "旅居康养路线方案卡片",
+  "cn_name": "旅居康养路线方案卡片",
+  "render_mode": "html_composition",
+  "layout": "chat-card",
+  "html": "route-plan.html",
+  "fallback_html": "route-plan.html",
+  "description": "用于展示旅居路线、康养基地、行程、预订和后续操作。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "route_plan",
+  "actions": [
+    "travel_route.replan",
+    "travel_route.fill_preferences",
+    "travel_route.view_detail",
+    "travel_route.check_availability",
+    "travel_route.booking_handoff",
+    "travel_route.open_workbench",
+    "travel_route.compare_destinations",
+    "travel_route.check_health_safety",
+    "travel_route.check_weather_risk",
+    "travel_route.calculate_budget",
+    "travel_route.plan_transport",
+    "travel_route.generate_packing_list",
+    "travel_route.preview_order",
+    "travel_route.notify_family",
+    "travel_route.export_family_brief",
+    "travel_route.find_nearby_medical",
+    "travel_route.check_accessibility",
+    "travel_route.recommend_season",
+    "travel_route.fallback_status",
+    "travel_route.collect_feedback",
+    "travel_route.view_status",
+    "travel_route.request_manual_review"
+  ],
+  "followup_suggestions": "templates/followups/route_plan.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "slots": [
+    {
+      "slot_key": "route-summary",
+      "file": "slots/route-summary.html",
+      "position": "top",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": [
+        "travel_route.replan",
+        "travel_route.compare_destinations"
+      ]
+    },
+    {
+      "slot_key": "preference-gaps",
+      "file": "slots/preference-gaps.html",
+      "position": "center",
+      "required": false,
+      "repeat": false,
+      "allowed_actions": [
+        "travel_route.fill_preferences"
+      ]
+    },
+    {
+      "slot_key": "itinerary-flow",
+      "file": "slots/itinerary-flow.html",
+      "position": "center",
+      "required": true,
+      "repeat": true,
+      "data_path": "days",
+      "allowed_actions": [
+        "travel_route.view_detail",
+        "travel_route.adjust_pace",
+        "travel_route.replan"
+      ]
+    },
+    {
+      "slot_key": "booking-handoff",
+      "file": "slots/booking-handoff.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": false,
+      "allowed_actions": [
+        "travel_route.check_availability",
+        "travel_route.booking_handoff",
+        "travel_route.preview_order",
+        "travel_route.open_workbench"
+      ]
+    },
+    {
+      "slot_key": "related-questions",
+      "file": "slots/related-questions.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": true,
+      "data_path": "related.questions",
+      "allowed_actions": [
+        "travel_route.replan",
+        "travel_route.fill_preferences",
+        "travel_route.check_availability",
+        "travel_route.booking_handoff",
+        "travel_route.open_workbench"
+      ]
+    },
+    {
+      "slot_key": "retreat-top-header",
+      "file": "slots/retreat-top-header.html",
+      "position": "top",
+      "required": false,
+      "repeat": false,
+      "allowed_actions": [
+        "travel_route.fill_preferences",
+        "travel_route.compare_destinations"
+      ]
+    },
+    {
+      "slot_key": "retreat-base-card",
+      "file": "slots/retreat-base-card.html",
+      "position": "center",
+      "required": false,
+      "repeat": true,
+      "data_path": "retreat_bases",
+      "allowed_actions": [
+        "travel_route.check_availability",
+        "travel_route.view_base_profile",
+        "travel_route.booking_handoff"
+      ]
+    },
+    {
+      "slot_key": "retreat-bottom-notice",
+      "file": "slots/retreat-bottom-notice.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": false,
+      "allowed_actions": [
+        "travel_route.check_availability",
+        "travel_route.request_manual_review"
+      ]
+    }
+  ],
+  "allowed_slot_sequences": [
+    [
+      "retreat-top-header",
+      "route-summary",
+      "preference-gaps",
+      "retreat-base-card",
+      "itinerary-flow",
+      "booking-handoff",
+      "retreat-bottom-notice",
+      "related-questions"
+    ],
+    [
+      "route-summary",
+      "itinerary-flow",
+      "booking-handoff"
+    ],
+    [
+      "route-summary",
+      "preference-gaps",
+      "itinerary-flow",
+      "booking-handoff",
+      "related-questions"
+    ],
+    [
+      "preference-gaps",
+      "related-questions"
+    ]
+  ],
+  "llm_selection_policy": {
+    "enabled": true,
+    "decision_schema": "skill-packages/travel_route/references/contracts/template-composition.schema.json",
+    "role": "select_registered_template_and_slots_only",
+    "default_variant": "travel_route.route_plan.v1",
+    "allowed_variants": [
+      "travel_route.route_plan.v1",
+      "travel_route.preference_card.v1",
+      "travel_route.itinerary_timeline.v1",
+      "travel_route.booking_handoff.v1",
+      "travel_route.destination_compare.v1",
+      "travel_route.base_profile.v1",
+      "travel_route.health_safety.v1",
+      "travel_route.weather_alert.v1",
+      "travel_route.budget_plan.v1",
+      "travel_route.transport_plan.v1",
+      "travel_route.companion_care.v1",
+      "travel_route.packing_list.v1",
+      "travel_route.product_detail.v1",
+      "travel_route.availability_status.v1",
+      "travel_route.order_preview.v1",
+      "travel_route.payment_status.v1",
+      "travel_route.cancellation_policy.v1",
+      "travel_route.family_brief.v1",
+      "travel_route.care_provider_note.v1",
+      "travel_route.policy_subsidy.v1",
+      "travel_route.nearby_medical.v1",
+      "travel_route.accessibility_check.v1",
+      "travel_route.seasonal_recommendation.v1",
+      "travel_route.risk_fallback.v1",
+      "travel_route.feedback_collect.v1",
+      "travel_route.route_status.v1"
+    ],
+    "allowed_slots": [
+      "route-summary",
+      "preference-gaps",
+      "itinerary-flow",
+      "booking-handoff",
+      "related-questions"
+    ],
+    "required_slots": [
+      "route-summary",
+      "itinerary-flow"
+    ],
+    "forbidden": [
+      "raw_html",
+      "script",
+      "inline_event_handler",
+      "external_url",
+      "unregistered_template_id",
+      "unregistered_slot_key",
+      "unregistered_action_key"
+    ],
+    "bff_must_validate": true
+  },
+  "resolved_html": "skill-packages/travel_route/templates/html/route-plan.html"
+}

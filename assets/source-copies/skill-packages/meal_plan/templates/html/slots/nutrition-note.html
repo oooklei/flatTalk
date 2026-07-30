@@ -1,0 +1,10 @@
+<section class="nutrition-section" data-slot="nutrition-note">
+  <div class="nutrition-title">
+    <span>{{nutrition.icon}}</span>
+    {{nutrition.title}}
+  </div>
+  <div class="ratio-text">{{nutrition.note}}</div>
+  <div class="tag-row" data-repeat="nutrition.tags">
+    <span class="tag">{{tag.icon}} {{tag.label}}</span>
+  </div>
+</section>

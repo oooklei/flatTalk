@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>健康风险预警模板预览</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    background: #f5f7fa;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 16px;
+  }
+  .nav {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .nav a {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #4a90d9;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+  .nav a:hover { background: #3a7fc4; }
+  .nav a.active { background: #2d7ec4; }
+  .preview-frame {
+    width: 100%;
+    height: 80vh;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+<h1>🏥 健康风险预警技能模板预览</h1>
+<div class="nav">
+  <a href="health_report_card.preview.html">健康报告卡片</a>
+  <a href="risk_assessment_card.preview.html">风险评估卡片</a>
+  <a href="risk_warning_card.preview.html">风险预警卡片</a>
+  <a href="dietary_regimen_card.preview.html">膳食调养卡片</a>
+</div>
+<iframe class="preview-frame" src="health_report_card.preview.html"></iframe>
+</body>
+</html>

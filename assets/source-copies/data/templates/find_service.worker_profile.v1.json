@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.worker_profile.v1",
+  "template_key": "worker_profile",
+  "skill_key": "find_service",
+  "name": "服务人员画像卡片",
+  "cn_name": "服务人员画像卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "worker-profile.html",
+  "fallback_html": "worker-profile.html",
+  "description": "展示护理员、网格员或村医的资质、评价和负载。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "worker_profile",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/worker_profile.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/worker-profile.html"
+}

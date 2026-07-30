@@ -1,0 +1,6 @@
+{
+  "id": "route_card",
+  "layout": "horizontal",
+  "match": "horizontal route timeline",
+  "required": ["time", "place", "note"]
+}

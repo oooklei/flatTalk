@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>flatTalk 嵌入对话</title>
+<style>
+  :root { --primary: #2f6fed; --bg: #f5f7fb; --fg: #1f2430; }
+  [data-theme="dark"] { --bg: #171a21; --fg: #e8eaf0; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { font: 14px/1.6 "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--fg); display: flex; flex-direction: column; }
+  header { padding: 10px 14px; background: var(--primary); color: #fff; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  header small { font-weight: 400; opacity: .8; }
+  #msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .msg { max-width: 82%; padding: 9px 12px; border-radius: 12px; white-space: pre-wrap; word-break: break-word; }
+  .msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.bot { align-self: flex-start; background: #fff; color: #1f2430; border: 1px solid #e3e7ef; border-bottom-left-radius: 4px; }
+  [data-theme="dark"] .msg.bot { background: #232733; color: #e8eaf0; border-color: #333948; }
+  .msg.err { align-self: center; background: #fdecec; color: #c0392b; font-size: 12px; }
+  form { display: flex; gap: 8px; padding: 10px 12px; background: #fff; border-top: 1px solid #e3e7ef; }
+  [data-theme="dark"] form { background: #232733; border-color: #333948; }
+  input { flex: 1; padding: 10px 12px; border: 1px solid #d4d9e3; border-radius: 8px; font-size: 14px; outline: none; }
+  input:focus { border-color: var(--primary); }
+  button { padding: 10px 18px; border: 0; border-radius: 8px; background: var(--primary); color: #fff; font-size: 14px; cursor: pointer; }
+  button:disabled { opacity: .5; }
+</style>
+</head>
+<body>
+<header><span id="title">flatTalk 对话</span><small>powered by flatTalk</small></header>
+<div id="msgs"></div>
+<form id="f"><input id="ipt" placeholder="请输入内容…" autocomplete="off" /><button id="send" type="submit">发送</button></form>
+<script>
+(async function () {
+  const qs = new URLSearchParams(location.search);
+  const token = qs.get('token') || '';
+  const msgs = document.getElementById('msgs');
+  const push = (cls, text) => {
+    const d = document.createElement('div');
+    d.className = 'msg ' + cls;
+    d.textContent = text;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+    return d;
+  };
+
+  let cfg = null;
+  try {
+    const r = await fetch('/api/embed/config?token=' + encodeURIComponent(token));
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'embed_invalid');
+    cfg = j.embed;
+  } catch (e) {
+    push('err', '嵌入配置无效或已停用（token 校验失败），请联系管理员在 admin「第三方嵌入」页面检查。');
+    document.getElementById('send').disabled = true;
+    return;
+  }
+  document.getElementById('title').textContent = cfg.name || 'flatTalk 对话';
+  if (cfg.theme === 'dark') document.body.dataset.theme = 'dark';
+  if (cfg.welcome) push('bot', cfg.welcome);
+
+  const conversationId = 'embed_' + Math.random().toString(36).slice(2, 10);
+  document.getElementById('f').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const ipt = document.getElementById('ipt');
+    const text = ipt.value.trim();
+    if (!text) return;
+    ipt.value = '';
+    push('user', text);
+    const pending = push('bot', '思考中…');
+    try {
+      const r = await fetch('/api/open/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-api-key': token },
+        body: JSON.stringify({
+          conversation_id: conversationId,
+          role: cfg.role || 'elder',
+          skill_key: cfg.skill_key || undefined,
+          messages: [{ role: 'user', content: text }],
+        }),
+      });
+      const j = await r.json();
+      if (r.status === 401) throw new Error(j.message || '鉴权失败');
+      pending.textContent = j.choices?.[0]?.message?.content || '(无回复内容)';
+    } catch (e) {
+      pending.className = 'msg err';
+      pending.textContent = '请求失败：' + e.message;
+    }
+  });
+})();
+</script>
+</body>
+</html>

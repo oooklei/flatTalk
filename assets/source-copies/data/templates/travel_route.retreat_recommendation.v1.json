@@ -1,0 +1,87 @@
+{
+  "template_id": "travel_route.retreat_recommendation.v1",
+  "template_key": "retreat_recommendation",
+  "skill_key": "travel_route",
+  "name": "旅居康养基地推荐组合卡片",
+  "cn_name": "旅居康养基地推荐组合卡片",
+  "render_mode": "html_composition",
+  "layout": "chat-card",
+  "html": "retreat-recommendation.html",
+  "fallback_html": "retreat-recommendation.html",
+  "description": "承接客户认可原型，按 top/center/bottom 分片组合展示。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "retreat_recommendation",
+  "actions": [
+    "travel_route.check_availability",
+    "travel_route.view_base_profile",
+    "travel_route.booking_handoff",
+    "travel_route.fill_preferences",
+    "travel_route.replan"
+  ],
+  "followup_suggestions": "templates/followups/route_plan.json",
+  "status": "enabled",
+  "html_present": true,
+  "slots": [
+    {
+      "slot_key": "retreat-top-header",
+      "file": "slots/retreat-top-header.html",
+      "position": "top",
+      "required": false,
+      "repeat": false,
+      "allowed_actions": [
+        "travel_route.fill_preferences",
+        "travel_route.compare_destinations"
+      ]
+    },
+    {
+      "slot_key": "retreat-base-card",
+      "file": "slots/retreat-base-card.html",
+      "position": "center",
+      "required": false,
+      "repeat": true,
+      "data_path": "retreat_bases",
+      "allowed_actions": [
+        "travel_route.check_availability",
+        "travel_route.view_base_profile",
+        "travel_route.booking_handoff"
+      ]
+    },
+    {
+      "slot_key": "retreat-bottom-notice",
+      "file": "slots/retreat-bottom-notice.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": false,
+      "allowed_actions": [
+        "travel_route.check_availability",
+        "travel_route.request_manual_review"
+      ]
+    }
+  ],
+  "allowed_slot_sequences": [
+    [
+      "retreat-top-header",
+      "retreat-base-card",
+      "retreat-bottom-notice"
+    ]
+  ],
+  "llm_selection_policy": {
+    "enabled": true,
+    "required_slots": [
+      "retreat-top-header",
+      "retreat-base-card",
+      "retreat-bottom-notice"
+    ],
+    "allowed_slots": [
+      "retreat-top-header",
+      "retreat-base-card",
+      "retreat-bottom-notice"
+    ],
+    "allowed_variants": [
+      "travel_route.retreat_recommendation.v1",
+      "travel_route.route_plan.v1"
+    ]
+  },
+  "resolved_html": "skill-packages/travel_route/templates/html/retreat-recommendation.html"
+}

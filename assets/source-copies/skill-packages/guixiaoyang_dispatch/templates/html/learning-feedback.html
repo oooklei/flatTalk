@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--learning_feedback" data-template-id="guixiaoyang_dispatch.learning_feedback.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{learning_feedback.badge}}</p>
+    <h3>{{learning_feedback.title}}</h3>
+    <p>{{learning_feedback.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{learning_feedback.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 对话反馈学习卡片: 收集用户对答案和动作建议的反馈。 -->

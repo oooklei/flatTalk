@@ -1,0 +1,13 @@
+{
+  "template_id": "dispatch.workorder_card.v1",
+  "skill_key": "dispatch_manage",
+  "cn_name": "工单卡片（兼容旧ID）",
+  "description": "兼容旧模板 ID，实际语义由 dispatch_manage.workorder_card.v1 承接。",
+  "html": "workorder-card.html",
+  "render_mode": "html_composition",
+  "alias_of": "dispatch_manage.workorder_card.v1",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/workorder-card.html"
+}

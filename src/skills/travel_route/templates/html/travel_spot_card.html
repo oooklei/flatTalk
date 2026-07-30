@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>适老化景点推荐卡片模板</title>
+<style>
+  :root {
+    --primary: #FF7826;
+    --primary-gradient: linear-gradient(135deg, #FF7826 0%, #FF9A5C 100%);
+    --bg: #F8EAD9; --bg-white: #ffffff;
+    --ink: #3A3A3A; --ink-light: #666; --muted: #999999;
+    --border: #E5E5E5; --divider: #F0EBE3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .chat-section-title {
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 8px; padding: 8px 12px;
+    background: linear-gradient(135deg, #FFF7E6, #FFF3E0);
+    border-radius: 8px; border-left: 3px solid var(--primary);
+  }
+  .chat-spot-card {
+    display: flex; gap: 10px; background: var(--bg-white);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 10px; margin-bottom: 8px; align-items: flex-start;
+  }
+  .chat-spot-emoji {
+    width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+  }
+  .chat-spot-body { flex: 1; min-width: 0; }
+  .chat-spot-name { font-size: 14px; font-weight: 700; }
+  .chat-spot-meta { font-size: 12px; color: var(--muted); margin: 2px 0 4px; }
+  .chat-spot-desc { font-size: 12px; color: var(--ink-light); line-height: 1.6; }
+  .chat-spot-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+  .chat-spot-tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+    background: #FFF3E0; color: #E65100;
+  }
+  .chat-spot-tag.good { background: #E8F5E9; color: #2E7D32; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="chat-section-title">{{title|🌅 适老化景点推荐（平缓少台阶）}}</div>
+
+    {{#spots}}
+    <div class="chat-spot-card">
+      <div class="chat-spot-emoji">{{emoji|🏞️}}</div>
+      <div class="chat-spot-body">
+        <div class="chat-spot-name">{{name|景点名称}}</div>
+        <div class="chat-spot-meta">{{meta|📍 距离 · 游玩时长}}</div>
+        <div class="chat-spot-desc">{{{desc|景点介绍}}}</div>
+        <div class="chat-spot-tags">
+          {{#tags}}<span class="chat-spot-tag {{cls|}}">{{label|标签}}</span>{{/tags}}
+        </div>
+      </div>
+    </div>
+    {{/spots}}
+
+    <div class="note">{{note|已按「轮椅可达、坡道平缓、卫生间就近」筛选，均适合长者与儿童同游。}}</div>
+  </div>
+
+  <script type="application/json">
+  {
+    "title": "🌅 适老化景点推荐（平缓少台阶 · 祖孙皆宜）",
+    "spots": [
+      {
+        "emoji": "🏖️",
+        "name": "白浪滩（大平坡）",
+        "meta": "📍 距基地 800米 · 建议游玩 2小时 · 免门票",
+        "desc": "十里平坦黑金沙滩，坡度极缓，<b>轮椅可直接推行至海边</b>；傍晚看日落最佳，滩边有无障碍卫生间。",
+        "tags": [
+          { "cls": "good", "label": "♿ 无障碍" },
+          { "cls": "good", "label": "🚻 卫生间近" },
+          { "cls": "", "label": "🌇 日落打卡" }
+        ]
+      },
+      {
+        "emoji": "🌳",
+        "name": "北部湾海洋文化公园",
+        "meta": "📍 车程 15分钟 · 建议游玩 1.5小时 · 免门票",
+        "desc": "环海步道全程平整柏油路，每200米设休息长椅；园内有观海凉亭，适合长者慢走晒太阳。",
+        "tags": [
+          { "cls": "good", "label": "🪑 长椅多" },
+          { "cls": "good", "label": "🛤️ 步道平缓" },
+          { "cls": "", "label": "🌊 观海" }
+        ]
+      },
+      {
+        "emoji": "🐚",
+        "name": "簕山古渔村",
+        "meta": "📍 车程 40分钟 · 建议游玩 3小时 · 免门票",
+        "desc": "百年渔村看观潮赶海，退潮时<b>祖孙一起拾贝抓蟹</b>；村内石板路平整，渔家餐厅有软食海鲜粥。",
+        "tags": [
+          { "cls": "", "label": "👨‍👩‍👧 亲子同乐" },
+          { "cls": "good", "label": "🥣 软食餐" },
+          { "cls": "", "label": "🌊 观潮" }
+        ]
+      }
+    ],
+    "note": "已按「轮椅可达、坡道平缓、卫生间就近」筛选，均适合长者与儿童同游。"
+  }
+  </script>
+</body>
+</html>

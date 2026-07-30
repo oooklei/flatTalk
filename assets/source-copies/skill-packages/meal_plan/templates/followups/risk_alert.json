@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "meal_plan",
+  "source_template_id": "meal_plan.risk_alert.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "risk_alert.swap_ingredient",
+      "source_template_id": "meal_plan.risk_alert.v1",
+      "label": "替换食材",
+      "user_prompt": "替换食材，并继续说明膳食风险提醒卡片的下一步",
+      "action_key": "meal_plan.swap_ingredient",
+      "next_template_id": "meal_plan.ingredient_swap.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "risk_alert.generate_shopping_list",
+      "source_template_id": "meal_plan.risk_alert.v1",
+      "label": "生成采购清单",
+      "user_prompt": "生成采购清单，并继续说明膳食风险提醒卡片的下一步",
+      "action_key": "meal_plan.generate_shopping_list",
+      "next_template_id": "meal_plan.shopping_list.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "risk_alert.show_cooking_steps",
+      "source_template_id": "meal_plan.risk_alert.v1",
+      "label": "查看烹饪步骤",
+      "user_prompt": "查看烹饪步骤，并继续说明膳食风险提醒卡片的下一步",
+      "action_key": "meal_plan.show_cooking_steps",
+      "next_template_id": "meal_plan.cooking_steps.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "risk_alert.compare_nutrition",
+      "source_template_id": "meal_plan.risk_alert.v1",
+      "label": "对比营养方案",
+      "user_prompt": "对比营养方案，并继续说明膳食风险提醒卡片的下一步",
+      "action_key": "meal_plan.compare_nutrition",
+      "next_template_id": "meal_plan.nutrition_compare.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

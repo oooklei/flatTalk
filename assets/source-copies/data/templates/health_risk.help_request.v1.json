@@ -1,0 +1,27 @@
+{
+  "template_id": "health_risk.help_request.v1",
+  "template_key": "help_request",
+  "skill_key": "health_risk_warning",
+  "name": "求救信息受理卡片",
+  "cn_name": "求救信息受理卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "help-request.html",
+  "fallback_html": "help-request.html",
+  "description": "展示求救信息、老人状态、位置和补全提醒。",
+  "sample_data": "templates/data/emergency.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "help_request",
+  "actions": [
+    "health_risk.call_120",
+    "health_risk.contact_family",
+    "health_risk.dispatch_emergency",
+    "health_risk.mark_safe",
+    "health_risk.request_doctor_review",
+    "health_risk.open_monitoring"
+  ],
+  "followup_suggestions": "",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/health_risk_warning/templates/html/help-request.html"
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.intent_router.v1",
+  "template_key": "intent_router",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "意图路由解释卡片",
+  "cn_name": "意图路由解释卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "intent-router.html",
+  "fallback_html": "intent-router.html",
+  "description": "解释识别到的意图、置信度和目标技能。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "intent_router",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/intent_router.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/intent-router.html"
+}

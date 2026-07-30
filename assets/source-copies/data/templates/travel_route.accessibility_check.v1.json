@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.accessibility_check.v1",
+  "template_key": "accessibility_check",
+  "skill_key": "travel_route",
+  "name": "无障碍条件检查卡片",
+  "cn_name": "无障碍条件检查卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "accessibility-check.html",
+  "fallback_html": "accessibility-check.html",
+  "description": "检查电梯、坡道、防滑、扶手等适老设施。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "accessibility_check",
+  "actions": [
+    "travel_route.check_accessibility",
+    "travel_route.view_base_profile",
+    "travel_route.replan"
+  ],
+  "followup_suggestions": "templates/followups/accessibility_check.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/accessibility-check.html"
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.festival_plan.v1",
+  "template_key": "festival_plan",
+  "skill_key": "meal_plan",
+  "name": "节日膳食卡片",
+  "cn_name": "节日膳食卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "festival-plan.html",
+  "fallback_html": "festival-plan.html",
+  "description": "兼顾节日口味、仪式感和健康限制。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "festival_plan",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/festival_plan.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/festival-plan.html"
+}

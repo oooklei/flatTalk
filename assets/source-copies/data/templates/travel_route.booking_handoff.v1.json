@@ -1,0 +1,26 @@
+{
+  "template_id": "travel_route.booking_handoff.v1",
+  "template_key": "booking_handoff",
+  "skill_key": "travel_route",
+  "name": "预订交接卡片",
+  "cn_name": "预订交接卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "booking-handoff.html",
+  "fallback_html": "booking-handoff.html",
+  "description": "展示预订交接信息、联系人和业务系统转交状态。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "booking_handoff",
+  "actions": [
+    "travel_route.check_availability",
+    "travel_route.booking_handoff",
+    "travel_route.preview_order",
+    "travel_route.open_workbench"
+  ],
+  "followup_suggestions": "templates/followups/booking_handoff.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/booking-handoff.html"
+}

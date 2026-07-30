@@ -1,0 +1,121 @@
+{
+  "schema": "gxy-contract.nuwax.v1",
+  "service": "nuwax",
+  "display_name": "女娲后端平台",
+  "version": "1.0.0",
+  "base_url_env": "NUWAX_BASE_URL",
+  "auth": {
+    "type": "bearer",
+    "header": "Authorization",
+    "token_env": "NUWAX_TOKEN"
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/agent/conversation/chat",
+      "purpose": "发起对话（SSE 流式）",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/agent/conversation/feedback",
+      "purpose": "对话反馈",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/vector/search",
+      "purpose": "知识库向量检索",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/compose/table/query/{tableId}",
+      "purpose": "组合表查询",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/skill/run",
+      "purpose": "执行技能",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/plugin/code/register-from-skill",
+      "purpose": "从技能包注册代码插件",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/validate-token",
+      "purpose": "校验 Token",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/space/rooms",
+      "purpose": "空间房间列表",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/agent/component/list",
+      "purpose": "组件列表",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/agent/instance/list",
+      "purpose": "智能体实例列表",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/agent/component/bind",
+      "purpose": "组件绑定",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/agent/task/start",
+      "purpose": "启动任务智能体",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/agent/task/stop",
+      "purpose": "停止任务智能体",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/agent/task/status/{taskId}",
+      "purpose": "任务状态",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/agent/publish/status",
+      "purpose": "发布状态",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/agent/publish/unpublish",
+      "purpose": "下线发布",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/agent/publish/republish",
+      "purpose": "重新发布",
+      "auth_required": true
+    }
+  ],
+  "sla": {
+    "timeout_ms": 20000,
+    "retry": 1
+  },
+  "notes": "BFF 通过 lib/remote-runtime-adapter.js 统一代理；模型输出为结构化页面协议（template/renderer/data/assets），前端渲染。"
+}

@@ -1,0 +1,24 @@
+{
+  "skill_key": "meal_plan",
+  "preferred_default_template": "meal_plan.plan.v1",
+  "default_slot_sequence": [
+    "summary-card",
+    "meal-section",
+    "nutrition-note",
+    "related-questions"
+  ],
+  "display_preferences": [
+    "Prefer the approved in-chat meal recommendation card style.",
+    "Use meal_plan.plan.v1 when breakfast, lunch, dinner, and nutrition notes are all present.",
+    "Use meal_plan.overview.v1 when the user asks for a concise overview.",
+    "Use meal_plan.timeline.v1 when the user asks about meal timing or sequence.",
+    "Use meal_plan.dashboard.v1 when the user asks about calories, nutrients, or ratios."
+  ],
+  "forbidden": [
+    "raw_html",
+    "script",
+    "inline_event_handler",
+    "external_url",
+    "unregistered_action_key"
+  ]
+}

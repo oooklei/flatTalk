@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--task_progress" data-template-id="guixiaoyang_dispatch.task_progress.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{task_progress.badge}}</p>
+    <h3>{{task_progress.title}}</h3>
+    <p>{{task_progress.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{task_progress.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 任务进度卡片: 展示跨技能任务的当前进度和下一步。 -->

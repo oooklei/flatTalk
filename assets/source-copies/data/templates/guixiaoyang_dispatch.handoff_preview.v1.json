@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.handoff_preview.v1",
+  "template_key": "handoff_preview",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "跨技能交接预览卡片",
+  "cn_name": "跨技能交接预览卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "handoff-preview.html",
+  "fallback_html": "handoff-preview.html",
+  "description": "展示将传递给目标技能的上下文摘要。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "handoff_preview",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/handoff_preview.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/handoff-preview.html"
+}

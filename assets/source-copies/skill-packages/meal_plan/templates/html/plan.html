@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--plan" data-template-id="meal_plan.plan.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{plan.badge}}</p>
+    <h3>{{plan.title}}</h3>
+    <p>{{plan.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{plan.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 膳食计划对话卡片: 展示一日膳食总览、餐段安排、营养提示和相关追问。 -->

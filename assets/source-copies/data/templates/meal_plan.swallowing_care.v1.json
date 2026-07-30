@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.swallowing_care.v1",
+  "template_key": "swallowing_care",
+  "skill_key": "meal_plan",
+  "name": "吞咽友好膳食卡片",
+  "cn_name": "吞咽友好膳食卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "swallowing-care.html",
+  "fallback_html": "swallowing-care.html",
+  "description": "针对吞咽困难、牙口不好和术后恢复输出软食建议。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "swallowing_care",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/swallowing_care.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/swallowing-care.html"
+}

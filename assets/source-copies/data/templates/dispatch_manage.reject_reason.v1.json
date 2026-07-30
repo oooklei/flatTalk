@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.reject_reason.v1",
+  "template_key": "reject_reason",
+  "skill_key": "dispatch_manage",
+  "name": "拒单原因分析卡片",
+  "cn_name": "拒单原因分析卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "reject-reason.html",
+  "fallback_html": "reject-reason.html",
+  "description": "分析候选拒单、超时和不可接原因。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "reject_reason",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/reject_reason.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/reject-reason.html"
+}

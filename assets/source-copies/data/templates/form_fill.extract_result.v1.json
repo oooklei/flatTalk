@@ -1,0 +1,11 @@
+{
+  "template_id": "form_fill.extract_result.v1",
+  "skill_key": "form_fill_assist",
+  "cn_name": "表单提取结果",
+  "description": "AI辅助填报的提取结果模板，展示从文档中提取的表单字段",
+  "html": "form_fill_assist/extract_result.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/form_fill_assist/templates/html/extract_result.html"
+}

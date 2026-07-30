@@ -1,0 +1,25 @@
+{
+  "template_id": "find_service.catalog.v1",
+  "template_key": "catalog",
+  "skill_key": "find_service",
+  "name": "服务目录卡片",
+  "cn_name": "服务目录卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "catalog.html",
+  "fallback_html": "catalog.html",
+  "description": "展示养老服务分类、适用场景和可选服务类型。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "overview",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.voice_broadcast",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/catalog.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/catalog.html"
+}

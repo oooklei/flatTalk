@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.policy_subsidy.v1",
+  "template_key": "policy_subsidy",
+  "skill_key": "travel_route",
+  "name": "政策补贴提示卡片",
+  "cn_name": "政策补贴提示卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "policy-subsidy.html",
+  "fallback_html": "policy-subsidy.html",
+  "description": "提示可能适用的旅居养老或助老补贴政策。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "policy_subsidy",
+  "actions": [
+    "travel_route.check_policy_subsidy",
+    "travel_route.preview_order",
+    "travel_route.request_manual_review"
+  ],
+  "followup_suggestions": "templates/followups/policy_subsidy.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/policy-subsidy.html"
+}

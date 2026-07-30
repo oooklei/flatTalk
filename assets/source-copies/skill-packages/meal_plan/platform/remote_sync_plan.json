@@ -1,0 +1,12 @@
+{
+  "packageKey": "meal_plan",
+  "remoteTables": [
+    "meal_plan_business"
+  ],
+  "remoteKnowledge": [
+    "meal_plan_business_kb",
+    "meal_plan_dialogue_kb"
+  ],
+  "requiresVectorization": true,
+  "requiresPublish": true
+}

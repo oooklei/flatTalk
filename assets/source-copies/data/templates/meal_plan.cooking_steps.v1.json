@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.cooking_steps.v1",
+  "template_key": "cooking_steps",
+  "skill_key": "meal_plan",
+  "name": "烹饪步骤卡片",
+  "cn_name": "烹饪步骤卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "cooking-steps.html",
+  "fallback_html": "cooking-steps.html",
+  "description": "展示适老化烹饪步骤、少油少盐和软烂处理。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "cooking_steps",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/cooking_steps.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/cooking-steps.html"
+}

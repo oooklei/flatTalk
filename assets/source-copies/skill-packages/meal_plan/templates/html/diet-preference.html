@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--diet_preference" data-template-id="meal_plan.diet_preference.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{diet_preference.badge}}</p>
+    <h3>{{diet_preference.title}}</h3>
+    <p>{{diet_preference.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{diet_preference.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 饮食偏好卡片: 展示口味、菜系、软硬度、餐次和预算偏好。 -->

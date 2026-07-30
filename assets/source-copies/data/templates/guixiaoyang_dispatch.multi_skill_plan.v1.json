@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.multi_skill_plan.v1",
+  "template_key": "multi_skill_plan",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "多技能协同计划卡片",
+  "cn_name": "多技能协同计划卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "multi-skill-plan.html",
+  "fallback_html": "multi-skill-plan.html",
+  "description": "规划膳食、找服务、派单等多技能顺序。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "multi_skill_plan",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/multi_skill_plan.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/multi-skill-plan.html"
+}

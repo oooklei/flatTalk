@@ -1,0 +1,128 @@
+{
+  "policies": [
+    {
+      "topic_id": "POL-005",
+      "topic_name": "高龄津贴",
+      "aliases": "高龄津贴,长寿补贴,老人津贴",
+      "required_slots": "年龄,户籍所在地,银行卡信息,申请人身份",
+      "answer_template": "subsidy_eligibility_card"
+    },
+    {
+      "topic_id": "POL-006",
+      "topic_name": "居家适老化改造",
+      "aliases": "适老化,扶手,防滑,改造补贴",
+      "required_slots": "居住地址,老人能力情况,改造需求,房屋权属或居住证明",
+      "answer_template": "application_materials_card"
+    }
+  ],
+  "services": [
+    {
+      "service_id": "SVC-006",
+      "service_name": "适老化上门评估",
+      "service_category": "居家改造",
+      "intent_aliases": "扶手,防滑,适老化,上门评估,改造",
+      "required_role": "grid_worker",
+      "default_urgency": "P3",
+      "requires_address": "true",
+      "requires_time": "true"
+    },
+    {
+      "service_id": "SVC-007",
+      "service_name": "送药到家",
+      "service_category": "助医",
+      "intent_aliases": "拿药,送药,买药,药品配送",
+      "required_role": "care_worker",
+      "default_urgency": "P2",
+      "requires_address": "true",
+      "requires_time": "true"
+    }
+  ],
+  "staff": [
+    {
+      "staff_id": "STF-004",
+      "staff_name": "赵网格",
+      "role_key": "grid_worker",
+      "org_id": "ORG-001",
+      "skills": "适老化评估,政策协办,巡访",
+      "current_load": "1",
+      "status": "online"
+    },
+    {
+      "staff_id": "STF-005",
+      "staff_name": "蓝医生",
+      "role_key": "village_doctor",
+      "org_id": "ORG-002",
+      "skills": "慢病随访,用药指导,血压复测",
+      "current_load": "0",
+      "status": "online"
+    }
+  ],
+  "travel": [
+    {
+      "product_id": "TRV-003",
+      "product_type": "route",
+      "product_name": "巴马长寿康养慢游路线",
+      "city": "河池/巴马",
+      "suitable_tags": "长寿文化,慢病康养,轻体力",
+      "provider_status": "placeholder",
+      "external_api": "searchProducts/productDetail/checkAvailability",
+      "handoff_required": "true"
+    },
+    {
+      "product_id": "TRV-004",
+      "product_type": "base",
+      "product_name": "北海海滨康养基地占位",
+      "city": "北海",
+      "suitable_tags": "暖冬旅居,海滨,无障碍",
+      "provider_status": "placeholder",
+      "external_api": "searchProducts/productDetail/checkAvailability",
+      "handoff_required": "true"
+    }
+  ],
+  "meals": [
+    {
+      "rule_id": "MEAL-004",
+      "condition_tag": "高血脂",
+      "suggestion": "减少油炸和动物脂肪，优先鱼类、豆制品、绿叶菜和全谷物。",
+      "risk_notice": "如合并肝肾疾病或正在服药，应以医生和营养师建议为准。",
+      "template": "meal_plan_card"
+    },
+    {
+      "rule_id": "MEAL-005",
+      "condition_tag": "吞咽困难",
+      "suggestion": "优先软烂、细碎、湿润食物，避免干硬散碎食物，必要时做吞咽评估。",
+      "risk_notice": "出现呛咳、发热或呼吸异常时需及时就医。",
+      "template": "meal_plan_card"
+    }
+  ],
+  "kb": [
+    {
+      "id": "KB-POL-BIZ-002",
+      "skill_key": "policy_consult",
+      "kb_type": "business",
+      "title": "适老化改造办理提示",
+      "keywords": [
+        "适老化",
+        "扶手",
+        "防滑",
+        "改造"
+      ],
+      "answer": "适老化改造通常需要确认居住地址、老人能力情况、改造项目和房屋居住证明，再由社区或网格员协助评估。",
+      "source": "本地补充业务知识库"
+    },
+    {
+      "id": "KB-TRV-BIZ-002",
+      "skill_key": "travel_route",
+      "kb_type": "business",
+      "title": "巴马康养路线偏好",
+      "keywords": [
+        "巴马",
+        "长寿",
+        "慢游",
+        "河池"
+      ],
+      "answer": "巴马康养路线更适合长住慢游和轻体力老人，推荐提前确认慢病用药、陪同人员和无障碍需求。",
+      "source": "本地补充业务知识库"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "packageKey": "meal_plan",
+  "templateProfile": "findService-v2.1",
+  "pathPolicy": "package-relative-only-for-runtime-and-remote-deploy",
+  "runtimeRoot": ".",
+  "remoteResources": {
+    "tables": [
+      "gxy_meal_recommendation"
+    ],
+    "knowledgeBases": [
+      "meal_plan_business_kb",
+      "meal_plan_dialogue_kb"
+    ]
+  },
+  "globalConventions": {
+    "conventionsDoc": "docs/superpowers/specs/2026-07-24-global-skill-conventions.md",
+    "redisDB": 7,
+    "bffPrefix": "/api/meal/*",
+    "tagFeedbackSource": "meal_plan",
+    "dialogueHistoryDB": 0,
+    "dialogueTable": "gxy_dialogue_history"
+  },
+  "ssoConfig": {
+    "tagSystemUrl": "http://192.168.1.160:8010",
+    "ssoUsername": "sysadmin",
+    "ssoPasswordEnv": "TAG_SYSTEM_SSO_PASSWORD",
+    "ssoTokenEnv": "TAG_SYSTEM_SSO_TOKEN",
+    "tokenCacheTTL": 3600
+  },
+  "bffConfig": {
+    "host": "192.168.1.2",
+    "port": 5443,
+    "protocol": "https",
+    "integratedIn": "main-system-server.js"
+  },
+  "tagFeedback": {
+    "enabled": true,
+    "strategy": "overwrite_with_manual_confirm",
+    "queueType": "ZSET",
+    "queueKeyPattern": "meal_plan:tag:queue:{entityId}",
+    "lockedKeyPattern": "meal_plan:tag:locked:{entityId}",
+    "cacheKeyPattern": "meal_plan:tag:cache:{entityId}",
+    "dedupKeyPattern": "meal_plan:behavior:dedup:{entityId}",
+    "confirmTimeout": 172800,
+    "writeApi": "POST /api/v1/tags/entity/{type}/{id}"
+  }
+}

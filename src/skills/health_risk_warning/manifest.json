@@ -1,0 +1,7 @@
+{
+  "skill_key": "health_risk_warning",
+  "name": "健康风险预警",
+  "version": "1.0.0-local",
+  "runtime": "template-card",
+  "default_template": "health_warning_card"
+}

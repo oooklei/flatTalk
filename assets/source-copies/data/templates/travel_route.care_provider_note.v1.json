@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.care_provider_note.v1",
+  "template_key": "care_provider_note",
+  "skill_key": "travel_route",
+  "name": "照护机构交接说明卡片",
+  "cn_name": "照护机构交接说明卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "care-provider-note.html",
+  "fallback_html": "care-provider-note.html",
+  "description": "给康养基地或照护人员输出交接要点。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "care_provider_note",
+  "actions": [
+    "travel_route.contact_base",
+    "travel_route.booking_handoff",
+    "travel_route.request_manual_review"
+  ],
+  "followup_suggestions": "templates/followups/care_provider_note.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/care-provider-note.html"
+}

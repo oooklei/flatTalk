@@ -1,0 +1,250 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { renderCard, renderTemplate } from '../../template-card/index.js';
+
+const COMMON_HTML = path.join(process.cwd(), 'src', 'skills', 'common', 'templates', 'html', 'common');
+const ANSWER_HTML = path.join(COMMON_HTML, 'answer.html');
+const ERROR_HTML = path.join(COMMON_HTML, 'fallback_error.html');
+
+function readTpl(p) { try { return fs.readFileSync(p, 'utf8'); } catch { return null; } }
+
+const HTML_TAG_PATTERN = /<[^>]*>/g;
+const EVENT_HANDLER_PATTERN = /\bon[a-z]+\s*=/gi;
+const SCRIPT_PROTOCOL_PATTERN = /javascript\s*:/gi;
+
+export function renderTemplateCardResult({
+  templateDir,
+  modelResult = {},
+  actions = [],
+  followupSuggestions = [],
+} = {}) {
+  const llmJson = normalizeLlmJson({
+    template_id: modelResult.template_id || modelResult.template_key || null,
+    answer: modelResult.answer || modelResult.answer_text || '',
+    data: modelResult.data || {},
+    actions,
+    followups: followupSuggestions,
+  });
+  let card;
+  let pageHtml = '';
+  try {
+    card = renderCard(templateDir, {
+      template_id: llmJson.template_id,
+      data: buildRenderData(llmJson),
+    });
+    pageHtml = card.pages[0] || '';
+    // 兜底：未匹配到具体模板（仅命中通用默认模板）时，使用公共 answer 模板承载正常返回
+    if ((card.reason === 'no-match-fallback' || card.reason === 'low-coverage-fallback') && card.templateId !== 'answer') {
+      const tpl = readTpl(ANSWER_HTML);
+      if (tpl) {
+        pageHtml = renderTemplate(tpl, buildRenderData(llmJson));
+        card = { ...card, templateId: 'answer', reason: 'answer-fallback' };
+      }
+    }
+  } catch (err) {
+    // 兜底：渲染异常时使用公共 fallback_error 模板
+    const tpl = readTpl(ERROR_HTML);
+    const message = String((err && err.message) ? err.message : err);
+    pageHtml = tpl
+      ? renderTemplate(tpl, { code: 'RENDER_ERROR', title: '渲染失败', message, suggestion: '请查看运行日志或联系管理员。' })
+      : `<p style="color:#d9534f">渲染失败：${message}</p>`;
+    card = { templateId: 'fallback_error', layout: 'vertical', reason: 'error_fallback', score: 0, cardCount: 1, pageCount: 1, pages: [pageHtml] };
+  }
+  const renderedHtml = buildHtmlFallback(pageHtml);
+
+  return {
+    llm: llmJson,
+    card: {
+      templateId: card.templateId,
+      layout: card.layout,
+      reason: card.reason,
+      score: card.score,
+      cardCount: card.cardCount,
+      pageCount: card.pageCount,
+      pages: card.pages,
+    },
+    rendered_html: renderedHtml,
+    html_fallback: renderedHtml,
+    render_status: card.templateId === 'fallback_error' ? 'error' : 'ok',
+  };
+}
+
+function normalizeLlmJson({ template_id, answer, data, actions, followups }) {
+  return {
+    template_id,
+    answer: sanitizeText(answer),
+    data: sanitizeModelValue(data),
+    actions,
+    followups,
+  };
+}
+
+function buildRenderData(llmJson) {
+  const rawData = llmJson.data && typeof llmJson.data === 'object' ? llmJson.data : {};
+  const data = llmJson.template_id === 'weekly_plan' ? normalizeWeeklyPlanData(rawData) : rawData;
+  return {
+    ...data,
+    answer: llmJson.answer,
+    answer_text: llmJson.answer,
+    actions: formatActionLabels(llmJson.actions),
+    followup_suggestions: formatFollowupLabels(llmJson.followups),
+  };
+}
+
+function normalizeWeeklyPlanData(data) {
+  const weekly = data.weekly_plan && typeof data.weekly_plan === 'object'
+    ? { ...data.weekly_plan }
+    : {};
+  return {
+    ...data,
+    weekly_plan: {
+      badge: weekly.badge || '一周计划',
+      title: weekly.title || '七天控糖清淡膳食计划',
+      summary: weekly.summary || '每日三餐按控糖、少盐、优质蛋白和软烂易消化原则轮换。',
+      suitable: weekly.suitable || '糖尿病或控糖需求长者',
+      dailyCal: weekly.dailyCal || '约1200kcal',
+      salt: weekly.salt || '每日<5g',
+      goal: weekly.goal || '控糖稳糖',
+      items: normalizeWeeklyItems(weekly.items || weekly.days || data.items),
+    },
+  };
+}
+
+function normalizeWeeklyItems(items) {
+  const source = Array.isArray(items) ? items : [];
+  const defaults = defaultWeeklyItems();
+  return defaults.map((fallback, index) => {
+    const item = source[index] && typeof source[index] === 'object' ? source[index] : {};
+    return {
+      ...fallback,
+      ...item,
+      dayName: item.dayName || item.day || fallback.dayName,
+      dayTotal: item.dayTotal || item.totalCal || fallback.dayTotal,
+      summary: item.summary || item.itemText || fallback.summary,
+      meals: normalizeMeals(item.meals, fallback.meals),
+    };
+  });
+}
+
+function normalizeMeals(meals, fallbackMeals) {
+  const source = Array.isArray(meals) ? meals : [];
+  return fallbackMeals.map((fallback, index) => {
+    const meal = source[index] && typeof source[index] === 'object' ? source[index] : {};
+    return {
+      ...fallback,
+      ...meal,
+      mealName: meal.mealName || meal.name || fallback.mealName,
+      mealEmoji: meal.mealEmoji || fallback.mealEmoji,
+      foods: formatFoods(meal.foods || meal.items || fallback.foods),
+      mealCal: meal.mealCal || meal.calories || fallback.mealCal,
+    };
+  });
+}
+
+function formatFoods(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (item && typeof item === 'object') return item.name || item.food || item.title || '';
+      return String(item ?? '');
+    }).filter(Boolean).join('、');
+  }
+  if (value && typeof value === 'object') return value.name || value.food || value.title || '';
+  return String(value ?? '');
+}
+
+function defaultWeeklyItems() {
+  return [
+    weeklyDay('周一', '约1250kcal', '主食定量，少油少盐。', ['燕麦小米粥、水煮蛋、凉拌黄瓜', '杂粮饭、清蒸鱼、清炒青菜', '番茄豆腐汤、蒸南瓜、白灼虾']),
+    weeklyDay('周二', '约1240kcal', '增加豆制品，避免甜饮。', ['无糖豆浆、全麦馒头、蒸蛋羹', '糙米饭、冬瓜鸡肉、清炒菠菜', '南瓜小米粥、清蒸豆腐、凉拌木耳']),
+    weeklyDay('周三', '约1230kcal', '搭配优质蛋白和高纤维蔬菜。', ['玉米面粥、煮鸡蛋、拌豆腐丝', '荞麦饭、番茄牛肉、蒜蓉西兰花', '清蒸鲈鱼、油麦菜、紫菜蛋花汤']),
+    weeklyDay('周四', '约1250kcal', '减少精制碳水，控制主食总量。', ['燕麦粥、凉拌黄瓜、鹌鹑蛋', '杂粮饭、瘦肉炒胡萝卜、冬瓜汤', '紫菜蛋花汤、蒸红薯、清炒时蔬']),
+    weeklyDay('周五', '约1210kcal', '蒸煮为主，少油少盐。', ['无糖豆浆、玉米、蒸蛋', '清蒸鱼、糙米饭、白灼西兰花', '豆腐青菜汤、蒸南瓜、凉拌木耳']),
+    weeklyDay('周六', '约1240kcal', '口味清淡，注意细嚼慢咽。', ['南瓜粥、水煮蛋、拌青菜', '杂粮饭、冬瓜虾仁、清炒芹菜', '小米粥、时蔬豆腐、蒸鱼片']),
+    weeklyDay('周日', '约1240kcal', '继续稳糖，避免高糖水果和甜点。', ['燕麦粥、蒸蛋、凉拌黄瓜', '糙米饭、清炖鸡肉、清炒油麦菜', '番茄豆腐汤、蒸山药、白灼青菜']),
+  ];
+}
+
+function weeklyDay(dayName, dayTotal, summary, foods) {
+  return {
+    dayName,
+    dayTotal,
+    summary,
+    meals: [
+      { mealName: '早餐', mealEmoji: '🌅', foods: foods[0], mealCal: '约300kcal' },
+      { mealName: '午餐', mealEmoji: '☀️', foods: foods[1], mealCal: '约520kcal' },
+      { mealName: '晚餐', mealEmoji: '🌙', foods: foods[2], mealCal: '约420kcal' },
+    ],
+  };
+}
+
+function formatActionLabels(actions) {
+  if (!Array.isArray(actions) || actions.length === 0) {
+    return '';
+  }
+
+  return actions
+    .map((action) => action?.label || action?.action_key || action?.key || '')
+    .filter(Boolean)
+    .join(' / ');
+}
+
+function formatFollowupLabels(followups) {
+  if (!Array.isArray(followups) || followups.length === 0) {
+    return '';
+  }
+
+  return followups
+    .map((followup) => followup?.label || followup?.user_prompt || followup?.prompt || '')
+    .filter(Boolean)
+    .join(' / ');
+}
+
+function buildHtmlFallback(pageHtml) {
+  // 注入自适配高度脚本：iframe 加载后按内容高度撑开，避免高卡片（如 7 天膳食）被固定高度裁切
+  const autoHeightScript = `<script>(function(){try{var h=document.documentElement.scrollHeight||document.body.scrollHeight;var f=window.frameElement;if(f&&h){f.style.height=Math.min(h,1500)+'px';}}catch(e){}})();<\/script>`;
+  const injected = pageHtml.replace(/<\/body>/i, `${autoHeightScript}</body>`);
+  const finalHtml = injected.includes(autoHeightScript) ? injected : pageHtml + autoHeightScript;
+  return [
+    '<article class="gxy-html-fallback" data-renderer="template-card-renderer">',
+    '<style>',
+    '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:visible;}',
+    '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:200px;max-height:1500px;border:0;border-radius:10px;background:#fff;overflow:auto;}',
+    '</style>',
+    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin" srcdoc="${escapeAttribute(finalHtml)}"></iframe>`,
+    '</article>',
+  ].join('');
+}
+
+function sanitizeModelValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeModelValue(item));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, sanitizeModelValue(child)]),
+    );
+  }
+
+  if (typeof value === 'string') {
+    return sanitizeText(value);
+  }
+
+  return value;
+}
+
+function sanitizeText(value) {
+  return String(value ?? '')
+    .replace(HTML_TAG_PATTERN, '')
+    .replace(EVENT_HANDLER_PATTERN, '')
+    .replace(SCRIPT_PROTOCOL_PATTERN, '')
+    .trim();
+}
+
+function escapeAttribute(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}

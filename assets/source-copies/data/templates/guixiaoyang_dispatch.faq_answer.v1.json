@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.faq_answer.v1",
+  "template_key": "faq_answer",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "常见问题答复卡片",
+  "cn_name": "常见问题答复卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "faq-answer.html",
+  "fallback_html": "faq-answer.html",
+  "description": "回答常见养老政策、服务和使用问题。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "faq_answer",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/faq_answer.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/faq-answer.html"
+}

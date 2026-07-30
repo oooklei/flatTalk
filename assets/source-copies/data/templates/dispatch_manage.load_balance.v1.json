@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.load_balance.v1",
+  "template_key": "load_balance",
+  "skill_key": "dispatch_manage",
+  "name": "负载均衡卡片",
+  "cn_name": "负载均衡卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "load-balance.html",
+  "fallback_html": "load-balance.html",
+  "description": "展示机构或人员当前负载和分配影响。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "load_balance",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/load_balance.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/load-balance.html"
+}

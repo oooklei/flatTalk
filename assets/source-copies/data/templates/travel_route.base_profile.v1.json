@@ -1,0 +1,26 @@
+{
+  "template_id": "travel_route.base_profile.v1",
+  "template_key": "base_profile",
+  "skill_key": "travel_route",
+  "name": "康养基地详情卡片",
+  "cn_name": "康养基地详情卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "base-profile.html",
+  "fallback_html": "base-profile.html",
+  "description": "展示康养基地资质、配套、价格和服务能力。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "base_profile",
+  "actions": [
+    "travel_route.view_base_profile",
+    "travel_route.check_accessibility",
+    "travel_route.find_nearby_medical",
+    "travel_route.contact_base"
+  ],
+  "followup_suggestions": "templates/followups/base_profile.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/base-profile.html"
+}

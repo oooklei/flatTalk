@@ -1,0 +1,10 @@
+<article class="gxy-card gxy-card--permission" data-template-id="common.permission_denied.v1">
+  <header class="gxy-card__header">
+    <h3>{{title || "暂无权限"}}</h3>
+    <span class="gxy-card__tag">{{role || "当前角色"}}</span>
+  </header>
+  <section class="gxy-card__body">
+    <p>{{message || "当前角色暂不能执行该操作，可切换账号或提交人工复核。"}}</p>
+    <p class="gxy-card__hint">{{required_role || required_permission || ""}}</p>
+  </section>
+</article>

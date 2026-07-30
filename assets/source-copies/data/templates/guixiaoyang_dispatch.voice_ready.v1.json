@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.voice_ready.v1",
+  "template_key": "voice_ready",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "语音播报准备卡片",
+  "cn_name": "语音播报准备卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "voice-ready.html",
+  "fallback_html": "voice-ready.html",
+  "description": "生成适合老人听的播报摘要。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "voice_ready",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/voice_ready.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/voice-ready.html"
+}

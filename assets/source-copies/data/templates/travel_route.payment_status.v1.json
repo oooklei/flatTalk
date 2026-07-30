@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.payment_status.v1",
+  "template_key": "payment_status",
+  "skill_key": "travel_route",
+  "name": "付款状态卡片",
+  "cn_name": "付款状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "payment-status.html",
+  "fallback_html": "payment-status.html",
+  "description": "展示付款确认、待支付和异常提醒。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "payment_status",
+  "actions": [
+    "travel_route.submit_payment",
+    "travel_route.view_status",
+    "travel_route.request_manual_review"
+  ],
+  "followup_suggestions": "templates/followups/payment_status.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/payment-status.html"
+}

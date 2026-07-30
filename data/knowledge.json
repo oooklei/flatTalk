@@ -1,0 +1,6 @@
+{
+  "items": [
+    { "id": 1, "title": "高血压膳食指南", "source": "docs/guide/hypertension.md", "status": "imported", "imported_at": "2026-07-28T10:00:00.000Z" },
+    { "id": 2, "title": "跌倒风险评测表", "source": "docs/assess/fall-risk.md", "status": "imported", "imported_at": "2026-07-29T14:30:00.000Z" }
+  ]
+}

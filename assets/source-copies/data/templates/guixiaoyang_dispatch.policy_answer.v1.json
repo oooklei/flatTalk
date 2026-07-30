@@ -1,0 +1,22 @@
+{
+  "template_id": "guixiaoyang_dispatch.policy_answer.v1",
+  "template_key": "policy_answer",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "桂小养政策答复卡片",
+  "cn_name": "桂小养政策答复卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "policy-answer.html",
+  "description": "用于政策咨询、补贴条件、办理材料和政策来源展示。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "policy",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.manual_review",
+    "guixiaoyang_dispatch.voice_broadcast"
+  ],
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/policy-answer.html"
+}

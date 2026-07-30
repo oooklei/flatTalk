@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.completion_check.v1",
+  "template_key": "completion_check",
+  "skill_key": "dispatch_manage",
+  "name": "完成核验卡片",
+  "cn_name": "完成核验卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "completion-check.html",
+  "fallback_html": "completion-check.html",
+  "description": "展示服务完成、照片、签名和回访状态。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "completion_check",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/completion_check.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/completion-check.html"
+}

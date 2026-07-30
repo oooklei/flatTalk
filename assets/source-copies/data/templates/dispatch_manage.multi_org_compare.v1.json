@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.multi_org_compare.v1",
+  "template_key": "multi_org_compare",
+  "skill_key": "dispatch_manage",
+  "name": "多机构对比卡片",
+  "cn_name": "多机构对比卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "multi-org-compare.html",
+  "fallback_html": "multi-org-compare.html",
+  "description": "对比机构能力、距离、负载和质量。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "multi_org_compare",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/multi_org_compare.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/multi-org-compare.html"
+}

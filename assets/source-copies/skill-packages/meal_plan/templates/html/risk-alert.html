@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--risk_alert" data-template-id="meal_plan.risk_alert.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{risk_alert.badge}}</p>
+    <h3>{{risk_alert.title}}</h3>
+    <p>{{risk_alert.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{risk_alert.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 膳食风险提醒卡片: 展示糖尿病、高血压、肾病、吞咽困难等风险。 -->

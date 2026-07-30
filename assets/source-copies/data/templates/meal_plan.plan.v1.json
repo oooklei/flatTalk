@@ -1,0 +1,154 @@
+{
+  "template_id": "meal_plan.plan.v1",
+  "template_key": "plan",
+  "skill_key": "meal_plan",
+  "name": "膳食计划对话卡片",
+  "cn_name": "膳食计划对话卡片",
+  "render_mode": "html_composition",
+  "layout": "chat-card",
+  "html": "plan.html",
+  "fallback_html": "plan.html",
+  "source": "jtd-api/pages/diet-card-full.html",
+  "description": "展示一日膳食总览、餐段安排、营养提示和相关追问。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "slots": [
+    {
+      "slot_key": "summary-card",
+      "file": "slots/summary-card.html",
+      "position": "top",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": []
+    },
+    {
+      "slot_key": "meal-section",
+      "file": "slots/meal-section.html",
+      "position": "center",
+      "required": true,
+      "repeat": true,
+      "data_path": "meals",
+      "allowed_actions": [
+        "meal_plan.regenerate"
+      ]
+    },
+    {
+      "slot_key": "nutrition-note",
+      "file": "slots/nutrition-note.html",
+      "position": "bottom",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": []
+    },
+    {
+      "slot_key": "related-questions",
+      "file": "slots/related-questions.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": true,
+      "data_path": "related.questions",
+      "allowed_actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ]
+    }
+  ],
+  "allowed_slot_sequences": [
+    [
+      "summary-card",
+      "meal-section",
+      "nutrition-note"
+    ],
+    [
+      "summary-card",
+      "meal-section",
+      "nutrition-note",
+      "related-questions"
+    ]
+  ],
+  "llm_selection_policy": {
+    "enabled": true,
+    "decision_schema": "skill-packages/meal_plan/references/contracts/template-composition.schema.json",
+    "role": "select_registered_template_and_slots_only",
+    "default_variant": "meal_plan.plan.v1",
+    "allowed_variants": [
+      "meal_plan.plan.v1",
+      "meal_plan.overview.v1",
+      "meal_plan.timeline.v1",
+      "meal_plan.dashboard.v1",
+      "meal_plan.condition_intake.v1",
+      "meal_plan.diet_preference.v1",
+      "meal_plan.risk_alert.v1",
+      "meal_plan.ingredient_swap.v1",
+      "meal_plan.shopping_list.v1",
+      "meal_plan.cooking_steps.v1",
+      "meal_plan.order_confirm.v1",
+      "meal_plan.delivery_handoff.v1",
+      "meal_plan.nutrition_compare.v1",
+      "meal_plan.weekly_plan.v1",
+      "meal_plan.chronic_disease.v1",
+      "meal_plan.swallowing_care.v1",
+      "meal_plan.family_explain.v1",
+      "meal_plan.feedback_collect.v1",
+      "meal_plan.leftover_reuse.v1",
+      "meal_plan.festival_plan.v1",
+      "meal_plan.budget_plan.v1",
+      "meal_plan.caregiver_brief.v1",
+      "meal_plan.doctor_note.v1",
+      "meal_plan.status.v1"
+    ],
+    "allowed_slots": [
+      "summary-card",
+      "meal-section",
+      "nutrition-note",
+      "related-questions"
+    ],
+    "required_slots": [
+      "summary-card",
+      "meal-section",
+      "nutrition-note"
+    ],
+    "forbidden": [
+      "raw_html",
+      "script",
+      "inline_event_handler",
+      "external_url",
+      "unregistered_template_id",
+      "unregistered_slot_key",
+      "unregistered_action_key"
+    ],
+    "bff_must_validate": true
+  },
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff",
+    "meal_plan.collect_condition",
+    "meal_plan.set_preference",
+    "meal_plan.check_risk",
+    "meal_plan.swap_ingredient",
+    "meal_plan.generate_shopping_list",
+    "meal_plan.show_cooking_steps",
+    "meal_plan.confirm_order",
+    "meal_plan.handoff_delivery",
+    "meal_plan.compare_nutrition",
+    "meal_plan.generate_weekly_plan",
+    "meal_plan.adapt_chronic_disease",
+    "meal_plan.adapt_swallowing",
+    "meal_plan.explain_to_family",
+    "meal_plan.collect_feedback",
+    "meal_plan.reuse_leftover",
+    "meal_plan.festival_adjust",
+    "meal_plan.budget_adjust",
+    "meal_plan.caregiver_brief",
+    "meal_plan.doctor_note",
+    "meal_plan.view_status"
+  ],
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "variant_role": "plan",
+  "followup_suggestions": "templates/followups/plan.json",
+  "resolved_html": "skill-packages/meal_plan/templates/html/plan.html"
+}

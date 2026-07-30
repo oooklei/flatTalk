@@ -1,0 +1,70 @@
+{
+  "version": "gxy-external-service-registry.v1",
+  "services": [
+    {
+      "service_key": "redis_local",
+      "name": "本机 Redis",
+      "type": "redis",
+      "status": "configured",
+      "url_env": "GXY_REDIS_URL",
+      "critical": true
+    },
+    {
+      "service_key": "mysql_local",
+      "name": "本机 MySQL",
+      "type": "mysql",
+      "status": "configured",
+      "host_env": "GXY_MYSQL_HOST",
+      "port_env": "GXY_MYSQL_PORT",
+      "critical": true
+    },
+    {
+      "service_key": "business_system",
+      "name": "业务系统",
+      "type": "http",
+      "status": "config_required",
+      "base_url_env": "GXY_BUSINESS_SYSTEM_BASE_URL",
+      "critical": true
+    },
+    {
+      "service_key": "tag_system",
+      "name": "标签系统",
+      "type": "http_or_pg",
+      "status": "config_required",
+      "base_url_env": "TAG_SYSTEM_API_BASE_URL",
+      "critical": true
+    },
+    {
+      "service_key": "nuwax_platform",
+      "name": "女娲平台",
+      "type": "http",
+      "status": "configured",
+      "base_url_env": "NUWAX_BASE_URL_160",
+      "critical": true
+    },
+    {
+      "service_key": "asr",
+      "name": "ASR 语音转写",
+      "type": "http",
+      "status": "configured",
+      "base_url_env": "ASR_ENDPOINT",
+      "critical": false
+    },
+    {
+      "service_key": "ocr",
+      "name": "OCR 图片识别",
+      "type": "http",
+      "status": "config_required",
+      "base_url_env": "OCR_ENDPOINT",
+      "critical": false
+    },
+    {
+      "service_key": "tts",
+      "name": "TTS 语音播报",
+      "type": "http",
+      "status": "config_required",
+      "base_url_env": "TTS_ENDPOINT",
+      "critical": false
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.product_detail.v1",
+  "template_key": "product_detail",
+  "skill_key": "travel_route",
+  "name": "旅居产品详情卡片",
+  "cn_name": "旅居产品详情卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "product-detail.html",
+  "fallback_html": "product-detail.html",
+  "description": "展示房型、服务、费用和退改规则。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "product_detail",
+  "actions": [
+    "travel_route.view_product_detail",
+    "travel_route.check_availability",
+    "travel_route.preview_order"
+  ],
+  "followup_suggestions": "templates/followups/product_detail.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/product-detail.html"
+}

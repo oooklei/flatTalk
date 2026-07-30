@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.router.v1",
+  "template_key": "router",
+  "skill_key": "dispatch_manage",
+  "name": "自动派单路由卡片",
+  "cn_name": "自动派单路由卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "router.html",
+  "fallback_html": "router.html",
+  "description": "展示派单模式、候选范围和决策入口。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "router",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/router.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/router.html"
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.multi_service_bundle.v1",
+  "template_key": "multi_service_bundle",
+  "skill_key": "find_service",
+  "name": "组合服务方案卡片",
+  "cn_name": "组合服务方案卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "multi-service-bundle.html",
+  "fallback_html": "multi-service-bundle.html",
+  "description": "将助洁、陪诊、送餐等组合成服务包。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "multi_service_bundle",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/multi_service_bundle.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/multi-service-bundle.html"
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.score_breakdown.v1",
+  "template_key": "score_breakdown",
+  "skill_key": "dispatch_manage",
+  "name": "候选评分拆解卡片",
+  "cn_name": "候选评分拆解卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "score-breakdown.html",
+  "fallback_html": "score-breakdown.html",
+  "description": "展示多因子分、权重和推荐理由。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "score_breakdown",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/score_breakdown.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/score-breakdown.html"
+}

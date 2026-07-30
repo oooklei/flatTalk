@@ -1,0 +1,26 @@
+{
+  "template_id": "meal_plan.dashboard.v1",
+  "template_key": "dashboard",
+  "skill_key": "meal_plan",
+  "name": "膳食仪表盘模板",
+  "cn_name": "膳食仪表盘模板",
+  "render_mode": "html_template",
+  "html": "dashboard.html",
+  "source": "jtd-api/pages/flow-3-dashboard.html",
+  "description": "展示营养结构、达标情况和风险提示。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "dashboard",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "layout": "chat-card",
+  "fallback_html": "dashboard.html",
+  "followup_suggestions": "templates/followups/dashboard.json",
+  "resolved_html": "skill-packages/meal_plan/templates/html/dashboard.html"
+}

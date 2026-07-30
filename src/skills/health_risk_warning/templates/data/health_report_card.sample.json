@@ -1,0 +1,61 @@
+{
+  "reportTitle": "健康风险预警报告",
+  "reportSubtitle": "基于体质与健康数据的综合评估与调养建议",
+  "assessmentTitle": "风险评估",
+  "sectionBadge": "易患病症",
+  "highRiskCount": 1,
+  "midRiskCount": 6,
+  "lowRiskCount": 6,
+  "risks": [
+    { "riskName": "乳腺结节风险评估", "riskScore": 65.6, "riskLabel": "预警", "levelClass": "high" },
+    { "riskName": "骨质疏松症风险评估", "riskScore": 54.5, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "甲状腺结节风险评估", "riskScore": 55.8, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "月经不调风险评估", "riskScore": 61.8, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "精神压力评估", "riskScore": 69, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "肺结节风险评估", "riskScore": 74.2, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "子宫肌瘤风险评估", "riskScore": 61.9, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "中风风险评估", "riskScore": 38.3, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "心血管功能评估", "riskScore": 52, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "脂肪肝风险评估", "riskScore": 59.1, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "糖尿病风险评估", "riskScore": 41.2, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "高血压风险评估", "riskScore": 46.8, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "慢性胃炎风险评估", "riskScore": 48.5, "riskLabel": "轻度风险", "levelClass": "low" }
+  ],
+  "hasWarnings": true,
+  "warningTitle": "风险预警",
+  "warnings": [
+    { "warningText": "提示肝胆异常。可能有睡眠不佳，情志不畅等表现。" },
+    { "warningText": "提示中焦郁滞或下焦壅塞。可能有腹胀，食少等表现。" }
+  ],
+  "hasDietary": true,
+  "dietaryBadge": "膳食调养",
+  "dietaryAdvice": "宜食用清淡、易消化、富含优质蛋白及膳食纤维的食物，如小米、山药、莲子、百合、绿叶蔬菜、鱼类等。",
+  "dietaryAvoid": "忌食辛辣刺激、油腻煎炸、生冷寒凉及过甜过咸食物，如辣椒、烧烤、冰淇淋、肥肉等。",
+  "recipes": [
+    {
+      "recipeTitle": "三花橘皮茶",
+      "recipeMedicine": "菊花、茉莉花、玫瑰花各 3g",
+      "recipeIngredients": "陈皮 5g、枸杞 6粒、冰糖适量",
+      "recipeMethod": "将药材与食材洗净后放入杯中，沸水冲泡 5–8 分钟，可反复冲泡。",
+      "recipeEffect": "疏肝理气、健脾和胃，适合情志不畅、腹胀食少者日常调养。",
+      "recipeSource": "《常见病食疗方》"
+    },
+    {
+      "recipeTitle": "山药小米粥",
+      "recipeMedicine": "怀山药 30g",
+      "recipeIngredients": "小米 50g、红枣 4枚、清水适量",
+      "recipeMethod": "小米淘洗后加水煮开，加入去皮山药块与红枣，小火熬煮至粘稠即可。",
+      "recipeEffect": "健脾益胃、养心安神，有助于改善睡眠不佳、食少腹胀。",
+      "recipeSource": "《中医食疗养生手册》"
+    },
+    {
+      "recipeTitle": "百合莲子汤",
+      "recipeMedicine": "干百合 15g、莲子 20g",
+      "recipeIngredients": "银耳 10g、冰糖适量",
+      "recipeMethod": "银耳提前泡发撕小朵，与百合、莲子同煮至软糯，出锅前加冰糖调味。",
+      "recipeEffect": "润肺宁心、清心安神，适合情志不畅、睡眠欠佳者。",
+      "recipeSource": "《药膳食疗精选》"
+    }
+  ],
+  "footerNote": "本报告仅供健康管理参考，不作为临床诊断依据。如有不适请及时就医。"
+}

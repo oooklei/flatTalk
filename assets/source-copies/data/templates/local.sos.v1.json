@@ -1,0 +1,28 @@
+{
+  "template_id": "local.sos.v1",
+  "skill_key": "health_risk_warning",
+  "cn_name": "SOS 紧急求助卡片",
+  "description": "本地识别 SOS、急救、求救时即时展示。",
+  "html": "local_sos.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "template_key": "local_sos",
+  "name": "SOS 紧急求助卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "fallback_html": "local_sos.html",
+  "sample_data": "templates/data/emergency.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "local_sos",
+  "actions": [
+    "health_risk.call_120",
+    "health_risk.contact_family",
+    "health_risk.dispatch_emergency",
+    "health_risk.mark_safe",
+    "health_risk.request_doctor_review",
+    "health_risk.open_monitoring"
+  ],
+  "followup_suggestions": "",
+  "html_present": true,
+  "resolved_html": "skill-packages/health_risk_warning/templates/html/local_sos.html"
+}

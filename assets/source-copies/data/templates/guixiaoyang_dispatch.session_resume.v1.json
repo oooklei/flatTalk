@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.session_resume.v1",
+  "template_key": "session_resume",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "会话恢复卡片",
+  "cn_name": "会话恢复卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "session-resume.html",
+  "fallback_html": "session-resume.html",
+  "description": "恢复上次未完成的服务、膳食或派单任务。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "session_resume",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/session_resume.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/session-resume.html"
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "source_template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "learning_feedback.show_fallback_status",
+      "source_template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+      "label": "查看兜底状态",
+      "user_prompt": "查看兜底状态，并继续说明对话反馈学习卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.show_fallback_status",
+      "next_template_id": "guixiaoyang_dispatch.fallback_status.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "learning_feedback.collect_learning_feedback",
+      "source_template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+      "label": "提交对话反馈",
+      "user_prompt": "提交对话反馈，并继续说明对话反馈学习卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.collect_learning_feedback",
+      "next_template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "learning_feedback.answer_faq",
+      "source_template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+      "label": "回答常见问题",
+      "user_prompt": "回答常见问题，并继续说明对话反馈学习卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.answer_faq",
+      "next_template_id": "guixiaoyang_dispatch.faq_answer.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "learning_feedback.resume_session",
+      "source_template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+      "label": "恢复上次会话",
+      "user_prompt": "恢复上次会话，并继续说明对话反馈学习卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.resume_session",
+      "next_template_id": "guixiaoyang_dispatch.session_resume.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

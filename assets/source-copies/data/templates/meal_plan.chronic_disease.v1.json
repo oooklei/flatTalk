@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.chronic_disease.v1",
+  "template_key": "chronic_disease",
+  "skill_key": "meal_plan",
+  "name": "慢病膳食卡片",
+  "cn_name": "慢病膳食卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "chronic-disease.html",
+  "fallback_html": "chronic-disease.html",
+  "description": "针对糖尿病、高血压、高血脂等慢病输出建议。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "chronic_disease",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/chronic_disease.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/chronic-disease.html"
+}

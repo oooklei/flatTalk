@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.auto_dispatch.v1",
+  "template_key": "auto_dispatch",
+  "skill_key": "dispatch_manage",
+  "name": "自动派单执行卡片",
+  "cn_name": "自动派单执行卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "auto-dispatch.html",
+  "fallback_html": "auto-dispatch.html",
+  "description": "展示自动派单执行结果和通知对象。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "auto_dispatch",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/auto_dispatch.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/auto-dispatch.html"
+}

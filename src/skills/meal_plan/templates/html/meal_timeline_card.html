@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>时间线式膳食流程卡片模板</title>
+<style>
+  :root {
+    --bg: #f4f7fa;
+    --card: #ffffff;
+    --ink: #2b2f33;
+    --ink2: #6b7280;
+    --line: #eceff3;
+    --accent: #2f8f5b;
+    --accent-soft: #e9f6ef;
+    --carb: #FF6B35;
+    --protein: #7CB342;
+    --fat: #42A5F5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 16px;
+  }
+  .page-header { text-align: center; margin-bottom: 14px; }
+  .page-header h1 { margin: 0; font-size: 22px; }
+  .page-header p { margin: 4px 0 0; color: var(--ink2); font-size: 13px; }
+
+  /* 顶部横幅 */
+  .profile-banner {
+    background: linear-gradient(135deg, #2f8f5b, #56b87f);
+    color: #fff; border-radius: 16px; padding: 16px; margin-bottom: 16px;
+    box-shadow: 0 6px 18px rgba(20, 30, 40, 0.08);
+  }
+  .profile-banner .pb-date { font-size: 13px; opacity: 0.92; }
+  .profile-banner .pb-title { font-size: 20px; font-weight: 700; margin: 4px 0 8px; }
+  .profile-banner .pb-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; }
+  .profile-banner .pb-meta b { font-weight: 600; }
+
+  /* 时间线 */
+  .timeline-wrap { position: relative; padding-left: 8px; }
+  .timeline-line {
+    position: absolute; left: 19px; top: 8px; bottom: 8px;
+    width: 3px; background: linear-gradient(180deg, #ff9a5a, #2f8f5b); border-radius: 3px;
+  }
+  .timeline-node { position: relative; padding: 0 0 18px 44px; }
+  .timeline-node .dot {
+    position: absolute; left: 8px; top: 4px; width: 22px; height: 22px;
+    border-radius: 50%; background: #ff9a5a; border: 4px solid #fff;
+    box-shadow: 0 0 0 2px #ff9a5a; z-index: 1;
+  }
+  .timeline-node.lunch .dot { background: #ffd24d; box-shadow: 0 0 0 2px #ffd24d; }
+  .timeline-node.dinner .dot { background: #2f8f5b; box-shadow: 0 0 0 2px #2f8f5b; }
+  .node-card {
+    background: var(--card); border-radius: 14px; padding: 14px;
+    box-shadow: 0 6px 18px rgba(20, 30, 40, 0.06); border: 1px solid var(--line);
+  }
+  .node-head { display: flex; align-items: center; justify-content: space-between; }
+  .node-head .nh-name { font-size: 16px; font-weight: 600; }
+  .node-head .nh-time { font-size: 12px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px; }
+  .node-cal { text-align: right; font-size: 13px; color: var(--ink2); margin-top: 2px; }
+  .food-line { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+  .food-line:last-child { border-bottom: 0; }
+  .food-line .fc { color: var(--ink2); font-size: 13px; }
+
+  /* 营养面板 */
+  .panel {
+    background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 16px;
+    box-shadow: 0 6px 18px rgba(20, 30, 40, 0.06); border: 1px solid var(--line);
+  }
+  .panel-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .ratio { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+  .ratio .r-dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; }
+  .ratio .r-name { width: 72px; font-size: 13px; }
+  .ratio .r-bar { flex: 1; height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+  .ratio .r-bar > i { display: block; height: 100%; border-radius: 999px; }
+  .ratio .r-pct { width: 56px; text-align: right; font-size: 13px; color: var(--ink2); }
+
+  /* 相关 */
+  .related-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .related-item { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; background: var(--accent-soft); }
+  .related-item .rel-icon { font-size: 22px; }
+  .related-item .rel-text { font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>{{pageTitle|⏰ 时间线式膳食流程}}</h1>
+    <p>{{pageSubtitle|按时间顺序纵向展示，适合移动端阅读}}</p>
+  </div>
+
+  <div class="profile-banner">
+    <div class="pb-date">{{bannerDate|📅 今日}}</div>
+    <div class="pb-title">{{bannerTitle|推荐 — 一日三餐}}</div>
+    <div class="pb-meta">
+      <span>👥 {{suitable|60岁以上长者 · 低盐低脂低糖}}</span>
+      <span>🔥 <b>{{totalCal|约 590kcal}}</b></span>
+      <span>🧂 <b>{{salt|每日 ≤ 5g（控盐勺量）}}</b></span>
+    </div>
+  </div>
+
+  <div class="timeline-wrap">
+    <div class="timeline-line"></div>
+    {{#meals}}
+    <div class="timeline-node {{dotCls|}}">
+      <div class="dot"></div>
+      <div class="node-card">
+        <div class="node-head">
+          <span class="nh-name">{{mealEmoji|}} {{mealName|餐次}}</span>
+          <span class="nh-time">{{mealTime|时间}}</span>
+        </div>
+        <div class="node-cal">{{mealTotal|0 kcal}}</div>
+        {{#foods}}
+        <div class="food-line">
+          <span>{{foodName|菜品}}</span>
+          <span class="fc">{{cal|0kcal}}</span>
+        </div>
+        {{/foods}}
+      </div>
+    </div>
+    {{/meals}}
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">📊 营养比例参考</div>
+    {{#ratios}}
+    <div class="ratio">
+      <span class="r-dot" style="background:{{color|#999}}"></span>
+      <span class="r-name">{{name|项目}}</span>
+      <span class="r-bar"><i style="width:{{width|50}}%;background:{{color|#999}}"></i></span>
+      <span class="r-pct">{{pct|0%}}</span>
+    </div>
+    {{/ratios}}
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🔗 相关膳食建议</div>
+    <div class="related-row">
+      {{#related}}
+      <div class="related-item">
+        <div class="rel-icon">{{relIcon|💡}}</div>
+        <div class="rel-text">{{{relText|相关建议}}}</div>
+      </div>
+      {{/related}}
+    </div>
+  </div>
+
+  <script type="application/json">
+  {
+    "pageTitle": "⏰ 时间线式膳食流程",
+    "pageSubtitle": "Flow 2 — 按时间顺序纵向展示，适合移动端阅读",
+    "bannerDate": "📅 今日",
+    "bannerTitle": "推荐 — 一日三餐",
+    "suitable": "60岁以上长者 · 低盐低脂低糖",
+    "totalCal": "约 590kcal",
+    "salt": "每日 ≤ 5g（控盐勺量）",
+    "meals": [
+      {
+        "mealName": "早餐", "mealEmoji": "🍳", "mealTime": "07:00 ~ 08:30",
+        "mealTotal": "173 kcal", "dotCls": "",
+        "foods": [
+          { "foodName": "🌾 小米粥", "cal": "85kcal" },
+          { "foodName": "🥚 水煮蛋", "cal": "70kcal" },
+          { "foodName": "🥬 凉拌菠菜", "cal": "18kcal" }
+        ]
+      },
+      {
+        "mealName": "午餐", "mealEmoji": "🍚", "mealTime": "11:30 ~ 13:00",
+        "mealTotal": "280 kcal", "dotCls": "lunch",
+        "foods": [
+          { "foodName": "🍚 杂粮饭", "cal": "160kcal" },
+          { "foodName": "🐟 清蒸鱼", "cal": "90kcal" },
+          { "foodName": "🥕 炒胡萝卜", "cal": "30kcal" }
+        ]
+      },
+      {
+        "mealName": "晚餐", "mealEmoji": "🍲", "mealTime": "18:00 ~ 19:30",
+        "mealTotal": "137 kcal", "dotCls": "dinner",
+        "foods": [
+          { "foodName": "🍲 蔬菜豆腐汤", "cal": "85kcal" },
+          { "foodName": "🍞 全麦馒头", "cal": "52kcal" }
+        ]
+      }
+    ],
+    "ratios": [
+      { "name": "碳水", "pct": "52%", "width": 52, "color": "#FF6B35" },
+      { "name": "蛋白", "pct": "18%", "width": 18, "color": "#7CB342" },
+      { "name": "脂肪", "pct": "30%", "width": 30, "color": "#42A5F5" }
+    ],
+    "related": [
+      { "relIcon": "📋", "relText": "完整一周<br>膳食方案" },
+      { "relIcon": "🍳", "relText": "每日三餐<br>搭配指南" },
+      { "relIcon": "🏃", "relText": "餐后轻运动<br>建议" }
+    ]
+  }
+  </script>
+</body>
+</html>

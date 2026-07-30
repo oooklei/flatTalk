@@ -1,0 +1,6 @@
+{
+  "id": "health_report_card",
+  "layout": "vertical",
+  "match": "展示完整的健康风险预警报告（包含风险评估、风险预警、膳食调养三个模块的综合报告卡片）",
+  "required": ["reportTitle", "risks"]
+}

@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--shopping_list" data-template-id="meal_plan.shopping_list.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{shopping_list.badge}}</p>
+    <h3>{{shopping_list.title}}</h3>
+    <p>{{shopping_list.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{shopping_list.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 采购清单卡片: 汇总食材、份量、采购频率和保存提示。 -->

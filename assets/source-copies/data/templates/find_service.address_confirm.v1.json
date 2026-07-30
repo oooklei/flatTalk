@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.address_confirm.v1",
+  "template_key": "address_confirm",
+  "skill_key": "find_service",
+  "name": "服务地址确认卡片",
+  "cn_name": "服务地址确认卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "address-confirm.html",
+  "fallback_html": "address-confirm.html",
+  "description": "确认地址、楼栋门牌、定位和特殊到达说明。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "address_confirm",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/address_confirm.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/address-confirm.html"
+}

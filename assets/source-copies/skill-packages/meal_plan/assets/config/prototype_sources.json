@@ -1,0 +1,17 @@
+{
+  "packageKey": "meal_plan",
+  "excelName": "AI膳食",
+  "sources": [
+    {
+      "url": "https://lanhuapp.com/link/#/invite?sid=qX09NM3a",
+      "status": "pending_crawl",
+      "capturedAt": null
+    },
+    {
+      "url": "https://www.kdocs.cn/l/cmVSrNHGm5Mr",
+      "status": "pending_crawl",
+      "capturedAt": null
+    }
+  ],
+  "generatedAt": "2026-07-15T03:18:53.089Z"
+}

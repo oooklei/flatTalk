@@ -1,0 +1,11 @@
+{
+  "template_id": "elder_health.profile_summary.v1",
+  "skill_key": "elder_health_profile",
+  "cn_name": "老人健康画像摘要",
+  "description": "老人健康画像AI分析的摘要模板，展示健康指标趋势和评估结论",
+  "html": "elder_health_profile/profile_summary.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/elder_health_profile/templates/html/profile_summary.html"
+}

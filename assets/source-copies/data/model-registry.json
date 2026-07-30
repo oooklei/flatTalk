@@ -1,0 +1,166 @@
+{
+  "version": "gxy-model-registry.v1",
+  "active_policy": "default_fastest_available",
+  "client_scope_note": "BFF server-side model clients only; browser clients must not call model providers directly.",
+  "providers": [
+    {
+      "provider_key": "zhipu",
+      "name": "Zhipu GLM",
+      "status": "configured",
+      "usage": [
+        "bff_client",
+        "template_orchestration",
+        "chat_runtime"
+      ],
+      "secret_ref": "",
+      "notes": "Initialized from Nuwax 160 model configs; API keys are encrypted at rest.",
+      "updated_at": "2026-07-27T19:14:16.902Z",
+      "source": "bff_admin_runtime"
+    },
+    {
+      "provider_key": "nuwax_runtime",
+      "name": "Nuwax runtime managed models",
+      "status": "external_managed",
+      "usage": [
+        "agent",
+        "skill"
+      ],
+      "secret_ref": "",
+      "notes": "Remote Agent/Skill runtime remains managed by Nuwax.",
+      "updated_at": "2026-07-27T19:14:16.916Z",
+      "source": "bff_admin_runtime"
+    }
+  ],
+  "endpoints": [
+    {
+      "endpoint_key": "nuwax_160_glm_5_2",
+      "endpoint_id": "nuwax_160_glm_5_2",
+      "name": "glm-5.2",
+      "display_name": "GLM-5.2 (Nuwax 160)",
+      "provider": "zhipu",
+      "provider_key": "zhipu",
+      "model_id": "glm-5.2",
+      "model_name": "glm-5.2",
+      "api_base": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "secret_ref": "",
+      "max_tokens": 8192,
+      "temperature": 0.7,
+      "is_active": true,
+      "is_default": true,
+      "sort_order": 10,
+      "priority": 10,
+      "status": "enabled",
+      "scopes": [
+        "bff_client",
+        "template_orchestration",
+        "chat_runtime"
+      ],
+      "timeout_ms": 120000,
+      "updated_at": "2026-07-27T19:14:32.130Z",
+      "source": "bff_admin_runtime",
+      "llm_model_schema": "gxy.local-llm-model.v1",
+      "api_key_ciphertext": "srbCp4HwaiWEMMTEJ73Zki9jGb0gUiHsYgl3eKogMyhpdOj+ylSjhfXBWcj4Txc/qg==",
+      "api_key_iv": "LF/FonxYWFrYezUW",
+      "api_key_tag": "zUPeOXcBodhuJAtjtOOW3A==",
+      "api_key_encoding": "gxy-llm-key-aes-256-gcm.v1",
+      "max_context_tokens": 128000,
+      "remote_platform": "",
+      "remote_space_id": "",
+      "remote_model_id": "",
+      "remote_component_id": "",
+      "source_name": "",
+      "api_protocol": "OpenAI",
+      "network_type": "",
+      "strategy": "",
+      "model_type": "Chat",
+      "modalities": [
+        "Text",
+        "Reasoning"
+      ],
+      "is_reason_model": 1,
+      "description": "",
+      "remote_modified_at": "",
+      "remote_created_at": "",
+      "api_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "apiUrl": "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+    },
+    {
+      "endpoint_key": "nuwax_160_glm_5_0",
+      "endpoint_id": "nuwax_160_glm_5_0",
+      "name": "glm-5.0",
+      "display_name": "GLM-5.0 (Nuwax 160, remote glm-5)",
+      "provider": "zhipu",
+      "provider_key": "zhipu",
+      "model_id": "glm-5",
+      "model_name": "glm-5",
+      "api_base": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "secret_ref": "",
+      "max_tokens": 8192,
+      "temperature": 0.7,
+      "is_active": true,
+      "is_default": false,
+      "sort_order": 20,
+      "priority": 20,
+      "status": "enabled",
+      "scopes": [
+        "bff_client",
+        "template_orchestration",
+        "chat_runtime"
+      ],
+      "timeout_ms": 120000,
+      "updated_at": "2026-07-27T19:14:32.145Z",
+      "source": "bff_admin_runtime",
+      "llm_model_schema": "gxy.local-llm-model.v1",
+      "api_key_ciphertext": "vGeoRY3Mcs4LcgVWUGHlYMqQsfeEU0w+6/5tkjoleTzjZsxAlA7LvwaVTKIZmfiSGw==",
+      "api_key_iv": "jjG/TTVgPAipqQLZ",
+      "api_key_tag": "Gg0MAsVTOpDdgQp2iKwvEA==",
+      "api_key_encoding": "gxy-llm-key-aes-256-gcm.v1",
+      "max_context_tokens": 128000,
+      "remote_platform": "",
+      "remote_space_id": "",
+      "remote_model_id": "",
+      "remote_component_id": "",
+      "source_name": "",
+      "api_protocol": "OpenAI",
+      "network_type": "",
+      "strategy": "",
+      "model_type": "Multi",
+      "modalities": [
+        "Text",
+        "Reasoning",
+        "Image"
+      ],
+      "is_reason_model": 1,
+      "description": "",
+      "remote_modified_at": "",
+      "remote_created_at": "",
+      "api_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "apiUrl": "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+    }
+  ],
+  "route_policies": [
+    {
+      "policy_key": "default_fastest_available",
+      "scope": "bff_client",
+      "strategy": "fastest_available",
+      "fallback_order": [
+        "nuwax_160_glm_5_2",
+        "nuwax_160_glm_5_0"
+      ],
+      "failure_types": [
+        "quota_exceeded",
+        "rate_limited",
+        "auth_failed",
+        "timeout",
+        "context_length_exceeded",
+        "billing_required"
+      ],
+      "weights": {},
+      "updated_at": "2026-07-27T19:14:16.921Z",
+      "source": "bff_admin_runtime"
+    }
+  ],
+  "updated_at": "2026-07-27T19:14:32.145Z"
+}

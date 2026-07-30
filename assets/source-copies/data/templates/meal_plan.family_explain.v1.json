@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.family_explain.v1",
+  "template_key": "family_explain",
+  "skill_key": "meal_plan",
+  "name": "家属解释卡片",
+  "cn_name": "家属解释卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "family-explain.html",
+  "fallback_html": "family-explain.html",
+  "description": "用家属易理解的话解释推荐原因和注意事项。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "family_explain",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/family_explain.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/family-explain.html"
+}

@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.transport_plan.v1",
+  "template_key": "transport_plan",
+  "skill_key": "travel_route",
+  "name": "交通接驳方案卡片",
+  "cn_name": "交通接驳方案卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "transport-plan.html",
+  "fallback_html": "transport-plan.html",
+  "description": "展示出发、换乘、接送和陪同交通安排。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "transport_plan",
+  "actions": [
+    "travel_route.plan_transport",
+    "travel_route.adjust_pace",
+    "travel_route.replan"
+  ],
+  "followup_suggestions": "templates/followups/transport_plan.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/transport-plan.html"
+}

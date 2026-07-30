@@ -1,0 +1,573 @@
+{
+  "title": "膳食推荐卡片",
+  "layout": "chat-card",
+  "summary": {
+    "badge": "今日推荐 - 一日三餐方案",
+    "audience_icon": "person",
+    "audience": "60岁以上长者，低盐低脂低糖",
+    "energy_icon": "flame",
+    "total_kcal": 590,
+    "total_kcal_label": "约 590kcal",
+    "salt_icon": "salt",
+    "salt_limit_g": 5,
+    "salt_limit_label": "每日≤ 5g（控制盐摄入）"
+  },
+  "meals": [
+    {
+      "key": "breakfast",
+      "name": "早餐",
+      "icon_primary": "sunrise",
+      "icon_secondary": "bowl",
+      "total_icon": "flame",
+      "total_kcal": 173,
+      "total_kcal_label": "173kcal",
+      "items": [
+        {
+          "name": "小米粥",
+          "icon": "grain",
+          "kcal": 85,
+          "kcal_label": "85kcal",
+          "portion": "碗(200g)",
+          "portion_label": "/碗(200g)",
+          "benefit": "膳食纤维，B族维生素"
+        },
+        {
+          "name": "水煮蛋",
+          "icon": "egg",
+          "kcal": 72,
+          "kcal_label": "72kcal",
+          "portion": "1个",
+          "portion_label": "/1个",
+          "benefit": "优质蛋白，卵磷脂"
+        },
+        {
+          "name": "凉拌黄瓜",
+          "icon": "cucumber",
+          "kcal": 16,
+          "kcal_label": "16kcal",
+          "portion": "份(100g)",
+          "portion_label": "/份(100g)",
+          "benefit": "维生素C，水分充足"
+        }
+      ]
+    },
+    {
+      "key": "lunch",
+      "name": "午餐",
+      "icon_primary": "sun",
+      "icon_secondary": "plate",
+      "total_icon": "flame",
+      "total_kcal": 251,
+      "total_kcal_label": "251kcal",
+      "items": [
+        {
+          "name": "清蒸红鱼",
+          "icon": "fish",
+          "kcal": 106,
+          "kcal_label": "106kcal",
+          "portion": "份(150g)",
+          "portion_label": "/份(150g)",
+          "benefit": "优质蛋白，Omega-3"
+        },
+        {
+          "name": "蒜蓉西兰花",
+          "icon": "broccoli",
+          "kcal": 34,
+          "kcal_label": "34kcal",
+          "portion": "份(150g)",
+          "portion_label": "/份(150g)",
+          "benefit": "维生素K，膳食纤维"
+        },
+        {
+          "name": "糙米饭",
+          "icon": "rice",
+          "kcal": 111,
+          "kcal_label": "111kcal",
+          "portion": "碗(150g)",
+          "portion_label": "/碗(150g)",
+          "benefit": "B族维生素，矿物质"
+        }
+      ]
+    },
+    {
+      "key": "dinner",
+      "name": "晚餐",
+      "icon_primary": "moon",
+      "icon_secondary": "soup",
+      "total_icon": "flame",
+      "total_kcal": 166,
+      "total_kcal_label": "166kcal",
+      "items": [
+        {
+          "name": "番茄豆腐汤",
+          "icon": "soup",
+          "kcal": 58,
+          "kcal_label": "58kcal",
+          "portion": "碗(250ml)",
+          "portion_label": "/碗(250ml)",
+          "benefit": "番茄红素，优质蛋白"
+        },
+        {
+          "name": "清炒南瓜",
+          "icon": "pumpkin",
+          "kcal": 26,
+          "kcal_label": "26kcal",
+          "portion": "份(120g)",
+          "portion_label": "/份(120g)",
+          "benefit": "β-胡萝卜素，钾"
+        },
+        {
+          "name": "玉米粥",
+          "icon": "corn",
+          "kcal": 82,
+          "kcal_label": "82kcal",
+          "portion": "小碗(100g)",
+          "portion_label": "/小碗(100g)",
+          "benefit": "膳食纤维，叶黄素"
+        }
+      ]
+    }
+  ],
+  "nutrition": {
+    "icon": "sparkles",
+    "title": "营养配比",
+    "note": "碳水化合物 50-55%；蛋白质 15-20%；脂肪 25-30%，符合长者代谢特点。如后续出现慢病标签、过敏禁忌、高血压、糖尿病等约束，系统应自动调整食谱。",
+    "tags": [
+      {
+        "icon": "heart-pulse",
+        "label": "高血压"
+      },
+      {
+        "icon": "activity",
+        "label": "糖尿病"
+      },
+      {
+        "icon": "bone",
+        "label": "骨质疏松"
+      },
+      {
+        "icon": "wheat-off",
+        "label": "无麸质"
+      }
+    ]
+  },
+  "related": {
+    "icon": "help-circle",
+    "title": "您可能还想了解",
+    "questions": [
+      {
+        "id": "weekly_plan",
+        "icon": "calendar-days",
+        "title": "查看完整一周的膳食方案",
+        "description": "周一至周日，每日三餐详细搭配",
+        "action_key": "meal_plan.regenerate"
+      },
+      {
+        "id": "hypertension_taboo",
+        "icon": "heart-pulse",
+        "title": "高血压老人饮食有什么禁忌？",
+        "description": "控盐控脂，宜吃忌口详细清单",
+        "action_key": "meal_plan.regenerate"
+      },
+      {
+        "id": "diabetes_diet",
+        "icon": "activity",
+        "title": "糖尿病老人怎么安排饮食？",
+        "description": "控糖食谱，升糖指数参考",
+        "action_key": "meal_plan.regenerate"
+      }
+    ]
+  },
+  "plan": {
+    "badge": "AI膳食",
+    "title": "膳食计划对话卡片",
+    "summary": "展示一日膳食总览、餐段安排、营养提示和相关追问。",
+    "items": [
+      "适用场景：用户表达膳食计划对话卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "overview": {
+    "badge": "AI膳食",
+    "title": "膳食概览模板",
+    "summary": "展示膳食推荐摘要、关键指标和主建议。",
+    "items": [
+      "适用场景：用户表达膳食概览模板相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "timeline": {
+    "badge": "AI膳食",
+    "title": "膳食时间线模板",
+    "summary": "按早餐、午餐、晚餐、加餐呈现执行节点。",
+    "items": [
+      "适用场景：用户表达膳食时间线模板相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "dashboard": {
+    "badge": "AI膳食",
+    "title": "膳食仪表盘模板",
+    "summary": "展示营养结构、达标情况和风险提示。",
+    "items": [
+      "适用场景：用户表达膳食仪表盘模板相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "condition_intake": {
+    "badge": "AI膳食",
+    "title": "健康条件采集卡片",
+    "summary": "采集慢病、过敏、禁忌、咀嚼吞咽和近期指标。",
+    "items": [
+      "适用场景：用户表达健康条件采集卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "diet_preference": {
+    "badge": "AI膳食",
+    "title": "饮食偏好卡片",
+    "summary": "展示口味、菜系、软硬度、餐次和预算偏好。",
+    "items": [
+      "适用场景：用户表达饮食偏好卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "risk_alert": {
+    "badge": "AI膳食",
+    "title": "膳食风险提醒卡片",
+    "summary": "展示糖尿病、高血压、肾病、吞咽困难等风险。",
+    "items": [
+      "适用场景：用户表达膳食风险提醒卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "ingredient_swap": {
+    "badge": "AI膳食",
+    "title": "食材替换建议卡片",
+    "summary": "提供同类食材替换、禁忌替换和采购建议。",
+    "items": [
+      "适用场景：用户表达食材替换建议卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "shopping_list": {
+    "badge": "AI膳食",
+    "title": "采购清单卡片",
+    "summary": "汇总食材、份量、采购频率和保存提示。",
+    "items": [
+      "适用场景：用户表达采购清单卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "cooking_steps": {
+    "badge": "AI膳食",
+    "title": "烹饪步骤卡片",
+    "summary": "展示适老化烹饪步骤、少油少盐和软烂处理。",
+    "items": [
+      "适用场景：用户表达烹饪步骤卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "order_confirm": {
+    "badge": "AI膳食",
+    "title": "订餐确认卡片",
+    "summary": "确认餐品、份数、配送地址、联系人和备注。",
+    "items": [
+      "适用场景：用户表达订餐确认卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "delivery_handoff": {
+    "badge": "AI膳食",
+    "title": "送餐交接卡片",
+    "summary": "将膳食方案转给订餐或配送系统。",
+    "items": [
+      "适用场景：用户表达送餐交接卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "nutrition_compare": {
+    "badge": "AI膳食",
+    "title": "营养对比卡片",
+    "summary": "对比多个方案的能量、蛋白、钠、糖和膳食纤维。",
+    "items": [
+      "适用场景：用户表达营养对比卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "weekly_plan": {
+    "badge": "AI膳食",
+    "title": "一周膳食计划卡片",
+    "summary": "展示多日膳食安排、轮换建议和采购节奏。",
+    "items": [
+      "适用场景：用户表达一周膳食计划卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "chronic_disease": {
+    "badge": "AI膳食",
+    "title": "慢病膳食卡片",
+    "summary": "针对糖尿病、高血压、高血脂等慢病输出建议。",
+    "items": [
+      "适用场景：用户表达慢病膳食卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "swallowing_care": {
+    "badge": "AI膳食",
+    "title": "吞咽友好膳食卡片",
+    "summary": "针对吞咽困难、牙口不好和术后恢复输出软食建议。",
+    "items": [
+      "适用场景：用户表达吞咽友好膳食卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "family_explain": {
+    "badge": "AI膳食",
+    "title": "家属解释卡片",
+    "summary": "用家属易理解的话解释推荐原因和注意事项。",
+    "items": [
+      "适用场景：用户表达家属解释卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "feedback_collect": {
+    "badge": "AI膳食",
+    "title": "膳食反馈收集卡片",
+    "summary": "收集饭后感受、饱腹感、血糖血压反应和偏好变化。",
+    "items": [
+      "适用场景：用户表达膳食反馈收集卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "leftover_reuse": {
+    "badge": "AI膳食",
+    "title": "剩餐复用建议卡片",
+    "summary": "根据剩余食材和饭菜提供安全复用建议。",
+    "items": [
+      "适用场景：用户表达剩餐复用建议卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "festival_plan": {
+    "badge": "AI膳食",
+    "title": "节日膳食卡片",
+    "summary": "兼顾节日口味、仪式感和健康限制。",
+    "items": [
+      "适用场景：用户表达节日膳食卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "budget_plan": {
+    "badge": "AI膳食",
+    "title": "预算膳食卡片",
+    "summary": "按预算约束给出高性价比膳食安排。",
+    "items": [
+      "适用场景：用户表达预算膳食卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "caregiver_brief": {
+    "badge": "AI膳食",
+    "title": "照护员执行简报卡片",
+    "summary": "给照护员输出可操作的备餐和提醒简报。",
+    "items": [
+      "适用场景：用户表达照护员执行简报卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "doctor_note": {
+    "badge": "AI膳食",
+    "title": "医生营养师沟通卡片",
+    "summary": "整理需要专业确认的营养风险和问题清单。",
+    "items": [
+      "适用场景：用户表达医生营养师沟通卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "status": {
+    "badge": "AI膳食",
+    "title": "膳食执行状态卡片",
+    "summary": "展示生成、确认、订餐、配送和反馈状态。",
+    "items": [
+      "适用场景：用户表达膳食执行状态卡片相关诉求",
+      "BFF校验模板、角色、上下文和action_key后渲染",
+      "必要时进入澄清、人工复核或跨技能交接"
+    ]
+  },
+  "followup_suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "plan.regenerate",
+      "source_template_id": "meal_plan.plan.v1",
+      "label": "重新生成膳食",
+      "user_prompt": "重新生成膳食，并继续说明膳食计划对话卡片的下一步",
+      "action_key": "meal_plan.regenerate",
+      "next_template_id": "meal_plan.plan.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "overview.confirm",
+      "source_template_id": "meal_plan.overview.v1",
+      "label": "确认采用方案",
+      "user_prompt": "确认采用方案，并继续说明膳食概览模板的下一步",
+      "action_key": "meal_plan.confirm",
+      "next_template_id": "meal_plan.status.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "timeline.order_handoff",
+      "source_template_id": "meal_plan.timeline.v1",
+      "label": "转订餐配送",
+      "user_prompt": "转订餐配送，并继续说明膳食时间线模板的下一步",
+      "action_key": "meal_plan.order_handoff",
+      "next_template_id": "meal_plan.delivery_handoff.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "dashboard.collect_condition",
+      "source_template_id": "meal_plan.dashboard.v1",
+      "label": "补充健康条件",
+      "user_prompt": "补充健康条件，并继续说明膳食仪表盘模板的下一步",
+      "action_key": "meal_plan.collect_condition",
+      "next_template_id": "meal_plan.condition_intake.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "condition_intake.set_preference",
+      "source_template_id": "meal_plan.condition_intake.v1",
+      "label": "设置饮食偏好",
+      "user_prompt": "设置饮食偏好，并继续说明健康条件采集卡片的下一步",
+      "action_key": "meal_plan.set_preference",
+      "next_template_id": "meal_plan.diet_preference.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "diet_preference.check_risk",
+      "source_template_id": "meal_plan.diet_preference.v1",
+      "label": "检查膳食风险",
+      "user_prompt": "检查膳食风险，并继续说明饮食偏好卡片的下一步",
+      "action_key": "meal_plan.check_risk",
+      "next_template_id": "meal_plan.risk_alert.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

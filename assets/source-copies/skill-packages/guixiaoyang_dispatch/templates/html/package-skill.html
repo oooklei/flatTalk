@@ -1,0 +1,19 @@
+<article class="gxy-card gxy-card--package-skill" data-template-id="guixiaoyang_dispatch.package_skill.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">技能打包</p>
+    <h3>{{skillName}} · 打包完成</h3>
+    <p>{{message}}</p>
+  </header>
+  <section class="gxy-card__body">
+    <p>文件名称：{{fileName}}</p>
+    <p>文件大小：{{fileSize}} 字节</p>
+    <p>文件类型：{{contentType}}</p>
+    {{#if ok}}
+    <p><a class="gxy-btn gxy-btn--primary" href="data:{{contentType}};base64,{{contentBase64}}" download="{{fileName}}">下载技能包（zip）</a></p>
+    {{/if}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 桂小养打包技能结果卡片: 展示技能打包结果并提供 zip 下载。 -->

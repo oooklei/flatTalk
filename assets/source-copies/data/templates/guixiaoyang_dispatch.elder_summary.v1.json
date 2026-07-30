@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.elder_summary.v1",
+  "template_key": "elder_summary",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "老人档案摘要卡片",
+  "cn_name": "老人档案摘要卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "elder-summary.html",
+  "fallback_html": "elder-summary.html",
+  "description": "展示与本次问题相关的老人档案摘要。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "elder_summary",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/elder_summary.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/elder-summary.html"
+}

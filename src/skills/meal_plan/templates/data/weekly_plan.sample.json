@@ -1,0 +1,85 @@
+{
+  "weekly_plan": {
+    "badge": "一周计划",
+    "title": "七天控糖清淡膳食计划",
+    "summary": "每日三餐按控糖、少盐、优质蛋白和软烂易消化原则轮换。",
+    "suitable": "糖尿病或控糖需求长者",
+    "dailyCal": "约1200kcal",
+    "salt": "每日<5g",
+    "goal": "控糖稳糖",
+    "items": [
+      {
+        "dayName": "周一",
+        "dayTotal": "约1250kcal",
+        "summary": "主食定量，少油少盐。",
+        "meals": [
+          { "mealName": "早餐", "mealEmoji": "🌅", "foods": "燕麦小米粥、水煮蛋、凉拌黄瓜", "mealCal": "约300kcal" },
+          { "mealName": "午餐", "mealEmoji": "☀️", "foods": "杂粮饭、清蒸鱼、清炒青菜", "mealCal": "约520kcal" },
+          { "mealName": "晚餐", "mealEmoji": "🌙", "foods": "番茄豆腐汤、蒸南瓜、白灼虾", "mealCal": "约430kcal" }
+        ]
+      },
+      {
+        "dayName": "周二",
+        "dayTotal": "约1240kcal",
+        "summary": "增加豆制品，避免甜饮。",
+        "meals": [
+          { "mealName": "早餐", "mealEmoji": "🌅", "foods": "无糖豆浆、全麦馒头、蒸蛋羹", "mealCal": "约300kcal" },
+          { "mealName": "午餐", "mealEmoji": "☀️", "foods": "糙米饭、冬瓜鸡肉、清炒菠菜", "mealCal": "约520kcal" },
+          { "mealName": "晚餐", "mealEmoji": "🌙", "foods": "南瓜小米粥、清蒸豆腐、凉拌木耳", "mealCal": "约420kcal" }
+        ]
+      },
+      {
+        "dayName": "周三",
+        "dayTotal": "约1230kcal",
+        "summary": "搭配优质蛋白和高纤维蔬菜。",
+        "meals": [
+          { "mealName": "早餐", "mealEmoji": "🌅", "foods": "玉米面粥、煮鸡蛋、拌豆腐丝", "mealCal": "约300kcal" },
+          { "mealName": "午餐", "mealEmoji": "☀️", "foods": "荞麦饭、番茄牛肉、蒜蓉西兰花", "mealCal": "约510kcal" },
+          { "mealName": "晚餐", "mealEmoji": "🌙", "foods": "清蒸鲈鱼、油麦菜、紫菜蛋花汤", "mealCal": "约420kcal" }
+        ]
+      },
+      {
+        "dayName": "周四",
+        "dayTotal": "约1250kcal",
+        "summary": "减少精制碳水，控制主食总量。",
+        "meals": [
+          { "mealName": "早餐", "mealEmoji": "🌅", "foods": "燕麦粥、凉拌黄瓜、鹌鹑蛋", "mealCal": "约300kcal" },
+          { "mealName": "午餐", "mealEmoji": "☀️", "foods": "杂粮饭、瘦肉炒胡萝卜、冬瓜汤", "mealCal": "约530kcal" },
+          { "mealName": "晚餐", "mealEmoji": "🌙", "foods": "紫菜蛋花汤、蒸红薯、清炒时蔬", "mealCal": "约420kcal" }
+        ]
+      },
+      {
+        "dayName": "周五",
+        "dayTotal": "约1210kcal",
+        "summary": "蒸煮为主，少油少盐。",
+        "meals": [
+          { "mealName": "早餐", "mealEmoji": "🌅", "foods": "无糖豆浆、玉米、蒸蛋", "mealCal": "约290kcal" },
+          { "mealName": "午餐", "mealEmoji": "☀️", "foods": "清蒸鱼、糙米饭、白灼西兰花", "mealCal": "约510kcal" },
+          { "mealName": "晚餐", "mealEmoji": "🌙", "foods": "豆腐青菜汤、蒸南瓜、凉拌木耳", "mealCal": "约410kcal" }
+        ]
+      },
+      {
+        "dayName": "周六",
+        "dayTotal": "约1240kcal",
+        "summary": "口味清淡，注意细嚼慢咽。",
+        "meals": [
+          { "mealName": "早餐", "mealEmoji": "🌅", "foods": "南瓜粥、水煮蛋、拌青菜", "mealCal": "约300kcal" },
+          { "mealName": "午餐", "mealEmoji": "☀️", "foods": "杂粮饭、冬瓜虾仁、清炒芹菜", "mealCal": "约520kcal" },
+          { "mealName": "晚餐", "mealEmoji": "🌙", "foods": "小米粥、时蔬豆腐、蒸鱼片", "mealCal": "约420kcal" }
+        ]
+      },
+      {
+        "dayName": "周日",
+        "dayTotal": "约1240kcal",
+        "summary": "继续稳糖，避免高糖水果和甜点。",
+        "meals": [
+          { "mealName": "早餐", "mealEmoji": "🌅", "foods": "燕麦粥、蒸蛋、凉拌黄瓜", "mealCal": "约300kcal" },
+          { "mealName": "午餐", "mealEmoji": "☀️", "foods": "糙米饭、清炖鸡肉、清炒油麦菜", "mealCal": "约520kcal" },
+          { "mealName": "晚餐", "mealEmoji": "🌙", "foods": "番茄豆腐汤、蒸山药、白灼青菜", "mealCal": "约420kcal" }
+        ]
+      }
+    ]
+  },
+  "followup_suggestions": "饭后留意血糖变化；如近期用药或血糖波动明显，请按医嘱调整主食量。",
+  "actions": "确认计划 / 生成采购清单"
+}

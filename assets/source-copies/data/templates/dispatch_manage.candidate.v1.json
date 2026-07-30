@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.candidate.v1",
+  "template_key": "candidate",
+  "skill_key": "dispatch_manage",
+  "name": "候选资源卡片",
+  "cn_name": "候选资源卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "candidate.html",
+  "fallback_html": "candidate.html",
+  "description": "展示可派机构、人员、距离、负载和匹配分。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "candidate",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/candidate.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/candidate.html"
+}

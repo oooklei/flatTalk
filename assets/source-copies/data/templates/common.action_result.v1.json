@@ -1,0 +1,11 @@
+{
+  "template_id": "common.action_result.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "动作执行结果",
+  "description": "通用动作执行结果展示模板，用于 action_key 执行后的结果反馈",
+  "html": "common/action_result.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/common/action_result.html"
+}

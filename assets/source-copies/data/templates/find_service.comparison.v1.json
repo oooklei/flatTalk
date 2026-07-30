@@ -1,0 +1,25 @@
+{
+  "template_id": "find_service.comparison.v1",
+  "template_key": "comparison",
+  "skill_key": "find_service",
+  "name": "服务对比卡片",
+  "cn_name": "服务对比卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "comparison.html",
+  "fallback_html": "comparison.html",
+  "description": "对比服务机构、服务人员、价格、距离和响应速度。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "comparison",
+  "actions": [
+    "find_service.create_order",
+    "find_service.refresh_recommendation",
+    "find_service.manual_review",
+    "find_service.clarify"
+  ],
+  "followup_suggestions": "templates/followups/comparison.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/comparison.html"
+}

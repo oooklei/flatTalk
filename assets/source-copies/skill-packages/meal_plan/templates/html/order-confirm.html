@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--order_confirm" data-template-id="meal_plan.order_confirm.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{order_confirm.badge}}</p>
+    <h3>{{order_confirm.title}}</h3>
+    <p>{{order_confirm.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{order_confirm.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 订餐确认卡片: 确认餐品、份数、配送地址、联系人和备注。 -->

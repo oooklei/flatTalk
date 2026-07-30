@@ -1,0 +1,27 @@
+{
+  "template_id": "find_service.order.v1",
+  "template_key": "order",
+  "skill_key": "find_service",
+  "name": "找服务建单卡片",
+  "cn_name": "找服务建单卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "order.html",
+  "fallback_html": "order.html",
+  "description": "展示订单创建、机构归属和派单交接状态。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "order",
+  "actions": [
+    "find_service.assign_org",
+    "find_service.dispatch_handoff",
+    "find_service.manual_review",
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/order.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/order.html"
+}

@@ -1,0 +1,10 @@
+{
+  "packageKey": "guixiaoyang_dispatch",
+  "mcp": "Tavily AI",
+  "enabledWhenRemoteMcpReady": true,
+  "plannedQueries": [
+    "AI养老助手 elderly care business rules",
+    "AI养老助手 prototype requirements",
+    "AI养老助手 data fields API"
+  ]
+}

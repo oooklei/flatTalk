@@ -1,0 +1,26 @@
+{
+  "schema": "guixiaoyang.action-intent-map.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "mappings": [
+    {
+      "intent_key": "meal_plan_request",
+      "preferred_action_key": "guixiaoyang_dispatch.route_meal_plan"
+    },
+    {
+      "intent_key": "dispatch_manage_request",
+      "preferred_action_key": "guixiaoyang_dispatch.route_dispatch_manage"
+    },
+    {
+      "intent_key": "clarify_required",
+      "preferred_action_key": "guixiaoyang_dispatch.clarify"
+    },
+    {
+      "intent_key": "manual_review_required",
+      "preferred_action_key": "guixiaoyang_dispatch.manual_review"
+    },
+    {
+      "intent_key": "voice_broadcast_request",
+      "preferred_action_key": "guixiaoyang_dispatch.voice_broadcast"
+    }
+  ]
+}

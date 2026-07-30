@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "source_template_id": "guixiaoyang_dispatch.timeline.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "timeline.run_safety_check",
+      "source_template_id": "guixiaoyang_dispatch.timeline.v1",
+      "label": "执行安全核对",
+      "user_prompt": "执行安全核对，并继续说明对话处理时间线卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.run_safety_check",
+      "next_template_id": "guixiaoyang_dispatch.safety_check.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "timeline.show_timeline",
+      "source_template_id": "guixiaoyang_dispatch.timeline.v1",
+      "label": "查看处理时间线",
+      "user_prompt": "查看处理时间线，并继续说明对话处理时间线卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.show_timeline",
+      "next_template_id": "guixiaoyang_dispatch.timeline.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "timeline.show_fallback_status",
+      "source_template_id": "guixiaoyang_dispatch.timeline.v1",
+      "label": "查看兜底状态",
+      "user_prompt": "查看兜底状态，并继续说明对话处理时间线卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.show_fallback_status",
+      "next_template_id": "guixiaoyang_dispatch.fallback_status.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "timeline.show_task_progress",
+      "source_template_id": "guixiaoyang_dispatch.timeline.v1",
+      "label": "查看任务进度",
+      "user_prompt": "查看任务进度，并继续说明对话处理时间线卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.show_task_progress",
+      "next_template_id": "guixiaoyang_dispatch.task_progress.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

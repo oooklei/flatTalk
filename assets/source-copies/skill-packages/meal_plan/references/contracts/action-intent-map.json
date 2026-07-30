@@ -1,0 +1,446 @@
+{
+  "schema": "guixiaoyang.action-intent-map.v2",
+  "skill_key": "meal_plan",
+  "description": "Maps user intents and answer followup clicks to registered meal_plan action_key handlers.",
+  "canonical_actions": [
+    "meal_plan.adapt_chronic_disease",
+    "meal_plan.adapt_swallowing",
+    "meal_plan.budget_adjust",
+    "meal_plan.caregiver_brief",
+    "meal_plan.check_risk",
+    "meal_plan.collect_condition",
+    "meal_plan.collect_feedback",
+    "meal_plan.compare_nutrition",
+    "meal_plan.confirm",
+    "meal_plan.confirm_order",
+    "meal_plan.doctor_note",
+    "meal_plan.explain_to_family",
+    "meal_plan.festival_adjust",
+    "meal_plan.generate_shopping_list",
+    "meal_plan.generate_weekly_plan",
+    "meal_plan.handoff_delivery",
+    "meal_plan.order_handoff",
+    "meal_plan.regenerate",
+    "meal_plan.reuse_leftover",
+    "meal_plan.set_preference",
+    "meal_plan.show_cooking_steps",
+    "meal_plan.swap_ingredient",
+    "meal_plan.view_status"
+  ],
+  "mappings": [
+    {
+      "intent_key": "adapt-chronic-disease-request",
+      "action_key": "meal_plan.adapt_chronic_disease",
+      "label": "适配慢病方案",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.adapt_chronic_disease",
+        "next_template_id": "meal_plan.chronic_disease.v1"
+      },
+      "next_template_id": "meal_plan.chronic_disease.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "adapt-swallowing-request",
+      "action_key": "meal_plan.adapt_swallowing",
+      "label": "适配吞咽能力",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.adapt_swallowing",
+        "next_template_id": "meal_plan.swallowing_care.v1"
+      },
+      "next_template_id": "meal_plan.swallowing_care.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "budget-adjust-request",
+      "action_key": "meal_plan.budget_adjust",
+      "label": "预算膳食调整",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.budget_adjust",
+        "next_template_id": "meal_plan.budget_plan.v1"
+      },
+      "next_template_id": "meal_plan.budget_plan.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "caregiver-brief-request",
+      "action_key": "meal_plan.caregiver_brief",
+      "label": "生成照护员简报",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.caregiver_brief",
+        "next_template_id": "meal_plan.caregiver_brief.v1"
+      },
+      "next_template_id": "meal_plan.caregiver_brief.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "check-risk-request",
+      "action_key": "meal_plan.check_risk",
+      "label": "检查膳食风险",
+      "target_type": "business_event",
+      "target": {
+        "kind": "business_system",
+        "event": "meal_plan.check_risk",
+        "next_template_id": "meal_plan.risk_alert.v1"
+      },
+      "next_template_id": "meal_plan.risk_alert.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "collect-condition-request",
+      "action_key": "meal_plan.collect_condition",
+      "label": "补充健康条件",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.collect_condition",
+        "next_template_id": "meal_plan.condition_intake.v1"
+      },
+      "next_template_id": "meal_plan.condition_intake.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "collect-feedback-request",
+      "action_key": "meal_plan.collect_feedback",
+      "label": "收集膳食反馈",
+      "target_type": "business_event",
+      "target": {
+        "kind": "business_system",
+        "event": "meal_plan.collect_feedback",
+        "next_template_id": "meal_plan.feedback_collect.v1"
+      },
+      "next_template_id": "meal_plan.feedback_collect.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "compare-nutrition-request",
+      "action_key": "meal_plan.compare_nutrition",
+      "label": "对比营养方案",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.compare_nutrition",
+        "next_template_id": "meal_plan.nutrition_compare.v1"
+      },
+      "next_template_id": "meal_plan.nutrition_compare.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "confirm-request",
+      "action_key": "meal_plan.confirm",
+      "label": "确认采用方案",
+      "target_type": "business_event",
+      "target": {
+        "kind": "business_system",
+        "event": "meal_plan.confirm",
+        "next_template_id": "meal_plan.status.v1"
+      },
+      "next_template_id": "meal_plan.status.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "confirm-order-request",
+      "action_key": "meal_plan.confirm_order",
+      "label": "确认订餐",
+      "target_type": "business_event",
+      "target": {
+        "kind": "business_system",
+        "event": "meal_plan.confirm_order",
+        "next_template_id": "meal_plan.order_confirm.v1"
+      },
+      "next_template_id": "meal_plan.order_confirm.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "doctor-note-request",
+      "action_key": "meal_plan.doctor_note",
+      "label": "整理专业沟通问题",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.doctor_note",
+        "next_template_id": "meal_plan.doctor_note.v1"
+      },
+      "next_template_id": "meal_plan.doctor_note.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "explain-to-family-request",
+      "action_key": "meal_plan.explain_to_family",
+      "label": "生成家属说明",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.explain_to_family",
+        "next_template_id": "meal_plan.family_explain.v1"
+      },
+      "next_template_id": "meal_plan.family_explain.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "festival-adjust-request",
+      "action_key": "meal_plan.festival_adjust",
+      "label": "节日膳食调整",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.festival_adjust",
+        "next_template_id": "meal_plan.festival_plan.v1"
+      },
+      "next_template_id": "meal_plan.festival_plan.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "generate-shopping-list-request",
+      "action_key": "meal_plan.generate_shopping_list",
+      "label": "生成采购清单",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.generate_shopping_list",
+        "next_template_id": "meal_plan.shopping_list.v1"
+      },
+      "next_template_id": "meal_plan.shopping_list.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "generate-weekly-plan-request",
+      "action_key": "meal_plan.generate_weekly_plan",
+      "label": "生成一周计划",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.generate_weekly_plan",
+        "next_template_id": "meal_plan.weekly_plan.v1"
+      },
+      "next_template_id": "meal_plan.weekly_plan.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "handoff-delivery-request",
+      "action_key": "meal_plan.handoff_delivery",
+      "label": "交接配送",
+      "target_type": "business_event",
+      "target": {
+        "kind": "business_system",
+        "event": "meal_plan.handoff_delivery",
+        "next_template_id": "meal_plan.delivery_handoff.v1"
+      },
+      "next_template_id": "meal_plan.delivery_handoff.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "order-handoff-request",
+      "action_key": "meal_plan.order_handoff",
+      "label": "转订餐配送",
+      "target_type": "business_event",
+      "target": {
+        "kind": "business_system",
+        "event": "meal_plan.order_handoff",
+        "next_template_id": "meal_plan.delivery_handoff.v1"
+      },
+      "next_template_id": "meal_plan.delivery_handoff.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "regenerate-request",
+      "action_key": "meal_plan.regenerate",
+      "label": "重新生成膳食",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.regenerate",
+        "next_template_id": "meal_plan.plan.v1"
+      },
+      "next_template_id": "meal_plan.plan.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "reuse-leftover-request",
+      "action_key": "meal_plan.reuse_leftover",
+      "label": "剩餐复用建议",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.reuse_leftover",
+        "next_template_id": "meal_plan.leftover_reuse.v1"
+      },
+      "next_template_id": "meal_plan.leftover_reuse.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "set-preference-request",
+      "action_key": "meal_plan.set_preference",
+      "label": "设置饮食偏好",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.set_preference",
+        "next_template_id": "meal_plan.diet_preference.v1"
+      },
+      "next_template_id": "meal_plan.diet_preference.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "show-cooking-steps-request",
+      "action_key": "meal_plan.show_cooking_steps",
+      "label": "查看烹饪步骤",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.show_cooking_steps",
+        "next_template_id": "meal_plan.cooking_steps.v1"
+      },
+      "next_template_id": "meal_plan.cooking_steps.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "swap-ingredient-request",
+      "action_key": "meal_plan.swap_ingredient",
+      "label": "替换食材",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.swap_ingredient",
+        "next_template_id": "meal_plan.ingredient_swap.v1"
+      },
+      "next_template_id": "meal_plan.ingredient_swap.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    },
+    {
+      "intent_key": "view-status-request",
+      "action_key": "meal_plan.view_status",
+      "label": "查看膳食执行状态",
+      "target_type": "bff_event",
+      "target": {
+        "kind": "bff",
+        "event": "meal_plan.view_status",
+        "next_template_id": "meal_plan.status.v1"
+      },
+      "next_template_id": "meal_plan.status.v1",
+      "followup_click_enabled": true,
+      "bff_validation": [
+        "action_key_registered",
+        "role_allowed",
+        "required_context_present"
+      ]
+    }
+  ]
+}

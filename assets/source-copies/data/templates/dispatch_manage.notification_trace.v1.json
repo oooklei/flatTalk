@@ -1,0 +1,23 @@
+{
+  "template_id": "dispatch_manage.notification_trace.v1",
+  "template_key": "notification_trace",
+  "skill_key": "dispatch_manage",
+  "name": "派单通知追踪卡片",
+  "cn_name": "派单通知追踪卡片",
+  "render_mode": "html_template",
+  "html": "notification-trace.html",
+  "source": "templates/html/notification_trace.json",
+  "description": "展示派单通知发送、送达、已读、未读和补发状态。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "notification",
+  "actions": [
+    "dispatch_manage.notify_org",
+    "dispatch_manage.escalate_manual",
+    "dispatch_manage.open_workbench"
+  ],
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/notification-trace.html"
+}

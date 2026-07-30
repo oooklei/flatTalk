@@ -1,0 +1,7 @@
+{
+  "skill_key": "travel_route",
+  "name": "旅居路线规划",
+  "version": "0.1.0",
+  "runtime": "local",
+  "default_template": "travel_itinerary_card"
+}

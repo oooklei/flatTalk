@@ -1,0 +1,47 @@
+<div class="card health-risk-rule-card" data-template="health_risk_rule_card">
+  <div class="hw-banner hw-banner-sub">
+    <div class="hw-banner-left">
+      <div class="hw-badge">{{badge|风险规则}}</div>
+      <div class="hw-level">{{elderName|李奶奶}} 规则命中</div>
+    </div>
+    <div class="hw-banner-right">
+      <div class="hw-elder">{{assessTime|2026-07-30 18:20}}</div>
+    </div>
+  </div>
+
+  <div class="hw-block">
+    <div class="hw-section-title">⚖️ 命中风险规则（{{rules_count|1}}）</div>
+    {{#rules}}
+    <div class="hw-rule-row">
+      <div class="hw-rule-name">{{ruleName|血压持续偏高}}</div>
+      <div class="hw-rule-meta">
+        <span class="hw-rule-level hw-status-{{ruleLevelStatus|abnormal}}">{{riskLevel|关注}}</span>
+        <span class="hw-rule-cond">{{condition|收缩压≥140 且持续≥3天}}</span>
+      </div>
+    </div>
+    {{/rules}}
+  </div>
+
+  {{#nextSteps}}
+  <div class="hw-block hw-next">
+    <div class="hw-section-title">➡️ 处置建议</div>
+    <div class="hw-text">{{nextSteps|对命中的规则，建议加强居家观察，必要时补充远程体检指标并转人工复核。}}</div>
+  </div>
+  {{/nextSteps}}
+
+  <div class="hw-foot">来源：{{sourceLabel|健康风险预警规则库}} · 规则判定仅供辅助参考</div>
+</div>
+
+<script type="application/json">
+{
+  "badge": "风险规则",
+  "elderName": "李奶奶",
+  "assessTime": "2026-07-30 18:20",
+  "rules_count": 1,
+  "rules": [
+    { "ruleName": "血压持续偏高", "riskLevel": "关注", "ruleLevelStatus": "abnormal", "condition": "收缩压≥140 且持续≥3天" }
+  ],
+  "nextSteps": "对命中的规则，建议加强居家观察，必要时补充远程体检指标并转人工复核。",
+  "sourceLabel": "健康风险预警规则库"
+}
+</script>

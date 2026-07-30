@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "meal_plan",
+  "source_template_id": "meal_plan.swallowing_care.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "swallowing_care.explain_to_family",
+      "source_template_id": "meal_plan.swallowing_care.v1",
+      "label": "生成家属说明",
+      "user_prompt": "生成家属说明，并继续说明吞咽友好膳食卡片的下一步",
+      "action_key": "meal_plan.explain_to_family",
+      "next_template_id": "meal_plan.family_explain.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "swallowing_care.collect_feedback",
+      "source_template_id": "meal_plan.swallowing_care.v1",
+      "label": "收集膳食反馈",
+      "user_prompt": "收集膳食反馈，并继续说明吞咽友好膳食卡片的下一步",
+      "action_key": "meal_plan.collect_feedback",
+      "next_template_id": "meal_plan.feedback_collect.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "swallowing_care.reuse_leftover",
+      "source_template_id": "meal_plan.swallowing_care.v1",
+      "label": "剩餐复用建议",
+      "user_prompt": "剩餐复用建议，并继续说明吞咽友好膳食卡片的下一步",
+      "action_key": "meal_plan.reuse_leftover",
+      "next_template_id": "meal_plan.leftover_reuse.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "swallowing_care.caregiver_brief",
+      "source_template_id": "meal_plan.swallowing_care.v1",
+      "label": "生成照护员简报",
+      "user_prompt": "生成照护员简报，并继续说明吞咽友好膳食卡片的下一步",
+      "action_key": "meal_plan.caregiver_brief",
+      "next_template_id": "meal_plan.caregiver_brief.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "template_id": "dispatch_manage.exception.v1",
+  "template_key": "exception",
+  "skill_key": "dispatch_manage",
+  "name": "派单异常卡片",
+  "cn_name": "派单异常卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "exception.html",
+  "fallback_html": "exception.html",
+  "description": "展示无候选、超时、拒单、接口失败和人工兜底。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "exception",
+  "actions": [
+    "dispatch_manage.escalate_manual",
+    "dispatch_manage.reassign",
+    "dispatch_manage.notify_org",
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch"
+  ],
+  "followup_suggestions": "templates/followups/exception.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/exception.html"
+}

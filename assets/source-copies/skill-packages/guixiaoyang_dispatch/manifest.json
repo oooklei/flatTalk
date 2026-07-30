@@ -1,0 +1,93 @@
+{
+  "schema": "guixiaoyang.local-skill-package.v3",
+  "generatedAt": "2026-07-15T03:11:26.295Z",
+  "updatedAt": "2026-07-28T20:40:00.000+08:00",
+  "sourcePolicy": "independent-local-copy",
+  "key": "guixiaoyang_dispatch",
+  "name": "桂小养智能调度",
+  "cnName": "桂小养智能调度",
+  "description": "桂小养通用型智能体的主调度技能，负责意图识别、知识答复、上下文补全、技能路由和 action_key 执行编排。",
+  "type": "skill",
+  "terminals": [
+    "C",
+    "G",
+    "B",
+    "Admin"
+  ],
+  "roles": [
+    "elder",
+    "family",
+    "system_admin"
+  ],
+  "workflows": [
+    "workflows/00_dialogue_delivery_policy.md",
+    "workflows/01_input_receive.md",
+    "workflows/02_identity_auth.md",
+    "workflows/03_context_collect.md",
+    "workflows/04_kb_pre_retrieve.md",
+    "workflows/05_table_query.md",
+    "workflows/06_reasoning_plan.md",
+    "workflows/07_result_compose.md",
+    "workflows/08_handoff_execute.md",
+    "workflows/09_dialogue_harvest_store.md",
+    "workflows/dialogue_store.md"
+  ],
+  "knowledgeBases": [
+    {
+      "name": "guixiaoyang_policy_kb",
+      "type": "policy",
+      "bindingScope": "agent",
+      "vectorizationRequired": true,
+      "description": "由桂小养智能体挂载的政策知识库，调度技能按本地文档清单参与打包和发布校验。",
+      "localDir": "knowledge_docs/business",
+      "documents": [
+        "knowledge_docs/business/policy_and_service.md",
+        "knowledge_docs/business/vectorization_plan.md"
+      ]
+    },
+    {
+      "name": "guixiaoyang_dispatch_business_kb",
+      "type": "business",
+      "localDir": "knowledge_docs/business",
+      "vectorizationRequired": true,
+      "documents": [
+        "knowledge_docs/business/policy_and_service.md",
+        "knowledge_docs/business/operation_guide.md"
+      ]
+    }
+  ],
+  "dataTables": [
+    {
+      "name": "gxy_dispatch_session",
+      "schemaFile": "references/database_schema.md",
+      "seedFile": "data_tables/gxy_dispatch_session.seed.json",
+      "minRowsRequired": 500
+    }
+  ],
+  "scripts": [
+    "scripts/backend/auth_api.js",
+    "scripts/backend/database_api.js",
+    "scripts/backend/knowledge_api.js",
+    "scripts/backend/seed_data.js",
+    "scripts/backend/business_runtime.py"
+  ],
+  "templates": [
+    "templates/registry.json"
+  ],
+  "prototypeSources": [
+    "https://codebuddy.work/agents/share/lxSDZ8b5qNCYDgAlRBYqTaUDNbPwSYRZgvSwrZK1RbjcktF741lKwuDYda8lWS7e",
+    "https://www.kdocs.cn/l/cse5I3j8ApV6"
+  ],
+  "templateProfile": "in-chat-template-rendering-v1",
+  "pathPolicy": "package-relative-only-for-runtime-and-remote-deploy",
+  "localSourceTrace": "platform/local_source_trace.json",
+  "templateContract": {
+    "registry": "templates/registry.json",
+    "htmlDir": "templates/html",
+    "dataDir": "templates/data",
+    "fieldBindings": "templates/data/field-bindings.generated.json",
+    "renderFlow": "references/contracts/render-flow.contract.json",
+    "actionIntentMap": "references/contracts/action-intent-map.json"
+  },
+  "status": "enabled"
+}

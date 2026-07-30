@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.deck{display:flex;flex-direction:row;gap:14px;overflow-x:auto;padding:10px 0;font-family:system-ui,sans-serif;}
+.stop{flex:0 0 200px;border:1px solid #d6e4ff;border-radius:12px;padding:14px;background:#f5f9ff;}
+.stop .time{font-size:12px;color:#2b6cb0;font-weight:700;}
+.stop .place{font-size:16px;color:#1a365d;margin:6px 0;}
+.stop .note{font-size:12px;color:#718096;}
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
+</style>
+</head>
+<body>
+<div class="tc-deck" data-layout="horizontal"><div class="tc-card">
+<!-- 横向布局由原型自身声明 -->
+<div class="deck" data-layout="horizontal">
+  <div class="stop">
+    <div class="time">20:00</div>
+    <div class="place">返程</div>
+    <div class="note">高铁回杭</div>
+  </div>
+</div>
+
+</div></div>
+<div class="tc-pager">第 3 / 3 页</div>
+</body>
+</html>

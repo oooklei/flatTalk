@@ -1,0 +1,11 @@
+{
+  "template_id": "message.event_context.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "消息事件上下文",
+  "description": "消息事件上下文模板，用于展示事件相关的背景信息",
+  "html": "message/event_context.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/message/event_context.html"
+}

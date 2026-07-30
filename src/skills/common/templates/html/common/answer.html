@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>答复卡</title>
+<style>
+  :root {
+    --bg: #f4f7fa; --card: #fff; --ink: #2b2f33; --ink2: #6b7280; --line: #eceff3;
+    --accent: #2f8f5b; --accent-soft: #e9f6ef; --shadow: 0 6px 18px rgba(20,30,40,.06);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; background: var(--bg); color: var(--ink); padding: 16px; display: flex; justify-content: center; }
+  .gxy-card { width: 100%; max-width: 560px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+  .gxy-card__head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; background: linear-gradient(135deg, #2f8f5b, #56b87f); color: #fff; }
+  .gxy-card__emoji { font-size: 26px; line-height: 1; }
+  .gxy-card__title { margin: 0; font-size: 17px; font-weight: 700; }
+  .gxy-card__sub { font-size: 12.5px; opacity: .92; margin-top: 2px; }
+  .gxy-card__body { padding: 16px 18px; font-size: 14.5px; line-height: 1.7; }
+  .gxy-card__answer { margin: 0; }
+  .gxy-card__rel { margin-top: 12px; padding: 12px 14px; background: var(--accent-soft); border-radius: 12px; font-size: 13.5px; color: var(--ink); }
+  .gxy-card__foot { padding: 10px 18px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink2); text-align: right; }
+</style>
+</head>
+<body>
+<article class="gxy-card gxy-card--answer" data-template-id="answer" data-layout="vertical">
+  <header class="gxy-card__head">
+    <span class="gxy-card__emoji">{{emoji|💬}}</span>
+    <div>
+      <h3 class="gxy-card__title">{{title|桂小养答复}}</h3>
+      <div class="gxy-card__sub">{{skill_name|答复}}</div>
+    </div>
+  </header>
+  <div class="gxy-card__body">
+    <p class="gxy-card__answer">{{answer|已收到您的问题，我会结合您的历史对话与健康状况，为您提供个性化建议。}}</p>
+    {{#related_questions}}
+    <div class="gxy-card__rel">🔗 {{related_questions}}</div>
+    {{/related_questions}}
+  </div>
+  <footer class="gxy-card__foot">{{foot|由桂小养健康助手生成}}</footer>
+</article>
+<script type="application/json">
+{
+  "emoji": "💬",
+  "title": "桂小养答复",
+  "skill_name": "答复",
+  "answer": "已收到您的问题，我会结合您的历史对话与健康状况，为您提供个性化建议。如需更精准的方案，可补充年龄、既往史与近期指标。",
+  "related_questions": "",
+  "foot": "由桂小养健康助手生成"
+}
+</script>
+</body>
+</html>

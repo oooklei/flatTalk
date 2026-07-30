@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.clarify.v1",
+  "template_key": "clarify",
+  "skill_key": "find_service",
+  "name": "找服务澄清卡片",
+  "cn_name": "找服务澄清卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "clarify.html",
+  "fallback_html": "clarify.html",
+  "description": "在服务对象、地址、时间和老人档案不足时补充信息。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "clarify",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/clarify.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/clarify.html"
+}

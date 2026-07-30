@@ -1,0 +1,16 @@
+<section class="related-section" data-slot="related-questions">
+  <div class="related-title">
+    <span>{{related.icon}}</span>
+    {{related.title}}
+  </div>
+  <div class="related-list" data-repeat="related.questions">
+    <button class="related-card" type="button" data-action-key="{{question.action_key}}" data-question-id="{{question.id}}">
+      <div class="card-icon-box">{{question.icon}}</div>
+      <div class="card-content">
+        <div class="card-title">{{question.title}}</div>
+        <div class="card-desc">{{question.description}}</div>
+      </div>
+      <span class="card-arrow">&gt;</span>
+    </button>
+  </div>
+</section>

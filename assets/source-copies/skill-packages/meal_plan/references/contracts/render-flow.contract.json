@@ -1,0 +1,33 @@
+{
+  "schema": "guixiaoyang.render-flow-contract.v1",
+  "skill_key": "meal_plan",
+  "flow": [
+    {
+      "step": "receive_model_result",
+      "description": "BFF receives structured LLM result with template_id, data payload and optional action_key."
+    },
+    {
+      "step": "validate_template",
+      "description": "BFF verifies template_id exists in templates/registry.json and template HTML exists under templates/html."
+    },
+    {
+      "step": "validate_action",
+      "description": "BFF verifies every action_key and followup action_key exists in platform/action-map.json."
+    },
+    {
+      "step": "compose_answer",
+      "description": "BFF renders registered HTML template, fills data bindings and appends answer followup suggestions."
+    },
+    {
+      "step": "execute_click",
+      "description": "When user clicks a suggestion, BFF sends the suggestion prompt back to LLM or executes the registered action target."
+    }
+  ],
+  "forbidden_capabilities": [
+    "unregistered standalone page container",
+    "right-panel page browsing mode",
+    "raw html emitted by model",
+    "inline script emitted by model",
+    "unregistered action key"
+  ]
+}

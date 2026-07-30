@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.service_match.v1",
+  "template_key": "service_match",
+  "skill_key": "find_service",
+  "name": "服务匹配解释卡片",
+  "cn_name": "服务匹配解释卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "service-match.html",
+  "fallback_html": "service-match.html",
+  "description": "说明为什么推荐某个服务类型或机构。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "service_match",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/service_match.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/service-match.html"
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.clarify.v1",
+  "template_key": "clarify",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "桂小养澄清卡片",
+  "cn_name": "桂小养澄清卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "clarify.html",
+  "fallback_html": "clarify.html",
+  "description": "在意图、角色、对象或上下文不足时引导补充。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "clarify",
+  "actions": [
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/clarify.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/clarify.html"
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.fallback_status.v1",
+  "template_key": "fallback_status",
+  "skill_key": "dispatch_manage",
+  "name": "派单兜底状态卡片",
+  "cn_name": "派单兜底状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "fallback-status.html",
+  "fallback_html": "fallback-status.html",
+  "description": "展示系统异常、数据缺失和降级入口。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "fallback_status",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/fallback_status.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/fallback-status.html"
+}

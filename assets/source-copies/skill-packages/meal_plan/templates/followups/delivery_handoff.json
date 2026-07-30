@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "meal_plan",
+  "source_template_id": "meal_plan.delivery_handoff.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "delivery_handoff.compare_nutrition",
+      "source_template_id": "meal_plan.delivery_handoff.v1",
+      "label": "对比营养方案",
+      "user_prompt": "对比营养方案，并继续说明送餐交接卡片的下一步",
+      "action_key": "meal_plan.compare_nutrition",
+      "next_template_id": "meal_plan.nutrition_compare.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "delivery_handoff.generate_weekly_plan",
+      "source_template_id": "meal_plan.delivery_handoff.v1",
+      "label": "生成一周计划",
+      "user_prompt": "生成一周计划，并继续说明送餐交接卡片的下一步",
+      "action_key": "meal_plan.generate_weekly_plan",
+      "next_template_id": "meal_plan.weekly_plan.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "delivery_handoff.adapt_chronic_disease",
+      "source_template_id": "meal_plan.delivery_handoff.v1",
+      "label": "适配慢病方案",
+      "user_prompt": "适配慢病方案，并继续说明送餐交接卡片的下一步",
+      "action_key": "meal_plan.adapt_chronic_disease",
+      "next_template_id": "meal_plan.chronic_disease.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "delivery_handoff.collect_feedback",
+      "source_template_id": "meal_plan.delivery_handoff.v1",
+      "label": "收集膳食反馈",
+      "user_prompt": "收集膳食反馈，并继续说明送餐交接卡片的下一步",
+      "action_key": "meal_plan.collect_feedback",
+      "next_template_id": "meal_plan.feedback_collect.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.cancel_change.v1",
+  "template_key": "cancel_change",
+  "skill_key": "find_service",
+  "name": "取消改约卡片",
+  "cn_name": "取消改约卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "cancel-change.html",
+  "fallback_html": "cancel-change.html",
+  "description": "处理取消、改约、换服务方和备注原因。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "cancel_change",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/cancel_change.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/cancel-change.html"
+}

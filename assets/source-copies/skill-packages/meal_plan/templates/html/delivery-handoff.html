@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--delivery_handoff" data-template-id="meal_plan.delivery_handoff.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{delivery_handoff.badge}}</p>
+    <h3>{{delivery_handoff.title}}</h3>
+    <p>{{delivery_handoff.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{delivery_handoff.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 送餐交接卡片: 将膳食方案转给订餐或配送系统。 -->

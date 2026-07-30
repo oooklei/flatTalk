@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    .route{display:flex;flex-direction:row;gap:10px;padding:10px}
+    .stop{min-width:120px;border:1px solid #ddd;border-radius:8px;padding:8px}
+  </style>
+</head>
+<body>
+  <section class="route" data-layout="horizontal">
+    <div class="stop"><b>{{time}}</b><strong>{{place}}</strong><p>{{note}}</p></div>
+  </section>
+  <script type="application/json">
+  { "time": "09:00", "place": "P0", "note": "x" }
+  </script>
+</body>
+</html>

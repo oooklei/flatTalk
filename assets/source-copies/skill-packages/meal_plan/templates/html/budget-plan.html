@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--budget_plan" data-template-id="meal_plan.budget_plan.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{budget_plan.badge}}</p>
+    <h3>{{budget_plan.title}}</h3>
+    <p>{{budget_plan.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{budget_plan.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 预算膳食卡片: 按预算约束给出高性价比膳食安排。 -->

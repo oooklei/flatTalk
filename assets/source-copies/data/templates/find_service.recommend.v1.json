@@ -1,0 +1,163 @@
+{
+  "template_id": "find_service.recommend.v1",
+  "skill_key": "find_service",
+  "cn_name": "找服务推荐卡片",
+  "description": "展示服务意图、候选服务、推荐理由、建单和派单入口。",
+  "html": "recommend.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "template_key": "recommend",
+  "name": "找服务推荐卡片",
+  "render_mode": "html_composition",
+  "layout": "chat-card",
+  "fallback_html": "status.html",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "recommend",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order",
+    "find_service.assign_org",
+    "find_service.dispatch_handoff",
+    "find_service.emergency_handoff",
+    "find_service.manual_review",
+    "find_service.voice_broadcast",
+    "find_service.collect_need",
+    "find_service.browse_catalog",
+    "find_service.explain_match",
+    "find_service.view_org_profile",
+    "find_service.view_worker_profile",
+    "find_service.estimate_price",
+    "find_service.confirm_address",
+    "find_service.select_time_slot",
+    "find_service.check_eligibility",
+    "find_service.triage_emergency",
+    "find_service.notify_family",
+    "find_service.preview_order",
+    "find_service.view_order_status",
+    "find_service.cancel_or_change",
+    "find_service.assist_complaint",
+    "find_service.collect_followup",
+    "find_service.show_subsidy_hint",
+    "find_service.bundle_services",
+    "find_service.recommend_community",
+    "find_service.fallback_status"
+  ],
+  "followup_suggestions": "templates/followups/recommend.json",
+  "slots": [
+    {
+      "slot_key": "request-summary",
+      "file": "slots/request-summary.html",
+      "position": "top",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": []
+    },
+    {
+      "slot_key": "service-card",
+      "file": "slots/service-card.html",
+      "position": "center",
+      "required": true,
+      "repeat": true,
+      "data_path": "services",
+      "allowed_actions": [
+        "find_service.create_order",
+        "find_service.assign_org",
+        "find_service.refresh_recommendation"
+      ]
+    },
+    {
+      "slot_key": "action-bar",
+      "file": "slots/action-bar.html",
+      "position": "bottom",
+      "required": true,
+      "repeat": false,
+      "allowed_actions": [
+        "find_service.clarify",
+        "find_service.create_order",
+        "find_service.dispatch_handoff",
+        "find_service.manual_review",
+        "find_service.voice_broadcast"
+      ]
+    },
+    {
+      "slot_key": "handoff-note",
+      "file": "slots/handoff-note.html",
+      "position": "bottom",
+      "required": false,
+      "repeat": false,
+      "allowed_actions": []
+    }
+  ],
+  "allowed_slot_sequences": [
+    [
+      "request-summary",
+      "service-card",
+      "action-bar"
+    ],
+    [
+      "request-summary",
+      "service-card",
+      "handoff-note",
+      "action-bar"
+    ]
+  ],
+  "llm_selection_policy": {
+    "enabled": true,
+    "decision_schema": "skill-packages/find_service/references/contracts/template-composition.schema.json",
+    "role": "select_registered_template_and_slots_only",
+    "default_variant": "find_service.recommend.v1",
+    "allowed_variants": [
+      "find_service.recommend.v1",
+      "find_service.clarify.v1",
+      "find_service.order.v1",
+      "find_service.emergency.v1",
+      "find_service.status.v1",
+      "find_service.catalog.v1",
+      "find_service.comparison.v1",
+      "find_service.schedule.v1",
+      "find_service.need_intake.v1",
+      "find_service.service_match.v1",
+      "find_service.org_profile.v1",
+      "find_service.worker_profile.v1",
+      "find_service.price_estimate.v1",
+      "find_service.address_confirm.v1",
+      "find_service.eligibility_check.v1",
+      "find_service.emergency_triage.v1",
+      "find_service.family_notify.v1",
+      "find_service.order_preview.v1",
+      "find_service.order_status.v1",
+      "find_service.cancel_change.v1",
+      "find_service.complaint_assist.v1",
+      "find_service.followup_visit.v1",
+      "find_service.subsidy_hint.v1",
+      "find_service.multi_service_bundle.v1",
+      "find_service.community_resource.v1",
+      "find_service.fallback_status.v1"
+    ],
+    "allowed_slots": [
+      "request-summary",
+      "service-card",
+      "action-bar",
+      "handoff-note"
+    ],
+    "required_slots": [
+      "request-summary",
+      "service-card",
+      "action-bar"
+    ],
+    "forbidden": [
+      "raw_html",
+      "script",
+      "inline_event_handler",
+      "external_url",
+      "unregistered_template_id",
+      "unregistered_slot_key",
+      "unregistered_action_key"
+    ],
+    "bff_must_validate": true
+  },
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/recommend.html"
+}

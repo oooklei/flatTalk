@@ -1,0 +1,8 @@
+{
+  "items": [
+    { "id": 1, "key": "RUNTIME_MODE", "value": "local", "group": "运行", "desc": "运行模式：local / cloud" },
+    { "id": 2, "key": "PORT", "value": "5298", "group": "运行", "desc": "服务端口" },
+    { "id": 3, "key": "LOG_LEVEL", "value": "info", "group": "日志", "desc": "日志级别" },
+    { "id": 4, "key": "KNOWLEDGE_DIR", "value": "data/knowledge", "group": "知识", "desc": "知识库目录" }
+  ]
+}

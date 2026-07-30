@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.audit.v1",
+  "template_key": "audit",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "桂小养调度审计卡片",
+  "cn_name": "桂小养调度审计卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "audit.html",
+  "fallback_html": "audit.html",
+  "description": "展示路由依据、上下文传递和执行记录。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "audit",
+  "actions": [
+    "guixiaoyang_dispatch.manual_review",
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify"
+  ],
+  "followup_suggestions": "templates/followups/audit.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/audit.html"
+}

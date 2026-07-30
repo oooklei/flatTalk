@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.learning_feedback.v1",
+  "template_key": "learning_feedback",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "对话反馈学习卡片",
+  "cn_name": "对话反馈学习卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "learning-feedback.html",
+  "fallback_html": "learning-feedback.html",
+  "description": "收集用户对答案和动作建议的反馈。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "learning_feedback",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/learning_feedback.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/learning-feedback.html"
+}

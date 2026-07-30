@@ -1,0 +1,11 @@
+{
+  "template_id": "approval.assist_result.v1",
+  "skill_key": "approval_assist",
+  "cn_name": "审批辅助结果",
+  "description": "AI辅助审批的结果展示模板，展示审批要点和建议",
+  "html": "approval_assist/result.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/approval_assist/templates/html/result.html"
+}

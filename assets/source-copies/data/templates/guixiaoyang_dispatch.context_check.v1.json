@@ -1,0 +1,22 @@
+{
+  "template_id": "guixiaoyang_dispatch.context_check.v1",
+  "template_key": "context_check",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "桂小养上下文核对卡片",
+  "cn_name": "桂小养上下文核对卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "context-check.html",
+  "description": "用于跨技能调度前核对老人档案、角色权限、关键上下文和缺失项。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "context",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/context-check.html"
+}

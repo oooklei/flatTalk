@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.delivery_handoff.v1",
+  "template_key": "delivery_handoff",
+  "skill_key": "meal_plan",
+  "name": "送餐交接卡片",
+  "cn_name": "送餐交接卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "delivery-handoff.html",
+  "fallback_html": "delivery-handoff.html",
+  "description": "将膳食方案转给订餐或配送系统。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "delivery_handoff",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/delivery_handoff.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/delivery-handoff.html"
+}

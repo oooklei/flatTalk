@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.order_status.v1",
+  "template_key": "order_status",
+  "skill_key": "find_service",
+  "name": "服务订单状态卡片",
+  "cn_name": "服务订单状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "order-status.html",
+  "fallback_html": "order-status.html",
+  "description": "展示订单创建、接单、到达、完成和取消状态。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "order_status",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/order_status.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/order-status.html"
+}

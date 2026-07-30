@@ -1,0 +1,10 @@
+<article class="gxy-card gxy-card--queue-status" data-template-id="chat.queue_status.v1">
+  <header class="gxy-card__header">
+    <h3>{{title || "排队状态"}}</h3>
+    <span class="gxy-card__tag">{{queue_status || "已排队"}}</span>
+  </header>
+  <section class="gxy-card__body">
+    <p>{{message || "问题已加入待处理队列。"}}</p>
+    <p class="gxy-card__hint">{{position || wait_seconds || ""}}</p>
+  </section>
+</article>

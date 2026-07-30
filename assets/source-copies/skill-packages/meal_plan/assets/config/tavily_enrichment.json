@@ -1,0 +1,10 @@
+{
+  "packageKey": "meal_plan",
+  "mcp": "Tavily AI",
+  "enabledWhenRemoteMcpReady": true,
+  "plannedQueries": [
+    "AI膳食 elderly care business rules",
+    "AI膳食 prototype requirements",
+    "AI膳食 data fields API"
+  ]
+}

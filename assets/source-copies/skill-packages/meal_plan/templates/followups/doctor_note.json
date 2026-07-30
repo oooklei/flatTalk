@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "meal_plan",
+  "source_template_id": "meal_plan.doctor_note.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "doctor_note.view_status",
+      "source_template_id": "meal_plan.doctor_note.v1",
+      "label": "查看膳食执行状态",
+      "user_prompt": "查看膳食执行状态，并继续说明医生营养师沟通卡片的下一步",
+      "action_key": "meal_plan.view_status",
+      "next_template_id": "meal_plan.status.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "doctor_note.regenerate",
+      "source_template_id": "meal_plan.doctor_note.v1",
+      "label": "重新生成膳食",
+      "user_prompt": "重新生成膳食，并继续说明医生营养师沟通卡片的下一步",
+      "action_key": "meal_plan.regenerate",
+      "next_template_id": "meal_plan.plan.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "doctor_note.confirm",
+      "source_template_id": "meal_plan.doctor_note.v1",
+      "label": "确认采用方案",
+      "user_prompt": "确认采用方案，并继续说明医生营养师沟通卡片的下一步",
+      "action_key": "meal_plan.confirm",
+      "next_template_id": "meal_plan.status.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "doctor_note.set_preference",
+      "source_template_id": "meal_plan.doctor_note.v1",
+      "label": "设置饮食偏好",
+      "user_prompt": "设置饮食偏好，并继续说明医生营养师沟通卡片的下一步",
+      "action_key": "meal_plan.set_preference",
+      "next_template_id": "meal_plan.diet_preference.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.arrival_tracking.v1",
+  "template_key": "arrival_tracking",
+  "skill_key": "dispatch_manage",
+  "name": "到达追踪卡片",
+  "cn_name": "到达追踪卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "arrival-tracking.html",
+  "fallback_html": "arrival-tracking.html",
+  "description": "展示服务人员出发、到达和异常上报。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "arrival_tracking",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/arrival_tracking.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/arrival-tracking.html"
+}

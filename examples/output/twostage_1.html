@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.card{width:300px;border:1px solid #e3e8ef;border-radius:14px;padding:18px;font-family:system-ui,sans-serif;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.card h3{margin:0 0 12px;font-size:18px;color:#1f2d3d;}
+.metric{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eef1f5;}
+.metric:last-child{border-bottom:0;}
+.metric .label{color:#6b7785;}
+.metric .value{font-weight:700;color:#0a8f5b;}
+.foot{margin-top:10px;font-size:12px;color:#9aa5b1;}
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
+</style>
+</head>
+<body>
+<div class="tc-deck" data-layout="vertical"><div class="tc-card">
+<div class="card">
+  <h3>今日健康概览</h3>
+  
+  <div class="metric"><span class="label">静息心率</span><span class="value">72 bpm</span></div>
+  
+  <div class="metric"><span class="label">睡眠时长</span><span class="value">6.8 小时</span></div>
+  
+  <div class="metric"><span class="label">步数</span><span class="value">8421</span></div>
+  
+  <div class="foot">数据更新于 08:00</div>
+</div>
+<!-- 原型自带的示例数据，作为字段缺省值 -->
+
+</div></div>
+
+</body>
+</html>

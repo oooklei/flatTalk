@@ -1,0 +1,20 @@
+{
+  "template_id": "route_card",
+  "followup_suggestions": [
+    {
+      "label": "对比目的地",
+      "user_prompt": "请对比巴马和北海哪个更适合老人旅居",
+      "action_key": "travel_route.compare_destinations"
+    },
+    {
+      "label": "查可订状态",
+      "user_prompt": "请检查这条旅居路线近期是否可预订",
+      "action_key": "travel_route.check_availability"
+    },
+    {
+      "label": "调整预算",
+      "user_prompt": "请按经济型预算重新规划这条旅居路线",
+      "action_key": "travel_route.calculate_budget"
+    }
+  ]
+}

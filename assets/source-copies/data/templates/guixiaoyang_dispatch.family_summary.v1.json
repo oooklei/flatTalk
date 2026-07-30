@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.family_summary.v1",
+  "template_key": "family_summary",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "家属代办摘要卡片",
+  "cn_name": "家属代办摘要卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "family-summary.html",
+  "fallback_html": "family-summary.html",
+  "description": "展示家属代办身份、权限和待确认事项。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "family_summary",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/family_summary.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/family-summary.html"
+}

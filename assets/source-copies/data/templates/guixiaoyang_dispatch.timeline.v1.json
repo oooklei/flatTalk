@@ -1,0 +1,24 @@
+{
+  "template_id": "guixiaoyang_dispatch.timeline.v1",
+  "template_key": "timeline",
+  "skill_key": "guixiaoyang_dispatch",
+  "name": "对话处理时间线卡片",
+  "cn_name": "对话处理时间线卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "timeline.html",
+  "fallback_html": "timeline.html",
+  "description": "展示识别、检索、路由、执行和反馈过程。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "timeline",
+  "actions": [
+    "guixiaoyang_dispatch.collect_context",
+    "guixiaoyang_dispatch.clarify",
+    "guixiaoyang_dispatch.manual_review"
+  ],
+  "followup_suggestions": "templates/followups/timeline.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/timeline.html"
+}

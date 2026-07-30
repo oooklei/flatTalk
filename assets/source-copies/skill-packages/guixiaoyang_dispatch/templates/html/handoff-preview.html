@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--handoff_preview" data-template-id="guixiaoyang_dispatch.handoff_preview.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{handoff_preview.badge}}</p>
+    <h3>{{handoff_preview.title}}</h3>
+    <p>{{handoff_preview.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{handoff_preview.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 跨技能交接预览卡片: 展示将传递给目标技能的上下文摘要。 -->

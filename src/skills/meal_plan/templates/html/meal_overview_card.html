@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>每日膳食总览卡片模板</title>
+<style>
+  :root {
+    --bg: #f4f7fa;
+    --card: #ffffff;
+    --ink: #2b2f33;
+    --ink2: #6b7280;
+    --line: #eceff3;
+    --accent: #2f8f5b;
+    --accent-soft: #e9f6ef;
+    --carb: #FF6B35;
+    --protein: #7CB342;
+    --fat: #42A5F5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 16px;
+  }
+  .page-header { text-align: center; margin-bottom: 12px; }
+  .page-header h1 { margin: 0; font-size: 22px; }
+  .page-header p { margin: 4px 0 0; color: var(--ink2); font-size: 13px; }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(20, 30, 40, 0.06);
+    border: 1px solid var(--line);
+  }
+
+  /* 顶部汇总卡 */
+  .summary-card { background: linear-gradient(135deg, #2f8f5b, #56b87f); color: #fff; }
+  .summary-card .sum-title { font-size: 18px; font-weight: 700; }
+  .summary-card .sum-desc { margin-top: 6px; font-size: 13px; opacity: 0.95; }
+  .summary-card .sum-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .summary-card .sum-stats div {
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+  }
+  .summary-card .sum-stats b { display: block; font-size: 20px; }
+  .summary-card .sum-stats span { font-size: 12px; opacity: 0.92; }
+
+  /* 三餐卡 */
+  .meal-card .meal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .meal-card .meal-name { font-size: 16px; font-weight: 600; }
+  .meal-card .meal-total { font-size: 13px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px; }
+  .food-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .food-row:last-child { border-bottom: 0; }
+  .food-name { font-size: 14px; }
+  .food-cal { font-size: 13px; color: var(--ink2); }
+
+  /* 营养比例条 */
+  .section-title { font-size: 15px; font-weight: 600; margin: 4px 0 12px; }
+  .ratio { margin: 10px 0; }
+  .ratio .ratio-head { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+  .ratio-bar { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px; }
+  .bar-fill-carb { background: var(--carb); }
+  .bar-fill-protein { background: var(--protein); }
+  .bar-fill-fat { background: var(--fat); }
+
+  /* 相关卡 */
+  .related-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .related-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px; border-radius: 12px; background: var(--accent-soft);
+  }
+  .related-item .rel-icon { font-size: 22px; }
+  .related-item .rel-text { font-size: 13px; color: var(--ink); }
+
+  @media (min-width: 768px) {
+    .overview-grid { grid-template-columns: 1fr 1fr; }
+    .summary-card { grid-column: 1 / -1; }
+    .nutrition-card { grid-column: 1 / -1; }
+    .related-card { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>{{pageTitle|🍽️ 每日膳食总览}}</h1>
+    <p>{{pageSubtitle|按一日三餐分栏展示，适合概览}}</p>
+  </div>
+
+  <div class="overview-grid">
+    <!-- 顶部汇总 -->
+    <div class="card summary-card">
+      <div class="sum-title">{{summaryTitle|📅 今日推荐 — 一日三餐}}</div>
+      <div class="sum-desc">{{summaryDesc|👥 60岁以上长者 · 低盐低脂低糖 · 🧂 用盐 ≤5g/天}}</div>
+      <div class="sum-stats">
+        {{#stats}}
+        <div><b>{{value|0}}</b><span>{{label|指标}}</span></div>
+        {{/stats}}
+      </div>
+    </div>
+
+    <!-- 三餐 -->
+    {{#meals}}
+    <div class="card meal-card">
+      <div class="meal-head">
+        <span class="meal-name">{{mealName|餐次}} {{mealEmoji|}}</span>
+        <span class="meal-total">{{mealTotal|0 kcal}}</span>
+      </div>
+      {{#foods}}
+      <div class="food-row">
+        <span class="food-name">{{foodName|菜品}}</span>
+        <span class="food-cal">{{cal|0kcal}}</span>
+      </div>
+      {{/foods}}
+    </div>
+    {{/meals}}
+
+    <!-- 营养比例 -->
+    <div class="card nutrition-card">
+      <div class="section-title">📊 营养比例参考</div>
+      {{#ratios}}
+      <div class="ratio">
+        <div class="ratio-head"><span>{{name|项目}}</span><span>{{pct|0%}}</span></div>
+        <div class="ratio-bar"><div class="bar-fill {{barCls|bar-fill-carb}}" style="width:{{width|50}}%"></div></div>
+      </div>
+      {{/ratios}}
+    </div>
+
+    <!-- 相关 -->
+    <div class="card related-card">
+      <div class="section-title">🔗 相关膳食建议</div>
+      <div class="related-row">
+        {{#related}}
+        <div class="related-item">
+          <div class="rel-icon">{{relIcon|💡}}</div>
+          <div class="rel-text">{{{relText|相关建议}}}</div>
+        </div>
+        {{/related}}
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json">
+  {
+    "pageTitle": "🍽️ 每日膳食总览",
+    "pageSubtitle": "Flow 1 — 三栏卡片式布局，一目了然",
+    "summaryTitle": "📅 今日推荐 — 一日三餐",
+    "summaryDesc": "👥 60岁以上长者 · 低盐低脂低糖 · 🧂 用盐 ≤5g/天",
+    "stats": [
+      { "value": "590", "label": "kcal 总热量" },
+      { "value": "3", "label": "餐次" },
+      { "value": "17", "label": "道菜品" }
+    ],
+    "meals": [
+      {
+        "mealName": "早餐", "mealEmoji": "🌅🍳", "mealTotal": "173 kcal",
+        "foods": [
+          { "foodName": "🌾 小米粥", "cal": "85kcal" },
+          { "foodName": "🥚 水煮蛋", "cal": "70kcal" },
+          { "foodName": "🥬 凉拌菠菜", "cal": "18kcal" }
+        ]
+      },
+      {
+        "mealName": "午餐", "mealEmoji": "🍚🥗", "mealTotal": "280 kcal",
+        "foods": [
+          { "foodName": "🍚 杂粮饭", "cal": "160kcal" },
+          { "foodName": "🐟 清蒸鱼", "cal": "90kcal" },
+          { "foodName": "🥕 炒胡萝卜", "cal": "30kcal" }
+        ]
+      },
+      {
+        "mealName": "晚餐", "mealEmoji": "🍲🌙", "mealTotal": "137 kcal",
+        "foods": [
+          { "foodName": "🍲 蔬菜豆腐汤", "cal": "85kcal" },
+          { "foodName": "🍞 全麦馒头", "cal": "52kcal" }
+        ]
+      }
+    ],
+    "ratios": [
+      { "name": "碳水化合物", "pct": "50~55%", "width": 52, "barCls": "bar-fill-carb" },
+      { "name": "蛋白质", "pct": "15~20%", "width": 18, "barCls": "bar-fill-protein" },
+      { "name": "脂肪", "pct": "25~30%", "width": 30, "barCls": "bar-fill-fat" }
+    ],
+    "related": [
+      { "relIcon": "📋", "relText": "完整一周<br>膳食方案" },
+      { "relIcon": "🍳", "relText": "每日三餐<br>搭配指南" },
+      { "relIcon": "🏃", "relText": "餐后轻运动<br>建议" }
+    ]
+  }
+  </script>
+</body>
+</html>

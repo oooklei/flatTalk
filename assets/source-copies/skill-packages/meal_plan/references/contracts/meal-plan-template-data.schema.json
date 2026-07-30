@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Meal plan chat-card template data",
+  "type": "object",
+  "required": ["summary", "meals", "nutrition"],
+  "additionalProperties": true,
+  "properties": {
+    "title": { "type": "string" },
+    "layout": { "const": "chat-card" },
+    "summary": {
+      "type": "object",
+      "required": ["badge", "audience", "total_kcal_label", "salt_limit_label"],
+      "additionalProperties": true,
+      "properties": {
+        "badge": { "type": "string" },
+        "audience": { "type": "string" },
+        "total_kcal": { "type": "number" },
+        "total_kcal_label": { "type": "string" },
+        "salt_limit_g": { "type": "number" },
+        "salt_limit_label": { "type": "string" }
+      }
+    },
+    "meals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["key", "name", "total_kcal_label", "items"],
+        "additionalProperties": true,
+        "properties": {
+          "key": { "type": "string" },
+          "name": { "type": "string" },
+          "total_kcal": { "type": "number" },
+          "total_kcal_label": { "type": "string" },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["name", "kcal_label", "portion_label"],
+              "additionalProperties": true,
+              "properties": {
+                "name": { "type": "string" },
+                "kcal": { "type": "number" },
+                "kcal_label": { "type": "string" },
+                "portion": { "type": "string" },
+                "portion_label": { "type": "string" },
+                "benefit": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "nutrition": {
+      "type": "object",
+      "required": ["title", "note"],
+      "additionalProperties": true,
+      "properties": {
+        "title": { "type": "string" },
+        "note": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label"],
+            "additionalProperties": true,
+            "properties": {
+              "icon": { "type": "string" },
+              "label": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "related": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "title": { "type": "string" },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "title", "action_key"],
+            "additionalProperties": true,
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "action_key": {
+                "type": "string",
+                "enum": ["meal_plan.regenerate", "meal_plan.confirm", "meal_plan.order_handoff"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "template_id": "find_service.schedule.v1",
+  "template_key": "schedule",
+  "skill_key": "find_service",
+  "name": "预约时段卡片",
+  "cn_name": "预约时段卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "schedule.html",
+  "fallback_html": "schedule.html",
+  "description": "展示可预约时段、服务时长和冲突提示。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "schedule",
+  "actions": [
+    "find_service.clarify",
+    "find_service.create_order",
+    "find_service.manual_review",
+    "find_service.refresh_recommendation"
+  ],
+  "followup_suggestions": "templates/followups/schedule.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/schedule.html"
+}

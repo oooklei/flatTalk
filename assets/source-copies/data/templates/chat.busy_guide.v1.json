@@ -1,0 +1,11 @@
+{
+  "template_id": "chat.busy_guide.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "忙时引导提示",
+  "description": "客服繁忙时的引导提示模板，告知用户预计等待时间",
+  "html": "chat/busy_guide.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/chat/busy_guide.html"
+}

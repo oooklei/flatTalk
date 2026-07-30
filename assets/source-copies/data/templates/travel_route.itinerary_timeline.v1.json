@@ -1,0 +1,26 @@
+{
+  "template_id": "travel_route.itinerary_timeline.v1",
+  "template_key": "itinerary_timeline",
+  "skill_key": "travel_route",
+  "name": "行程时间线卡片",
+  "cn_name": "行程时间线卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "itinerary-timeline.html",
+  "fallback_html": "itinerary-timeline.html",
+  "description": "展示每日行程、交通、活动和照护安排。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "itinerary_timeline",
+  "actions": [
+    "travel_route.view_detail",
+    "travel_route.adjust_pace",
+    "travel_route.replan",
+    "travel_route.open_workbench"
+  ],
+  "followup_suggestions": "templates/followups/itinerary_timeline.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/itinerary-timeline.html"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "health_warning_card",
+  "title": "健康风险预警结果卡",
+  "layout": "health_warning_card",
+  "match": "健康风险预警 血压 血糖 跌倒 心率 设备信号 风险等级",
+  "required": ["level"]
+}

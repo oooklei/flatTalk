@@ -1,0 +1,158 @@
+[
+  {
+    "id": "KB-POL-BIZ-001",
+    "skill_key": "policy_consult",
+    "kb_type": "business",
+    "title": "养老服务补贴办理指引",
+    "keywords": [
+      "养老补贴",
+      "护理补贴",
+      "经济困难",
+      "补贴",
+      "申请"
+    ],
+    "answer": "养老服务补贴通常需要先确认年龄、户籍或常住地、经济困难类型、能力评估情况，再生成材料清单和办理路径。",
+    "source": "本地政策主题种子库"
+  },
+  {
+    "id": "KB-POL-DLG-001",
+    "skill_key": "policy_consult",
+    "kb_type": "dialogue_harvest",
+    "title": "补贴咨询常见追问",
+    "keywords": [
+      "需要什么材料",
+      "怎么办",
+      "流程",
+      "哪里办"
+    ],
+    "answer": "可继续补充老人所在区县、年龄、是否低保或特困、是否已做能力评估；系统会以对话收割方式补全缺失参数。",
+    "source": "对话收割知识库"
+  },
+  {
+    "id": "KB-SVC-BIZ-001",
+    "skill_key": "find_service",
+    "kb_type": "business",
+    "title": "居家服务匹配规则",
+    "keywords": [
+      "打扫",
+      "保洁",
+      "送饭",
+      "陪诊",
+      "上门服务",
+      "助餐"
+    ],
+    "answer": "找服务优先匹配服务目录，再检查地址、服务时间、联系人和紧急度，最后生成订单草稿交给业务系统确认。",
+    "source": "findService业务知识库"
+  },
+  {
+    "id": "KB-SVC-DLG-001",
+    "skill_key": "find_service",
+    "kb_type": "dialogue_harvest",
+    "title": "服务下单缺失字段",
+    "keywords": [
+      "没有地址",
+      "明天",
+      "上午",
+      "联系人",
+      "电话"
+    ],
+    "answer": "服务下单常见缺失字段为详细地址、期望上门时间、联系人、联系电话、老人行动能力和是否紧急。",
+    "source": "findService对话收割知识库"
+  },
+  {
+    "id": "KB-DIS-BIZ-001",
+    "skill_key": "dispatch_manage",
+    "kb_type": "business",
+    "title": "派单硬过滤和评分规则",
+    "keywords": [
+      "派单",
+      "工单",
+      "护理员",
+      "网格员",
+      "村医",
+      "接单"
+    ],
+    "answer": "派单先做服务区域、角色资质、当前状态硬过滤，再按距离、负荷、技能、历史响应和紧急度评分。",
+    "source": "派单业务知识库"
+  },
+  {
+    "id": "KB-DIS-DLG-001",
+    "skill_key": "dispatch_manage",
+    "kb_type": "dialogue_harvest",
+    "title": "健康异常派单补全",
+    "keywords": [
+      "血压",
+      "头晕",
+      "异常",
+      "预警",
+      "村医介入"
+    ],
+    "answer": "健康异常需要补全症状、持续时间、当前定位、是否独居、是否已联系家属，必要时升级村医或紧急救援。",
+    "source": "派单对话收割知识库"
+  },
+  {
+    "id": "KB-TRV-BIZ-001",
+    "skill_key": "travel_route",
+    "kb_type": "business",
+    "title": "旅居路线推荐边界",
+    "keywords": [
+      "旅居",
+      "路线",
+      "康养基地",
+      "过冬",
+      "北海",
+      "防城港",
+      "预订"
+    ],
+    "answer": "旅居技能负责搜索产品、查看公开详情、可售校验和路线推荐；登录、库存、价格、下单、支付由外部旅居系统二次校验。",
+    "source": "旅居业务知识库"
+  },
+  {
+    "id": "KB-TRV-DLG-001",
+    "skill_key": "travel_route",
+    "kb_type": "dialogue_harvest",
+    "title": "旅居偏好补全",
+    "keywords": [
+      "几天",
+      "预算",
+      "慢病",
+      "无障碍",
+      "带父母",
+      "海边"
+    ],
+    "answer": "旅居推荐需要补全年龄、出行人数、出发地、预算、天数、慢病禁忌、无障碍需求和偏好城市。",
+    "source": "旅居对话收割知识库"
+  },
+  {
+    "id": "KB-MEAL-BIZ-001",
+    "skill_key": "meal_plan",
+    "kb_type": "business",
+    "title": "慢病膳食建议边界",
+    "keywords": [
+      "膳食",
+      "糖尿病",
+      "高血压",
+      "晚餐",
+      "午餐",
+      "忌口"
+    ],
+    "answer": "膳食技能可给出慢病友好饮食建议、禁忌提醒和助餐承接，但不能替代医生处方和血糖血压管理方案。",
+    "source": "膳食业务知识库"
+  },
+  {
+    "id": "KB-MEAL-DLG-001",
+    "skill_key": "meal_plan",
+    "kb_type": "dialogue_harvest",
+    "title": "膳食参数补全",
+    "keywords": [
+      "吃什么",
+      "不能吃",
+      "送餐",
+      "软烂",
+      "吞咽",
+      "血糖"
+    ],
+    "answer": "膳食建议需要补全慢病标签、过敏禁忌、咀嚼吞咽能力、餐次、是否需要助餐配送和医生特别叮嘱。",
+    "source": "膳食对话收割知识库"
+  }
+]

@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--notification_summary" data-template-id="guixiaoyang_dispatch.notification_summary.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{notification_summary.badge}}</p>
+    <h3>{{notification_summary.title}}</h3>
+    <p>{{notification_summary.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{notification_summary.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 通知摘要卡片: 展示已通知对象、渠道和状态。 -->

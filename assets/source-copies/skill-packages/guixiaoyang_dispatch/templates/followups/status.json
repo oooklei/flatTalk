@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "source_template_id": "guixiaoyang_dispatch.status.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "status.manual_review",
+      "source_template_id": "guixiaoyang_dispatch.status.v1",
+      "label": "转人工复核",
+      "user_prompt": "转人工复核，并继续说明桂小养状态卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.manual_review",
+      "next_template_id": "guixiaoyang_dispatch.manual_review.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "status.route_find_service",
+      "source_template_id": "guixiaoyang_dispatch.status.v1",
+      "label": "转入AI找服务",
+      "user_prompt": "转入AI找服务，并继续说明桂小养状态卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.route_find_service",
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "status.route_meal_plan",
+      "source_template_id": "guixiaoyang_dispatch.status.v1",
+      "label": "转入AI膳食",
+      "user_prompt": "转入AI膳食，并继续说明桂小养状态卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.route_meal_plan",
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "status.screen_policy",
+      "source_template_id": "guixiaoyang_dispatch.status.v1",
+      "label": "筛查政策资格",
+      "user_prompt": "筛查政策资格，并继续说明桂小养状态卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.screen_policy",
+      "next_template_id": "guixiaoyang_dispatch.policy_screening.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

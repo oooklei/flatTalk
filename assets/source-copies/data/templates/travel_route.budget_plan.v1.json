@@ -1,0 +1,25 @@
+{
+  "template_id": "travel_route.budget_plan.v1",
+  "template_key": "budget_plan",
+  "skill_key": "travel_route",
+  "name": "旅居预算测算卡片",
+  "cn_name": "旅居预算测算卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "budget-plan.html",
+  "fallback_html": "budget-plan.html",
+  "description": "拆解住宿、交通、餐食、护理和陪同费用。",
+  "sample_data": "templates/data/route.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "budget_plan",
+  "actions": [
+    "travel_route.calculate_budget",
+    "travel_route.replan",
+    "travel_route.preview_order"
+  ],
+  "followup_suggestions": "templates/followups/budget_plan.json",
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/travel_route/templates/html/budget-plan.html"
+}

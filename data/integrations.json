@@ -1,0 +1,252 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "status": "active",
+      "config": {},
+      "key": "nuwax",
+      "name": "女娲平台 NuwaX",
+      "category": "AI平台",
+      "base_url": "http://43.138.143.130:9015",
+      "auth_type": "none",
+      "test_path": "/",
+      "env_keys": [
+        "NUWAX_BASE_URL",
+        "NUWAX_ACCOUNT",
+        "NUWAX_PASSWORD",
+        "NUWAX_SPACE_ID"
+      ],
+      "description": "远程智能体对话、技能/知识库部署编排（迁自 lib/nuwax-client.js）"
+    },
+    {
+      "id": 2,
+      "status": "active",
+      "config": {},
+      "key": "tavily",
+      "name": "Tavily 网页搜索",
+      "category": "搜索",
+      "base_url": "https://api.tavily.com",
+      "auth_type": "bearer",
+      "test_path": "/",
+      "env_keys": [
+        "TAVILY_API_KEY",
+        "WEB_SEARCH_API_KEY"
+      ],
+      "description": "POI 富化网页素材搜索（迁自 adapters/tavily-poi-enricher.js）"
+    },
+    {
+      "id": 3,
+      "status": "active",
+      "config": {},
+      "key": "tencent_map",
+      "name": "腾讯位置服务",
+      "category": "地图",
+      "base_url": "https://apis.map.qq.com",
+      "auth_type": "query",
+      "auth_name": "key",
+      "test_path": "/ws/geocoder/v1/?address=南宁市",
+      "env_keys": [
+        "TENCENT_MAP_KEY",
+        "TENCENT_MAP_SK"
+      ],
+      "description": "地理编码 / 路线规划 / POI 搜索（迁自 travel_route tencent_map_api.js）",
+      "last_test": {
+        "at": "2026-07-29T20:29:52.508Z",
+        "ok": true,
+        "status": 200
+      }
+    },
+    {
+      "id": 4,
+      "status": "active",
+      "config": {},
+      "key": "tencent_weather",
+      "name": "腾讯天气",
+      "category": "天气",
+      "base_url": "https://apis.map.qq.com",
+      "auth_type": "query",
+      "auth_name": "key",
+      "test_path": "/",
+      "env_keys": [
+        "TENCENT_WEATHER_BASE_URL",
+        "TENCENT_MAP_KEY"
+      ],
+      "description": "实时天气（迁自 travel_route tencent_weather_api.js）"
+    },
+    {
+      "id": 5,
+      "status": "active",
+      "config": {},
+      "key": "qweather",
+      "name": "和风天气灾害预警",
+      "category": "天气",
+      "base_url": "https://devapi.qweather.com",
+      "auth_type": "header",
+      "auth_name": "X-QW-Api-Key",
+      "test_path": "/v7/warning/now?location=101300101",
+      "env_keys": [
+        "QWEATHER_KEY",
+        "QWEATHER_BASE_URL"
+      ],
+      "description": "灾害预警，P2 可降级（迁自 qweather_disaster_api.js）"
+    },
+    {
+      "id": 6,
+      "status": "active",
+      "config": {},
+      "key": "ocr",
+      "name": "OCR 通用识别",
+      "category": "感知",
+      "base_url": "",
+      "auth_type": "none",
+      "test_path": "/",
+      "env_keys": [
+        "OCR_ENDPOINT"
+      ],
+      "description": "图片文字识别（迁自 lib/input-adapters.js normalizeOcrInput）"
+    },
+    {
+      "id": 7,
+      "status": "active",
+      "config": {},
+      "key": "volc_asr",
+      "name": "火山引擎 ASR",
+      "category": "感知",
+      "base_url": "",
+      "auth_type": "bearer",
+      "test_path": "/",
+      "env_keys": [
+        "ASR_ENDPOINT",
+        "VOLCENGINE_APP_ID",
+        "VOLCENGINE_ACCESS_TOKEN",
+        "VOLCENGINE_RESOURCE_ID"
+      ],
+      "description": "语音转写（迁自 lib/volcengine-asr.js）"
+    },
+    {
+      "id": 8,
+      "status": "active",
+      "config": {},
+      "key": "profile_tags",
+      "name": "老人画像标签",
+      "category": "业务数据",
+      "base_url": "",
+      "auth_type": "bearer",
+      "test_path": "/",
+      "env_keys": [
+        "PROFILE_TAG_API_BASE_URL",
+        "PROFILE_TAG_SSO_USERNAME",
+        "PROFILE_TAG_SSO_PASSWORD",
+        "PROFILE_TAG_API_TOKEN"
+      ],
+      "description": "老人画像标签拉取，SSO 鉴权（迁自 profile_tags_api.js）"
+    },
+    {
+      "id": 9,
+      "status": "active",
+      "config": {},
+      "key": "tag_system",
+      "name": "统一标签系统",
+      "category": "业务数据",
+      "base_url": "http://192.168.1.160:8010",
+      "auth_type": "header",
+      "auth_name": "X-Client-Key",
+      "test_path": "/",
+      "env_keys": [
+        "TAG_SYSTEM_SSO_TOKEN",
+        "TAG_SYSTEM_CLIENT_KEY",
+        "FLATTALK_TAG_SYSTEM_PG_URL"
+      ],
+      "description": "实体标签读取 P1（迁自 adapters/tag-system）"
+    },
+    {
+      "id": 10,
+      "status": "active",
+      "config": {},
+      "key": "jtd",
+      "name": "金跳动旅居产品",
+      "category": "交易",
+      "base_url": "",
+      "auth_type": "none",
+      "test_path": "/",
+      "env_keys": [
+        "JTD_API_MODE",
+        "JTD_BASE_URL",
+        "JTD_PATH_PREFIX",
+        "JTD_TENANT_ID",
+        "JTD_AI_APP_ID",
+        "JTD_AI_APP_SECRET",
+        "JTD_TIMEOUT_MS",
+        "TRAVEL_PRODUCT_API_BASE_URL",
+        "TRAVEL_PRODUCT_API_APP_ID",
+        "TRAVEL_PRODUCT_API_APP_SECRET",
+        "TRAVEL_ORDER_API_BASE_URL",
+        "JTD_H5_BASE_URL",
+        "JTD_MINI_PROGRAM_APPID"
+      ],
+      "description": "旅居产品搜索 / 详情 / 下单跳转（迁自 product_api_adapters.js）"
+    },
+    {
+      "id": 11,
+      "status": "active",
+      "config": {},
+      "key": "unified_auth",
+      "name": "统一认证/订单工单",
+      "category": "交易",
+      "base_url": "",
+      "auth_type": "none",
+      "test_path": "/",
+      "env_keys": [
+        "UNIFIED_AUTH_BASE_URL",
+        "UNIFIED_AUTH_USERNAME",
+        "UNIFIED_AUTH_PASSWORD",
+        "ORDER_SYSTEM_BASE_URL"
+      ],
+      "description": "yunxida 统一认证 + 订单/工单查询（迁自 order_system_client.js）"
+    },
+    {
+      "id": 12,
+      "status": "active",
+      "config": {},
+      "key": "business_system",
+      "name": "业务系统 BFF",
+      "category": "业务数据",
+      "base_url": "",
+      "auth_type": "bearer",
+      "test_path": "/",
+      "env_keys": [
+        "GXY_BUSINESS_SYSTEM_BASE_URL",
+        "GXY_BUSINESS_SYSTEM_TOKEN"
+      ],
+      "description": "current-user / 工单动作 / 消息发布（迁自 adapters/business-system）"
+    },
+    {
+      "id": 13,
+      "key": "ext_svc_1",
+      "name": "天气服务",
+      "category": "外部服务(迁入)",
+      "base_url": "https://api.weather.com/v1",
+      "auth_type": "none",
+      "auth_name": "",
+      "test_path": "/",
+      "env_keys": [],
+      "description": "迁自外部服务登记；类型:rest；属主:system",
+      "status": "active",
+      "config": {}
+    },
+    {
+      "id": 14,
+      "key": "ext_svc_2",
+      "name": "医保查询",
+      "category": "外部服务(迁入)",
+      "base_url": "https://api.medical.gov/catalog",
+      "auth_type": "none",
+      "auth_name": "",
+      "test_path": "/",
+      "env_keys": [],
+      "description": "迁自外部服务登记；类型:rest；属主:system",
+      "status": "draft",
+      "config": {}
+    }
+  ]
+}

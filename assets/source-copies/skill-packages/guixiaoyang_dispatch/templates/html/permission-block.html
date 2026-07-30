@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--permission_block" data-template-id="guixiaoyang_dispatch.permission_block.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{permission_block.badge}}</p>
+    <h3>{{permission_block.title}}</h3>
+    <p>{{permission_block.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{permission_block.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 权限不足说明卡片: 说明角色权限不足和可替代动作。 -->

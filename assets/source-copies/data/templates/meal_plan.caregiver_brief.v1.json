@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.caregiver_brief.v1",
+  "template_key": "caregiver_brief",
+  "skill_key": "meal_plan",
+  "name": "照护员执行简报卡片",
+  "cn_name": "照护员执行简报卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "caregiver-brief.html",
+  "fallback_html": "caregiver-brief.html",
+  "description": "给照护员输出可操作的备餐和提醒简报。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "caregiver_brief",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/caregiver_brief.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/caregiver-brief.html"
+}

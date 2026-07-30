@@ -1,0 +1,662 @@
+{
+  "schema": "guixiaoyang.skill-template-registry.v1",
+  "skill_key": "meal_plan",
+  "templates": [
+    {
+      "template_id": "meal_plan.budget_plan.v1",
+      "template_key": "budget_plan",
+      "skill_key": "meal_plan",
+      "name": "预算膳食卡片",
+      "cn_name": "预算膳食卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "budget-plan.html",
+      "fallback_html": "budget-plan.html",
+      "description": "按预算约束给出高性价比膳食安排。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "budget_plan",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/budget_plan.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.caregiver_brief.v1",
+      "template_key": "caregiver_brief",
+      "skill_key": "meal_plan",
+      "name": "照护员执行简报卡片",
+      "cn_name": "照护员执行简报卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "caregiver-brief.html",
+      "fallback_html": "caregiver-brief.html",
+      "description": "给照护员输出可操作的备餐和提醒简报。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "caregiver_brief",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/caregiver_brief.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.chronic_disease.v1",
+      "template_key": "chronic_disease",
+      "skill_key": "meal_plan",
+      "name": "慢病膳食卡片",
+      "cn_name": "慢病膳食卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "chronic-disease.html",
+      "fallback_html": "chronic-disease.html",
+      "description": "针对糖尿病、高血压、高血脂等慢病输出建议。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "chronic_disease",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/chronic_disease.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.condition_intake.v1",
+      "template_key": "condition_intake",
+      "skill_key": "meal_plan",
+      "name": "健康条件采集卡片",
+      "cn_name": "健康条件采集卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "condition-intake.html",
+      "fallback_html": "condition-intake.html",
+      "description": "采集慢病、过敏、禁忌、咀嚼吞咽和近期指标。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "condition_intake",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/condition_intake.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.cooking_steps.v1",
+      "template_key": "cooking_steps",
+      "skill_key": "meal_plan",
+      "name": "烹饪步骤卡片",
+      "cn_name": "烹饪步骤卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "cooking-steps.html",
+      "fallback_html": "cooking-steps.html",
+      "description": "展示适老化烹饪步骤、少油少盐和软烂处理。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "cooking_steps",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/cooking_steps.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.dashboard.v1",
+      "template_key": "dashboard",
+      "skill_key": "meal_plan",
+      "name": "膳食仪表盘模板",
+      "cn_name": "膳食仪表盘模板",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "dashboard.html",
+      "fallback_html": "dashboard.html",
+      "description": "展示营养结构、达标情况和风险提示。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "dashboard",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/dashboard.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.delivery_handoff.v1",
+      "template_key": "delivery_handoff",
+      "skill_key": "meal_plan",
+      "name": "送餐交接卡片",
+      "cn_name": "送餐交接卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "delivery-handoff.html",
+      "fallback_html": "delivery-handoff.html",
+      "description": "将膳食方案转给订餐或配送系统。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "delivery_handoff",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/delivery_handoff.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.diet_preference.v1",
+      "template_key": "diet_preference",
+      "skill_key": "meal_plan",
+      "name": "饮食偏好卡片",
+      "cn_name": "饮食偏好卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "diet-preference.html",
+      "fallback_html": "diet-preference.html",
+      "description": "展示口味、菜系、软硬度、餐次和预算偏好。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "diet_preference",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/diet_preference.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.doctor_note.v1",
+      "template_key": "doctor_note",
+      "skill_key": "meal_plan",
+      "name": "医生营养师沟通卡片",
+      "cn_name": "医生营养师沟通卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "doctor-note.html",
+      "fallback_html": "doctor-note.html",
+      "description": "整理需要专业确认的营养风险和问题清单。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "doctor_note",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/doctor_note.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.family_explain.v1",
+      "template_key": "family_explain",
+      "skill_key": "meal_plan",
+      "name": "家属解释卡片",
+      "cn_name": "家属解释卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "family-explain.html",
+      "fallback_html": "family-explain.html",
+      "description": "用家属易理解的话解释推荐原因和注意事项。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "family_explain",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/family_explain.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.feedback_collect.v1",
+      "template_key": "feedback_collect",
+      "skill_key": "meal_plan",
+      "name": "膳食反馈收集卡片",
+      "cn_name": "膳食反馈收集卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "feedback-collect.html",
+      "fallback_html": "feedback-collect.html",
+      "description": "收集饭后感受、饱腹感、血糖血压反应和偏好变化。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "feedback_collect",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/feedback_collect.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.festival_plan.v1",
+      "template_key": "festival_plan",
+      "skill_key": "meal_plan",
+      "name": "节日膳食卡片",
+      "cn_name": "节日膳食卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "festival-plan.html",
+      "fallback_html": "festival-plan.html",
+      "description": "兼顾节日口味、仪式感和健康限制。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "festival_plan",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/festival_plan.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.ingredient_swap.v1",
+      "template_key": "ingredient_swap",
+      "skill_key": "meal_plan",
+      "name": "食材替换建议卡片",
+      "cn_name": "食材替换建议卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "ingredient-swap.html",
+      "fallback_html": "ingredient-swap.html",
+      "description": "提供同类食材替换、禁忌替换和采购建议。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "ingredient_swap",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/ingredient_swap.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.leftover_reuse.v1",
+      "template_key": "leftover_reuse",
+      "skill_key": "meal_plan",
+      "name": "剩餐复用建议卡片",
+      "cn_name": "剩餐复用建议卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "leftover-reuse.html",
+      "fallback_html": "leftover-reuse.html",
+      "description": "根据剩余食材和饭菜提供安全复用建议。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "leftover_reuse",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/leftover_reuse.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.nutrition_compare.v1",
+      "template_key": "nutrition_compare",
+      "skill_key": "meal_plan",
+      "name": "营养对比卡片",
+      "cn_name": "营养对比卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "nutrition-compare.html",
+      "fallback_html": "nutrition-compare.html",
+      "description": "对比多个方案的能量、蛋白、钠、糖和膳食纤维。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "nutrition_compare",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/nutrition_compare.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.order_confirm.v1",
+      "template_key": "order_confirm",
+      "skill_key": "meal_plan",
+      "name": "订餐确认卡片",
+      "cn_name": "订餐确认卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "order-confirm.html",
+      "fallback_html": "order-confirm.html",
+      "description": "确认餐品、份数、配送地址、联系人和备注。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "order_confirm",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/order_confirm.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.overview.v1",
+      "template_key": "overview",
+      "skill_key": "meal_plan",
+      "name": "膳食概览模板",
+      "cn_name": "膳食概览模板",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "overview.html",
+      "fallback_html": "overview.html",
+      "description": "展示膳食推荐摘要、关键指标和主建议。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "overview",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/overview.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.plan.v1",
+      "template_key": "plan",
+      "skill_key": "meal_plan",
+      "name": "膳食计划对话卡片",
+      "cn_name": "膳食计划对话卡片",
+      "render_mode": "html_composition",
+      "layout": "chat-card",
+      "html": "plan.html",
+      "fallback_html": "plan.html",
+      "description": "展示一日膳食总览、餐段安排、营养提示和相关追问。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "plan",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff",
+        "meal_plan.collect_condition",
+        "meal_plan.set_preference",
+        "meal_plan.check_risk",
+        "meal_plan.swap_ingredient",
+        "meal_plan.generate_shopping_list",
+        "meal_plan.show_cooking_steps",
+        "meal_plan.confirm_order",
+        "meal_plan.handoff_delivery",
+        "meal_plan.compare_nutrition",
+        "meal_plan.generate_weekly_plan",
+        "meal_plan.adapt_chronic_disease",
+        "meal_plan.adapt_swallowing",
+        "meal_plan.explain_to_family",
+        "meal_plan.collect_feedback",
+        "meal_plan.reuse_leftover",
+        "meal_plan.festival_adjust",
+        "meal_plan.budget_adjust",
+        "meal_plan.caregiver_brief",
+        "meal_plan.doctor_note",
+        "meal_plan.view_status"
+      ],
+      "followup_suggestions": "templates/followups/plan.json",
+      "status": "enabled",
+      "slots": [
+        {
+          "slot_key": "summary-card",
+          "file": "slots/summary-card.html",
+          "position": "top",
+          "required": true,
+          "repeat": false,
+          "allowed_actions": []
+        },
+        {
+          "slot_key": "meal-section",
+          "file": "slots/meal-section.html",
+          "position": "center",
+          "required": true,
+          "repeat": true,
+          "data_path": "meals",
+          "allowed_actions": [
+            "meal_plan.regenerate"
+          ]
+        },
+        {
+          "slot_key": "nutrition-note",
+          "file": "slots/nutrition-note.html",
+          "position": "bottom",
+          "required": true,
+          "repeat": false,
+          "allowed_actions": []
+        },
+        {
+          "slot_key": "related-questions",
+          "file": "slots/related-questions.html",
+          "position": "bottom",
+          "required": false,
+          "repeat": true,
+          "data_path": "related.questions",
+          "allowed_actions": [
+            "meal_plan.regenerate",
+            "meal_plan.confirm",
+            "meal_plan.order_handoff"
+          ]
+        }
+      ],
+      "allowed_slot_sequences": [
+        [
+          "summary-card",
+          "meal-section",
+          "nutrition-note"
+        ],
+        [
+          "summary-card",
+          "meal-section",
+          "nutrition-note",
+          "related-questions"
+        ]
+      ],
+      "llm_selection_policy": {
+        "enabled": true,
+        "decision_schema": "skill-packages/meal_plan/references/contracts/template-composition.schema.json",
+        "role": "select_registered_template_and_slots_only",
+        "default_variant": "meal_plan.plan.v1",
+        "allowed_variants": [
+          "meal_plan.plan.v1",
+          "meal_plan.overview.v1",
+          "meal_plan.timeline.v1",
+          "meal_plan.dashboard.v1",
+          "meal_plan.condition_intake.v1",
+          "meal_plan.diet_preference.v1",
+          "meal_plan.risk_alert.v1",
+          "meal_plan.ingredient_swap.v1",
+          "meal_plan.shopping_list.v1",
+          "meal_plan.cooking_steps.v1",
+          "meal_plan.order_confirm.v1",
+          "meal_plan.delivery_handoff.v1",
+          "meal_plan.nutrition_compare.v1",
+          "meal_plan.weekly_plan.v1",
+          "meal_plan.chronic_disease.v1",
+          "meal_plan.swallowing_care.v1",
+          "meal_plan.family_explain.v1",
+          "meal_plan.feedback_collect.v1",
+          "meal_plan.leftover_reuse.v1",
+          "meal_plan.festival_plan.v1",
+          "meal_plan.budget_plan.v1",
+          "meal_plan.caregiver_brief.v1",
+          "meal_plan.doctor_note.v1",
+          "meal_plan.status.v1"
+        ],
+        "allowed_slots": [
+          "summary-card",
+          "meal-section",
+          "nutrition-note",
+          "related-questions"
+        ],
+        "required_slots": [
+          "summary-card",
+          "meal-section",
+          "nutrition-note"
+        ],
+        "forbidden": [
+          "raw_html",
+          "script",
+          "inline_event_handler",
+          "external_url",
+          "unregistered_template_id",
+          "unregistered_slot_key",
+          "unregistered_action_key"
+        ],
+        "bff_must_validate": true
+      }
+    },
+    {
+      "template_id": "meal_plan.risk_alert.v1",
+      "template_key": "risk_alert",
+      "skill_key": "meal_plan",
+      "name": "膳食风险提醒卡片",
+      "cn_name": "膳食风险提醒卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "risk-alert.html",
+      "fallback_html": "risk-alert.html",
+      "description": "展示糖尿病、高血压、肾病、吞咽困难等风险。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "risk_alert",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/risk_alert.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.shopping_list.v1",
+      "template_key": "shopping_list",
+      "skill_key": "meal_plan",
+      "name": "采购清单卡片",
+      "cn_name": "采购清单卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "shopping-list.html",
+      "fallback_html": "shopping-list.html",
+      "description": "汇总食材、份量、采购频率和保存提示。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "shopping_list",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/shopping_list.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.status.v1",
+      "template_key": "status",
+      "skill_key": "meal_plan",
+      "name": "膳食执行状态卡片",
+      "cn_name": "膳食执行状态卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "status.html",
+      "fallback_html": "status.html",
+      "description": "展示生成、确认、订餐、配送和反馈状态。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "status",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/status.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.swallowing_care.v1",
+      "template_key": "swallowing_care",
+      "skill_key": "meal_plan",
+      "name": "吞咽友好膳食卡片",
+      "cn_name": "吞咽友好膳食卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "swallowing-care.html",
+      "fallback_html": "swallowing-care.html",
+      "description": "针对吞咽困难、牙口不好和术后恢复输出软食建议。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "swallowing_care",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/swallowing_care.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.timeline.v1",
+      "template_key": "timeline",
+      "skill_key": "meal_plan",
+      "name": "膳食时间线模板",
+      "cn_name": "膳食时间线模板",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "timeline.html",
+      "fallback_html": "timeline.html",
+      "description": "按早餐、午餐、晚餐、加餐呈现执行节点。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "flow",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/timeline.json",
+      "status": "enabled"
+    },
+    {
+      "template_id": "meal_plan.weekly_plan.v1",
+      "template_key": "weekly_plan",
+      "skill_key": "meal_plan",
+      "name": "一周膳食计划卡片",
+      "cn_name": "一周膳食计划卡片",
+      "render_mode": "html_template",
+      "layout": "chat-card",
+      "html": "weekly-plan.html",
+      "fallback_html": "weekly-plan.html",
+      "description": "展示多日膳食安排、轮换建议和采购节奏。",
+      "sample_data": "templates/data/plan.sample.json",
+      "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+      "variant_role": "weekly_plan",
+      "actions": [
+        "meal_plan.regenerate",
+        "meal_plan.confirm",
+        "meal_plan.order_handoff"
+      ],
+      "followup_suggestions": "templates/followups/weekly_plan.json",
+      "status": "enabled"
+    }
+  ]
+}

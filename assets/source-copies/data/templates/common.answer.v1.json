@@ -1,0 +1,11 @@
+{
+  "template_id": "common.answer.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "通用回答",
+  "description": "通用对话回答模板，用于常规问答场景的文本展示",
+  "html": "common/answer.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/common/answer.html"
+}

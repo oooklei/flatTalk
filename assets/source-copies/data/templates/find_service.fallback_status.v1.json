@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.fallback_status.v1",
+  "template_key": "fallback_status",
+  "skill_key": "find_service",
+  "name": "找服务兜底状态卡片",
+  "cn_name": "找服务兜底状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "fallback-status.html",
+  "fallback_html": "fallback-status.html",
+  "description": "展示系统降级、接口失败和人工处理入口。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "fallback_status",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/fallback_status.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/fallback-status.html"
+}

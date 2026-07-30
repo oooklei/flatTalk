@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.status.v1",
+  "template_key": "status",
+  "skill_key": "meal_plan",
+  "name": "膳食执行状态卡片",
+  "cn_name": "膳食执行状态卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "status.html",
+  "fallback_html": "status.html",
+  "description": "展示生成、确认、订餐、配送和反馈状态。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "status",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/status.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/status.html"
+}

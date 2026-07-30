@@ -1,0 +1,26 @@
+{
+  "template_id": "meal_plan.timeline.v1",
+  "template_key": "timeline",
+  "skill_key": "meal_plan",
+  "name": "膳食时间线模板",
+  "cn_name": "膳食时间线模板",
+  "render_mode": "html_template",
+  "html": "timeline.html",
+  "source": "jtd-api/pages/flow-2-timeline.html",
+  "description": "按早餐、午餐、晚餐、加餐呈现执行节点。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "flow",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "layout": "chat-card",
+  "fallback_html": "timeline.html",
+  "followup_suggestions": "templates/followups/timeline.json",
+  "resolved_html": "skill-packages/meal_plan/templates/html/timeline.html"
+}

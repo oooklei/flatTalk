@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>健康风险预警报告</title>
+  <style>
+    :root {
+      --blue: #4a90d9;
+      --blue-deep: #3d7ec4;
+      --blue-title: #2d7ec4;
+      --blue-light: #ebf4fb;
+      --blue-line: #69b1e4;
+      --blue-dash: #c5daf0;
+      --risk-high: #e54d42;
+      --risk-mid: #e8a020;
+      --risk-low: #68b032;
+      --red-border: #e07a7a;
+      --warn-red: #e54d42;
+      --text: #222;
+      --text-body: #333;
+      --bg: #eef4fa;
+      --card: #fff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px 16px 56px;
+    }
+
+    .report {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .report-header {
+      background: linear-gradient(135deg, #4a90d9 0%, #3a7fc4 100%);
+      color: #fff;
+      border-radius: 10px 10px 0 0;
+      padding: 32px 28px 28px;
+      text-align: center;
+    }
+
+    .report-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+
+    .report-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 28px 28px 32px;
+      box-shadow: 0 2px 12px rgba(74, 144, 217, 0.08);
+    }
+
+    .card + .card {
+      margin-top: 16px;
+      border-radius: 8px;
+    }
+
+    .card:last-of-type {
+      border-radius: 0 0 10px 10px;
+    }
+
+    .main-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .title-line {
+      height: 1px;
+      background: var(--blue);
+      margin-bottom: 20px;
+    }
+
+    .section-badge {
+      display: inline-block;
+      background: var(--blue);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 8px 36px 8px 18px;
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+      margin-bottom: 16px;
+    }
+
+    /* —— 风险评估 —— */
+    .risk-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      background: var(--blue-light);
+      border-radius: 2px;
+      padding: 12px 8px;
+      margin-bottom: 8px;
+    }
+
+    .risk-summary span {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 28px;
+      padding: 4px 0 0;
+    }
+
+    .risk-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 4px;
+      border-bottom: 1px solid #f0f4f8;
+      font-size: 14px;
+    }
+
+    .risk-score,
+    .risk-label { font-weight: 600; white-space: nowrap; }
+    .risk-score { min-width: 40px; text-align: right; }
+    .risk-label { min-width: 64px; text-align: right; }
+
+    .high { color: var(--risk-high); }
+    .mid { color: var(--risk-mid); }
+    .low { color: var(--risk-low); }
+
+    /* —— 风险预警 —— */
+    .warning-block {
+      border-top: 1.5px dashed var(--blue-line);
+      border-bottom: 1.5px solid var(--blue-line);
+      padding: 26px 4px 30px;
+    }
+
+    .warning-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .warning-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .warning-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .warn-icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+    }
+
+    .warn-icon svg { width: 100%; height: 100%; display: block; }
+
+    /* —— 膳食调养 —— */
+    .diet-summary {
+      border: 1px solid var(--red-border);
+      background: #fbfbfb;
+      border-radius: 2px;
+      padding: 14px 16px;
+      margin-bottom: 4px;
+      font-size: 14px;
+      color: var(--text-body);
+    }
+
+    .diet-summary p + p { margin-top: 10px; }
+    .diet-summary strong { color: var(--text); font-weight: 700; }
+
+    .recipe-list { list-style: none; }
+
+    .recipe-item {
+      display: flex;
+      gap: 18px;
+      padding: 22px 0;
+      border-bottom: 1px dashed var(--blue-dash);
+      align-items: flex-start;
+    }
+
+    .recipe-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .recipe-thumb {
+      flex-shrink: 0;
+      width: 110px;
+      height: 110px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #eef5fb;
+    }
+
+    .recipe-thumb svg { width: 100%; height: 100%; display: block; }
+
+    .recipe-body { flex: 1; min-width: 0; font-size: 14px; }
+
+    .recipe-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--blue-title);
+      margin-bottom: 8px;
+    }
+
+    .recipe-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: var(--text-body);
+    }
+
+    .recipe-meta strong { color: var(--text); font-weight: 700; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 20px;
+      padding: 0 12px;
+    }
+
+    @media (max-width: 640px) {
+      .report-header { padding: 24px 16px; border-radius: 8px 8px 0 0; }
+      .report-header h1 { font-size: 22px; }
+      .card { padding: 20px 14px 24px; }
+      .risk-summary { grid-template-columns: 1fr; gap: 6px; }
+      .risk-grid { grid-template-columns: 1fr; }
+      .recipe-item { flex-direction: column; }
+      .recipe-thumb { width: 100%; height: 160px; }
+    }
+
+    /* tc-deck 支持样式 */
+    .tc-deck { box-sizing: border-box; }
+    .tc-deck[data-layout="horizontal"] { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 16px; overflow-x: auto; padding: 8px 0; }
+    .tc-deck[data-layout="vertical"] { display: flex; flex-direction: column; gap: 16px; }
+    .tc-card { flex: 0 0 auto; }
+  </style>
+</head>
+<body>
+  <div class="report">
+    <header class="report-header">
+      <h1>{{reportTitle|健康风险预警报告}}</h1>
+      <p>{{reportSubtitle|基于体质与健康数据的综合评估与调养建议}}</p>
+    </header>
+
+    <!-- 风险评估 -->
+    <section class="card">
+      <h2 class="main-title">{{assessmentTitle|风险评估}}</h2>
+      <div class="title-line"></div>
+      <div class="section-badge">{{sectionBadge|易患病症}}</div>
+
+      <div class="risk-summary">
+        <span>重度风险 ({{highRiskCount|0}}项)</span>
+        <span>中度风险 ({{midRiskCount|0}}项)</span>
+        <span>轻度风险 ({{lowRiskCount|0}}项)</span>
+      </div>
+
+      <div class="risk-grid">
+        {{#risks}}
+        <div class="risk-item">
+          <span>{{riskName}}</span>
+          <span class="risk-score {{levelClass}}">{{riskScore}}</span>
+          <span class="risk-label {{levelClass}}">{{riskLabel}}</span>
+        </div>
+        {{/risks}}
+      </div>
+    </section>
+
+    <!-- 风险预警 -->
+    {{#hasWarnings}}
+    <section class="card">
+      <div class="warning-block">
+        <h2 class="warning-title">{{warningTitle|风险预警}}</h2>
+        <ul class="warning-list">
+          {{#warnings}}
+          <li class="warning-item">
+            <span class="warn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2.5L22.5 20.5H1.5L12 2.5Z" fill="#E54D42" stroke="#E54D42" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M12 9V14.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+                <circle cx="12" cy="17.5" r="1.2" fill="#fff"/>
+              </svg>
+            </span>
+            <span>{{warningText}}</span>
+          </li>
+          {{/warnings}}
+        </ul>
+      </div>
+    </section>
+    {{/hasWarnings}}
+
+    <!-- 膳食调养 -->
+    {{#hasDietary}}
+    <section class="card">
+      <div class="section-badge">{{dietaryBadge|膳食调养}}</div>
+
+      <div class="diet-summary">
+        <p><strong>【宜食】</strong>{{dietaryAdvice}}</p>
+        <p><strong>【忌食】</strong>{{dietaryAvoid}}</p>
+      </div>
+
+      <ul class="recipe-list">
+        {{#recipes}}
+        <li class="recipe-item">
+          <div class="recipe-thumb" aria-hidden="true">
+            {{{recipeThumb}}}
+          </div>
+          <div class="recipe-body">
+            <h3 class="recipe-title">{{recipeTitle}}</h3>
+            <div class="recipe-meta">
+              <p><strong>【药材】</strong>{{recipeMedicine}}</p>
+              <p><strong>【食材】</strong>{{recipeIngredients}}</p>
+              <p><strong>【烹饪方法】</strong>{{recipeMethod}}</p>
+              <p><strong>【功效】</strong>{{recipeEffect}}</p>
+              <p><strong>【引自】</strong>{{recipeSource}}</p>
+            </div>
+          </div>
+        </li>
+        {{/recipes}}
+      </ul>
+    </section>
+    {{/hasDietary}}
+
+    <p class="footer-note">{{footerNote|本报告仅供健康管理参考，不作为临床诊断依据。如有不适请及时就医。}}</p>
+  </div>
+
+<script type="application/json">
+{
+  "reportTitle": "健康风险预警报告",
+  "reportSubtitle": "基于体质与健康数据的综合评估与调养建议",
+  "assessmentTitle": "风险评估",
+  "sectionBadge": "易患病症",
+  "highRiskCount": 1,
+  "midRiskCount": 6,
+  "lowRiskCount": 6,
+  "risks": [
+    { "riskName": "乳腺结节风险评估", "riskScore": 65.6, "riskLabel": "预警", "levelClass": "high" },
+    { "riskName": "骨质疏松症风险评估", "riskScore": 54.5, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "甲状腺结节风险评估", "riskScore": 55.8, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "月经不调风险评估", "riskScore": 61.8, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "精神压力评估", "riskScore": 69, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "肺结节风险评估", "riskScore": 74.2, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "子宫肌瘤风险评估", "riskScore": 61.9, "riskLabel": "中度风险", "levelClass": "mid" },
+    { "riskName": "中风风险评估", "riskScore": 38.3, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "心血管功能评估", "riskScore": 52, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "脂肪肝风险评估", "riskScore": 59.1, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "糖尿病风险评估", "riskScore": 41.2, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "高血压风险评估", "riskScore": 46.8, "riskLabel": "轻度风险", "levelClass": "low" },
+    { "riskName": "慢性胃炎风险评估", "riskScore": 48.5, "riskLabel": "轻度风险", "levelClass": "low" }
+  ],
+  "hasWarnings": true,
+  "warningTitle": "风险预警",
+  "warnings": [
+    { "warningText": "提示肝胆异常。可能有睡眠不佳，情志不畅等表现。" },
+    { "warningText": "提示中焦郁滞或下焦壅塞。可能有腹胀，食少等表现。" }
+  ],
+  "hasDietary": true,
+  "dietaryBadge": "膳食调养",
+  "dietaryAdvice": "宜食用清淡、易消化、富含优质蛋白及膳食纤维的食物，如小米、山药、莲子、百合、绿叶蔬菜、鱼类等。",
+  "dietaryAvoid": "忌食辛辣刺激、油腻煎炸、生冷寒凉及过甜过咸食物，如辣椒、烧烤、冰淇淋、肥肉等。",
+  "recipes": [
+    {
+      "recipeTitle": "三花橘皮茶",
+      "recipeMedicine": "菊花、茉莉花、玫瑰花各 3g",
+      "recipeIngredients": "陈皮 5g、枸杞 6粒、冰糖适量",
+      "recipeMethod": "将药材与食材洗净后放入杯中，沸水冲泡 5–8 分钟，可反复冲泡。",
+      "recipeEffect": "疏肝理气、健脾和胃，适合情志不畅、腹胀食少者日常调养。",
+      "recipeSource": "《常见病食疗方》",
+      "recipeThumb": "<svg viewBox=\"0 0 220 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"g1\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#f8e8d0\"/><stop offset=\"100%\" stop-color=\"#e8c48a\"/></linearGradient></defs><rect width=\"220\" height=\"220\" fill=\"url(#g1)\"/><ellipse cx=\"110\" cy=\"150\" rx=\"70\" ry=\"18\" fill=\"#c9a06a\" opacity=\"0.35\"/><ellipse cx=\"110\" cy=\"128\" rx=\"58\" ry=\"28\" fill=\"#fff8ee\"/><ellipse cx=\"110\" cy=\"122\" rx=\"50\" ry=\"22\" fill=\"#f3d5a0\"/><circle cx=\"88\" cy=\"118\" r=\"8\" fill=\"#e8a85a\"/><circle cx=\"112\" cy=\"112\" r=\"7\" fill=\"#d98b4a\"/><circle cx=\"132\" cy=\"120\" r=\"6\" fill=\"#c9783a\"/><path d=\"M70 100 Q110 70 150 100\" fill=\"none\" stroke=\"#7ab86a\" stroke-width=\"4\" stroke-linecap=\"round\"/></svg>"
+    },
+    {
+      "recipeTitle": "山药小米粥",
+      "recipeMedicine": "怀山药 30g",
+      "recipeIngredients": "小米 50g、红枣 4枚、清水适量",
+      "recipeMethod": "小米淘洗后加水煮开，加入去皮山药块与红枣，小火熬煮至粘稠即可。",
+      "recipeEffect": "健脾益胃、养心安神，有助于改善睡眠不佳、食少腹胀。",
+      "recipeSource": "《中医食疗养生手册》",
+      "recipeThumb": "<svg viewBox=\"0 0 220 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"g2\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#fff6e8\"/><stop offset=\"100%\" stop-color=\"#f0d9a8\"/></linearGradient></defs><rect width=\"220\" height=\"220\" fill=\"url(#g2)\"/><ellipse cx=\"110\" cy=\"155\" rx=\"68\" ry=\"16\" fill=\"#c9a06a\" opacity=\"0.3\"/><ellipse cx=\"110\" cy=\"135\" rx=\"62\" ry=\"36\" fill=\"#fffaf0\"/><ellipse cx=\"110\" cy=\"128\" rx=\"54\" ry=\"28\" fill=\"#f7e6c4\"/><ellipse cx=\"95\" cy=\"120\" rx=\"14\" ry=\"10\" fill=\"#e8c98a\"/><ellipse cx=\"125\" cy=\"118\" rx=\"12\" ry=\"9\" fill=\"#dfbf7a\"/><circle cx=\"108\" cy=\"112\" r=\"5\" fill=\"#8bc34a\"/></svg>"
+    },
+    {
+      "recipeTitle": "百合莲子汤",
+      "recipeMedicine": "干百合 15g、莲子 20g",
+      "recipeIngredients": "银耳 10g、冰糖适量",
+      "recipeMethod": "银耳提前泡发撕小朵，与百合、莲子同煮至软糯，出锅前加冰糖调味。",
+      "recipeEffect": "润肺宁心、清心安神，适合情志不畅、睡眠欠佳者。",
+      "recipeSource": "《药膳食疗精选》",
+      "recipeThumb": "<svg viewBox=\"0 0 220 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"g3\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#e8f5e9\"/><stop offset=\"100%\" stop-color=\"#c8e6c9\"/></linearGradient></defs><rect width=\"220\" height=\"220\" fill=\"url(#g3)\"/><ellipse cx=\"110\" cy=\"158\" rx=\"65\" ry=\"14\" fill=\"#81c784\" opacity=\"0.25\"/><ellipse cx=\"110\" cy=\"130\" rx=\"55\" ry=\"40\" fill=\"#fffde7\"/><ellipse cx=\"110\" cy=\"125\" rx=\"48\" ry=\"32\" fill=\"#fff9c4\"/><circle cx=\"90\" cy=\"118\" r=\"9\" fill=\"#ffcc80\"/><circle cx=\"115\" cy=\"112\" r=\"8\" fill=\"#ef9a9a\"/><circle cx=\"135\" cy=\"122\" r=\"7\" fill=\"#a5d6a7\"/></svg>"
+    }
+  ],
+  "footerNote": "本报告仅供健康管理参考，不作为临床诊断依据。如有不适请及时就医。"
+}
+</script>
+</body>
+</html>

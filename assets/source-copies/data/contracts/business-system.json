@@ -1,0 +1,49 @@
+{
+  "schema": "gxy-contract.business-system.v1",
+  "service": "business-system",
+  "display_name": "业务系统",
+  "version": "1.0.0",
+  "base_url_env": "BUSINESS_SYSTEM_BASE_URL",
+  "auth": {
+    "type": "internal",
+    "header": "X-Service-Token",
+    "token_env": "BUSINESS_SYSTEM_TOKEN"
+  },
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/business/elder/profile/{elderId}",
+      "purpose": "老人档案",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/business/service-order/create",
+      "purpose": "创建服务工单",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/business/service-order/{orderId}",
+      "purpose": "工单详情",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/business/elder/sos",
+      "purpose": "SOS 紧急求助",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/business/org/list",
+      "purpose": "服务机构列表",
+      "auth_required": true
+    }
+  ],
+  "sla": {
+    "timeout_ms": 10000,
+    "retry": 0
+  },
+  "notes": "由 BFF action 编排；与女娲 compose 表 / 代码插件解耦，便于多后端适配。"
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>健康报告卡片预览</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    background: #eef4fa;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  .container { width: 100%; max-width: 900px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- 完整健康报告模板 -->
+  <div class="report">
+    <header class="report-header" style="background: linear-gradient(135deg, #4a90d9 0%, #3a7fc4 100%); color: #fff; border-radius: 10px 10px 0 0; padding: 32px 28px 28px; text-align: center;">
+      <h1 style="font-size: 28px; font-weight: 700; letter-spacing: 3px; margin-bottom: 8px;">健康风险预警报告</h1>
+      <p style="font-size: 14px; opacity: 0.9;">基于体质与健康数据的综合评估与调养建议</p>
+    </header>
+
+    <!-- 风险评估 -->
+    <section class="card" style="background: #fff; padding: 28px; box-shadow: 0 2px 12px rgba(74,144,217,0.08);">
+      <h2 style="text-align: center; font-size: 24px; font-weight: 700; color: #4a90d9; letter-spacing: 2px; margin-bottom: 12px;">风险评估</h2>
+      <div style="height: 1px; background: #4a90d9; margin-bottom: 20px;"></div>
+      <div style="display: inline-block; background: #4a90d9; color: #fff; font-size: 15px; font-weight: 600; padding: 8px 36px 8px 18px; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%); margin-bottom: 16px;">易患病症</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; background: #ebf4fb; border-radius: 2px; padding: 12px 8px; margin-bottom: 8px;">
+        <span style="text-align: center; font-size: 15px; font-weight: 700;">重度风险 (1项)</span>
+        <span style="text-align: center; font-size: 15px; font-weight: 700;">中度风险 (6项)</span>
+        <span style="text-align: center; font-size: 15px; font-weight: 700;">轻度风险 (6项)</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding: 4px 0 0;">
+        <div style="display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 13px 4px; border-bottom: 1px solid #f0f4f8; font-size: 14px;">
+          <span>乳腺结节风险评估</span>
+          <span style="font-weight: 600; min-width: 40px; text-align: right; color: #e54d42;">65.6</span>
+          <span style="font-weight: 600; min-width: 64px; text-align: right; color: #e54d42;">预警</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 13px 4px; border-bottom: 1px solid #f0f4f8; font-size: 14px;">
+          <span>骨质疏松症风险评估</span>
+          <span style="font-weight: 600; min-width: 40px; text-align: right; color: #e8a020;">54.5</span>
+          <span style="font-weight: 600; min-width: 64px; text-align: right; color: #e8a020;">中度风险</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 风险预警 -->
+    <section class="card" style="background: #fff; padding: 28px; box-shadow: 0 2px 12px rgba(74,144,217,0.08); margin-top: 16px;">
+      <div style="border-top: 1.5px dashed #69b1e4; border-bottom: 1.5px solid #69b1e4; padding: 26px 4px 30px;">
+        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 20px;">风险预警</h2>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
+          <li style="display: flex; align-items: flex-start; gap: 12px; font-size: 15px;">
+            <span style="flex-shrink: 0; width: 20px; height: 20px; margin-top: 2px;">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5L22.5 20.5H1.5L12 2.5Z" fill="#E54D42" stroke="#E54D42" stroke-width="1.5"/><path d="M12 9V14.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.2" fill="#fff"/></svg>
+            </span>
+            <span>提示肝胆异常。可能有睡眠不佳，情志不畅等表现。</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 膳食调养 -->
+    <section class="card" style="background: #fff; padding: 28px; box-shadow: 0 2px 12px rgba(74,144,217,0.08); margin-top: 16px; border-radius: 0 0 10px 10px;">
+      <div style="display: inline-block; background: #4a90d9; color: #fff; font-size: 15px; font-weight: 600; padding: 8px 36px 8px 18px; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%); margin-bottom: 16px;">膳食调养</div>
+      <div style="border: 1px solid #e07a7a; background: #fbfbfb; border-radius: 2px; padding: 14px 16px; margin-bottom: 4px; font-size: 14px;">
+        <p><strong>【宜食】</strong>宜食用清淡、易消化、富含优质蛋白及膳食纤维的食物</p>
+        <p style="margin-top: 10px;"><strong>【忌食】</strong>忌食辛辣刺激、油腻煎炸、生冷寒凉及过甜过咸食物</p>
+      </div>
+    </section>
+
+    <p style="text-align: center; font-size: 12px; color: #888; margin-top: 20px;">本报告仅供健康管理参考，不作为临床诊断依据。如有不适请及时就医。</p>
+  </div>
+</div>
+</body>
+</html>

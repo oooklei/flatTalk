@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.followup_visit.v1",
+  "template_key": "followup_visit",
+  "skill_key": "find_service",
+  "name": "服务回访卡片",
+  "cn_name": "服务回访卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "followup-visit.html",
+  "fallback_html": "followup-visit.html",
+  "description": "收集服务质量、满意度和下次偏好。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "followup_visit",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/followup_visit.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/followup-visit.html"
+}

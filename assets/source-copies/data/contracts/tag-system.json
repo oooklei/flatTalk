@@ -1,0 +1,49 @@
+{
+  "schema": "gxy-contract.tag-system.v1",
+  "service": "tag-system",
+  "display_name": "标签系统",
+  "version": "1.0.0",
+  "base_url_env": "TAG_SYSTEM_BASE_URL",
+  "auth": {
+    "type": "internal",
+    "header": "X-Service-Token",
+    "token_env": "TAG_SYSTEM_TOKEN"
+  },
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/tag-system/tags",
+      "purpose": "标签定义列表",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/tag-system/tags",
+      "purpose": "创建标签定义",
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/tag-system/persons/{personId}/tags",
+      "purpose": "人员标签查询",
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/tag-system/persons/{personId}/tags",
+      "purpose": "打标签",
+      "auth_required": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/tag-system/persons/{personId}/tags/{tagId}",
+      "purpose": "移除标签",
+      "auth_required": true
+    }
+  ],
+  "sla": {
+    "timeout_ms": 8000,
+    "retry": 0
+  },
+  "notes": "标签数据由 BFF 在 action 执行后回写，支撑 elder_health_profile 等画像类技能。"
+}

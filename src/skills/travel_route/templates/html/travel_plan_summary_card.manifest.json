@@ -1,0 +1,6 @@
+{
+  "id": "travel_plan_summary_card",
+  "layout": "vertical",
+  "match": "旅居方案总结卡：住宿/餐饮/医养/游玩/交通汇总行+预估总费用+预订按钮+追问引导标签，用于旅游方案最终汇总确认场景",
+  "required": ["title", "rows", "totalPrice"]
+}

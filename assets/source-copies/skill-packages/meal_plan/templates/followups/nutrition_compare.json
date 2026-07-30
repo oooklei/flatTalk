@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "meal_plan",
+  "source_template_id": "meal_plan.nutrition_compare.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "nutrition_compare.generate_weekly_plan",
+      "source_template_id": "meal_plan.nutrition_compare.v1",
+      "label": "生成一周计划",
+      "user_prompt": "生成一周计划，并继续说明营养对比卡片的下一步",
+      "action_key": "meal_plan.generate_weekly_plan",
+      "next_template_id": "meal_plan.weekly_plan.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "nutrition_compare.adapt_chronic_disease",
+      "source_template_id": "meal_plan.nutrition_compare.v1",
+      "label": "适配慢病方案",
+      "user_prompt": "适配慢病方案，并继续说明营养对比卡片的下一步",
+      "action_key": "meal_plan.adapt_chronic_disease",
+      "next_template_id": "meal_plan.chronic_disease.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "nutrition_compare.adapt_swallowing",
+      "source_template_id": "meal_plan.nutrition_compare.v1",
+      "label": "适配吞咽能力",
+      "user_prompt": "适配吞咽能力，并继续说明营养对比卡片的下一步",
+      "action_key": "meal_plan.adapt_swallowing",
+      "next_template_id": "meal_plan.swallowing_care.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "meal_plan",
+      "suggestion_key": "nutrition_compare.reuse_leftover",
+      "source_template_id": "meal_plan.nutrition_compare.v1",
+      "label": "剩餐复用建议",
+      "user_prompt": "剩餐复用建议，并继续说明营养对比卡片的下一步",
+      "action_key": "meal_plan.reuse_leftover",
+      "next_template_id": "meal_plan.leftover_reuse.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

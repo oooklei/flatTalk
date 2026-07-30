@@ -1,0 +1,3442 @@
+{
+  "copied_at": "2026-07-29T14:59:21.323Z",
+  "source_name": "guixiaoyang-chat-system",
+  "source_root_note": "Copied from FLATTALK_SOURCE_ROOT at copy time. Runtime code must read from this asset root only.",
+  "asset_root": "D:\\GuiCare\\flatTalk\\assets\\source-copies",
+  "files": [
+    {
+      "source_relative": "data/action-registry.json",
+      "copied_relative": "data/action-registry.json",
+      "bytes": 131792,
+      "sha256": "808e4101b8715ac5b5f0af7b7b10b07f03c081d6b381eb1e9ff6e1fbc5b88499",
+      "sanitized_count": 4
+    },
+    {
+      "source_relative": "data/bff-capability-registry.json",
+      "copied_relative": "data/bff-capability-registry.json",
+      "bytes": 4057,
+      "sha256": "132e5fabe4365af9ecbeeac664267a603f621fb5a0a17212e77a9e58aa41322d",
+      "sanitized_count": 1
+    },
+    {
+      "source_relative": "data/contracts/business-system.json",
+      "copied_relative": "data/contracts/business-system.json",
+      "bytes": 1230,
+      "sha256": "b50b208db675a8dfa398c34b7eb1c68ccfd0f116f522ec1cebda93c69f0b3a5b"
+    },
+    {
+      "source_relative": "data/contracts/nuwax.json",
+      "copied_relative": "data/contracts/nuwax.json",
+      "bytes": 2979,
+      "sha256": "23d50af17bfa7b16a1655a681606ddae674754f9c9d16f649e69eafb14ac57ce"
+    },
+    {
+      "source_relative": "data/contracts/tag-system.json",
+      "copied_relative": "data/contracts/tag-system.json",
+      "bytes": 1228,
+      "sha256": "d86db7ac848dc49b5144c3fe83e41a5b1f7270925fc3121e7812fffe1f6e8868"
+    },
+    {
+      "source_relative": "data/external-service-registry.json",
+      "copied_relative": "data/external-service-registry.json",
+      "bytes": 1696,
+      "sha256": "ef70fab7e1360735f54c392f5e23e508bd39056ab3cb403ba80e1b4e164cdacc"
+    },
+    {
+      "source_relative": "data/kb/knowledge.json",
+      "copied_relative": "data/kb/knowledge.json",
+      "bytes": 4656,
+      "sha256": "8a67ffd9c11ad73d63349fb173101f5fad15a72af33bb5b457c6707b80d8fb94"
+    },
+    {
+      "source_relative": "data/keyword-registry-default.json",
+      "copied_relative": "data/keyword-registry-default.json",
+      "bytes": 9516,
+      "sha256": "c9fba39ec2ac90cdeb51b5a074af4849e770a6c81538735c7e13ce3720745608"
+    },
+    {
+      "source_relative": "data/model-registry.json",
+      "copied_relative": "data/model-registry.json",
+      "bytes": 5181,
+      "sha256": "566208bcb59116c07d01d58c4a22c057df200ecc627190ad0006d5a62303a3fb"
+    },
+    {
+      "source_relative": "data/openapi-app-registry.json",
+      "copied_relative": "data/openapi-app-registry.json",
+      "bytes": 432,
+      "sha256": "266263bce4f91d1beb08e2b7da7c6f6bfcc10986f1636e5081777f0dba7a250a"
+    },
+    {
+      "source_relative": "data/role-skill-matrix.json",
+      "copied_relative": "data/role-skill-matrix.json",
+      "bytes": 3378,
+      "sha256": "f13e124db2aeb2b3c0247aa335ab6da0c65fed434bc138339a26e4cf70b89277"
+    },
+    {
+      "source_relative": "data/supplemental/domain-data.json",
+      "copied_relative": "data/supplemental/domain-data.json",
+      "bytes": 4087,
+      "sha256": "3cd924e114bbc0dd05b81a63030e478a823f06a01a7ff9ce55c1bcc252cc5172"
+    },
+    {
+      "source_relative": "data/template-registry.json",
+      "copied_relative": "data/template-registry.json",
+      "bytes": 157776,
+      "sha256": "9d30422e32802c413a961dc877d623377993ab7abe4e2b374eabc928aa721cc9"
+    },
+    {
+      "source_relative": "data/templates/approval.assist_result.v1.json",
+      "copied_relative": "data/templates/approval.assist_result.v1.json",
+      "bytes": 416,
+      "sha256": "275b8ada92c92425f9a32c9c19fecf4a72920f93ceb933d23cb15d58c2b30ec9"
+    },
+    {
+      "source_relative": "data/templates/chat.busy_guide.v1.json",
+      "copied_relative": "data/templates/chat.busy_guide.v1.json",
+      "bytes": 425,
+      "sha256": "9b964026cab84ac9f72aff4bb1138e460f51881a1b062f915c2e9ba65b226eb6"
+    },
+    {
+      "source_relative": "data/templates/chat.merge_notice.v1.json",
+      "copied_relative": "data/templates/chat.merge_notice.v1.json",
+      "bytes": 431,
+      "sha256": "ff124f2c9bd0b1f219189f80e113b5e4520a60820f88d1e9b9f653d1fc8393f4"
+    },
+    {
+      "source_relative": "data/templates/chat.queue_status.v1.json",
+      "copied_relative": "data/templates/chat.queue_status.v1.json",
+      "bytes": 434,
+      "sha256": "afd0884a66332e08b9e07f1acdbac76bfdbc68cced5d2ac1ebe08ca9e9b375b9"
+    },
+    {
+      "source_relative": "data/templates/common.action_result.v1.json",
+      "copied_relative": "data/templates/common.action_result.v1.json",
+      "bytes": 452,
+      "sha256": "d5f89e51aae2ba883cdad7bc785d2a14e85b526b33d6b0bf5cea2f056fc71532"
+    },
+    {
+      "source_relative": "data/templates/common.answer.v1.json",
+      "copied_relative": "data/templates/common.answer.v1.json",
+      "bytes": 410,
+      "sha256": "76e01d8bf5663fa274e7c29e7ffafeda10529808abb2845cd824e1d255d9a3aa"
+    },
+    {
+      "source_relative": "data/templates/common.error.v1.json",
+      "copied_relative": "data/templates/common.error.v1.json",
+      "bytes": 401,
+      "sha256": "634dcbbf3df55f9978fcfd75639c0cdac5400865a6eb4aba1983beafb91a6464"
+    },
+    {
+      "source_relative": "data/templates/common.permission_denied.v1.json",
+      "copied_relative": "data/templates/common.permission_denied.v1.json",
+      "bytes": 449,
+      "sha256": "22b1e8d5f8c6e78e8f6403ada1b404238b58d622c2fa1498c4ef79b9cea1cdf4"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.arrival_tracking.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.arrival_tracking.v1.json",
+      "bytes": 910,
+      "sha256": "1b7e3628136896677cf4458502535756a746922a64c5112a59567a42e082d833"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.audit_summary.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.audit_summary.v1.json",
+      "bytes": 892,
+      "sha256": "0326359d32de1f7082f12901208ead5fbfd7afbc146d298692fc2c36f1ab6553"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.auto_dispatch.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.auto_dispatch.v1.json",
+      "bytes": 898,
+      "sha256": "759266e4ca31b0a09fcacb586de2dd5047b41b8e7b97718efea0f1a6426f5748"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.candidate_ranking.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.candidate_ranking.v1.json",
+      "bytes": 934,
+      "sha256": "898ba7005aacf96b1a2f420ba9c2faaff6f07b9ca49dadc5bbd8af3e19fbb6f0"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.candidate.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.candidate.v1.json",
+      "bytes": 870,
+      "sha256": "525ededb87d721a159abec38cac5b941dfd7234d2f2ef5d8f1c8f5dd72b50136"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.capacity_dashboard.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.capacity_dashboard.v1.json",
+      "bytes": 968,
+      "sha256": "6612d29db16cec4a3b4acf77386fc000e81683dba8fd3a9b2653606b40d9fb6d"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.capacity_gap.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.capacity_gap.v1.json",
+      "bytes": 888,
+      "sha256": "5a443901f500147e36d7f2ca8ab7748d7154c5013885c36e10158921961700a1"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.completion_check.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.completion_check.v1.json",
+      "bytes": 913,
+      "sha256": "02180b8854d2b60ec290e365ee2b09feef89caa86be5f38d9abb73909831bf8c"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.dispatch_decision.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.dispatch_decision.v1.json",
+      "bytes": 900,
+      "sha256": "232bc34e7c6733cd71e12bbaa12a5ae46604982587c77f9714a5b6f3ecc7ffcd"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.exception.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.exception.v1.json",
+      "bytes": 942,
+      "sha256": "dc74200d1a21ed421870a470900c4e2f9e1d64cdb952ba89fdb3d3949b193562"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.fallback_status.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.fallback_status.v1.json",
+      "bytes": 915,
+      "sha256": "1f104085adce2b6a132a81a0ced871fd838d8bec25653210538ad4e72497f915"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.family_trace.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.family_trace.v1.json",
+      "bytes": 888,
+      "sha256": "e6a54eee6ade34ab8a397b60e01df89ec20a0c13fd944eb1f2480f0797d97dcf"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.hard_filter.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.hard_filter.v1.json",
+      "bytes": 893,
+      "sha256": "7329596e14000555b65ab842a63523410d89dd53d3033bcd6ce08b4a454e1405"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.load_balance.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.load_balance.v1.json",
+      "bytes": 882,
+      "sha256": "577c3b06474b36b67a336e1212f5ed16aa4d858f273a36aa5b23fc5002d5b14a"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.manual_queue.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.manual_queue.v1.json",
+      "bytes": 888,
+      "sha256": "55dfe894831ec7b1e4086cb4566f4b65e15b27621b9fc4541aaaa1046fed29ff"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.multi_org_compare.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.multi_org_compare.v1.json",
+      "bytes": 920,
+      "sha256": "6aa430bc5d129320cf67b116c1659349e47635dc30b8da9cefa5ca4a5db5050b"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.notification_retry.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.notification_retry.v1.json",
+      "bytes": 927,
+      "sha256": "952f8a2681285227aa653d8f2e0edb57b8e28afe692b82f82f80329572637e64"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.notification_trace.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.notification_trace.v1.json",
+      "bytes": 897,
+      "sha256": "9550c87a14b9e651c82f748de180bcda36646fd92c36a4dbfba8988fce4ad345"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.reassign_plan.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.reassign_plan.v1.json",
+      "bytes": 883,
+      "sha256": "8c2fab0f1e1c7455e05662507ef6d4faf6c04c03abcf2e558a446d1b9590f71c"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.reject_reason.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.reject_reason.v1.json",
+      "bytes": 898,
+      "sha256": "38231d6bac3b74dcfb7195117c25a646251ed8966ee1201738267314a61d5ca9"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.risk_escalation.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.risk_escalation.v1.json",
+      "bytes": 903,
+      "sha256": "e7afa1e0a61f69f89245b1dd9e1ab956d57c1dc5d4ca8a19d6fc1c3d29d683ef"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.route_map.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.route_map.v1.json",
+      "bytes": 873,
+      "sha256": "67effd309b85a4ae7955e12866723308cfb4813201e0b8473a13d76b53e93e04"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.router.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.router.v1.json",
+      "bytes": 852,
+      "sha256": "cf07a444911e810c8ca4245ec8a67e4d4a294845ca8203427ec75d763e1b13d4"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.score_breakdown.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.score_breakdown.v1.json",
+      "bytes": 909,
+      "sha256": "2abbc6bb27ea61e5c97fc7527cc83cc6994b4c4be66560ba38112c43946da8cf"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.sla_countdown.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.sla_countdown.v1.json",
+      "bytes": 886,
+      "sha256": "3cedcd58a401ad66fb861f5ea338658dc3c652d5cf845154b88b9328699bb6f0"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.status.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.status.v1.json",
+      "bytes": 969,
+      "sha256": "b2c5b82cf58c5e4b0b2fda0bc9064fc79debace8e705ce049b63aedb3028d2d2"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.worker_contact.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.worker_contact.v1.json",
+      "bytes": 905,
+      "sha256": "9a0df5745a0d6842f06a73b740ee95df3ba6693b12dd06f4d237bca8ca65e22e"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.workorder_card.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.workorder_card.v1.json",
+      "bytes": 6123,
+      "sha256": "79ea406ab60080dd905a6d8c6ce75009ddafce98a0de5866abe50f7a24608243"
+    },
+    {
+      "source_relative": "data/templates/dispatch_manage.workorder_intake.v1.json",
+      "copied_relative": "data/templates/dispatch_manage.workorder_intake.v1.json",
+      "bytes": 934,
+      "sha256": "3e0a6b2b8bcded4e51e896f5cd9b57527d3fc15995bd3f27ff162a2b350935a4"
+    },
+    {
+      "source_relative": "data/templates/dispatch.workorder_card.v1.json",
+      "copied_relative": "data/templates/dispatch.workorder_card.v1.json",
+      "bytes": 536,
+      "sha256": "5e35407b87a61c4318659e6032c8bdb5d072c9dffe14c06999319ed310c8f51a"
+    },
+    {
+      "source_relative": "data/templates/elder_health.profile_summary.v1.json",
+      "copied_relative": "data/templates/elder_health.profile_summary.v1.json",
+      "bytes": 479,
+      "sha256": "160e7981a77fb0389a831975b40ef098e39f630b1d5d2109bc90d9bc474c2f9d"
+    },
+    {
+      "source_relative": "data/templates/find_service.address_confirm.v1.json",
+      "copied_relative": "data/templates/find_service.address_confirm.v1.json",
+      "bytes": 897,
+      "sha256": "323f134df4216a3b4a4840b8de3a85679907c8dd671c323885dd0f3a71c3f8ef"
+    },
+    {
+      "source_relative": "data/templates/find_service.cancel_change.v1.json",
+      "copied_relative": "data/templates/find_service.cancel_change.v1.json",
+      "bytes": 865,
+      "sha256": "07e2fc15ed30ef578d1fc9ea181f7e67863d4499fd1392e505949ef4af7a36d3"
+    },
+    {
+      "source_relative": "data/templates/find_service.catalog.v1.json",
+      "copied_relative": "data/templates/find_service.catalog.v1.json",
+      "bytes": 869,
+      "sha256": "f5418c1e35bcc9d07e81375811f2f31a1fbc9955052898a93210b726b0f3a8c5"
+    },
+    {
+      "source_relative": "data/templates/find_service.clarify.v1.json",
+      "copied_relative": "data/templates/find_service.clarify.v1.json",
+      "bytes": 847,
+      "sha256": "3336db04f8b1763a18ded3b5d60c93a4fa0ef5b67ae89b84fdd86d5c68c34e61"
+    },
+    {
+      "source_relative": "data/templates/find_service.community_resource.v1.json",
+      "copied_relative": "data/templates/find_service.community_resource.v1.json",
+      "bytes": 915,
+      "sha256": "7751c5d5ca91e642b8d5c660a54f2ba8f06b077c5c247c6b4322fb22ecd1485d"
+    },
+    {
+      "source_relative": "data/templates/find_service.comparison.v1.json",
+      "copied_relative": "data/templates/find_service.comparison.v1.json",
+      "bytes": 893,
+      "sha256": "250091ffb0dafa66a08236641695b5adde89c458a72ab5a80428e2d3b4e882f7"
+    },
+    {
+      "source_relative": "data/templates/find_service.complaint_assist.v1.json",
+      "copied_relative": "data/templates/find_service.complaint_assist.v1.json",
+      "bytes": 901,
+      "sha256": "3328a04c3a4c9a4f47e96c8fa88263f15ed567c779c87da2eb94065bc9eed8c1"
+    },
+    {
+      "source_relative": "data/templates/find_service.eligibility_check.v1.json",
+      "copied_relative": "data/templates/find_service.eligibility_check.v1.json",
+      "bytes": 911,
+      "sha256": "aa9071f1be40aff81082ad61a90ac83436cefc785528e570c205847577e4070f"
+    },
+    {
+      "source_relative": "data/templates/find_service.emergency_triage.v1.json",
+      "copied_relative": "data/templates/find_service.emergency_triage.v1.json",
+      "bytes": 892,
+      "sha256": "fd34b1428e45ddfe02e35bcea0f723e5dcc77c71f2d4c1c6a6f386ff5352b5ba"
+    },
+    {
+      "source_relative": "data/templates/find_service.emergency.v1.json",
+      "copied_relative": "data/templates/find_service.emergency.v1.json",
+      "bytes": 975,
+      "sha256": "1095c24e2f1171a1d64d8184d638284b1fd84c8a8b0526f321ebed02995a446b"
+    },
+    {
+      "source_relative": "data/templates/find_service.fallback_status.v1.json",
+      "copied_relative": "data/templates/find_service.fallback_status.v1.json",
+      "bytes": 900,
+      "sha256": "75ae30c5db4b93264765dad212c3bb9a6be617ca157c8e337b29a30a829547d5"
+    },
+    {
+      "source_relative": "data/templates/find_service.family_notify.v1.json",
+      "copied_relative": "data/templates/find_service.family_notify.v1.json",
+      "bytes": 862,
+      "sha256": "5363b1be7bd95cfe686ba1ac48151e2d53c2ece9ceb264b9d8726b84b944f4a2"
+    },
+    {
+      "source_relative": "data/templates/find_service.followup_visit.v1.json",
+      "copied_relative": "data/templates/find_service.followup_visit.v1.json",
+      "bytes": 866,
+      "sha256": "df1985f1ccc625095dd88b9f8e4ba6aff6ec501e4e56178fb9ad42f6f4ce6cb0"
+    },
+    {
+      "source_relative": "data/templates/find_service.multi_service_bundle.v1.json",
+      "copied_relative": "data/templates/find_service.multi_service_bundle.v1.json",
+      "bytes": 923,
+      "sha256": "21d482a932b0e36ba0f739e36ac4a096431fac1c68c6a74ced5125053af7d419"
+    },
+    {
+      "source_relative": "data/templates/find_service.need_intake.v1.json",
+      "copied_relative": "data/templates/find_service.need_intake.v1.json",
+      "bytes": 875,
+      "sha256": "ce050e4859d9707ce5485e6e03561e419c1c4e5d3c6ebcdf0f732a45c3afd0c4"
+    },
+    {
+      "source_relative": "data/templates/find_service.order_preview.v1.json",
+      "copied_relative": "data/templates/find_service.order_preview.v1.json",
+      "bytes": 874,
+      "sha256": "583ebb22385a9778cbf9fb02e03e56972ec4e31596f3cde923126248a1b22606"
+    },
+    {
+      "source_relative": "data/templates/find_service.order_status.v1.json",
+      "copied_relative": "data/templates/find_service.order_status.v1.json",
+      "bytes": 879,
+      "sha256": "3c7348fb8f004c19c511c136786b3c562b74f92c623d3f03a36c3c482b9f0829"
+    },
+    {
+      "source_relative": "data/templates/find_service.order.v1.json",
+      "copied_relative": "data/templates/find_service.order.v1.json",
+      "bytes": 920,
+      "sha256": "7a445aa4a4e5ecbffaa3e0abeb22dae96c78f15b337d1c4b6fe04543abe6e70a"
+    },
+    {
+      "source_relative": "data/templates/find_service.org_profile.v1.json",
+      "copied_relative": "data/templates/find_service.org_profile.v1.json",
+      "bytes": 866,
+      "sha256": "fd07171296da7eadec56bdb09f28f173f5c798be632519c73570651e71171d16"
+    },
+    {
+      "source_relative": "data/templates/find_service.price_estimate.v1.json",
+      "copied_relative": "data/templates/find_service.price_estimate.v1.json",
+      "bytes": 872,
+      "sha256": "658855bc8e4b7065741a45811d09f86f477c1bca4d736e06d9cb9b765af2dd77"
+    },
+    {
+      "source_relative": "data/templates/find_service.recommend.v1.json",
+      "copied_relative": "data/templates/find_service.recommend.v1.json",
+      "bytes": 4908,
+      "sha256": "cdf22d7f45a2670dcdf41eafaef710e675f3028352295d146d3501d2117f5618"
+    },
+    {
+      "source_relative": "data/templates/find_service.schedule.v1.json",
+      "copied_relative": "data/templates/find_service.schedule.v1.json",
+      "bytes": 864,
+      "sha256": "29ba60f69171329160c0ea75559afcf0a6831eaacebf8e47249788842bb0ecce"
+    },
+    {
+      "source_relative": "data/templates/find_service.service_match.v1.json",
+      "copied_relative": "data/templates/find_service.service_match.v1.json",
+      "bytes": 874,
+      "sha256": "0a5755d13c3512ef0b66fa43e96da0be61160abef1e5d5b352eeaac72741f755"
+    },
+    {
+      "source_relative": "data/templates/find_service.status.v1.json",
+      "copied_relative": "data/templates/find_service.status.v1.json",
+      "bytes": 898,
+      "sha256": "68365bcfb5ffd721da43c34f94424d61f60d3ff0b03ca7c6b1ff99b7fb9e25f4"
+    },
+    {
+      "source_relative": "data/templates/find_service.subsidy_hint.v1.json",
+      "copied_relative": "data/templates/find_service.subsidy_hint.v1.json",
+      "bytes": 849,
+      "sha256": "572b46939adb1b0c06d75ba5f9a7d0948a8c0b4aef08843e0c73e151574ad42a"
+    },
+    {
+      "source_relative": "data/templates/find_service.worker_profile.v1.json",
+      "copied_relative": "data/templates/find_service.worker_profile.v1.json",
+      "bytes": 896,
+      "sha256": "61829a54229fed51e722065d9fd1a989703556d57bd729bd68850a4206e7a932"
+    },
+    {
+      "source_relative": "data/templates/form_fill.extract_result.v1.json",
+      "copied_relative": "data/templates/form_fill.extract_result.v1.json",
+      "bytes": 449,
+      "sha256": "0b95fb257fd1240305851b5bd0655562688d2f5a168f9cef87afc18f7bebb829"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.audit.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.audit.v1.json",
+      "bytes": 870,
+      "sha256": "802229566d7946a12d37932bb544b368c5b0366f25e121b29fc3fe4849c8c940"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.capability_intro.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.capability_intro.v1.json",
+      "bytes": 920,
+      "sha256": "493b267a3cc3215d7fca5c13c6527d98728d84c9feaa0a7c55a637959566abe4"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.clarify.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.clarify.v1.json",
+      "bytes": 881,
+      "sha256": "34196ff7000dbdde9c20fb7390b8fa9cdfd0f545f6b63d975d7dc5f1511363fd"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.context_check.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.context_check.v1.json",
+      "bytes": 853,
+      "sha256": "56990a47305605c55e85049624bd8af5259cd7a1f23cdc0b84d00e43dcc79a6e"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.elder_summary.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.elder_summary.v1.json",
+      "bytes": 917,
+      "sha256": "d49339bb7a0d8a0e3173ab76c46b9e114b4a32700ac942fc56b0f823b05d28a7"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.fallback_status.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.fallback_status.v1.json",
+      "bytes": 943,
+      "sha256": "72f3654e925cee67bbc5d5469e1de15c9fec56044a3760949e4c185eee21f609"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.family_summary.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.family_summary.v1.json",
+      "bytes": 927,
+      "sha256": "3d889afb66533563265abea72aebbea26eeaf0b8bda9ca57ca0eb7362295f510"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.faq_answer.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.faq_answer.v1.json",
+      "bytes": 896,
+      "sha256": "1a2db4fb6e16b0ee1111faaf147b80f31ec712daba815eb1dd7610b8e9c57a32"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.handoff_preview.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.handoff_preview.v1.json",
+      "bytes": 937,
+      "sha256": "7a5b1f1fa1281c848377670a50302b971718a66e2d62811ba402fe86f0d4d060"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.intent_router.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.intent_router.v1.json",
+      "bytes": 920,
+      "sha256": "bfaa2bf6340c1ba4dede96f941bbe3d3427465baf0fc059bf278b12386d4028b"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.knowledge_gap.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.knowledge_gap.v1.json",
+      "bytes": 902,
+      "sha256": "9d9c9f7489998e31be0e331b936579cba1018c5d3ee7caab0893f8c8f7355427"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.learning_feedback.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.learning_feedback.v1.json",
+      "bytes": 942,
+      "sha256": "1d739545e29e3181b938b576b20fc19bb07d54fe5dba786b377e604feefe89d4"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.manual_review.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.manual_review.v1.json",
+      "bytes": 905,
+      "sha256": "51c99e1a337d27184e028082fe6ca6004a36574fb587bb1d126a763b3788215d"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.multi_skill_plan.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.multi_skill_plan.v1.json",
+      "bytes": 947,
+      "sha256": "ca34e8f445147246d086c9b0b32345f06dac91bd90cfdc489b897abd67646f1b"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.notification_summary.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.notification_summary.v1.json",
+      "bytes": 945,
+      "sha256": "e365855435ccff656491cdfb6d4fed2122f621582a83f98f6b1efbfb45fa5ac0"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.permission_block.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.permission_block.v1.json",
+      "bytes": 932,
+      "sha256": "e1e9408093dab397c29a3080daebe82244d1b9709547c8e661ac36191f99b251"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.policy_answer.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.policy_answer.v1.json",
+      "bytes": 836,
+      "sha256": "06111aac7097e8a667047d9c7dd359f5f16922b97f2ed5ea8c2de9d0f1607f3c"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.policy_screening.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.policy_screening.v1.json",
+      "bytes": 941,
+      "sha256": "ef6686522252d645282ebb41f5b29a801096ceb05e4d5fefe58df70422dc6769"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.profile_missing.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.profile_missing.v1.json",
+      "bytes": 940,
+      "sha256": "b6598c38f3bd30c909971dc0cd59aa936259b6a038b2c583c7ab8fb2acf7ac4f"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.router.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.router.v1.json",
+      "bytes": 5293,
+      "sha256": "c85bbcc57cb80c0d66c4166bee9f8eded20d4a9538d5cc2ecd2fec5f7d04853f"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.safety_check.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.safety_check.v1.json",
+      "bytes": 907,
+      "sha256": "c04f981543660358e31939a0d6d9154651e6513a37e4c280071adacf64e94325"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.session_resume.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.session_resume.v1.json",
+      "bytes": 918,
+      "sha256": "0651e9b42573e98ebcd1b9d9bfb22920daf16de55bbb6f7e02418c6df8990fad"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.skill_hub.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.skill_hub.v1.json",
+      "bytes": 825,
+      "sha256": "afaf3cc4b90bbea8de5c23e81648257256df6eaa3f2531c3eb8bc76b378f98c1"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.status.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.status.v1.json",
+      "bytes": 924,
+      "sha256": "0d2055b00e3e4e33ad0cfda75df0eefece77e9c12108fafeeef2476ff60be4fc"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.task_progress.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.task_progress.v1.json",
+      "bytes": 905,
+      "sha256": "251a230d2714692a461c0cc6ad3868840957600b014d42769d8818846fcd39d0"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.timeline.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.timeline.v1.json",
+      "bytes": 894,
+      "sha256": "fc7edb5135040ec0fe02ac01dde0f7ad4cf086f68c983c2069efd18153369a00"
+    },
+    {
+      "source_relative": "data/templates/guixiaoyang_dispatch.voice_ready.v1.json",
+      "copied_relative": "data/templates/guixiaoyang_dispatch.voice_ready.v1.json",
+      "bytes": 891,
+      "sha256": "7807f079d7443b53256ac5a8f30445f7081f52f8909df5a615604023190f8448"
+    },
+    {
+      "source_relative": "data/templates/health_risk.emergency_service.v1.json",
+      "copied_relative": "data/templates/health_risk.emergency_service.v1.json",
+      "bytes": 987,
+      "sha256": "c8bd2694686ad4d7ebfaa84873e6cfa5c0d72e62048a440fe398116e04c0bde2"
+    },
+    {
+      "source_relative": "data/templates/health_risk.first_aid_guide.v1.json",
+      "copied_relative": "data/templates/health_risk.first_aid_guide.v1.json",
+      "bytes": 973,
+      "sha256": "f8095dcc4f16860cb1d42aab30db92f3853a719b217dfe621a589fa102e2dd24"
+    },
+    {
+      "source_relative": "data/templates/health_risk.help_request.v1.json",
+      "copied_relative": "data/templates/health_risk.help_request.v1.json",
+      "bytes": 955,
+      "sha256": "91cd86dbd63863266e3f7a1732aa48c7b280147a9af8285f84bf1d54191a8e16"
+    },
+    {
+      "source_relative": "data/templates/health_risk.warning_card.v1.json",
+      "copied_relative": "data/templates/health_risk.warning_card.v1.json",
+      "bytes": 990,
+      "sha256": "ef6bc9844132e7287a63db64bd2d301061c4f7b1854dd188ddabc2456bcce1fc"
+    },
+    {
+      "source_relative": "data/templates/local.abnormal.v1.json",
+      "copied_relative": "data/templates/local.abnormal.v1.json",
+      "bytes": 993,
+      "sha256": "341949fc962d16c86be975e950c7fe70b1cc5aa95c262a72f1b9008d29ec7adb"
+    },
+    {
+      "source_relative": "data/templates/local.sos.v1.json",
+      "copied_relative": "data/templates/local.sos.v1.json",
+      "bytes": 957,
+      "sha256": "2fb2488175e02a6c31d6b5a16248591c4bd919c9d41f16a77ef6ba3638a361f8"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.budget_plan.v1.json",
+      "copied_relative": "data/templates/meal_plan.budget_plan.v1.json",
+      "bytes": 830,
+      "sha256": "3c72f57eeffa235d2972194489f645538f47f1ac2aaf9b2fd937e71485a32525"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.caregiver_brief.v1.json",
+      "copied_relative": "data/templates/meal_plan.caregiver_brief.v1.json",
+      "bytes": 882,
+      "sha256": "8ea1963c3d70a989d2101f8844f74ca7848a6c484e9b9d4828c8cfbb589cea1c"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.chronic_disease.v1.json",
+      "copied_relative": "data/templates/meal_plan.chronic_disease.v1.json",
+      "bytes": 873,
+      "sha256": "008bc31922432a68fbdcbe85a47dcec97cb020cce6b6aa802a27725bfb0e04de"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.condition_intake.v1.json",
+      "copied_relative": "data/templates/meal_plan.condition_intake.v1.json",
+      "bytes": 892,
+      "sha256": "e300fcbf29ecb2b5fef69451f696c5ae804551ba48dbde405933e2cd0763cec1"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.cooking_steps.v1.json",
+      "copied_relative": "data/templates/meal_plan.cooking_steps.v1.json",
+      "bytes": 856,
+      "sha256": "22e825b14b74e23bd435c7b0db3914041d1f0aa35317d7ae0a4144ceddeb611c"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.dashboard.v1.json",
+      "copied_relative": "data/templates/meal_plan.dashboard.v1.json",
+      "bytes": 925,
+      "sha256": "bbde6618de2cf1cb890397df1bad7b2638977e8764e11684bedddfb88891df0a"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.delivery_handoff.v1.json",
+      "copied_relative": "data/templates/meal_plan.delivery_handoff.v1.json",
+      "bytes": 862,
+      "sha256": "907d5272f6690f2eb009580fabfa5aaeb6a31119428201f66cf1ec40deb1c31a"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.diet_preference.v1.json",
+      "copied_relative": "data/templates/meal_plan.diet_preference.v1.json",
+      "bytes": 870,
+      "sha256": "97057514a0cb5e3de0e40611837f9fa5ebf684419773e0665db2705d5d92f64b"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.doctor_note.v1.json",
+      "copied_relative": "data/templates/meal_plan.doctor_note.v1.json",
+      "bytes": 857,
+      "sha256": "2bfb88737eefb69929559156a87db940f7d7686b13c4b735f3ff12d8309909a6"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.family_explain.v1.json",
+      "copied_relative": "data/templates/meal_plan.family_explain.v1.json",
+      "bytes": 863,
+      "sha256": "e0392fea7a0c2fcf2f4f57471155fd8ee71430971e61ac90a43730bf372e345f"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.feedback_collect.v1.json",
+      "copied_relative": "data/templates/meal_plan.feedback_collect.v1.json",
+      "bytes": 898,
+      "sha256": "aade3095f7294a451d535d61d2da2912bf7c5052aa5f9b0c356ba32be0706660"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.festival_plan.v1.json",
+      "copied_relative": "data/templates/meal_plan.festival_plan.v1.json",
+      "bytes": 844,
+      "sha256": "75feafae0865341b045f4ec7e17fabf6d33b5e0a69c7f1b556bb43594a9f6cd6"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.ingredient_swap.v1.json",
+      "copied_relative": "data/templates/meal_plan.ingredient_swap.v1.json",
+      "bytes": 879,
+      "sha256": "9ce383f23baaf67326956c3999c7cf42f9045bd7491256e1373fa7cd0e4b0e8e"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.leftover_reuse.v1.json",
+      "copied_relative": "data/templates/meal_plan.leftover_reuse.v1.json",
+      "bytes": 869,
+      "sha256": "aeab88910b0b230c514d8c07bbd82dee60c2b13ace56e840cb6a535bbd12a11e"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.nutrition_compare.v1.json",
+      "copied_relative": "data/templates/meal_plan.nutrition_compare.v1.json",
+      "bytes": 890,
+      "sha256": "53c6e622e5032bb8b070442652c12de8ad0d15363cf6a48d70299552e98d8bc3"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.order_confirm.v1.json",
+      "copied_relative": "data/templates/meal_plan.order_confirm.v1.json",
+      "bytes": 856,
+      "sha256": "40a56c356afe71976c6e3ac9ad8f8d70b74d188616175356b61b75aab7ed5aa9"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.overview.v1.json",
+      "copied_relative": "data/templates/meal_plan.overview.v1.json",
+      "bytes": 914,
+      "sha256": "77c9e82dbe0da2e34ce30c50c4e366594bf45a8cd424bc2432d07d50be05cbbd"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.plan.v1.json",
+      "copied_relative": "data/templates/meal_plan.plan.v1.json",
+      "bytes": 4412,
+      "sha256": "ab3cf16cfb7f21ceecced86340421c2481930c9791d3aa21c8b65a2cccc34f7d"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.risk_alert.v1.json",
+      "copied_relative": "data/templates/meal_plan.risk_alert.v1.json",
+      "bytes": 850,
+      "sha256": "ad286e38fe3456ebd088c146f9db1964b601131aee877412e11c7feb0430727c"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.shopping_list.v1.json",
+      "copied_relative": "data/templates/meal_plan.shopping_list.v1.json",
+      "bytes": 850,
+      "sha256": "95d4ea4fdf5e582e5e5a088afc9edd4b4bde56f705ddc8e5ad7d69edbbebbe0b"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.status.v1.json",
+      "copied_relative": "data/templates/meal_plan.status.v1.json",
+      "bytes": 816,
+      "sha256": "a7f4c16db77561af9a4c55692b8bc1252995c2d10a63e41f772486ea5e7b4f33"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.swallowing_care.v1.json",
+      "copied_relative": "data/templates/meal_plan.swallowing_care.v1.json",
+      "bytes": 891,
+      "sha256": "bcc5a76a3468fdbba221ddcb2a6ab9d7376bf834396374708382a9de4e02cbc3"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.timeline.v1.json",
+      "copied_relative": "data/templates/meal_plan.timeline.v1.json",
+      "bytes": 919,
+      "sha256": "16345335699128786018fcd6ef1f6d9f523664774b1d8cfda492184011916630"
+    },
+    {
+      "source_relative": "data/templates/meal_plan.weekly_plan.v1.json",
+      "copied_relative": "data/templates/meal_plan.weekly_plan.v1.json",
+      "bytes": 851,
+      "sha256": "3b6cb1944a2df926dc3c95d7c56e3a63216b2ef5abdcf039526c52212637532b"
+    },
+    {
+      "source_relative": "data/templates/message.event_context.v1.json",
+      "copied_relative": "data/templates/message.event_context.v1.json",
+      "bytes": 446,
+      "sha256": "ec76b9aed7d488f2c45b4d590ebdeea2d29b77d5aaad9b6cd7a670e159ae9324"
+    },
+    {
+      "source_relative": "data/templates/remote.dispatch.result.v1.json",
+      "copied_relative": "data/templates/remote.dispatch.result.v1.json",
+      "bytes": 507,
+      "sha256": "1e63dae889c51eda6308d76d97e32b98c447039c9775ad573cc67b2cce22f2b2"
+    },
+    {
+      "source_relative": "data/templates/travel_route.accessibility_check.v1.json",
+      "copied_relative": "data/templates/travel_route.accessibility_check.v1.json",
+      "bytes": 976,
+      "sha256": "010390529fbb4845ea8492dd043f1ba0ca0a014226d97fc9935e3f5a52ae4500"
+    },
+    {
+      "source_relative": "data/templates/travel_route.availability_status.v1.json",
+      "copied_relative": "data/templates/travel_route.availability_status.v1.json",
+      "bytes": 956,
+      "sha256": "0cef5034883cb8cc4d9cc5166324f7b7c8698a7210309430d345306f1aa0eaf6"
+    },
+    {
+      "source_relative": "data/templates/travel_route.base_profile.v1.json",
+      "copied_relative": "data/templates/travel_route.base_profile.v1.json",
+      "bytes": 970,
+      "sha256": "38f852399e94f6c90ff12fa2eda5957d4bf33fb41dfb12c4d2a950cb88abbf7b"
+    },
+    {
+      "source_relative": "data/templates/travel_route.booking_handoff.v1.json",
+      "copied_relative": "data/templates/travel_route.booking_handoff.v1.json",
+      "bytes": 978,
+      "sha256": "b9719fb79189e37084c822bb70bd561bb8a2cdeb93cd460026b4adcc191219de"
+    },
+    {
+      "source_relative": "data/templates/travel_route.budget_plan.v1.json",
+      "copied_relative": "data/templates/travel_route.budget_plan.v1.json",
+      "bytes": 907,
+      "sha256": "77b50cbb0e5f2010166d42f1e52723f18e930c76b505755f9a481d7ae1543c1c"
+    },
+    {
+      "source_relative": "data/templates/travel_route.cancellation_policy.v1.json",
+      "copied_relative": "data/templates/travel_route.cancellation_policy.v1.json",
+      "bytes": 964,
+      "sha256": "cf55af936d1563e201667e2886a8b66d182ddab864125e9ea5d875718f160ffc"
+    },
+    {
+      "source_relative": "data/templates/travel_route.care_provider_note.v1.json",
+      "copied_relative": "data/templates/travel_route.care_provider_note.v1.json",
+      "bytes": 975,
+      "sha256": "6d5d07f99f04ca5655641944523acf175deb416feb0f9c58e9e371f379c95fac"
+    },
+    {
+      "source_relative": "data/templates/travel_route.companion_care.v1.json",
+      "copied_relative": "data/templates/travel_route.companion_care.v1.json",
+      "bytes": 939,
+      "sha256": "0f986c2515204b49235a8cbc86526f690523101c9e21afd9b30f0a2503cbd78e"
+    },
+    {
+      "source_relative": "data/templates/travel_route.destination_compare.v1.json",
+      "copied_relative": "data/templates/travel_route.destination_compare.v1.json",
+      "bytes": 964,
+      "sha256": "753fc3231eee8b71d608cf2c7a9c657340b5c195f2143eb397cad5531e169adc"
+    },
+    {
+      "source_relative": "data/templates/travel_route.family_brief.v1.json",
+      "copied_relative": "data/templates/travel_route.family_brief.v1.json",
+      "bytes": 908,
+      "sha256": "8a6edc5e8792bfd4f05cdd5608fe076c3c4c97e04847aa7894bde68e5049d570"
+    },
+    {
+      "source_relative": "data/templates/travel_route.feedback_collect.v1.json",
+      "copied_relative": "data/templates/travel_route.feedback_collect.v1.json",
+      "bytes": 940,
+      "sha256": "d58f8805b2091a1dda7b4e239f67b98cba094e68b5349d79888fb1ff2de4e675"
+    },
+    {
+      "source_relative": "data/templates/travel_route.health_safety.v1.json",
+      "copied_relative": "data/templates/travel_route.health_safety.v1.json",
+      "bytes": 952,
+      "sha256": "26ff8473b0a5a5cf3f34c224b90226e353944af5529a8bfde52c28864f541449"
+    },
+    {
+      "source_relative": "data/templates/travel_route.itinerary_timeline.v1.json",
+      "copied_relative": "data/templates/travel_route.itinerary_timeline.v1.json",
+      "bytes": 975,
+      "sha256": "865dc1ee7b33389b0ca32a21041b9756701b6bddadf6967b11072b44c931ad73"
+    },
+    {
+      "source_relative": "data/templates/travel_route.nearby_medical.v1.json",
+      "copied_relative": "data/templates/travel_route.nearby_medical.v1.json",
+      "bytes": 948,
+      "sha256": "9027e381a60c5b6dff87c027236082552a784b4aec275dad6e8b8ff7eb1aa108"
+    },
+    {
+      "source_relative": "data/templates/travel_route.order_preview.v1.json",
+      "copied_relative": "data/templates/travel_route.order_preview.v1.json",
+      "bytes": 925,
+      "sha256": "8a0f4abc333372bd0b54616e42a689ade8916d70df01a7002d2468188608af60"
+    },
+    {
+      "source_relative": "data/templates/travel_route.packing_list.v1.json",
+      "copied_relative": "data/templates/travel_route.packing_list.v1.json",
+      "bytes": 901,
+      "sha256": "1bb67a008fb6719d191b35f6faf027497a6d9aa4d3f6459fc9eb57edfeaf3359"
+    },
+    {
+      "source_relative": "data/templates/travel_route.payment_status.v1.json",
+      "copied_relative": "data/templates/travel_route.payment_status.v1.json",
+      "bytes": 918,
+      "sha256": "01a7d83b0637995c808bf90c599296b84472e061698fb64b19e9281d9ac7205f"
+    },
+    {
+      "source_relative": "data/templates/travel_route.policy_subsidy.v1.json",
+      "copied_relative": "data/templates/travel_route.policy_subsidy.v1.json",
+      "bytes": 947,
+      "sha256": "0e6eb914ee0b146ec9498f834577392808b5ed8717166d5cbe338d1d7113bc49"
+    },
+    {
+      "source_relative": "data/templates/travel_route.preference_card.v1.json",
+      "copied_relative": "data/templates/travel_route.preference_card.v1.json",
+      "bytes": 939,
+      "sha256": "723209587c4c0218a31314a4f5372076f3790bd76786e03b841978769b7b72ce"
+    },
+    {
+      "source_relative": "data/templates/travel_route.product_detail.v1.json",
+      "copied_relative": "data/templates/travel_route.product_detail.v1.json",
+      "bytes": 934,
+      "sha256": "4f5c424c8625af8d1fe4c6be99813a4dc912ec12082d711bba3dd23442ab3645"
+    },
+    {
+      "source_relative": "data/templates/travel_route.retreat_recommendation.v1.json",
+      "copied_relative": "data/templates/travel_route.retreat_recommendation.v1.json",
+      "bytes": 2557,
+      "sha256": "54e7d222d86f1d274a257e0de251da8bde74ecb572bf5e49b0088c5129c9875f"
+    },
+    {
+      "source_relative": "data/templates/travel_route.risk_fallback.v1.json",
+      "copied_relative": "data/templates/travel_route.risk_fallback.v1.json",
+      "bytes": 943,
+      "sha256": "0f6e1c463b56b83aea0094559945a5529acbfaff506889c691fab1d6eba50685"
+    },
+    {
+      "source_relative": "data/templates/travel_route.route_plan.v1.json",
+      "copied_relative": "data/templates/travel_route.route_plan.v1.json",
+      "bytes": 6657,
+      "sha256": "5b7b6c8ddecf352cec1860569122073814796f92b44b7f2788a1ad18e1a06c20"
+    },
+    {
+      "source_relative": "data/templates/travel_route.route_status.v1.json",
+      "copied_relative": "data/templates/travel_route.route_status.v1.json",
+      "bytes": 917,
+      "sha256": "06ec807e90c30b40034f11abae0f88889b3358eeb1e11e7f25919f551c5d3910"
+    },
+    {
+      "source_relative": "data/templates/travel_route.seasonal_recommendation.v1.json",
+      "copied_relative": "data/templates/travel_route.seasonal_recommendation.v1.json",
+      "bytes": 998,
+      "sha256": "970d9a10bbb8c74340d714a0f55d3f81ba403ec9f4729edaaa80d2ad31c20098"
+    },
+    {
+      "source_relative": "data/templates/travel_route.transport_plan.v1.json",
+      "copied_relative": "data/templates/travel_route.transport_plan.v1.json",
+      "bytes": 921,
+      "sha256": "36be35f1cac52fad8275abfe96fd00039985b8a8b9de474be0fc8f75f0bcb85b"
+    },
+    {
+      "source_relative": "data/templates/travel_route.weather_alert.v1.json",
+      "copied_relative": "data/templates/travel_route.weather_alert.v1.json",
+      "bytes": 922,
+      "sha256": "8b718998dbc38f32b97b84f48567b88c23efea333a4d8375b9602c212e177dd0"
+    },
+    {
+      "source_relative": "data/templates/travel.route_plan.v1.json",
+      "copied_relative": "data/templates/travel.route_plan.v1.json",
+      "bytes": 484,
+      "sha256": "22b0b77f37c2d303a22b46bc49f21f61582bf755d72bde1b2f80376ebb769359"
+    },
+    {
+      "source_relative": "public/assets/community-home-care-photo.png",
+      "copied_relative": "public/assets/community-home-care-photo.png",
+      "bytes": 1856838,
+      "sha256": "d52839f90c444f5a377d23d84b8bf0ee009a42c19f25c805aaa2930935c76cae"
+    },
+    {
+      "source_relative": "public/mobile.css",
+      "copied_relative": "public/mobile.css",
+      "bytes": 40625,
+      "sha256": "74fdad380ee75bc13eed90501119a98d107c7aa4d240691968714187dc478652"
+    },
+    {
+      "source_relative": "public/mobile.html",
+      "copied_relative": "public/mobile.html",
+      "bytes": 3136,
+      "sha256": "ae92e19a7232a5984734ee073a9f93d24749782a637547b3557fe75d76c15f22"
+    },
+    {
+      "source_relative": "public/mobile.js",
+      "copied_relative": "public/mobile.js",
+      "bytes": 103657,
+      "sha256": "7f978960630c7b8d68a99dd234659830afc3c2b3c79881b984eed1af7adb4328"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/assets/config/platform_config.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/assets/config/platform_config.json",
+      "bytes": 390,
+      "sha256": "8a27730835793e1589cff3e452646a4ae28dc8120a7ea00262a19b93abdb73a4"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/assets/config/prototype_sources.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/assets/config/prototype_sources.json",
+      "bytes": 451,
+      "sha256": "7c03409be54b6a15b2a7bcc525afe1bcd2e8fc900a26d577ed0c45447fdfc895"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/assets/config/tavily_enrichment.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/assets/config/tavily_enrichment.json",
+      "bytes": 261,
+      "sha256": "0e88131b4d50d1ff03cc35468a05343b2def0c79d0a1d8b42c2a330587e7401a"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/assets/flow_diagrams/overview.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/assets/flow_diagrams/overview.md",
+      "bytes": 152,
+      "sha256": "e29bfb750d9b621762a21cd0eb5ff90a7e758738c272d75efcf4d2492abf7ffc"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/assets/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/assets/INDEX.md",
+      "bytes": 183,
+      "sha256": "4210c1a975cde2daf0dcf8054bc53f8648e968bed5e1dd193dbde7d67f77cc36"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/auth/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/auth/INDEX.md",
+      "bytes": 72,
+      "sha256": "751b2c2001e70c042e9dd54bdaaf0949f0ba8a77f6c32dc79a6a0b58488fe610"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/auth/README.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/auth/README.md",
+      "bytes": 136,
+      "sha256": "dcaa212039167a771e6a7146bf2455a86d437844c34b6e1f381cb9b9effef385"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/auth/role-access.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/auth/role-access.json",
+      "bytes": 1745,
+      "sha256": "e2226b5c93ffe532fd216d808101318f9acda354b126e3ca6d3071ab870e2ff0"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/data_tables/guixiaoyang_dispatch_business.seed.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/data_tables/guixiaoyang_dispatch_business.seed.json",
+      "bytes": 268310,
+      "sha256": "3cab841c0812aea0053483d188d3530f44836ddbb2778908287e84697e7269a8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/data_tables/gxy_dispatch_log.ddl.sql",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/data_tables/gxy_dispatch_log.ddl.sql",
+      "bytes": 3221,
+      "sha256": "c85b7fb08e62f8d840c58b808f3992ae27ca5e4464596b2956e733ecd31ff760"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/data_tables/gxy_dispatch_session.seed.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/data_tables/gxy_dispatch_session.seed.json",
+      "bytes": 329599,
+      "sha256": "c0ddd0abc401800c12f37f21fb94670d1da5837cf09e84f516e40b84b8ef9360"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/data_tables/gxy_intent_record.ddl.sql",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/data_tables/gxy_intent_record.ddl.sql",
+      "bytes": 3450,
+      "sha256": "44391ed6b6f111efdf64fea0c8c8321ef21b4f0c30094df615f3bf1e5dec3442"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/data_tables/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/data_tables/INDEX.md",
+      "bytes": 161,
+      "sha256": "217731fcc776fbe5c6e2f16258882d4565d94999373552071f8ac08e763e9438"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/data_tables/README.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/data_tables/README.md",
+      "bytes": 152,
+      "sha256": "bb6856e3dbed79be7d0975a12df13722e6304bacc7da379d03eabd29c54038ac"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/DEPLOYMENT_REPORT.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/DEPLOYMENT_REPORT.md",
+      "bytes": 305,
+      "sha256": "32db3fc04a483f47238e0c1fba5fbded06b885608bc9d62f7ab8eb06f3bdbaa8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/INDEX.md",
+      "bytes": 82,
+      "sha256": "be0aacb7f67c1013d1c310c31cad6e677de28809c216ebd4733283bdfc264a80"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/operation_guide.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/operation_guide.md",
+      "bytes": 148,
+      "sha256": "7e3c21b27afa062768aa56a5b15b17b8b83f9a93818ca670fbe828b7e1948cce"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/policy_and_service.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/policy_and_service.md",
+      "bytes": 426,
+      "sha256": "afc712a64d66d1a36af33fc6d92df086ec0627602d22f312c780ef47d0ac45d6"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充.zip",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充.zip",
+      "bytes": 234582,
+      "sha256": "69fd7204e258a09369802e51ea4a292bb99aff1087389a0166bd03e28a7aa0a4"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/_export_qa_xlsx.py",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/_export_qa_xlsx.py",
+      "bytes": 1636,
+      "sha256": "b36deb547f63ad6559b2756a31a3fa341471a96c57e90b0f34b31b8d6d97ae12"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/_build_guides.py",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/_build_guides.py",
+      "bytes": 46199,
+      "sha256": "32cb1d77e6a77c1e3e8a0e5927620690d3d309409c9faf8fc9c3ee05253b1b8b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/00-事项索引.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/00-事项索引.md",
+      "bytes": 1572,
+      "sha256": "63b93ada4ea17d3d4d947d13a806578f49b233a7b662177dbd0dd2d07293a3d2"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2025〕34号_老年人能力评估结果审核表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2025〕34号_老年人能力评估结果审核表.md",
+      "bytes": 2044,
+      "sha256": "84112add4b6f7d59225161faec64ecb46b807dc23fbbc7d95eabe3d885ad0077"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2025〕34号_老年人能力评估结论告知书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2025〕34号_老年人能力评估结论告知书.md",
+      "bytes": 1341,
+      "sha256": "2da4b0a50bdd739e191a2cfa5f7b3635c677caa94686a6fcb32d07280ba4b025"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2025〕34号_老年人能力评估申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2025〕34号_老年人能力评估申请表.md",
+      "bytes": 1792,
+      "sha256": "fcd129b23bb83c0e6eec152ef4c0b92f9bcdbee8c2e23dc36b0f3545de00dcf4"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2026〕2号_诚信承诺书（参考模板）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2026〕2号_诚信承诺书（参考模板）.md",
+      "bytes": 5958,
+      "sha256": "3c23cd09de71235127c1536ed955d9e1e6ea617037fb17cb842cd6824faae174"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2026〕2号_机构要求.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2026〕2号_机构要求.md",
+      "bytes": 3278,
+      "sha256": "2631501c2165d37c0d81f897dd0b09e10b77349eabf103a7b0296c00472234bd"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2026〕7号_广西壮族自治区经济困难老年人护理补贴申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2026〕7号_广西壮族自治区经济困难老年人护理补贴申请表.md",
+      "bytes": 2121,
+      "sha256": "aee3322f834bade9318770a909fc991202a36505d4ee63faf804cbf8e9c51cc6"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2026〕7号_护理补贴不予认定告知书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民发〔2026〕7号_护理补贴不予认定告知书.md",
+      "bytes": 1339,
+      "sha256": "2ec993f6ee91057ec87fbb61ce34e709f525d9f68090ded32ec1154563324103"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_建设补贴申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_建设补贴申请表.md",
+      "bytes": 1718,
+      "sha256": "7f8423f37bfd0d38643cb60c0bcbf5c778aef9fbe163dcf7347736a654f5a7d3"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_申请人信用承诺书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_申请人信用承诺书.md",
+      "bytes": 1096,
+      "sha256": "289373fce317a312a655a281ae110a4f0801fe32d5437427f1922cfe9e089ba3"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_养老机构从业人员岗位津贴申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_养老机构从业人员岗位津贴申请表.md",
+      "bytes": 1115,
+      "sha256": "036a321989962bdee2418ec23005ee8e7d067723d2cc093acadea704429394d0"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_用人单位信用承诺书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_用人单位信用承诺书.md",
+      "bytes": 970,
+      "sha256": "28dfc494562fbc2d3c9d23cfb3664ba9d6b32800aa75f1379d4754dc36c54330"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_运营补贴申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2021〕7号_运营补贴申请表.md",
+      "bytes": 1697,
+      "sha256": "0146bb423ad24a55cc4b73d5fe3c150ae76736e0f3705fb7be138db56f8a72ab"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕2号_集中照护服务救助不予认定告知书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕2号_集中照护服务救助不予认定告知书.md",
+      "bytes": 1322,
+      "sha256": "2982a3f752beac7995a8fa16a1211c21290ef6f7b6d0bfbcad21a126c3460545"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕2号_集中照护服务救助金调整（停发）告知书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕2号_集中照护服务救助金调整（停发）告知书.md",
+      "bytes": 1253,
+      "sha256": "62b10049a17f9e286a79a8652fa3f43e3243a5683356ba58a4b89022a21960c9"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕2号_经济困难失能老年人集中照护服务救助情况汇总表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕2号_经济困难失能老年人集中照护服务救助情况汇总表.md",
+      "bytes": 1475,
+      "sha256": "d3080680a38cd370cdeab3ea147aca1f9a48b6560b51aaaf263a160f49f88182"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕2号_经济困难失能老年人集中照护服务救助申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕2号_经济困难失能老年人集中照护服务救助申请表.md",
+      "bytes": 2446,
+      "sha256": "9fdfa71a961b4810d7bcc8679f4fa23a02a2a198448ccf2de47b94ad74a2cdad"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_民办养老机构建设补贴申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_民办养老机构建设补贴申请表.md",
+      "bytes": 1629,
+      "sha256": "50b3bf373d14b212991444253369b35738e6d1bcd96fce747094345313c667ed"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_民办养老机构运营补贴申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_民办养老机构运营补贴申请表.md",
+      "bytes": 1598,
+      "sha256": "bcc2d7e74c1861d0b02cf318ef9faaedf799dbf697a58957d8bebdabb8c59c0b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_申请人信用承诺书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_申请人信用承诺书.md",
+      "bytes": 939,
+      "sha256": "02bef05f4f2f069c1205414e4e8cea446f359862f1dff599a9e2d907badb07ca"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_养老机构从业人员岗位津贴申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_养老机构从业人员岗位津贴申请表.md",
+      "bytes": 1109,
+      "sha256": "fa4ab9cc7528fc47fa12bb6bf8173b82e5af0c764b6253a1555aecdcadb6a9e8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_用人单位信用承诺书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2024〕4号_用人单位信用承诺书.md",
+      "bytes": 1006,
+      "sha256": "0d73070f06ef777a279342917f0bf50ab39d66428995b787f334bf6b30d3fb19"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2025〕1号_集中照护服务补助不予认定告知书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2025〕1号_集中照护服务补助不予认定告知书.md",
+      "bytes": 1378,
+      "sha256": "8c779fac403742f2fa5527da589f624c8785772d3ad0665bd343833e8d34ef75"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2025〕1号_集中照护服务补助金调整（停发）告知书.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2025〕1号_集中照护服务补助金调整（停发）告知书.md",
+      "bytes": 1294,
+      "sha256": "e1e651fa1214cf2bdd240c33a0a7392562da6177c1ca1e49b61d5afbd8c59bd4"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2025〕1号_集中照护服务补助申请表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2025〕1号_集中照护服务补助申请表.md",
+      "bytes": 2383,
+      "sha256": "6b37cae9d809d1b89acf82f5c3d315bba19b04e4a4c7a7eaa1adff672e52398d"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2025〕1号_集中照护服务救助情况汇总表.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/表格说明/桂民规〔2025〕1号_集中照护服务救助情况汇总表.md",
+      "bytes": 1159,
+      "sha256": "bdf5e7b56d8419ede9fca968fcb41ed85657b84ff053907b73fea5238290632e"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/01-经济困难老年人护理补贴申请.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/01-经济困难老年人护理补贴申请.md",
+      "bytes": 1676,
+      "sha256": "f294536680845d6984b238e2d0cd3cadb7aba6bd0fa0088fa7466a1cfae8e877"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/02-失能老年人集中照护服务申请.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/02-失能老年人集中照护服务申请.md",
+      "bytes": 1897,
+      "sha256": "b8ff54f0119014a5375fa426c7501e0675a8cb7d6783d7fa9c9ca430509a3d7b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/03-老年人能力评估申请.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/03-老年人能力评估申请.md",
+      "bytes": 1831,
+      "sha256": "6e4567538f6eb8b66d7e781ea7fd2237b7dcb79a5982e1aec337d68a2d87045f"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/04-经济困难老年人养老服务补贴申领.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/04-经济困难老年人养老服务补贴申领.md",
+      "bytes": 1417,
+      "sha256": "f8022541f26f6b36bd5731ed77d6f0962ff615a84fdc94a894351cb647ff21b8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/05-中度以上失能老年人养老服务消费补贴.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/05-中度以上失能老年人养老服务消费补贴.md",
+      "bytes": 1719,
+      "sha256": "82324a7eaeee4d62392ac1df2cfce75648d5cfa22974017046ebae402e871c21"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/06-民办养老机构建设运营补贴及岗位津贴.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/06-民办养老机构建设运营补贴及岗位津贴.md",
+      "bytes": 1912,
+      "sha256": "72bcc3a44a3045fc6292f4222d9d8358c6c9ea5753ae8982fc55833acbf85f89"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/07-养老机构服务合同示范文本使用说明.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/事项/07-养老机构服务合同示范文本使用说明.md",
+      "bytes": 1371,
+      "sha256": "c6f215324ff636cdd6fcfc8d32107a49727f2d6d6e0551c8c75779c55567e498"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/QA/广西养老办事指引_QA.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/QA/广西养老办事指引_QA.json",
+      "bytes": 7474,
+      "sha256": "cbb416eea167cbcbb27a02e221632e672475c0f24fa9e841b2fd8f451b2273ae"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/QA/广西养老办事指引_QA.xlsx",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/QA/广西养老办事指引_QA.xlsx",
+      "bytes": 8582,
+      "sha256": "bb4316a513c7866f4ad1005d7ae9ceb8664d28b38fe9ec0215d5391599b746eb"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/README.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/办事指引/README.md",
+      "bytes": 5500,
+      "sha256": "8a83a0cf652bfc6f4d748b30450937b15b2b9ac4a901032b0d0a6975b7892a70"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/_convert_docs.py",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/_convert_docs.py",
+      "bytes": 6388,
+      "sha256": "0b1001417bdd2cdb25cb60a3ecba6fd2c120cc99872b45aef922ad626e7d5385"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/_convert_report.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/_convert_report.json",
+      "bytes": 23741,
+      "sha256": "64aa930468c75f46a936e1e960e306754716d1cd4eb074d5dec1879e6cdcd0c8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/00-政策索引.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/00-政策索引.md",
+      "bytes": 4132,
+      "sha256": "37e4e3ebf080bee0c9165b9ef77d27de3302ed63563c33194ec6a67f3a507b27"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《关于加强养老服务人才队伍建设的实施意见》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《关于加强养老服务人才队伍建设的实施意见》政策解读.md",
+      "bytes": 12702,
+      "sha256": "60b15c01f126bad80bc55de8f0a0ac26c76edc9a70cca9f72c730a1945f61c2b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《关于进一步加强养老机构安全管理的若干措施》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《关于进一步加强养老机构安全管理的若干措施》政策解读.md",
+      "bytes": 4177,
+      "sha256": "263f52d39b641f25dfc52ee4b1b8b51e6414c5ebb347458a53e603b77688b77b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西积极发展老年助餐服务实施方案》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西积极发展老年助餐服务实施方案》政策解读.md",
+      "bytes": 12926,
+      "sha256": "c6a31330c8a7d0a762494e160c5e1ec92d76b992b6d3ba8d4beb3f3e1c9f4e42"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西深化养老服务改革发展的若干措施》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西深化养老服务改革发展的若干措施》政策解读.md",
+      "bytes": 6262,
+      "sha256": "019ee8a182cf3b17626053342bcc97336c92a4dc64f9f30ace0192de103134cc"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西养老产业发展三年行动计划（2024—2026年）》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西养老产业发展三年行动计划（2024—2026年）》政策解读.md",
+      "bytes": 8664,
+      "sha256": "1f250c902572756b98ac0d17a7648a1385e70c6f77984ad49df5247d55bcbe6e"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区“十四五”养老服务体系规划》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区“十四五”养老服务体系规划》政策解读.md",
+      "bytes": 9720,
+      "sha256": "91a33a70cf9e600e2e668b70687146e8933d1efdaa823453ea65f97d599e4376"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区经济困难老年人养老服务补贴实施办法（试行）》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区经济困难老年人养老服务补贴实施办法（试行）》政策解读.md",
+      "bytes": 3718,
+      "sha256": "4c7fb26ed7ba5cee32849d04d94ddba752eabae6e91108434dd6e8b0445436bb"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区民政厅 广西壮族自治区财政厅关于做好经济困难失能老年人等群体集中照护服务工作的通知》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区民政厅 广西壮族自治区财政厅关于做好经济困难失能老年人等群体集中照护服务工作的通知》政策解读.md",
+      "bytes": 6459,
+      "sha256": "08f7ff5e2093a0e1491089a79a0c0e9e9c2d5996adc863700cd20d6b843f6c3c"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区民政厅等15部门关于进一步加强农村养老服务工作的通知》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区民政厅等15部门关于进一步加强农村养老服务工作的通知》政策解读.md",
+      "bytes": 4284,
+      "sha256": "8254337bb8ced93e0ab9dd6af7d6579c25cd5f172c0d411e684062058021f2b4"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区养老服务补贴管理办法（试行）》政策解读.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/《广西壮族自治区养老服务补贴管理办法（试行）》政策解读.md",
+      "bytes": 8033,
+      "sha256": "1cff189f9b6d6c95faaea9606e0bc4136a31c2d47838aa88ad6f6eecf35db689"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区“十四五”养老服务体系规划.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区“十四五”养老服务体系规划.md",
+      "bytes": 46776,
+      "sha256": "9c871396f6482df6fa71280fa8db651efa9d364511309820c7585e9313bc7621"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅 广西壮族自治区人力资源和社会保障厅关于印发《广西壮族自治区老年人能力评估实施办法（试行）》的通知（桂民发〔2025〕34号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅 广西壮族自治区人力资源和社会保障厅关于印发《广西壮族自治区老年人能力评估实施办法（试行）》的通知（桂民发〔2025〕34号）.md",
+      "bytes": 13176,
+      "sha256": "9aa15072974e850fa8ea3628323a6376a4208b4ac6a5a19b529296ec32ec1bdd"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于印发广西向中度以上失能老年人发放养老服务消费补贴项目实施方案的通知（桂民发〔2026〕2号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于印发广西向中度以上失能老年人发放养老服务消费补贴项目实施方案的通知（桂民发〔2026〕2号）.md",
+      "bytes": 15413,
+      "sha256": "e2235929835b323c809d21fb08f43b0b93760c69fe988021caba60fe7eae2a25"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于印发广西壮族自治区经济困难老年人养老服务补贴实施办法（试行）的通知（桂民规〔2024〕5号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于印发广西壮族自治区经济困难老年人养老服务补贴实施办法（试行）的通知（桂民规〔2024〕5号）.md",
+      "bytes": 8610,
+      "sha256": "2414633666b5b50c96de2a82b2eed5a0dc5c0be666e3f62d7026917c7e32cc47"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于印发广西壮族自治区养老服务补贴管理办法（试行）的通知（桂民规〔2024〕4号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于印发广西壮族自治区养老服务补贴管理办法（试行）的通知（桂民规〔2024〕4号）.md",
+      "bytes": 11301,
+      "sha256": "d638f2ad9c7b0cf4d0405c627933e2d6b3d49f05d9bd1a5e0d219ee6a0d5a672"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于做好经济困难失能老年人等群体集中照护服务工作的通知（桂民规〔2025〕1号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于做好经济困难失能老年人等群体集中照护服务工作的通知（桂民规〔2025〕1号）.md",
+      "bytes": 14472,
+      "sha256": "ba0c246290138fa44997598e7f12f02354b9747e8a02d7106bcedfafe388d369"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于做好经济困难失能老年人集中照护服务工作的通知（桂民规〔2024〕2号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于做好经济困难失能老年人集中照护服务工作的通知（桂民规〔2024〕2号）.md",
+      "bytes": 13133,
+      "sha256": "73990d75cce9dece18daf73b578c16e12c33b1472faebceef11f1826bf3540e9"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于做好全区经济困难老年人护理补贴发放工作的通知（桂民发〔2026〕7号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区财政厅关于做好全区经济困难老年人护理补贴发放工作的通知（桂民发〔2026〕7号）.md",
+      "bytes": 8066,
+      "sha256": "492fe835325f5b9add3f9dd0c660825bcfe18bef3e9db202012f16df7fce617b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区发展和改革委员会等11部门关于印发《广西积极发展老年助餐服务实施方案》的通知（桂民发〔2024〕3号.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区发展和改革委员会等11部门关于印发《广西积极发展老年助餐服务实施方案》的通知（桂民发〔2024〕3号.md",
+      "bytes": 22904,
+      "sha256": "ca34280e0b5e28282dd58a6825ec308613cd80c0626aa90ea6a2437ce38238ec"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区发展和改革委员会关于印发广西养老产业发展三年行动计划（2024—2026年）的通知（桂民发〔2024〕26号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅 广西壮族自治区发展和改革委员会关于印发广西养老产业发展三年行动计划（2024—2026年）的通知（桂民发〔2024〕26号）.md",
+      "bytes": 16165,
+      "sha256": "c8c92add716512e038a72e5b826e0437391d092ebc7c3223dbd276b17754147a"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅等10部门关于印发《关于进一步加强养老机构安全管理的若干措施》的通知（桂民发〔2026〕11号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅等10部门关于印发《关于进一步加强养老机构安全管理的若干措施》的通知（桂民发〔2026〕11号）.md",
+      "bytes": 11121,
+      "sha256": "68b130ff3b594ec2a0c813256c074fa31c9485baa7b5eb69639336d77b71253e"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅等15部门关于进一步加强农村养老服务工作的通知（桂民发〔2025〕19号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅等15部门关于进一步加强农村养老服务工作的通知（桂民发〔2025〕19号）.md",
+      "bytes": 9293,
+      "sha256": "83fadfcf05514350313fc9134182b3384d50aa3e75c15ef3b664f8085a544662"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅等21部门关于印发《广西深化养老服务改革发展的若干措施》的通知（桂民发〔2025〕20号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅等21部门关于印发《广西深化养老服务改革发展的若干措施》的通知（桂民发〔2025〕20号）.md",
+      "bytes": 16894,
+      "sha256": "7098810d6b6cdd028b096ea703abf33e16a2a04bd55b519bf91b4e7ec6153a60"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅等十三部门关于加强养老服务人才队伍建设的实施意见（桂民发〔2024〕22号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区民政厅等十三部门关于加强养老服务人才队伍建设的实施意见（桂民发〔2024〕22号）.md",
+      "bytes": 18701,
+      "sha256": "ca814255329fe61b644be810ca1ee35d9d710330e0d23188c3682bed12122fc0"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区养老机构服务合同（示范文本）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/广西壮族自治区养老机构服务合同（示范文本）.md",
+      "bytes": 54667,
+      "sha256": "654b0019bfaacb2e226e9b0ec5747fe81ca0dffb86f00d4ee8f794d01f645e72"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/桂民规〔2021〕广西壮族自治区民政厅 广西壮族自治区财政厅关于印发《广西壮族自治区养老服务补贴管理办法（试行）》的通知（桂民规〔2021〕7号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/桂民规〔2021〕广西壮族自治区民政厅 广西壮族自治区财政厅关于印发《广西壮族自治区养老服务补贴管理办法（试行）》的通知（桂民规〔2021〕7号）.md",
+      "bytes": 11502,
+      "sha256": "636a6a554c681de31dd61e0d6419f7013a78b9a8590e409516c5b61314c59c4e"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/自治区民政厅 自治区市场监管局关于印发广西壮族自治区养老机构服务合同（示范文本）的通知（桂民函〔2025〕568号）.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/原文/自治区民政厅 自治区市场监管局关于印发广西壮族自治区养老机构服务合同（示范文本）的通知（桂民函〔2025〕568号）.md",
+      "bytes": 1429,
+      "sha256": "5f5a386dbcf94bc7398d84cf7eac125228f8bbf667ee289e10c5c793ccc7c543"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/QA/广西养老政策_QA.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/QA/广西养老政策_QA.json",
+      "bytes": 12662,
+      "sha256": "5a46d84a5fbc71e40d8ced6f97123e29de9481fe4e4c5bb04ed061535c90cf95"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/QA/广西养老政策_QA.xlsx",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/QA/广西养老政策_QA.xlsx",
+      "bytes": 10347,
+      "sha256": "a3fb4cbece8dac873482051099e57167af867937a157f499b56cfc845d76229f"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/README.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/extracted/知识库/养老政策/README.md",
+      "bytes": 8927,
+      "sha256": "275c02ddd3a6b5e1ff2aafd1c29a0daefa9ef799f5bee3ced6db982a96269668"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/raw/政策与办事指引补充.zip",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/source_materials/政策与办事指引补充/raw/政策与办事指引补充.zip",
+      "bytes": 234582,
+      "sha256": "69fd7204e258a09369802e51ea4a292bb99aff1087389a0166bd03e28a7aa0a4"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/vectorization_plan.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/business/vectorization_plan.md",
+      "bytes": 101,
+      "sha256": "ef2c9c4ecc698e1634d67fc42b732e89d1e29f510bc627d58216b4363cd1f8eb"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/dialogue/faq_seed.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/dialogue/faq_seed.md",
+      "bytes": 156,
+      "sha256": "a7471b68163e90e4c90d70b9795cfa4586458881464904ad5189e1b12cd9bb1c"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/dialogue/harvest_policy.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/dialogue/harvest_policy.md",
+      "bytes": 109,
+      "sha256": "8430a62f227956fcea3c25535aabe05fca8f1a8ec7f22e00e1ebf868fc55e6ed"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/dialogue/harvest_rules.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/dialogue/harvest_rules.md",
+      "bytes": 154,
+      "sha256": "c4d6a212406cdd71ea77e1ef40a0d0903233960eea681ca0d66a61134c5e9489"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/dialogue/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/dialogue/INDEX.md",
+      "bytes": 82,
+      "sha256": "9aa55f4a2902d56fd57e6c2e63ce91ac291031c5fa150bef7aad58f24d570bc8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/knowledge_docs/INDEX.md",
+      "bytes": 307,
+      "sha256": "29e7a67d5acd7c6b08df21520420e5ec187da167d0453fcf29fbe92645c20998"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/manifest.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/manifest.json",
+      "bytes": 3071,
+      "sha256": "d2aaed83c713dced159e75076d20c67ab378b0ac922e39e5ecd05277973cb49d"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/PLATFORM_API_REFERENCE.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/PLATFORM_API_REFERENCE.md",
+      "bytes": 990,
+      "sha256": "19f20fc83754c2c511a33f46e313d216b37ea41f4207dc9c51e66a1a3e52b103"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/platform/action-map.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/platform/action-map.json",
+      "bytes": 15197,
+      "sha256": "a00ccabbe7fef74c97974bbf7afd5a25fefb502dda6194781ebeb4d6b64757c5"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/platform/deploy_config.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/platform/deploy_config.json",
+      "bytes": 853,
+      "sha256": "390432a5656d36a4804180dbb97175ec3954cbb8d9f91a3e7360c75ada4ccd24"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/platform/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/platform/INDEX.md",
+      "bytes": 99,
+      "sha256": "9c2c8a96797defe9590030f7f419f7e780586c3a55ea8a4e542cf536135e6a6a"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/platform/local_source_trace.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/platform/local_source_trace.json",
+      "bytes": 613,
+      "sha256": "256ffa3d8895eaa34cf34b42e47ced5ec6ecf72b9f9116f68f71a48f2f4fcc66"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/platform/remote_sync_plan.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/platform/remote_sync_plan.json",
+      "bytes": 271,
+      "sha256": "e7dd2cb5dcb97af29a45af2c12d1c98b1f1714628b86a322a35ac7d6de9d3a2b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/platform/remote_sync_plan.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/platform/remote_sync_plan.md",
+      "bytes": 368,
+      "sha256": "04e7247d1eae316832ecd5b8d39559cb4f5fb62f19dfef454bcc143b382c1be3"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/api_reference.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/api_reference.md",
+      "bytes": 77,
+      "sha256": "f906980357bdc2659abf74c9b543f6eb82835aaf2091c55e5067a4a08c0a026f"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/auth_roles.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/auth_roles.md",
+      "bytes": 314,
+      "sha256": "444d0a660d346d635d4b4f09e534277ace2b27274c7da43478fd392584fb4457"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/action-intent-map.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/action-intent-map.json",
+      "bytes": 737,
+      "sha256": "294d46cb76b854554b8fdffaf25a820cd749be440d10425a8774179460184f2c"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/actions.schema.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/actions.schema.json",
+      "bytes": 1097,
+      "sha256": "6a7944c5ea4668d6b325f1ba038cc4ba4da88418fe4b1c4b128b729559c25ddd"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/input.schema.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/input.schema.json",
+      "bytes": 116,
+      "sha256": "fef974bf60f425c9b5aac171ab1899026ed0a3c44dc447dd564e66d85f123cbf"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/output.schema.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/output.schema.json",
+      "bytes": 2670,
+      "sha256": "319a92240b7bae613a2ccf16f807f455e4fe36bfa3c031bed8a3a5601eac28c6"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/render-flow.contract.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/render-flow.contract.json",
+      "bytes": 432,
+      "sha256": "c1f85bdbb14b9e5f2e03aabf215e9ffa0f24c4c9fd57f6eb46dc30c4f33fb96a"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/template-composition.schema.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/contracts/template-composition.schema.json",
+      "bytes": 2247,
+      "sha256": "27781f87b926780d49788d9e8a427d15db0b612bdb4dd0973ab245f7c722c1b6"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/data_dictionary.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/data_dictionary.md",
+      "bytes": 276,
+      "sha256": "8a7e85b941352cd8cc9336b173976280e8bec201e1a9f4bba46bde37d9cfd8cc"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/database_schema.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/database_schema.md",
+      "bytes": 1120,
+      "sha256": "96ac12c3434ef296f8cecfe71d2a6fc18d61e02add4f8a911a1fcb330a57a576"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/excel_requirement_mapping.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/excel_requirement_mapping.md",
+      "bytes": 234,
+      "sha256": "8d5758fa39aa8dec6c6139a1d1d3462b87441f9786568e2f78d2e35fc788f221"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/INDEX.md",
+      "bytes": 245,
+      "sha256": "25a8db215883253294c2edd50e2c89dae3a5813f142590f1f75fd87fef7fdbc5"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/knowledge_base_design.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/knowledge_base_design.md",
+      "bytes": 436,
+      "sha256": "97dde0fb4bf7524a003b7c7ac82c66b58bf5dab5ab4f249b4fae8d2d03674e79"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/references/platform_integration.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/references/platform_integration.md",
+      "bytes": 644,
+      "sha256": "5c536a4192686fd93a9c6cf6cf22ba41c867746fb43eb3b3b75c022d0104b3c9"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/rules/data_quality_rules.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/rules/data_quality_rules.md",
+      "bytes": 136,
+      "sha256": "802b94e2c88b705531433ebc5a4bd9bb2772dfdd7546b70a943efcf32a0260b9"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/rules/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/rules/INDEX.md",
+      "bytes": 137,
+      "sha256": "be01d33b62366ef141861a7b2603e5534b2f5be239a4f3d84835b93b449ea5b6"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/rules/kb_rules.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/rules/kb_rules.md",
+      "bytes": 151,
+      "sha256": "eeca3201410fe3c7c2963067857689e6976b14d056312ec902e0de543224f2c1"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/rules/permission_rules.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/rules/permission_rules.md",
+      "bytes": 115,
+      "sha256": "0b19b3b8a1a75ac004bac69d8c67e0ee39647a3f9f4f46e170913f2297821a9c"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/rules/remote_required.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/rules/remote_required.md",
+      "bytes": 242,
+      "sha256": "589754223109f431e80c8333d3d0576baebc762a2f35226436f8a3cb7718bae1"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/samples/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/samples/INDEX.md",
+      "bytes": 150,
+      "sha256": "a2178dd3a1ad4e1e940999d28e1c5a78b53ab5fa78b654e6905ff3190f91b41f"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/samples/negative/missing_remote_resource.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/samples/negative/missing_remote_resource.md",
+      "bytes": 150,
+      "sha256": "bbae84f7ad99f44bd26b1044641b5a42348e4135dd8f24923b3e8bbf26fa6862"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/samples/positive/happy_path.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/samples/positive/happy_path.md",
+      "bytes": 148,
+      "sha256": "6f9e513c60f22d07e7cadc2525192ac586378fb87e1c755e593eadc33b013d17"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/samples/positive/remote_success.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/samples/positive/remote_success.md",
+      "bytes": 102,
+      "sha256": "312bbbae66344ea5ee2e6cf919612d03fbad16c5e1e6c4fcd45057a59b419ed6"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/auth_api.js",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/auth_api.js",
+      "bytes": 544,
+      "sha256": "868581306c8df755d45e9dc028e8491fa28277ba7677ff37e63dfc02cfff6ab3"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/business_runtime.py",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/business_runtime.py",
+      "bytes": 5668,
+      "sha256": "4c1fc9e52d1af54601ac86d5fc95f161448452d0adcc36f00b4c228c72395915"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/database_api.js",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/database_api.js",
+      "bytes": 548,
+      "sha256": "ba30b9e0e562965da07724f0b46f863496d6ac4db41034dba660b86fbd2c4360"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/knowledge_api.js",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/knowledge_api.js",
+      "bytes": 549,
+      "sha256": "572167fc8f92963d152d1a547eb92e97d90ba6f7b85e6f60b3065c75e6354997"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/package_skill.js",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/package_skill.js",
+      "bytes": 5009,
+      "sha256": "65726b08387f66615f214745dc7f039c70e17b3417c835133cf514cfc7db4672"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/seed_data.js",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/scripts/backend/seed_data.js",
+      "bytes": 548,
+      "sha256": "7698394183434ce65b7afbdcbce0fa8b35e9063d96fc973aa7f971d144590ceb"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/scripts/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/scripts/INDEX.md",
+      "bytes": 333,
+      "sha256": "72d0a395690313256ad4b271a7ea6b609a4827d4f2f3385febf856c5983cc1b9"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/SKILL.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/SKILL.md",
+      "bytes": 3838,
+      "sha256": "5723b77ec134db7d467637104d807475e6d02b758c11bd84fd96394e2c99bb56"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/data/dispatch.sample.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/data/dispatch.sample.json",
+      "bytes": 17983,
+      "sha256": "c884ccdce2af9dfc4a58db2a1b28b160421d767207b7ffc03488444d8085f48c"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/data/field-bindings.generated.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/data/field-bindings.generated.json",
+      "bytes": 6036,
+      "sha256": "f8e23635388032abc68271b4d397c1ab98516458249daae4f54c0a73b5032aac"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/audit.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/audit.json",
+      "bytes": 4236,
+      "sha256": "324ba5b8ffd0662755a51d777c9d7de7a3f9fd47a7de967729abf70daae6523e"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/capability_intro.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/capability_intro.json",
+      "bytes": 4315,
+      "sha256": "d5984997ca3137176d8ce2403d186c6715b10d1750e47ae5afa9519af42e1fde"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/clarify.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/clarify.json",
+      "bytes": 4187,
+      "sha256": "5bd744263ef90ab2de8c224c3f7894d8d8cb81f2e5f6bba36bcfbdf9937f2ce7"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/elder_summary.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/elder_summary.json",
+      "bytes": 4319,
+      "sha256": "eb9c08fe461de94b24c9c6123bba2fd97d740169d252ad26c10d2c222fe5297c"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/fallback_status.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/fallback_status.json",
+      "bytes": 4376,
+      "sha256": "671a8cf48e3caea76daede3ed267cbd15817c789cd69f8a9e4aae4269f27370f"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/family_summary.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/family_summary.json",
+      "bytes": 4347,
+      "sha256": "47a091b4f264f2abe01a9ea7e4c451a09da1ddc423b5da95c3ecdbd525c0ed49"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/faq_answer.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/faq_answer.json",
+      "bytes": 4264,
+      "sha256": "8155abc14562cbbb9563e04de6777c7ab68465d2ba8fb1a9f4eaf80bf8d681f3"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/handoff_preview.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/handoff_preview.json",
+      "bytes": 4338,
+      "sha256": "717a0319533eea38c68326e9698eeaeac454011d06d9cbaa50f3680a83322e7d"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/index.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/index.json",
+      "bytes": 4248,
+      "sha256": "c99868d158d57b0043e19fab81510197f8104f074ec23ef124a3d88d49e3f3fc"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/intent_router.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/intent_router.json",
+      "bytes": 4308,
+      "sha256": "0d1a2b02bb44eccfe0d1bcf8e1ee3321417f31dae48b25872cf6ad865291ed31"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/knowledge_gap.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/knowledge_gap.json",
+      "bytes": 4312,
+      "sha256": "ad4bf21b36afbf03ade4ec32528132ceacb98e317af333081fd3318c39f22714"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/learning_feedback.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/learning_feedback.json",
+      "bytes": 4344,
+      "sha256": "75bb654be1468b9e2cd9be8cb365b7c53ee2dd7570045834f0cd92c61b7c16f6"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/manual_review.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/manual_review.json",
+      "bytes": 4277,
+      "sha256": "ad1d6f6689258591aba63fa6517880142cf8763e98ffb23f6af3bafd5bb080d4"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/multi_skill_plan.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/multi_skill_plan.json",
+      "bytes": 4356,
+      "sha256": "4308bfcb77f298b738c7c79b4c2554256654c33aa940b2c3606c0600515f4288"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/notification_summary.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/notification_summary.json",
+      "bytes": 4347,
+      "sha256": "c785634bf325b8a8cccf8af8a7c2c95f5b2f1eca44109b5d16353635f274a068"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/permission_block.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/permission_block.json",
+      "bytes": 4346,
+      "sha256": "7e27b8bacbce256345ce0a2d19ca6d6e6a4ccc27521307292a149cc162141669"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/policy_screening.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/policy_screening.json",
+      "bytes": 4330,
+      "sha256": "e1cfbb62ae4b11f431c91f2e78a43a5339fc4b1a77f9e874d81e414870e0f199"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/profile_missing.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/profile_missing.json",
+      "bytes": 4326,
+      "sha256": "b900d5005d796b396101440f763dc26d25c84f7111c8bacc93e79de7a1f20149"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/router.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/router.json",
+      "bytes": 4191,
+      "sha256": "5129fe33733faee4e915cf291d581063c518932b7e78505f03741070753c8645"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/safety_check.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/safety_check.json",
+      "bytes": 4283,
+      "sha256": "3426a8152a32cb133b33f977f6a7273bb60c697247333229e8d227679f844ef1"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/session_resume.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/session_resume.json",
+      "bytes": 4289,
+      "sha256": "1542329b730d05d5af0eb71b43cc586f188f61ea27b6d8f4d2ee309c75bc17f8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/status.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/status.json",
+      "bytes": 4196,
+      "sha256": "122486dbbba5c4b21f521062e1895837d5e59a178b8f13501ab00aec9e162aff"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/task_progress.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/task_progress.json",
+      "bytes": 4248,
+      "sha256": "c44ceb8754a69286af9dbbdcbe1dfee6331fdbc2a177af2dc250298d48066244"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/timeline.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/timeline.json",
+      "bytes": 4269,
+      "sha256": "f0565b7933d2599dad3453f37e847f59cf53ac8ec842661a6a513743cb0decfe"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/voice_ready.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/followups/voice_ready.json",
+      "bytes": 4275,
+      "sha256": "f75de0706e0c0f59ab641931ae2814f869f6073a50f130e959cf1db631694a8e"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/audit.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/audit.html",
+      "bytes": 569,
+      "sha256": "cbd09b40591cfeaf7e2a107d0eb5a4283be81b1a09f28b7c22fe23f7a7fc99e2"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/capability-intro.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/capability-intro.html",
+      "bytes": 617,
+      "sha256": "6474689bfb9f1dd8044ce70e192be86ca34d8c7aebdcc06a0063ef2688106d9b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/chat/busy_guide.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/chat/busy_guide.html",
+      "bytes": 408,
+      "sha256": "556c9f378770dce977ba31454c844aa772b4374d5e940c71104a82ca4f59ccc8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/chat/merge_notice.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/chat/merge_notice.html",
+      "bytes": 382,
+      "sha256": "5d20a6a3115c25fba175b7d6ce2c8d3f4c7959d89aef1d5d9a97fbc48cf3db9f"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/chat/queue_status.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/chat/queue_status.html",
+      "bytes": 440,
+      "sha256": "fe6828b73e1185c15d4ba0965b14b9ef0ad83163360ad23fe51bec8a658d4832"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/clarify.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/clarify.html",
+      "bytes": 584,
+      "sha256": "c2e401dda21d3d736f51a778cddeb5336be5a54d492e63c01d3944acb91ac71a"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/common/action_result.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/common/action_result.html",
+      "bytes": 442,
+      "sha256": "b8f6b5e7f1a4624378a83a1c068faf67a68030c9356e6280751a8f4cb3079c70"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/common/answer.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/common/answer.html",
+      "bytes": 551,
+      "sha256": "00402212a24a3596e1ff1ec1e4a317a79256ec6db68a844331324677918a8eda"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/common/error.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/common/error.html",
+      "bytes": 455,
+      "sha256": "778b9c900ed605a7c9ff154b7abd482b94ae017801705f9608bf1eb76273dfa2"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/common/permission_denied.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/common/permission_denied.html",
+      "bytes": 497,
+      "sha256": "436fa69ad78a90935406fd101251fcad74de09b804465ff68ed7078a976fa354"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/context-check.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/context-check.html",
+      "bytes": 442,
+      "sha256": "a7c1b498775d828d7e17559d5733fd162a4291503f265812cdc78ae781a9a994"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/elder-summary.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/elder-summary.html",
+      "bytes": 611,
+      "sha256": "f037a96b4b65d3c912e28a862eca9180efc1b534768d6341330b616038161a11"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/fallback-status.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/fallback-status.html",
+      "bytes": 632,
+      "sha256": "cd3008534807c071ce0524c5fdc87aef9b2188ac265a958af5288dd53aabe001"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/fallback.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/fallback.html",
+      "bytes": 591,
+      "sha256": "2c3988f8a5f09d747bd4f23b093d8bafa4418089a812989a1b5838220f3f0014"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/family-summary.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/family-summary.html",
+      "bytes": 620,
+      "sha256": "e899198f172255c7887cfcd08377fab3a97d06556657e8debb8236e0cc8590c5"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/faq-answer.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/faq-answer.html",
+      "bytes": 593,
+      "sha256": "b7059f2772b228447e489f62935d206517a70ac09cfc16550e508d9ec903da14"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/guixiaoyang_dispatch/remote_dispatch_result.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/guixiaoyang_dispatch/remote_dispatch_result.html",
+      "bytes": 498,
+      "sha256": "11ec1f682a18b2579067379e01c01aca101a458ccf87668ce5f371756a3e2467"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/handoff-preview.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/handoff-preview.html",
+      "bytes": 626,
+      "sha256": "407348488e529aa9eeef698893f4df45784a8ff5efcbe280f815a7751ef1f36f"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/intent-router.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/intent-router.html",
+      "bytes": 614,
+      "sha256": "d54e55fbd602d08cba1e08c27d22141521628d8daa5d36a69f6f7680574e89d8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/knowledge-gap.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/knowledge-gap.html",
+      "bytes": 602,
+      "sha256": "1b5946f73fc9cf199ed550788749331263ecc08e8c236d5694b63b0c10b86c74"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/learning-feedback.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/learning-feedback.html",
+      "bytes": 632,
+      "sha256": "2572a5e3664f14064802aad33358d9f88a73be0308786dfd595a5395fc0d080e"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/manual-review.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/manual-review.html",
+      "bytes": 605,
+      "sha256": "4094deb8c527e8714763ae9074619def3884e7267d564d9568ec27e334ca2f98"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/message/event_context.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/message/event_context.html",
+      "bytes": 459,
+      "sha256": "ea21469899a4ff74cb4ac924b8867ba0ca320bfade3b5ce458d316d91c83def1"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/multi-skill-plan.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/multi-skill-plan.html",
+      "bytes": 635,
+      "sha256": "e01b64ecc9d56fc884dc2ed2ead450ac6351cfef7569c992a29748f8b2a146d8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/notification-summary.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/notification-summary.html",
+      "bytes": 638,
+      "sha256": "587c84ebf90369b6619f1706a10b6c7e90a405c2c361f289dd0c91b4cafcf2bf"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/package-skill.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/package-skill.html",
+      "bytes": 813,
+      "sha256": "6e3a82d4de32221bf9e6aad5e2550a0c15b7fae0356f96c8f72a378f7e0f2065"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/permission-block.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/permission-block.html",
+      "bytes": 623,
+      "sha256": "bdc407bb7ef969e725df4df5abac75dc3c245ee00d67c7d6ef4e677211d84d9e"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/policy-answer.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/policy-answer.html",
+      "bytes": 437,
+      "sha256": "ad43ac56248dd3cc4d589c1ab713b64c6b4d571bbfc74b1f8273c1cf87c59739"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/policy-screening.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/policy-screening.html",
+      "bytes": 632,
+      "sha256": "e833f5a837d8746108cf303e4f5a7132397bd68aedd5d424cff184a076d82c09"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/profile-missing.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/profile-missing.html",
+      "bytes": 632,
+      "sha256": "dc3846b7ff2a7b3f79886ae1b4d0f8a983c73771d053003edc94b5242383ab16"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/router.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/router.html",
+      "bytes": 581,
+      "sha256": "04b46b623638c7969f190eb2d2063cc1c9d0577718d03090ec6a2915564598e3"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/safety-check.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/safety-check.html",
+      "bytes": 602,
+      "sha256": "0faf04f6003c206e0b881b2b13bdde192aa15e8aacb281a19de4fd55aa259efd"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/session-resume.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/session-resume.html",
+      "bytes": 617,
+      "sha256": "c4f7a516de83903f41b79e7123a1872bfb737ef835887636ade8d017d9978b63"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/skill-hub.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/skill-hub.html",
+      "bytes": 417,
+      "sha256": "33d9f6fa316e7ab37788beb1135ddc6ad03c1d890b71d9b8c8b169499d64af93"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/action-bar.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/action-bar.html",
+      "bytes": 288,
+      "sha256": "d491bd9a5f1077cb7d2f8f730156d3e890f0ecf93dcab8fb5686f21e41c6a751"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/followup-suggestions.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/followup-suggestions.html",
+      "bytes": 271,
+      "sha256": "f3c4974a798a1186baac21879a95943c0ad59e369733b7037df65253e5fc7797"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/handoff-note.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/handoff-note.html",
+      "bytes": 138,
+      "sha256": "74b44fe0855b81a9b876d8f1d2c63a9caac73bc8ddc59035f49cc2f707af07d9"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/intent-summary.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/intent-summary.html",
+      "bytes": 234,
+      "sha256": "cf91a626f81a8458e82ea435de27be2bcb1333723ea2a177487fa28b2f632124"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/route-options.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/slots/route-options.html",
+      "bytes": 297,
+      "sha256": "b0ec9d735ac143e5034325a3af75db0796149cd9010e9ff69c142ad2598d7ece"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/status.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/status.html",
+      "bytes": 584,
+      "sha256": "7b33a7c9c457935abe29b8bcb37217cab8c4bb7d527b426eff403467f225552a"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/task-progress.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/task-progress.html",
+      "bytes": 605,
+      "sha256": "f49effd2fd09fda0d5c37113b1d2b38fdb83f5454a25f9bed6e2e2436af0c7cc"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/timeline.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/timeline.html",
+      "bytes": 590,
+      "sha256": "977089b8b1c2b0709850cb5d1ca01b3eff9f5361ec55f21084291d1cc02055c7"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/html/voice-ready.html",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/html/voice-ready.html",
+      "bytes": 587,
+      "sha256": "23fc550efc09edff2c68de194fe92f9b0804b24ed804dedc87621ffcdb0e9477"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/INDEX.md",
+      "bytes": 376,
+      "sha256": "afdd5da9dbc6b1163e208c24256754c70bc1b26e1790fcc3f162b659d5c771ba"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/intent_prompt.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/intent_prompt.md",
+      "bytes": 226,
+      "sha256": "c5bcca7c79637c306069454376bcaf3c54e44d136f228bfcbb86c73d72e0c7b7"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/kb_answer_template.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/kb_answer_template.md",
+      "bytes": 154,
+      "sha256": "fd33fb31b1fcf00c5b5f7e7fe46d7f8b35da38ec698d92e47f8e6bbdb124dcc8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/output_schema.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/output_schema.md",
+      "bytes": 129,
+      "sha256": "99bae9568a40fe9617c7356f74e23f2a72fe9ef960b4db8c271c51ab0cf722fa"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/prompts/orchestration.context.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/prompts/orchestration.context.json",
+      "bytes": 716,
+      "sha256": "f6b4e2e4100166e331d1ea12ecf2490c3cd1092278b16f583ffad947b8b00671"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/prompts/slot-preferences.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/prompts/slot-preferences.json",
+      "bytes": 4190,
+      "sha256": "43d2d9438863b25a9aa8e325968491307e8f5dfda1139b86ed7f080fe593c70b"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/prompts/template-selection.examples.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/prompts/template-selection.examples.json",
+      "bytes": 10212,
+      "sha256": "a0e5bb2b37a3569878c1eae4db779c09a41d152b6040f2e300f22e8531c1d837"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/templates/registry.json",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/templates/registry.json",
+      "bytes": 29648,
+      "sha256": "2c5801b4c5b7fa3c0beb88a2c15ed7f3b171d07b62c0ba7f36964f485bcbde59"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/tests/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/tests/INDEX.md",
+      "bytes": 143,
+      "sha256": "b5fb95e9f967cebbfd722767f429c38a3c4b5cc020f0be953a22fb70a1e6c5cf"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/tests/integration_test.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/tests/integration_test.md",
+      "bytes": 145,
+      "sha256": "a40c3d637186e89c50b7d460bc8361401853ac9fb83fd47aaa7636f6f6df6e23"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/tests/kb_vector_test.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/tests/kb_vector_test.md",
+      "bytes": 163,
+      "sha256": "bf16ba42a04336da060efe417cd093df3158c0cf4b36e477de44d851785e4796"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/tests/render_contract.test.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/tests/render_contract.test.md",
+      "bytes": 327,
+      "sha256": "1468ef100a0dec6e5205a25b8835f342898922a81cf0b665c8b51d8e25bfee1f"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/tests/run_logic_tests.js",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/tests/run_logic_tests.js",
+      "bytes": 87,
+      "sha256": "4b8b787bbcb3be7dbe808b778bf08dd261e649a990eeb585b55ba1bd918e7bf9"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/00_dialogue_delivery_policy.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/00_dialogue_delivery_policy.md",
+      "bytes": 1491,
+      "sha256": "71a75e45fd781ad23535661974ea851b03de9233207d9cf4f6a849332615d169"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/01_input_receive.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/01_input_receive.md",
+      "bytes": 369,
+      "sha256": "1407c4e86b51fb5d86c4090296c6be220e616d914afb26160750dce0c054b632"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/02_identity_auth.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/02_identity_auth.md",
+      "bytes": 464,
+      "sha256": "9877492a33d01d4c8efafe28520727b5cf159b5ffd9f298d9a316247b56ca9c8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/03_context_collect.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/03_context_collect.md",
+      "bytes": 363,
+      "sha256": "fa7dad7de124e1e94c3390602f24dd8fc5376379ec646d0013c8f85f623f20a8"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/04_kb_pre_retrieve.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/04_kb_pre_retrieve.md",
+      "bytes": 332,
+      "sha256": "f1622ad452803094b3c16b84f1392ac1dec31835c0ca469dda7bc95d873d2b3d"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/05_table_query.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/05_table_query.md",
+      "bytes": 263,
+      "sha256": "091a7df15c618ae79efbda6518ae088d5dd0f95029940beb0a749ce7aaba57dd"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/06_reasoning_plan.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/06_reasoning_plan.md",
+      "bytes": 419,
+      "sha256": "ed532b1bca07db26abece3540c5264cbb300d3227cf712efe9408a2c7bf749ac"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/07_result_compose.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/07_result_compose.md",
+      "bytes": 461,
+      "sha256": "f682c9123d090753081ae01750946727faf1fe6cb7767c51a5e4bcde849673b4"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/08_handoff_execute.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/08_handoff_execute.md",
+      "bytes": 434,
+      "sha256": "fbdc51c4d4ec6c6a2d07fb4becf48d22d5f927df5c3a87f5fd44d215eb2ca471"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/09_dialogue_harvest_store.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/09_dialogue_harvest_store.md",
+      "bytes": 426,
+      "sha256": "fe770d03a82681ed37484d348c79d7a3ca0b40c5f1ab16ab08891c7382c3ceae"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/dialogue_store.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/dialogue_store.md",
+      "bytes": 1200,
+      "sha256": "c4ecd271ae53b04ccf2cd94dc4b6de04b189c7f369e3c370c17fc7cff4c24456"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/identity_auth.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/identity_auth.md",
+      "bytes": 583,
+      "sha256": "68704add0458b3f9e61c9aa9bfa137699f81c17d93de1a866d1a14f06220850d"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/INDEX.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/INDEX.md",
+      "bytes": 512,
+      "sha256": "c0bf4f1605c94a16aa01d9d3b7c5a87c1232eeab183b5ddfa2b1678b340d339c"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/input_receive.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/input_receive.md",
+      "bytes": 747,
+      "sha256": "0d362fbc20c8d2735d652cbaa8cb63701d6ebf6f8ff635fb6169eb65a18f4a79"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/intent_route.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/intent_route.md",
+      "bytes": 963,
+      "sha256": "0392e8a7b3a476cf74b6e5000aae2d24c544d33702655cd35435b41c092d0168"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/kb_retrieve.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/kb_retrieve.md",
+      "bytes": 625,
+      "sha256": "5053e93a238bafffd641392272f929b60d8146dc87f1638c6f1d1468808a4460"
+    },
+    {
+      "source_relative": "skill-packages/guixiaoyang_dispatch/workflows/skill_dispatch.md",
+      "copied_relative": "skill-packages/guixiaoyang_dispatch/workflows/skill_dispatch.md",
+      "bytes": 593,
+      "sha256": "11ddfc5378855597df3c088ad5f531234cb7d574caa52a56c4773ce312e809d4"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/assets/config/platform_config.json",
+      "copied_relative": "skill-packages/meal_plan/assets/config/platform_config.json",
+      "bytes": 272,
+      "sha256": "efa1ae7c852523a415468af5079b51b11595ab1dd38ff3d6d6d390f775590775"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/assets/config/prototype_sources.json",
+      "copied_relative": "skill-packages/meal_plan/assets/config/prototype_sources.json",
+      "bytes": 381,
+      "sha256": "1b64447f08b10c3549cc34350c2388a00ea99a8e56db37eb0ddccc97fd1f71c9"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/assets/config/tavily_enrichment.json",
+      "copied_relative": "skill-packages/meal_plan/assets/config/tavily_enrichment.json",
+      "bytes": 232,
+      "sha256": "1ae4f37f3fbb3ee8fa3f133864601e588dccdad6e1e85ac63f730ada951f6207"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/assets/flow_diagrams/overview.md",
+      "copied_relative": "skill-packages/meal_plan/assets/flow_diagrams/overview.md",
+      "bytes": 165,
+      "sha256": "73ea13738210145657436bf7a2e5dd7d3cb738cecdd07bbf96c0220020b50d2b"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/assets/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/assets/INDEX.md",
+      "bytes": 172,
+      "sha256": "dd0983495dd50651d3c34cfd7a0b1ea4dd03a61ed471b0244e1b3679b501452b"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/auth/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/auth/INDEX.md",
+      "bytes": 61,
+      "sha256": "b5fdc6717d97544f323034bd4d2f4f94f6bd012aa9f1a62ac45292e74fba407a"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/auth/README.md",
+      "copied_relative": "skill-packages/meal_plan/auth/README.md",
+      "bytes": 116,
+      "sha256": "e51320963d8947ba2a351316f1b93df2c3ad460a3d16bd96a26082487c691125"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/auth/role-access.json",
+      "copied_relative": "skill-packages/meal_plan/auth/role-access.json",
+      "bytes": 1558,
+      "sha256": "93cf477e500b14163ab0b96f51683ffb087fb74e944102dd30923db5f3ed610b"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/data_tables/gxy_meal_plan_feedback.ddl.sql",
+      "copied_relative": "skill-packages/meal_plan/data_tables/gxy_meal_plan_feedback.ddl.sql",
+      "bytes": 2244,
+      "sha256": "1c0c28e0b250a2d3e435873e7fad1aab0b264ca3ff4f36f2ca6e5dd2e5a0bfb4"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/data_tables/gxy_meal_plan_push_setting.ddl.sql",
+      "copied_relative": "skill-packages/meal_plan/data_tables/gxy_meal_plan_push_setting.ddl.sql",
+      "bytes": 2648,
+      "sha256": "55444af6a19727ccd16f4627054262fb0f2d33896d919c60960df12de121f561"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/data_tables/gxy_meal_plan_recommend.ddl.sql",
+      "copied_relative": "skill-packages/meal_plan/data_tables/gxy_meal_plan_recommend.ddl.sql",
+      "bytes": 3422,
+      "sha256": "ec5fc456a105520cffd7a5eca264024ed1d5ad93a7dfda242a63cbc8f1a6df3d"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/data_tables/gxy_meal_recommendation.seed.json",
+      "copied_relative": "skill-packages/meal_plan/data_tables/gxy_meal_recommendation.seed.json",
+      "bytes": 338952,
+      "sha256": "9ed4d77ed277272cfc7a8fee094641d73e59efc6e6aa673f68755157fb4dd2b1"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/data_tables/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/data_tables/INDEX.md",
+      "bytes": 142,
+      "sha256": "6f0c0f4082fe8a3cb96296724b9904fd928fa421dded999cf4b08f9680467cef"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/data_tables/meal_plan_business.seed.json",
+      "copied_relative": "skill-packages/meal_plan/data_tables/meal_plan_business.seed.json",
+      "bytes": 236134,
+      "sha256": "ec43b157d253e9888c9b109a1909572d1dc53a4bc52be3ed037cce017125e283"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/data_tables/README.md",
+      "copied_relative": "skill-packages/meal_plan/data_tables/README.md",
+      "bytes": 138,
+      "sha256": "147bfc6f81ac5ac441c29e162f285b4e1975cbe453268b149969276793dde088"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/DEPLOYMENT_REPORT.md",
+      "copied_relative": "skill-packages/meal_plan/DEPLOYMENT_REPORT.md",
+      "bytes": 285,
+      "sha256": "b6a177fe7d533236fcc3ad3552829c9c6663f5ee1ce6fc7bf03b37cc59d8f462"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/INDEX.md",
+      "bytes": 71,
+      "sha256": "ff4b51036aeab0ee85404a458639cd035aae7edb01a8769f6128082831210d28"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/operation_guide.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/operation_guide.md",
+      "bytes": 131,
+      "sha256": "ac90fa07c83126470485abc9a1f16f358b1e077d12460f61ce308edc14eada9d"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/policy_and_service.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/policy_and_service.md",
+      "bytes": 393,
+      "sha256": "19c0a1938b43454b8eae294d90726df2fb635e00d8b15b94f72a41a29b24dcb5"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/_gen_qa.py",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/_gen_qa.py",
+      "bytes": 20282,
+      "sha256": "d386f2fa8308dbafc4a835e8298a4273a4e37647540784ebfc01ece8be9d6182"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/00-元数据与适用范围.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/00-元数据与适用范围.md",
+      "bytes": 1367,
+      "sha256": "a32639a8d6891ca46dcbd2ed6e45f0a1f0bc81a0329ddf962018f82d4bf29ef2"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/01-术语定义.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/01-术语定义.md",
+      "bytes": 1782,
+      "sha256": "9c2a5402a393ceaa48d0c9eb3cab499aaefcb684e8c9fb35c797dc8f846e6fa3"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/02-膳食指导原则.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/02-膳食指导原则.md",
+      "bytes": 822,
+      "sha256": "c2c81343ad03cde38e6afdb08ad8fe8cd4eb5dc1618bdbfeba114b524f84df4a"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/03-能量与宏量营养素.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/03-能量与宏量营养素.md",
+      "bytes": 1535,
+      "sha256": "2f00f3eb3edb87b128fa8e9ab5bdc0fa787896d7086c76df4499992cda5ec6bf"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/04-微量营养素.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/04-微量营养素.md",
+      "bytes": 3094,
+      "sha256": "693673ac93382064363b1a6cde4a9b17a29e86ff7ec740bb9721212b0582b02f"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/05-水与膳食纤维.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/05-水与膳食纤维.md",
+      "bytes": 1153,
+      "sha256": "04f1dd0f503ae6ab6158b4a38600d15f834805a2cd698fadc9152090da68e804"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/06-食物选择.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/06-食物选择.md",
+      "bytes": 3386,
+      "sha256": "e33e44427d4a9db05f52681011ddce8b7e5ffc02cd02055e7b22bbea541b9772"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/07-不同能量食物推荐量.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/07-不同能量食物推荐量.md",
+      "bytes": 1667,
+      "sha256": "04db4ecb3f1885074324caeb5edea14d341a054e1bdee579494243b812a9b475"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/老年人膳食指导_QA.json",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/老年人膳食指导_QA.json",
+      "bytes": 32238,
+      "sha256": "c7459a0a0dd179e4531f03c94db335f241afed5699f662f73681e8f0bfacdfab"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/老年人膳食指导_QA.xlsx",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/老年人膳食指导_QA.xlsx",
+      "bytes": 13970,
+      "sha256": "92d368c432773b889bc9a8c72b2493ebd0ddad8a96b101096f1191c69e79c4c2"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/README.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/extracted/知识库/WS-T-556-2017/README.md",
+      "bytes": 2397,
+      "sha256": "b55920bd51310c6c539dca6ac40c133744107554a275f4d0433dcbb5785d14b1"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/raw/膳食知识库补充.zip",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/source_materials/膳食知识库补充/raw/膳食知识库补充.zip",
+      "bytes": 36550,
+      "sha256": "1379f1e8dccaa6b8253fbc91de1a757df95e361fccbba6a376c65e31408bdf44"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/business/vectorization_plan.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/business/vectorization_plan.md",
+      "bytes": 95,
+      "sha256": "8f82ee78cf34d63d31805a83ec03e03da347d8ef0851d805bd0614667df78aa5"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/dialogue/faq_seed.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/dialogue/faq_seed.md",
+      "bytes": 136,
+      "sha256": "5e3b2dc888f4104fe0d8737909cd58bdf09006e8eacd10f740701c55e54ce6bd"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/dialogue/harvest_policy.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/dialogue/harvest_policy.md",
+      "bytes": 103,
+      "sha256": "712da19478db86b6908a870eaa8e7194c65581208abeabe4f5f8b1ca4d406a02"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/dialogue/harvest_rules.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/dialogue/harvest_rules.md",
+      "bytes": 134,
+      "sha256": "daa55d38d538718ca2a1b27a53f9cbed351d835525a8c17c5036a783e06ff388"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/dialogue/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/dialogue/INDEX.md",
+      "bytes": 71,
+      "sha256": "f0420862ddb229a283e0b957930ecff5738a8132060064b7a52794839cf99dad"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/knowledge_docs/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/knowledge_docs/INDEX.md",
+      "bytes": 296,
+      "sha256": "73997462530872abbb4cf278af0191020e309a1fd3f47dccd8842f847a623dd4"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/manifest.json",
+      "copied_relative": "skill-packages/meal_plan/manifest.json",
+      "bytes": 2810,
+      "sha256": "b4241c4282b2f01f4d0fa3c2a44b346569f1a74ae484497249cf2a8c27488480"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/PLATFORM_API_REFERENCE.md",
+      "copied_relative": "skill-packages/meal_plan/PLATFORM_API_REFERENCE.md",
+      "bytes": 6485,
+      "sha256": "b9d583a749bc9f9fdb92c8fcf562574e794e5326428cdac364d3572725dfc636"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/platform/action-map.json",
+      "copied_relative": "skill-packages/meal_plan/platform/action-map.json",
+      "bytes": 12079,
+      "sha256": "bb7ae4e18957d7918043492208e6626a9e7a848349abd5ae334a7f683f17c48e"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/platform/deploy_config.json",
+      "copied_relative": "skill-packages/meal_plan/platform/deploy_config.json",
+      "bytes": 1412,
+      "sha256": "ea283ba580879337f9366cdd6b6a6f4b43c87b284c89b671d3f9ccbd6275d9b8"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/platform/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/platform/INDEX.md",
+      "bytes": 88,
+      "sha256": "a85ee030b09f95af425d6c4f58082838b1504f66fcdaee0850d80b6d6afdc40d"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/platform/local_source_trace.json",
+      "copied_relative": "skill-packages/meal_plan/platform/local_source_trace.json",
+      "bytes": 809,
+      "sha256": "1a7d01de7977b866aad59dfdd9b047925b70e6684df1eaded7203d0f82feee68"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/platform/remote_sync_plan.json",
+      "copied_relative": "skill-packages/meal_plan/platform/remote_sync_plan.json",
+      "bytes": 227,
+      "sha256": "6ad7059e187e98077ba5943179c19e564ec39af7a7dc1ccb9e8142848e468906"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/platform/remote_sync_plan.md",
+      "copied_relative": "skill-packages/meal_plan/platform/remote_sync_plan.md",
+      "bytes": 329,
+      "sha256": "feb137b8a6e314c617d004803d6d3ce9fa1736d998d5a8ad277969d20396998f"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/api_reference.md",
+      "copied_relative": "skill-packages/meal_plan/references/api_reference.md",
+      "bytes": 66,
+      "sha256": "8b2210f4a50070381a7ae2703a80622b00f2e8814b78af389752adc6e4f1edda"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/auth_roles.md",
+      "copied_relative": "skill-packages/meal_plan/references/auth_roles.md",
+      "bytes": 294,
+      "sha256": "c8dc31803ee958c8c8796370ef9c67964aadf48ba284ba63c7e909350f4f9503"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/contracts/action-intent-map.json",
+      "copied_relative": "skill-packages/meal_plan/references/contracts/action-intent-map.json",
+      "bytes": 13788,
+      "sha256": "fe847e76e55bbdcd54c2b0af2ac2b0549c4cec83090a226c1347bd3bf8e57d54"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/contracts/actions.schema.json",
+      "copied_relative": "skill-packages/meal_plan/references/contracts/actions.schema.json",
+      "bytes": 116,
+      "sha256": "fef974bf60f425c9b5aac171ab1899026ed0a3c44dc447dd564e66d85f123cbf"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/contracts/input.schema.json",
+      "copied_relative": "skill-packages/meal_plan/references/contracts/input.schema.json",
+      "bytes": 116,
+      "sha256": "fef974bf60f425c9b5aac171ab1899026ed0a3c44dc447dd564e66d85f123cbf"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/contracts/meal-plan-template-data.schema.json",
+      "copied_relative": "skill-packages/meal_plan/references/contracts/meal-plan-template-data.schema.json",
+      "bytes": 3103,
+      "sha256": "a4a49bc895a237f4d84ff57aa5dcd091c0be2a5fd020d31c685456ddb70b6b5a"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/contracts/output.schema.json",
+      "copied_relative": "skill-packages/meal_plan/references/contracts/output.schema.json",
+      "bytes": 4815,
+      "sha256": "54366ba2c1cde45a8a36bc0b17a279a49ccc7b610f69d45794fc63bd01c84cec"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/contracts/page-flow.contract.json",
+      "copied_relative": "skill-packages/meal_plan/references/contracts/page-flow.contract.json",
+      "bytes": 3256,
+      "sha256": "d8879415df1a41b2aa7324627dbedd86e99603850581150b00808d3e70442932"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/contracts/render-flow.contract.json",
+      "copied_relative": "skill-packages/meal_plan/references/contracts/render-flow.contract.json",
+      "bytes": 1170,
+      "sha256": "5a73bd2f4268f98dd38b07343b5950399671b18e64978f3f2b97a889d784dda0"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/contracts/template-composition.schema.json",
+      "copied_relative": "skill-packages/meal_plan/references/contracts/template-composition.schema.json",
+      "bytes": 3221,
+      "sha256": "da93b4467909b029fa3a1d46ee763305cb1106a7dfaef8895c685f471878e916"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/data_dictionary.md",
+      "copied_relative": "skill-packages/meal_plan/references/data_dictionary.md",
+      "bytes": 276,
+      "sha256": "31c049f61f9ce9e69fb647da29b082f4155e338eed695e83fa5674cbc3023e94"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/database_schema.md",
+      "copied_relative": "skill-packages/meal_plan/references/database_schema.md",
+      "bytes": 1083,
+      "sha256": "b8ecaf3931db976df5da7a5222788f771e62646c4e7e0878e2ff6b917fcd786d"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/excel_requirement_mapping.md",
+      "copied_relative": "skill-packages/meal_plan/references/excel_requirement_mapping.md",
+      "bytes": 229,
+      "sha256": "3513c7597a689902da3f77c15e8ea593701806bb147437cc0d337ab5d146a6fd"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/references/INDEX.md",
+      "bytes": 234,
+      "sha256": "7ee7f283919c99ebf7ddc3dce2cc834d69bfbaa065254ed5e99ff71216a303d2"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/knowledge_base_design.md",
+      "copied_relative": "skill-packages/meal_plan/references/knowledge_base_design.md",
+      "bytes": 394,
+      "sha256": "0564e78f61a928bcec17dbd0b4b661310af621f92e36d9d63b2563ac3996ab42"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/references/platform_integration.md",
+      "copied_relative": "skill-packages/meal_plan/references/platform_integration.md",
+      "bytes": 410,
+      "sha256": "2c3741aba091680c9744d178dc0b866be2b8c9de5f0ff9f1954f5bb985e3cecc"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/rules/data_quality_rules.md",
+      "copied_relative": "skill-packages/meal_plan/rules/data_quality_rules.md",
+      "bytes": 116,
+      "sha256": "7be270d70a4e84fd63f45074d98ff580df6405fb196f696f33b72eb104e0e6dc"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/rules/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/rules/INDEX.md",
+      "bytes": 126,
+      "sha256": "9dbe1f4e1a2ea2c64b40dc763a1b85771b3449b33ba4528c57d7265c279ba845"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/rules/kb_rules.md",
+      "copied_relative": "skill-packages/meal_plan/rules/kb_rules.md",
+      "bytes": 131,
+      "sha256": "bca78c39cbbc9158431e76a37a7456f3ef6cf94f8a02e187f35dbbb7c994bb4b"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/rules/permission_rules.md",
+      "copied_relative": "skill-packages/meal_plan/rules/permission_rules.md",
+      "bytes": 91,
+      "sha256": "553dfd4520e595016001a5a2422171fd1f90e716fa7a832ca45b67d70b070f3d"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/rules/remote_required.md",
+      "copied_relative": "skill-packages/meal_plan/rules/remote_required.md",
+      "bytes": 227,
+      "sha256": "41688c3ff7db3138e7ffda6e5b53e4f1da612c56876d99ec4f5a02b103f56825"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/samples/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/samples/INDEX.md",
+      "bytes": 139,
+      "sha256": "036e6a8cb68040a0b8c4fb5862aaeb4549b07e44e4c6324e57453c00f27ce401"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/samples/negative/missing_remote_resource.md",
+      "copied_relative": "skill-packages/meal_plan/samples/negative/missing_remote_resource.md",
+      "bytes": 130,
+      "sha256": "7f8d6a371ae5280bda3b1c74d5a8a51840b282867e50004095eb2d862160510c"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/samples/positive/happy_path.md",
+      "copied_relative": "skill-packages/meal_plan/samples/positive/happy_path.md",
+      "bytes": 128,
+      "sha256": "24d1615be92584b852f0549d978888deee8d1252fc55c2d7600592cd50237c83"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/samples/positive/remote_success.md",
+      "copied_relative": "skill-packages/meal_plan/samples/positive/remote_success.md",
+      "bytes": 102,
+      "sha256": "312bbbae66344ea5ee2e6cf919612d03fbad16c5e1e6c4fcd45057a59b419ed6"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/scripts/backend/auth_api.js",
+      "copied_relative": "skill-packages/meal_plan/scripts/backend/auth_api.js",
+      "bytes": 514,
+      "sha256": "47f9f09574a0a25b88f280453a8987ec8353d123abc852a69601e9c58a2dfdfb"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/scripts/backend/business_runtime.py",
+      "copied_relative": "skill-packages/meal_plan/scripts/backend/business_runtime.py",
+      "bytes": 4977,
+      "sha256": "d2baa223306fc2351dc9c59de88ac502b2951f5da8b7113b6a7ae12f2e8ca381"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/scripts/backend/database_api.js",
+      "copied_relative": "skill-packages/meal_plan/scripts/backend/database_api.js",
+      "bytes": 518,
+      "sha256": "7a281b989c5ee811311c7142be0116b846e4c3359709b10da65b5d7560bd0a8a"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/scripts/backend/knowledge_api.js",
+      "copied_relative": "skill-packages/meal_plan/scripts/backend/knowledge_api.js",
+      "bytes": 519,
+      "sha256": "266847992a8a50f08df475b246da5949ae7268366c94001d3ec3f369ea61c4e0"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/scripts/backend/seed_data.js",
+      "copied_relative": "skill-packages/meal_plan/scripts/backend/seed_data.js",
+      "bytes": 518,
+      "sha256": "720f1f345d0d151c0d2ff72bfc13f6e9eb3d98d5d2b77a7976f2a7fc8014afe1"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/scripts/backend/tag_feedback.js",
+      "copied_relative": "skill-packages/meal_plan/scripts/backend/tag_feedback.js",
+      "bytes": 274,
+      "sha256": "d571d17bb9a081a9e7277aecbc3aa3aebc89d209256bba4505e2be8877c465f4"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/scripts/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/scripts/INDEX.md",
+      "bytes": 191,
+      "sha256": "ac8d781be09fac40d99a97b7e1e1a3a26124bd7f80210be9c01eff6d38424add"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/SKILL.md",
+      "copied_relative": "skill-packages/meal_plan/SKILL.md",
+      "bytes": 1429,
+      "sha256": "45eaf9f044373f22b989bb9153d7432a040e1771d4307e7703b1ecc7bc8832a8"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/data/field-bindings.generated.json",
+      "copied_relative": "skill-packages/meal_plan/templates/data/field-bindings.generated.json",
+      "bytes": 23918,
+      "sha256": "4dfe2782173b9499763e411e5c9e64d7dbba22e5a21865c9682f972a30e28b23"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/data/plan.sample.json",
+      "copied_relative": "skill-packages/meal_plan/templates/data/plan.sample.json",
+      "bytes": 20033,
+      "sha256": "08805b665ed900be6cd0463ec1d677ae3ff40eb203746cd7508443cad0299796"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/budget_plan.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/budget_plan.json",
+      "bytes": 4046,
+      "sha256": "e6e8b9118bf5b4f6e02a5eaa2b63f59180d5c6b2bb8d77cb6df2d9442ccd5332"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/caregiver_brief.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/caregiver_brief.json",
+      "bytes": 4105,
+      "sha256": "edec1b65838129261a832ff8adb3fbff132f4f053088f9230aea9956290df12d"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/chronic_disease.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/chronic_disease.json",
+      "bytes": 4090,
+      "sha256": "e7e2b6f22c2a86acf7db52a839c0b2f9e0eac10052d12cc511ce9206e9e2b100"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/condition_intake.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/condition_intake.json",
+      "bytes": 4076,
+      "sha256": "3f483a742315a8eeea4274e95eb005734c45840df905ffb18e08c03a3715fae9"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/cooking_steps.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/cooking_steps.json",
+      "bytes": 4053,
+      "sha256": "a6ea1dd19c9235739c61ed12484e09e4addcc81b1014a3f38fe61d51e8b6fbb2"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/dashboard.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/dashboard.json",
+      "bytes": 4040,
+      "sha256": "4e964b5968bef623b521922a9882f4a94495fd2eda7020a63d4fcb31e172efb5"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/delivery_handoff.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/delivery_handoff.json",
+      "bytes": 4126,
+      "sha256": "c261466ea6eefe66c0d1275192ad0d95782ca366d6f39a693921d51c96c717f5"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/diet_preference.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/diet_preference.json",
+      "bytes": 4066,
+      "sha256": "59f88bbd41c70f70ec8baeb6d0982faf78086b2447c90380b14df647d42343b5"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/doctor_note.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/doctor_note.json",
+      "bytes": 4037,
+      "sha256": "cb472abc77db2b0304db7cd3b498324efe27f44ccaf72ebe93ca385745868f00"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/family_explain.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/family_explain.json",
+      "bytes": 4079,
+      "sha256": "f69cc130043c1392b4e58768ec46fdc4b550e8483f34d36a33ace1177b399a7a"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/feedback_collect.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/feedback_collect.json",
+      "bytes": 4105,
+      "sha256": "ef0132ff6cec60ac637143575befcd3c217334e556333c0203eba56958ad1e82"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/festival_plan.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/festival_plan.json",
+      "bytes": 4045,
+      "sha256": "ee41828946851f25c2e163baab30f9ab46d1da5268f7e203fd38cc52d0ba3620"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/index.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/index.json",
+      "bytes": 3961,
+      "sha256": "6943f74da6887d3a620b327d23f67f23adaad82bba97d31ff224cce0ef0290a1"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/ingredient_swap.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/ingredient_swap.json",
+      "bytes": 4118,
+      "sha256": "a9a813a0d5027347e061d11f1d40b7ae939b8e8de7a6b4da587499bab168f9ee"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/leftover_reuse.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/leftover_reuse.json",
+      "bytes": 4080,
+      "sha256": "775d2aee87372f0e4a18f517b3d17f06bcee0833152fcb04ac5587e51a9cf350"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/nutrition_compare.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/nutrition_compare.json",
+      "bytes": 4125,
+      "sha256": "d9fb22853f001c84d4c5f95dc59361808269776222e01e630c51f1e90062d48e"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/order_confirm.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/order_confirm.json",
+      "bytes": 4078,
+      "sha256": "0a9bf096d8dfe7e2755f2536ddbe59f4d9ea060cf3c55691f1bfe6f59d265fe0"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/overview.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/overview.json",
+      "bytes": 3986,
+      "sha256": "ee2a9a0d7ce34775e8a9d30b51c016f75b2781924e799780356feb80ea918ab4"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/plan.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/plan.json",
+      "bytes": 3945,
+      "sha256": "7c8ba598748c88a3f2830992e16a1c3c35940e62370bf18a6dedd6b3b07e40bc"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/risk_alert.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/risk_alert.json",
+      "bytes": 4079,
+      "sha256": "5a17f2f54d1bc0be4c6e40ca43b46b5025764727c8fbb180bf58610c5caadb12"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/shopping_list.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/shopping_list.json",
+      "bytes": 4061,
+      "sha256": "c6686a2230e11943ed3f00e4f30e4a2fa5a19055fbabaf3389ef5c6fed776ab9"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/status.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/status.json",
+      "bytes": 3963,
+      "sha256": "a01eeaaab69c9eaac5bc1c0a23e53cfab8fc3108da297666cfc5cf67ba7703e3"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/swallowing_care.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/swallowing_care.json",
+      "bytes": 4123,
+      "sha256": "92b230f5ba986584ca10623cdeb120022271c59a543c4fadf48770a63b9bab3d"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/timeline.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/timeline.json",
+      "bytes": 4045,
+      "sha256": "730c09f24d3deeef13d5e084c9366a6489321a17206b6b4529380d33bf2c36fb"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/followups/weekly_plan.json",
+      "copied_relative": "skill-packages/meal_plan/templates/followups/weekly_plan.json",
+      "bytes": 4093,
+      "sha256": "91a2bff6085a7902ded5554d6868b1dae2936d5038ee87e7c7544b3f6c2b75a7"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/budget-plan.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/budget-plan.html",
+      "bytes": 579,
+      "sha256": "d8fc4d383f63c3ac63544387138d4eee863ddf56065db6f42688f922bb5013e5"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/caregiver-brief.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/caregiver-brief.html",
+      "bytes": 618,
+      "sha256": "e259bbfb8adcb4890d1e39ac3447bbdc5dc371b39119261389c139bdec2f62be"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/chronic-disease.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/chronic-disease.html",
+      "bytes": 618,
+      "sha256": "f0eb9c86b9f4b13858d0a9c45011e508e687de824fda5f4083f9b677819b0023"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/condition-intake.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/condition-intake.html",
+      "bytes": 630,
+      "sha256": "12da9b0e33af7f3e3dafeeea9aab282280fd90e6797d9cb677b40088f68e0eb6"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/cooking-steps.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/cooking-steps.html",
+      "bytes": 603,
+      "sha256": "1344e5ee9c60eab04ac770d60f81d2d3905c952b0072319756e8301860391529"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/dashboard.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/dashboard.html",
+      "bytes": 573,
+      "sha256": "d537632ed24bfc8eec8e03787e51623d34f60a70ff75e73eaab14a4905afb450"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/delivery-handoff.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/delivery-handoff.html",
+      "bytes": 606,
+      "sha256": "64d3d37aa83780d50fa4811e98c077cb4eb51fd4a58a171a719ab8bf480d982e"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/diet-preference.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/diet-preference.html",
+      "bytes": 615,
+      "sha256": "4bdeb3d5c2e5c5b86bc2670549ab9318d984ba3f2bf4b173a57d266e418136f7"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/doctor-note.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/doctor-note.html",
+      "bytes": 597,
+      "sha256": "cadae0cf92c2567243f0f8ed9f3b00db24bd79e94b65d522a0b1cc10200665b6"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/fallback.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/fallback.html",
+      "bytes": 598,
+      "sha256": "fc1791bee71eec606b8dc3aaa7794923b2ecd6b4076c4786ff2d917aa716c6b3"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/family-explain.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/family-explain.html",
+      "bytes": 609,
+      "sha256": "89b0a2ebb3209305c968d24b6bf2569f2fa4f4682da7385283c64af62b72dcad"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/feedback-collect.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/feedback-collect.html",
+      "bytes": 636,
+      "sha256": "4e31f2283c10125ea799ca2e00a9a63c0694411f409d851679be60857153cb9e"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/festival-plan.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/festival-plan.html",
+      "bytes": 591,
+      "sha256": "30241a6ad825b1dc3af567ab8445b2182130f046421e189444e95b3209553d54"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/ingredient-swap.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/ingredient-swap.html",
+      "bytes": 618,
+      "sha256": "bc908e8fb1c8c56d4555386f85d09af7ccd285aa875003b99502b62fae8f09d9"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/leftover-reuse.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/leftover-reuse.html",
+      "bytes": 609,
+      "sha256": "d8cb4c117bba1829aae16d6c5f2adf346d2cf5aad578fe634eec768f0aa71818"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/nutrition-compare.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/nutrition-compare.html",
+      "bytes": 633,
+      "sha256": "0dd240fccf1bbaf37bc86a436c3fb85b0753fdfaa52579d3b5ef4dd4b56fc7b1"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/order-confirm.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/order-confirm.html",
+      "bytes": 603,
+      "sha256": "1d913b73fe0ffd35b5474bfc22a61120ea9d6629abc475c448a721444e877ae7"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/overview.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/overview.html",
+      "bytes": 567,
+      "sha256": "14438ab0a2a4edf3c405857ee5b0189005a348964ff6dfb0145089a440f16bf6"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/plan.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/plan.html",
+      "bytes": 567,
+      "sha256": "13c15ef6ca1dcc0bd7d2daa85ea2e4f2480fb16bbbf9be8b077cf7893d58c5ac"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/risk-alert.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/risk-alert.html",
+      "bytes": 594,
+      "sha256": "b24fc1d1007305655a8273d335e976a6f1178f5f16024fdd5d40673821bad3ba"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/shopping-list.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/shopping-list.html",
+      "bytes": 597,
+      "sha256": "9a7fe4db2da65930bacfa4573bd3f41e541f04ec6729ee9302506ca759e04550"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/slots/followup-suggestions.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/slots/followup-suggestions.html",
+      "bytes": 271,
+      "sha256": "f3c4974a798a1186baac21879a95943c0ad59e369733b7037df65253e5fc7797"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/slots/meal-section.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/slots/meal-section.html",
+      "bytes": 907,
+      "sha256": "9959a054789497bc7fbaeb79cbc6b0798515725fdbd43067799d476516bff027"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/slots/nutrition-note.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/slots/nutrition-note.html",
+      "bytes": 344,
+      "sha256": "30d7119ab0eda882361b0b944fa8ee32c4f2a3851fa2a8b3ce35a6cff8d719e1"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/slots/related-questions.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/slots/related-questions.html",
+      "bytes": 644,
+      "sha256": "dc3b50baceda8ffa65ecb8f5f56729386c024b3d93a593445dee7b6b1cd7003f"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/slots/summary-card.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/slots/summary-card.html",
+      "bytes": 729,
+      "sha256": "0167698bbde5f90e360deacf5db4ec35a54e08633574e66f3f529e1b324dcbb5"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/status.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/status.html",
+      "bytes": 564,
+      "sha256": "7b440cb71c1a7ebb48e1f10bcd7c4158f73046db08a7dc61bdb2cc42441c9821"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/swallowing-care.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/swallowing-care.html",
+      "bytes": 630,
+      "sha256": "7d9788c2413a7c2e8cb1192dbf2940ae840b03a39aa349cc9cce85a983b80c88"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/timeline.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/timeline.html",
+      "bytes": 573,
+      "sha256": "02de1ffbc5cb5688ba4619f00e2ae1bd3ef77e32d501c57fa08d4bd2e1d63f86"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/html/weekly-plan.html",
+      "copied_relative": "skill-packages/meal_plan/templates/html/weekly-plan.html",
+      "bytes": 594,
+      "sha256": "8acaef8ac0ae4f4291f551279b8ba37f247781a659a775102da1d13ae7a611b4"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/templates/INDEX.md",
+      "bytes": 857,
+      "sha256": "4e80ee04e0d5785e7f242bf55b0ae4c1baea399b265a80db05990dd8d7b1f86f"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/intent_prompt.md",
+      "copied_relative": "skill-packages/meal_plan/templates/intent_prompt.md",
+      "bytes": 197,
+      "sha256": "abcd20f1d14c235aba49c93b6f9b4b83d4cacf41b5f07ec604152834bbbc3dd3"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/kb_answer_template.md",
+      "copied_relative": "skill-packages/meal_plan/templates/kb_answer_template.md",
+      "bytes": 134,
+      "sha256": "7f37f37670559cde5e7220ed3a7521651724eb070b9673982e98366b86d7ff44"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/output_schema.md",
+      "copied_relative": "skill-packages/meal_plan/templates/output_schema.md",
+      "bytes": 109,
+      "sha256": "739ecc46419e0fb6adcc433e310c704519825d17559fa75ae953adaf2a9c5a70"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/prompts/orchestration.context.json",
+      "copied_relative": "skill-packages/meal_plan/templates/prompts/orchestration.context.json",
+      "bytes": 779,
+      "sha256": "d99b61d8eacfbe33928c94151562f2d3fe2ed14a1b2215fb2f00a35376d821ec"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/prompts/slot-preferences.json",
+      "copied_relative": "skill-packages/meal_plan/templates/prompts/slot-preferences.json",
+      "bytes": 4366,
+      "sha256": "6e8cd623e870de95f49c047a4babbadaa18a145e618a68823a5ec818ae11c958"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/prompts/template-selection.examples.json",
+      "copied_relative": "skill-packages/meal_plan/templates/prompts/template-selection.examples.json",
+      "bytes": 8997,
+      "sha256": "8471186ae4d6346ed61e52f8b88ffc07f12cd86bc30e7163f7ab9d18c44e1753"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/templates/registry.json",
+      "copied_relative": "skill-packages/meal_plan/templates/registry.json",
+      "bytes": 24301,
+      "sha256": "a2a300a40a45b77ce277ddc238069d865e3613f12ee9b06c1e0ebcc100bc4dc3"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/tests/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/tests/INDEX.md",
+      "bytes": 132,
+      "sha256": "631eb454df23b485b93debb106b0ecc3192a0cf2be125d6483747f067fdc233f"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/tests/integration_test.md",
+      "copied_relative": "skill-packages/meal_plan/tests/integration_test.md",
+      "bytes": 125,
+      "sha256": "ac691e7252ab99ee3aaf6a15af4c27c0515bcffc2bda2bc52680760739b062c0"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/tests/kb_vector_test.md",
+      "copied_relative": "skill-packages/meal_plan/tests/kb_vector_test.md",
+      "bytes": 143,
+      "sha256": "7b0a7bda0e5e9c6a7d97cece142327579880ded890d8c2b5f23772394bd65921"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/tests/run_logic_tests.js",
+      "copied_relative": "skill-packages/meal_plan/tests/run_logic_tests.js",
+      "bytes": 76,
+      "sha256": "3bfd2898a2ed2e4f23463332007b9a758c3d9b2e20c8009a41201b28c8135f6a"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/00_dialogue_delivery_policy.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/00_dialogue_delivery_policy.md",
+      "bytes": 1022,
+      "sha256": "5591b123a7b2871047c514985df6ed2b933552c2ffb7c73f5801e513c104429b"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/01_input_receive.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/01_input_receive.md",
+      "bytes": 468,
+      "sha256": "2c54ff5ce3a2d2f08370be98781c4efe2dd05981ee00c836e0fc6ae20f7a7afe"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/02_identity_auth.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/02_identity_auth.md",
+      "bytes": 473,
+      "sha256": "a824d92ae1037f3f7cc9ccbe47e9feff362ba83ecdcc675a2e0eebe9608afd73"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/03_context_collect.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/03_context_collect.md",
+      "bytes": 489,
+      "sha256": "6e3f67085f489a7e590de582c9086c59ac826573f35d1e1326a490434ba430d7"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/04_kb_pre_retrieve.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/04_kb_pre_retrieve.md",
+      "bytes": 498,
+      "sha256": "36757f140d377c19430919a6c33869c7cbe21d1a09021a7a38d3ac824742d395"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/05_table_query.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/05_table_query.md",
+      "bytes": 481,
+      "sha256": "96e90022b4ff10d04276aba588fc10887ef087eeab03dfda7decd19155ed0c5e"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/06_reasoning_plan.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/06_reasoning_plan.md",
+      "bytes": 486,
+      "sha256": "19f5f5dd1cdebf1784fe63f7ef0d47ba3d15cbc2f5ed472a43040eab1fcc12b2"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/07_result_compose.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/07_result_compose.md",
+      "bytes": 468,
+      "sha256": "a9105c8ffd4a7ade381125d47443ddc493b8f06ee91b5150705ba58ca6cd1618"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/08_handoff_execute.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/08_handoff_execute.md",
+      "bytes": 493,
+      "sha256": "600a1bde752e8efe8f620ff3fd37d7344e8f416dae931b180c178997a65d657c"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/09_dialogue_harvest_store.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/09_dialogue_harvest_store.md",
+      "bytes": 1942,
+      "sha256": "7d24d7e32f65b70daef8f5458dc86be8c9902869a6e708ed4546d5cc5dd9588e"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/contraindication_check.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/contraindication_check.md",
+      "bytes": 917,
+      "sha256": "94103dd62faeab6e67571ee2a0d5ae997591848710bbe1b7df7f6a1519c76646"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/health_profile_read.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/health_profile_read.md",
+      "bytes": 911,
+      "sha256": "5b3228a1216e4b3b0d84805d852e66b6a08de57284be5d7b99a0c27c51f96885"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/INDEX.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/INDEX.md",
+      "bytes": 549,
+      "sha256": "ff3f793d0c1b90fce23bcccfe5c9a03300d770dc73fd753e0ed75ddfbd219229"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/input_receive.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/input_receive.md",
+      "bytes": 899,
+      "sha256": "d5a7174785f2a73aa47f2376e040b049f54e5b9ac2dc0f9c8d3a714b65ed8358"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/kb_retrieve.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/kb_retrieve.md",
+      "bytes": 895,
+      "sha256": "774e0f077634822cfd357c2d0c7682bef7c836cda69ce246199205ac3f9cfdae"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/kb_store.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/kb_store.md",
+      "bytes": 889,
+      "sha256": "625fb11b3f1b729719e934470cc964cfcdc28df656b3557ecbbaefb20bacfe5d"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/meal_order_handoff.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/meal_order_handoff.md",
+      "bytes": 909,
+      "sha256": "74234c95b29d3e056b0290537a5a97e44d79ed497b9a9a1d2034dab134d16738"
+    },
+    {
+      "source_relative": "skill-packages/meal_plan/workflows/nutrition_match.md",
+      "copied_relative": "skill-packages/meal_plan/workflows/nutrition_match.md",
+      "bytes": 903,
+      "sha256": "4c97a6b8d4cfc197f29460313f92581316bf34f546a8aaa1ff7a4cb981a4b85f"
+    }
+  ]
+}

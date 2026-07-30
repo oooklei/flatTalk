@@ -1,0 +1,91 @@
+{
+  "schema": "guixiaoyang.local-skill-package.v3",
+  "generatedAt": "2026-07-15T03:11:26.752Z",
+  "updatedAt": "2026-07-28T20:40:00.000+08:00",
+  "sourcePolicy": "independent-local-copy",
+  "key": "meal_plan",
+  "name": "AI膳食",
+  "type": "skill",
+  "excelName": "AI膳食",
+  "terminals": [
+    "C",
+    "B",
+    "Admin"
+  ],
+  "roles": [
+    "elder",
+    "family",
+    "meal_site_manager",
+    "system_admin"
+  ],
+  "workflows": [
+    "workflows/01_input_receive.md",
+    "workflows/02_identity_auth.md",
+    "workflows/03_context_collect.md",
+    "workflows/04_kb_pre_retrieve.md",
+    "workflows/05_table_query.md",
+    "workflows/06_reasoning_plan.md",
+    "workflows/07_result_compose.md",
+    "workflows/08_handoff_execute.md",
+    "workflows/09_dialogue_harvest_store.md"
+  ],
+  "knowledgeBases": [
+    {
+      "name": "meal_plan_business_kb",
+      "type": "business",
+      "localDir": "knowledge_docs/business",
+      "vectorizationRequired": true,
+      "documents": [
+        "knowledge_docs/business/policy_and_service.md",
+        "knowledge_docs/business/operation_guide.md"
+      ]
+    },
+    {
+      "name": "meal_plan_dialogue_kb",
+      "type": "dialogue",
+      "localDir": "knowledge_docs/dialogue",
+      "vectorizationRequired": true,
+      "documents": [
+        "knowledge_docs/dialogue/harvest_rules.md",
+        "knowledge_docs/dialogue/faq_seed.md"
+      ]
+    }
+  ],
+  "dataTables": [
+    {
+      "name": "gxy_meal_recommendation",
+      "schemaFile": "references/database_schema.md",
+      "seedFile": "data_tables/gxy_meal_recommendation.seed.json",
+      "minRowsRequired": 500
+    }
+  ],
+  "scripts": [
+    "scripts/backend/auth_api.js",
+    "scripts/backend/database_api.js",
+    "scripts/backend/knowledge_api.js",
+    "scripts/backend/seed_data.js",
+    "scripts/backend/business_runtime.py"
+  ],
+  "templates": [
+    "templates/registry.json"
+  ],
+  "prototypeSources": [
+    "https://lanhuapp.com/link/#/invite?sid=qX09NM3a",
+    "https://www.kdocs.cn/l/cmVSrNHGm5Mr"
+  ],
+  "templateProfile": "meal-plan-render-document-v1",
+  "pathPolicy": "package-relative-only-for-runtime-and-remote-deploy",
+  "localSourceTrace": "platform/local_source_trace.json",
+  "templateContract": {
+    "registry": "templates/registry.json",
+    "htmlDir": "templates/html",
+    "dataDir": "templates/data",
+    "fieldBindings": "templates/data/field-bindings.generated.json",
+    "actionIntentMap": "references/contracts/action-intent-map.json",
+    "renderFlow": "references/contracts/render-flow.contract.json",
+    "followupSuggestions": "templates/followups/index.json"
+  },
+  "cnName": "AI膳食",
+  "description": "面向老人画像、慢病约束、口味偏好和助餐配送的膳食方案生成、营养解释、订单交接和反馈闭环技能。",
+  "status": "enabled"
+}

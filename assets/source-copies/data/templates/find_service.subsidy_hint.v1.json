@@ -1,0 +1,24 @@
+{
+  "template_id": "find_service.subsidy_hint.v1",
+  "template_key": "subsidy_hint",
+  "skill_key": "find_service",
+  "name": "补贴提示卡片",
+  "cn_name": "补贴提示卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "subsidy-hint.html",
+  "fallback_html": "subsidy-hint.html",
+  "description": "提示可适用养老补贴和材料清单。",
+  "sample_data": "templates/data/service.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "subsidy_hint",
+  "actions": [
+    "find_service.clarify",
+    "find_service.refresh_recommendation",
+    "find_service.create_order"
+  ],
+  "followup_suggestions": "templates/followups/subsidy_hint.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/find_service/templates/html/subsidy-hint.html"
+}

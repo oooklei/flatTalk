@@ -1,0 +1,6 @@
+{
+  "id": "risk_assessment_card",
+  "layout": "vertical",
+  "match": "展示各类疾病风险评估结果（重度/中度/轻度风险分级、分值、标签）的单卡片",
+  "required": ["mainTitle", "risks"]
+}

@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    .card{border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:12px;background:#fff}
+    .metric{display:flex;gap:8px;margin:6px 0}
+  </style>
+</head>
+<body>
+  <section class="card" data-layout="vertical">
+    <h3>{{title}}</h3>
+    {{#metrics}}<div class="metric"><b>{{label}}</b><span>{{value}}</span></div>{{/metrics}}
+  </section>
+  <script type="application/json">
+  {
+    "title": "王女士",
+    "metrics": [{ "label": "血压", "value": "稳定" }]
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "template_id": "chat.merge_notice.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "cn_name": "会话合并通知",
+  "description": "会话合并通知模板，用于多个会话合并时的用户告知",
+  "html": "chat/merge_notice.html",
+  "status": "enabled",
+  "updated_at": "2026-07-27T12:00:00.000Z",
+  "html_present": true,
+  "resolved_html": "skill-packages/guixiaoyang_dispatch/templates/html/chat/merge_notice.html"
+}

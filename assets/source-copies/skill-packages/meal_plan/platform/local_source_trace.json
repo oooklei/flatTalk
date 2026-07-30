@@ -1,0 +1,21 @@
+{
+  "policy": "local_audit_only_not_for_remote_deploy",
+  "generatedAt": "2026-07-17T06:25:31.539Z",
+  "packageKey": "meal_plan",
+  "sourceProfile": "findService-v2.1",
+  "sourceFiles": {
+    "findServiceTemplate": "D:\\find-service\\skills\\findService",
+    "roleWorkbook": "D:\\GuiCare\\AI养老-用户角色体系.xlsx",
+    "requirementWorkbook": "D:\\GuiCare\\智能体项目负责人0706.xlsx",
+    "zipSources": [
+      "D:\\GuiCare\\ai养老助手.zip",
+      "D:\\GuiCare\\ai膳食.zip",
+      "D:\\GuiCare\\AI辅助填报.zip",
+      "D:\\GuiCare\\上门服务业务流程图.zip",
+      "D:\\GuiCare\\广西养老政策文件.zip",
+      "D:\\find-service\\skills\\findService.zip",
+      "D:\\find-service\\skills\\findService_v2.1.zip"
+    ]
+  },
+  "deployPathPolicy": "package-relative-only"
+}

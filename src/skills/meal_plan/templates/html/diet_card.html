@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>膳食推荐卡片 - 完整组合（数据驱动模板）</title>
+<style>
+  :root {
+    --bg-warm: #FFFAF5;
+    --card-bg: #FFFFFF;
+    --accent-orange: #FF6B35;
+    --accent-yellow: #FFB347;
+    --accent-green: #7CB342;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --text-light: #999999;
+    --border-light: #F0E6DC;
+    --section-bg: #FFF8F0;
+    --shadow-card: 0 2px 16px rgba(255,107,53,0.1);
+    --shadow-float: 0 4px 20px rgba(255,107,53,0.15);
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    background: var(--bg-warm);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100%;
+    padding: 0;
+  }
+
+  /* ===== Main Card Container ===== */
+  .diet-card-full {
+    width: 100%;
+    max-width: 400px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ===== Profile Section ===== */
+  .profile-section {
+    padding: 14px 16px 12px;
+  }
+  .date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #FFF3E0, #FFE8CC);
+    color: var(--accent-orange);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(240,230,220,0.6);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-icon { width: 28px; text-align: center; font-size: 15px; flex-shrink: 0; }
+  .info-label {
+    font-size: 13px; color: var(--text-secondary); min-width: 54px; flex-shrink: 0;
+  }
+  .info-value { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+  .info-value.highlight { color: var(--accent-orange); font-weight: 700; font-size: 15px; }
+  .info-value.sub { color: var(--text-secondary); font-size: 13px; }
+
+  /* Divider */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+    margin: 0 14px;
+  }
+
+  /* ===== Meal Section ===== */
+  .meal-section { padding: 12px 16px; }
+  .meal-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  }
+  .meal-header .emoji { font-size: 17px; }
+  .meal-title { font-size: 15.5px; font-weight: 700; color: var(--text-primary); }
+
+  .food-item {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 6.5px 0; cursor: pointer; border-radius: var(--radius-sm); transition: background 0.15s;
+  }
+  .food-item:hover { background: var(--section-bg); }
+  .food-left { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+  .food-icon { color: var(--accent-green); font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+  .food-name { font-size: 13.5px; color: var(--text-primary); line-height: 1.45; }
+  .food-right { text-align: right; flex-shrink: 0; margin-left: 10px; }
+  .food-cal { font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
+  .food-cal-sub { font-size: 11px; color: var(--text-light); }
+
+  .meal-total {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 9px; margin-top: 3px; border-top: 1px dashed var(--border-light);
+  }
+  .total-label { display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--text-secondary); }
+  .total-cal { font-size: 15.5px; font-weight: 700; color: var(--accent-orange); }
+
+  /* ===== Nutrition Footer ===== */
+  .nutrition-section {
+    padding: 12px 16px;
+    background: linear-gradient(180deg, #FFFDF9, #FFF8F0);
+    border-top: 1px solid var(--border-light);
+  }
+  .nutrition-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px;
+  }
+  .ratio-text {
+    font-size: 13px; line-height: 1.75; color: var(--text-secondary);
+  }
+  .ratio-text strong { color: var(--accent-orange); font-weight: 700; }
+  .ratio-text em { color: var(--text-secondary); font-style: normal; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: linear-gradient(135deg, #FFF3E0, #FFE8CC);
+    color: var(--accent-orange); font-size: 11px; padding: 3px 9px; border-radius: 12px;
+    cursor: pointer; transition: transform 0.15s;
+  }
+  .tag:hover { transform: translateY(-1px); }
+
+  /* ===== Related Cards ===== */
+  .related-section { padding: 12px 16px 14px; }
+  .related-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px;
+  }
+  .related-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #FFFDF9, #FFF8F0);
+    border: 1px solid var(--border-light); border-radius: var(--radius-md);
+    margin-bottom: 10px; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .related-card:last-child { margin-bottom: 0; }
+  .related-card:hover {
+    transform: translateY(-2px); box-shadow: 0 4px 14px rgba(255,107,53,0.12);
+    border-color: var(--accent-orange);
+  }
+  .card-icon-box {
+    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #FFE8CC, #FFD4A3); border-radius: 10px;
+    flex-shrink: 0; font-size: 20px;
+  }
+  .card-content { flex: 1; min-width: 0; }
+  .card-title { font-size: 13.5px; font-weight: 600; color: var(--text-primary); line-height: 1.35; }
+  .card-desc { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .card-arrow { color: var(--text-light); font-size: 17px; flex-shrink: 0; transition: all 0.2s; }
+  .related-card:hover .card-arrow { color: var(--accent-orange); transform: translateX(3px); }
+
+  @media (max-width: 360px) {
+    .profile-section,
+    .meal-section,
+    .nutrition-section,
+    .related-section { padding-left: 12px; padding-right: 12px; }
+    .info-row { gap: 6px; }
+    .info-icon { width: 22px; }
+    .info-label { min-width: 46px; }
+    .food-right { margin-left: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="diet-card-full">
+
+  <!-- ========== Profile Header ========== -->
+  <div class="profile-section">
+    <div class="date-badge">📅 {{dateBadge}}</div>
+    <div class="info-row">
+      <span class="info-icon">👥</span><span class="info-label">适用</span>
+      <span class="info-value">{{suitable}}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-icon">🔥</span><span class="info-label">合计</span>
+      <span class="info-value highlight">{{totalCal}}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-icon">🧂</span><span class="info-label">用盐</span>
+      <span class="info-value sub">{{salt}}</span>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== 餐次（数组：早/午/晚）========== -->
+  {{#meals}}
+  <div class="meal-section">
+    <div class="meal-header"><span class="emoji">{{mealEmoji|map:mealName:早餐=🌅🍳,午餐=☀️🍱,晚餐=🌙🍲,=🍴}}</span><span class="meal-title">{{mealName}}</span></div>
+    {{#foods}}
+    <div class="food-item" onclick="alert('查看：{{foodName}} 详情')">
+      <div class="food-left"><span class="food-icon">{{foodIcon|🍽}}</span><span class="food-name">{{foodName}}</span></div>
+      <div class="food-right"><div class="food-cal">{{cal}}</div><div class="food-cal-sub">{{calNote}}</div></div>
+    </div>
+    {{/foods}}
+    <div class="meal-total"><span class="total-label">🔥 小计</span><span class="total-cal">{{mealTotal}}</span></div>
+  </div>
+  {{/meals}}
+
+  <div class="section-divider"></div>
+
+  <!-- ========== 营养配比 ========== -->
+  <div class="nutrition-section">
+    <div class="nutrition-title"><span>📊</span> 营养配比</div>
+    <div class="ratio-text">{{{ratioText}}}</div>
+    <div class="tag-row">
+      {{#tags}}
+      <span class="tag" onclick="alert('{{tagLabel}}饮食指南')">{{tagIcon|💡}} {{tagLabel}}</span>
+      {{/tags}}
+    </div>
+  </div>
+
+  <!-- ========== 您可能还想了解 ========== -->
+  <div class="related-section">
+    <div class="related-title"><span>💡</span> 您可能还想了解</div>
+    {{#related}}
+    <div class="related-card" onclick="alert('{{relTitle}}')">
+      <div class="card-icon-box" style="{{relIconStyle}}">{{relIcon|📋}}</div>
+      <div class="card-content"><div class="card-title">{{relTitle}}</div><div class="card-desc">{{relDesc}}</div></div>
+      <span class="card-arrow">›</span>
+    </div>
+    {{/related}}
+  </div>
+
+</div>
+
+<!-- 原始静态内容已抽成示例数据，缺字段时回退，避免空白 -->
+<script type="application/json">
+{
+  "dateBadge": "今日推荐 — 一日三餐",
+  "suitable": "60岁以上长者，低盐低脂低糖",
+  "totalCal": "约580kcal",
+  "salt": "每日≤5g（控盐勺量）",
+  "meals": [
+    { "mealName": "早餐", "mealEmoji": "🌅🍳", "mealTotal": "173kcal",
+      "foods": [
+        {"foodIcon":"🌾","foodName":"小米粥","cal":"85kcal","calNote":"(每200g)"},
+        {"foodIcon":"🥚","foodName":"清蒸蛋羹、|蒸蛋羹主菜","cal":"72kcal","calNote":"( / 个)"},
+        {"foodIcon":"🥬","foodName":"(优质蛋白)紫菜脑","cal":"16kcal","calNote":"(每100g)"},
+        {"foodIcon":"🥒","foodName":"凉拌黄瓜、|凉拌元瓜","cal":"","calNote":""},
+        {"foodIcon":"🥜","foodName":"坚果未煮、|水煮元山","cal":"","calNote":""}
+      ] },
+    { "mealName": "午餐", "mealEmoji": "☀️🍱", "mealTotal": "251kcal",
+      "foods": [
+        {"foodIcon":"🐟","foodName":"清蒸石斑鱼","cal":"106kcal","calNote":"(每150g)"},
+        {"foodIcon":"🐠","foodName":"(优质蛋白) Omega 3","cal":"","calNote":""},
+        {"foodIcon":"🥦","foodName":"蒜蓉西兰花","cal":"34kcal","calNote":"(每150g)"},
+        {"foodIcon":"🍵","foodName":"世界茶K、酷香叶排","cal":"","calNote":""},
+        {"foodIcon":"🍚","foodName":"糙米饭","cal":"111kcal","calNote":"(每150g)"},
+        {"foodIcon":"🧅","foodName":"(助消化)葱、|物脑","cal":"","calNote":""}
+      ] },
+    { "mealName": "晚餐", "mealEmoji": "🌙🍲", "mealTotal": "166kcal",
+      "foods": [
+        {"foodIcon":"🍅","foodName":"番茄豆腐蛋汤","cal":"58kcal","calNote":"(每250ml)"},
+        {"foodIcon":"🥚","foodName":"(易打碎)蒸、|虎皮白","cal":"","calNote":""},
+        {"foodIcon":"🍄","foodName":"清炒鸡丁菇","cal":"26kcal","calNote":"(每120g)"},
+        {"foodIcon":"🥕","foodName":"(补叶酸)卜煮、肾","cal":"","calNote":""},
+        {"foodIcon":"🌽","foodName":"玉米饼","cal":"82kcal","calNote":"(每1枚100g)"},
+        {"foodIcon":"🥬","foodName":"(醋纤维)排、芹菜素","cal":"","calNote":""}
+      ] }
+  ],
+  "ratioText": "碳水化合物：<strong>约50~55%</strong> | 蛋白质15~20% | 脂肪25~30%。符合长者代谢特点，<em>如有忌口、过敏或慢性病（如糖尿病、高血压、痛风等），请在对应框中说明，将依标自动调整食谱。</em>",
+  "tags": [
+    {"tagIcon":"💡","tagLabel":"糖尿病"},
+    {"tagIcon":"🩺","tagLabel":"高血压"},
+    {"tagIcon":"🦴","tagLabel":"骨质疏松"},
+    {"tagIcon":"🫀","tagLabel":"心血管"},
+    {"tagIcon":"🌾","tagLabel":"无麸质"}
+  ],
+  "related": [
+    {"relIcon":"📋","relIconStyle":"","relTitle":"查看完整一周的膳食方案","relDesc":"清单·菜谱、每日三餐搭配指南"},
+    {"relIcon":"❤️","relIconStyle":"background:linear-gradient(135deg,#FFD4E5,#FFB4C8)","relTitle":"高血压老人饮食有什么禁忌？","relDesc":"控盐控脂、常见误区与推荐清单"},
+    {"relIcon":"🩺","relIconStyle":"background:linear-gradient(135deg,#D4E7FF,#A8C8F0)","relTitle":"糖尿病老人怎么安排饮食？","relDesc":"低GI食谱、升糖指数对照表"}
+  ]
+}
+</script>
+</body>
+</html>

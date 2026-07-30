@@ -1,0 +1,17 @@
+<article class="gxy-card gxy-card--condition_intake" data-template-id="meal_plan.condition_intake.v1">
+  <header class="gxy-card__header">
+    <p class="gxy-card__kicker">{{condition_intake.badge}}</p>
+    <h3>{{condition_intake.title}}</h3>
+    <p>{{condition_intake.summary}}</p>
+  </header>
+  <section class="gxy-card__body">
+    {{condition_intake.items}}
+  </section>
+  <section class="gxy-card__followups">
+    {{followup_suggestions}}
+  </section>
+  <footer class="gxy-card__actions">
+    {{actions}}
+  </footer>
+</article>
+<!-- 健康条件采集卡片: 采集慢病、过敏、禁忌、咀嚼吞咽和近期指标。 -->

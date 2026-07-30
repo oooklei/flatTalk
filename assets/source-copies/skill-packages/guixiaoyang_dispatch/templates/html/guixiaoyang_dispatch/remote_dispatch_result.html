@@ -1,0 +1,10 @@
+<article class="gxy-card gxy-card--remote-dispatch" data-template-id="remote.dispatch.result.v1">
+  <header class="gxy-card__header">
+    <h3>{{title || "远程派单结果"}}</h3>
+    <span class="gxy-card__tag">{{dispatch_status || status || "处理中"}}</span>
+  </header>
+  <section class="gxy-card__body">
+    <p>{{summary || message || "远程派单结果已返回，正在同步到对话。"}}</p>
+    <p class="gxy-card__hint">{{workorder_id || task_id || ""}}</p>
+  </section>
+</article>

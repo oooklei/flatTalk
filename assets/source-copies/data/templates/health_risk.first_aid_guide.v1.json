@@ -1,0 +1,27 @@
+{
+  "template_id": "health_risk.first_aid_guide.v1",
+  "template_key": "first_aid_guide",
+  "skill_key": "health_risk_warning",
+  "name": "急救处置指引卡片",
+  "cn_name": "急救处置指引卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "first-aid-guide.html",
+  "fallback_html": "first-aid-guide.html",
+  "description": "展示现场急救检查、呼救、观察和交接步骤。",
+  "sample_data": "templates/data/emergency.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "first_aid_guide",
+  "actions": [
+    "health_risk.call_120",
+    "health_risk.contact_family",
+    "health_risk.dispatch_emergency",
+    "health_risk.mark_safe",
+    "health_risk.request_doctor_review",
+    "health_risk.open_monitoring"
+  ],
+  "followup_suggestions": "",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/health_risk_warning/templates/html/first-aid-guide.html"
+}

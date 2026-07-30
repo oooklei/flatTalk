@@ -1,0 +1,23 @@
+{
+  "template_id": "dispatch_manage.dispatch_decision.v1",
+  "template_key": "dispatch_decision",
+  "skill_key": "dispatch_manage",
+  "name": "派单决策确认卡片",
+  "cn_name": "派单决策确认卡片",
+  "render_mode": "html_template",
+  "html": "dispatch-decision.html",
+  "source": "templates/html/dispatch_decision.json",
+  "description": "确认最终派单对象、决策原因、接单倒计时和人工升级入口。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "decision",
+  "actions": [
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual",
+    "dispatch_manage.reassign"
+  ],
+  "status": "enabled",
+  "updated_at": "2026-07-28T00:00:00.000+08:00",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/dispatch-decision.html"
+}

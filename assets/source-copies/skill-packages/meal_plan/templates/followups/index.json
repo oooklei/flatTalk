@@ -1,0 +1,128 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-index.v1",
+  "skill_key": "meal_plan",
+  "description": "答案渲染后的下一步建议列表，供用户点击继续追问或触发已注册action_key。",
+  "min_required_template_count": 20,
+  "items": [
+    {
+      "source_template_id": "meal_plan.plan.v1",
+      "file": "templates/followups/plan.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.overview.v1",
+      "file": "templates/followups/overview.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.timeline.v1",
+      "file": "templates/followups/timeline.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.dashboard.v1",
+      "file": "templates/followups/dashboard.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.condition_intake.v1",
+      "file": "templates/followups/condition_intake.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.diet_preference.v1",
+      "file": "templates/followups/diet_preference.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.risk_alert.v1",
+      "file": "templates/followups/risk_alert.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.ingredient_swap.v1",
+      "file": "templates/followups/ingredient_swap.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.shopping_list.v1",
+      "file": "templates/followups/shopping_list.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.cooking_steps.v1",
+      "file": "templates/followups/cooking_steps.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.order_confirm.v1",
+      "file": "templates/followups/order_confirm.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.delivery_handoff.v1",
+      "file": "templates/followups/delivery_handoff.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.nutrition_compare.v1",
+      "file": "templates/followups/nutrition_compare.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.weekly_plan.v1",
+      "file": "templates/followups/weekly_plan.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.chronic_disease.v1",
+      "file": "templates/followups/chronic_disease.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.swallowing_care.v1",
+      "file": "templates/followups/swallowing_care.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.family_explain.v1",
+      "file": "templates/followups/family_explain.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.feedback_collect.v1",
+      "file": "templates/followups/feedback_collect.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.leftover_reuse.v1",
+      "file": "templates/followups/leftover_reuse.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.festival_plan.v1",
+      "file": "templates/followups/festival_plan.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.budget_plan.v1",
+      "file": "templates/followups/budget_plan.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.caregiver_brief.v1",
+      "file": "templates/followups/caregiver_brief.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.doctor_note.v1",
+      "file": "templates/followups/doctor_note.json",
+      "suggestion_count": 4
+    },
+    {
+      "source_template_id": "meal_plan.status.v1",
+      "file": "templates/followups/status.json",
+      "suggestion_count": 4
+    }
+  ]
+}

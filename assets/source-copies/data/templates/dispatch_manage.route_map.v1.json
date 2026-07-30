@@ -1,0 +1,24 @@
+{
+  "template_id": "dispatch_manage.route_map.v1",
+  "template_key": "route_map",
+  "skill_key": "dispatch_manage",
+  "name": "服务路线态势卡片",
+  "cn_name": "服务路线态势卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "route-map.html",
+  "fallback_html": "route-map.html",
+  "description": "展示候选距离、预计到达和片区覆盖。",
+  "sample_data": "templates/data/dispatch.sample.json",
+  "data_schema": "references/contracts/output.schema.json",
+  "variant_role": "route_map",
+  "actions": [
+    "dispatch_manage.refresh_candidates",
+    "dispatch_manage.confirm_dispatch",
+    "dispatch_manage.escalate_manual"
+  ],
+  "followup_suggestions": "templates/followups/route_map.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/dispatch_manage/templates/html/route-map.html"
+}

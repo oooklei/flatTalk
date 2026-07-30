@@ -1,0 +1,45 @@
+{
+  "roles": [
+    {
+      "key": "elder",
+      "cn_name": "老人",
+      "wildcard": false,
+      "skills": [
+        "common",
+        "meal_plan"
+      ]
+    },
+    {
+      "key": "family",
+      "cn_name": "家属",
+      "wildcard": false,
+      "skills": [
+        "common",
+        "meal_plan"
+      ]
+    },
+    {
+      "key": "service",
+      "cn_name": "服务人员",
+      "wildcard": false,
+      "skills": [
+        "common",
+        "meal_plan"
+      ]
+    },
+    {
+      "key": "partner",
+      "cn_name": "合作方",
+      "wildcard": false,
+      "skills": [
+        "common"
+      ]
+    },
+    {
+      "key": "admin",
+      "cn_name": "管理员",
+      "wildcard": true,
+      "skills": []
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "guixiaoyang.answer-followup-suggestion-set.v1",
+  "skill_key": "guixiaoyang_dispatch",
+  "source_template_id": "guixiaoyang_dispatch.clarify.v1",
+  "min_required_count": 3,
+  "suggestions": [
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "clarify.clarify",
+      "source_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "label": "继续澄清",
+      "user_prompt": "继续澄清，并继续说明桂小养澄清卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.clarify",
+      "next_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "clarify.manual_review",
+      "source_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "label": "转人工复核",
+      "user_prompt": "转人工复核，并继续说明桂小养澄清卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.manual_review",
+      "next_template_id": "guixiaoyang_dispatch.manual_review.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "clarify.route_find_service",
+      "source_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "label": "转入AI找服务",
+      "user_prompt": "转入AI找服务，并继续说明桂小养澄清卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.route_find_service",
+      "next_template_id": "guixiaoyang_dispatch.intent_router.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    },
+    {
+      "schema": "guixiaoyang.answer-followup-suggestion.v1",
+      "skill_key": "guixiaoyang_dispatch",
+      "suggestion_key": "clarify.show_capabilities",
+      "source_template_id": "guixiaoyang_dispatch.clarify.v1",
+      "label": "查看可用能力",
+      "user_prompt": "查看可用能力，并继续说明桂小养澄清卡片的下一步",
+      "action_key": "guixiaoyang_dispatch.show_capabilities",
+      "next_template_id": "guixiaoyang_dispatch.capability_intro.v1",
+      "display": {
+        "style": "chip",
+        "position": "answer_bottom",
+        "max_visible": 6
+      },
+      "implementation": {
+        "click_behavior": "send_user_prompt_and_optionally_execute_action_key",
+        "bff_validation": [
+          "source_template_id_registered",
+          "action_key_registered",
+          "role_allowed",
+          "required_context_present"
+        ],
+        "fallback_behavior": "if action cannot execute, send user_prompt back to LLM for clarification"
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "template_id": "meal_plan.nutrition_compare.v1",
+  "template_key": "nutrition_compare",
+  "skill_key": "meal_plan",
+  "name": "营养对比卡片",
+  "cn_name": "营养对比卡片",
+  "render_mode": "html_template",
+  "layout": "chat-card",
+  "html": "nutrition-compare.html",
+  "fallback_html": "nutrition-compare.html",
+  "description": "对比多个方案的能量、蛋白、钠、糖和膳食纤维。",
+  "sample_data": "templates/data/plan.sample.json",
+  "data_schema": "references/contracts/meal-plan-template-data.schema.json",
+  "variant_role": "nutrition_compare",
+  "actions": [
+    "meal_plan.regenerate",
+    "meal_plan.confirm",
+    "meal_plan.order_handoff"
+  ],
+  "followup_suggestions": "templates/followups/nutrition_compare.json",
+  "status": "enabled",
+  "html_present": true,
+  "resolved_html": "skill-packages/meal_plan/templates/html/nutrition-compare.html"
+}
