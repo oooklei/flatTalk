@@ -20,7 +20,7 @@ function isLocalSecureException(hostname = location.hostname) {
 
 function voiceSecurityMessage() {
   if (window.isSecureContext || isLocalSecureException()) return "";
-  const httpsPort = location.port === "5177" ? "5443" : location.port;
+  const httpsPort = location.port === "5177" ? "5444" : location.port;
   const httpsHost = `${location.hostname}${httpsPort ? `:${httpsPort}` : ""}`;
   const httpsUrl = `https://${httpsHost}${location.pathname}${location.search}`;
   return `Microphone requires HTTPS or localhost. Please run npm run start:https and open ${httpsUrl}.`;
@@ -328,7 +328,7 @@ function recoverHtmlCardFromSource(value = "") {
     '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:hidden;}',
     '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:860px;border:0;border-radius:10px;background:#fff;overflow:hidden;}',
     '</style>',
-    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="" scrolling="no" srcdoc="${escapeHtml(pageHtml)}"></iframe>`,
+    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-popups" scrolling="no" srcdoc="${escapeHtml(pageHtml)}"></iframe>`,
     '</article>',
   ].join('');
 }
@@ -351,6 +351,7 @@ function isSupportedMobileAction(action = {}) {
     || key === "travel_route.fill_preferences"
     || key === "travel_route.compare_destinations"
     || key === "travel_route.check_availability"
+    || key === "travel_route.check_weather_risk"
     || key === "travel_route.booking_handoff"
     || key === "travel_route.view_product_detail"
     || key === "travel_route.calculate_budget"
@@ -1757,6 +1758,9 @@ class MobileApp {
     this.updateLastAiBubble(answer, { markdown: !fallbackHtml, html: fallbackHtml, error: normalizedBody.ok === false, meta: routeMeta });
     this.appendAssistantActions(normalizedBody);
     this.appendFollowupSuggestions(normalizedBody);
+    const lastBubbles = screen.querySelectorAll(".bubble.ai");
+    const lastCard = lastBubbles[lastBubbles.length - 1];
+    if (lastCard) this.bindCompactFollowups(lastCard);
     this.upsertTemplateTab(normalizedBody);
     this.renderTemplatePanel(normalizedBody);
     // 鍙充晶璋冩祴鍗＄墖鑻ュ凡鎵撳紑锛屽垯鑷姩鍒锋柊
@@ -1871,6 +1875,126 @@ class MobileApp {
     last.querySelectorAll("[data-mobile-followup]").forEach((button) => {
       button.addEventListener("click", () => this.handleFollowupSuggestion(decodeFollowup(button.dataset.mobileFollowup), button));
     });
+  }
+
+  bindCompactFollowups(cardEl) {
+    if (!cardEl) return;
+    const chips = cardEl.querySelectorAll(".compact-chip:not([data-bound])");
+    chips.forEach((chip) => {
+      chip.setAttribute("data-bound", "1");
+      chip.addEventListener("click", (e) => this.handleCompactChipClick(e));
+    });
+  }
+
+  async handleCompactChipClick(e) {
+    const chip = e.currentTarget;
+    const actionKey = chip.dataset.actionKey;
+    if (!actionKey || this.state.sending) return;
+
+    const inputDef = chip.dataset.input ? JSON.parse(chip.dataset.input) : null;
+
+    if (!inputDef) {
+      const params = chip.dataset.params ? JSON.parse(chip.dataset.params) : {};
+      this.handleAssistantAction({ action_key: actionKey, params, label: chip.textContent.trim() }, chip);
+      return;
+    }
+
+    document.querySelectorAll(".compact-chip-expand").forEach((el) => el.remove());
+
+    if (inputDef.type === "text") this.expandCompactTextInput(chip, inputDef, actionKey);
+    else if (inputDef.type === "select") this.expandCompactSelect(chip, inputDef, actionKey);
+    else if (inputDef.type === "form") this.expandCompactForm(chip, inputDef, actionKey);
+  }
+
+  expandCompactTextInput(chip, def, actionKey) {
+    const wrap = document.createElement("span");
+    wrap.className = "compact-chip-expand";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = def.placeholder || "";
+    input.className = "compact-chip-input";
+    const confirm = document.createElement("button");
+    confirm.textContent = "✓";
+    confirm.className = "compact-chip-confirm";
+    const submit = () => {
+      const baseParams = chip.dataset.params ? JSON.parse(chip.dataset.params) : {};
+      baseParams[def.param_key] = input.value.trim();
+      this.handleAssistantAction({ action_key: actionKey, params: baseParams, label: chip.textContent.trim() }, chip);
+    };
+    confirm.addEventListener("click", submit);
+    input.addEventListener("keydown", (ev) => { if (ev.key === "Enter") submit(); });
+    wrap.append(input, confirm);
+    chip.after(wrap);
+    input.focus();
+  }
+
+  expandCompactSelect(chip, def, actionKey) {
+    const wrap = document.createElement("span");
+    wrap.className = "compact-chip-expand";
+    const select = document.createElement("select");
+    select.className = "compact-chip-select";
+    const placeholder = document.createElement("option");
+    placeholder.textContent = def.placeholder || "请选择";
+    placeholder.value = "";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+    for (const opt of def.options || []) {
+      const o = document.createElement("option");
+      o.value = opt; o.textContent = opt;
+      select.appendChild(o);
+    }
+    const confirm = document.createElement("button");
+    confirm.textContent = "✓";
+    confirm.className = "compact-chip-confirm";
+    confirm.addEventListener("click", () => {
+      if (!select.value) return;
+      const baseParams = chip.dataset.params ? JSON.parse(chip.dataset.params) : {};
+      baseParams[def.param_key] = select.value;
+      this.handleAssistantAction({ action_key: actionKey, params: baseParams, label: chip.textContent.trim() }, chip);
+    });
+    wrap.append(select, confirm);
+    chip.after(wrap);
+  }
+
+  expandCompactForm(chip, def, actionKey) {
+    const panel = document.createElement("div");
+    panel.className = "compact-chip-expand compact-form-panel";
+    for (const field of def.fields || []) {
+      const row = document.createElement("div");
+      row.className = "compact-form-row";
+      const label = document.createElement("label");
+      label.textContent = field.label || "";
+      let input;
+      if (field.type === "select") {
+        input = document.createElement("select");
+        for (const opt of field.options || []) {
+          const o = document.createElement("option");
+          o.value = opt; o.textContent = opt;
+          input.appendChild(o);
+        }
+      } else {
+        input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = field.placeholder || "";
+      }
+      input.dataset.fieldKey = field.key;
+      input.className = "compact-form-field";
+      row.append(label, input);
+      panel.appendChild(row);
+    }
+    const submitBtn = document.createElement("button");
+    submitBtn.textContent = "提交";
+    submitBtn.className = "compact-chip-confirm compact-form-submit";
+    submitBtn.addEventListener("click", () => {
+      const params = chip.dataset.params ? JSON.parse(chip.dataset.params) : {};
+      panel.querySelectorAll(".compact-form-field").forEach((f) => {
+        if (f.value.trim()) params[f.dataset.fieldKey] = f.value.trim();
+      });
+      this.handleAssistantAction({ action_key: actionKey, params, label: chip.textContent.trim() }, chip);
+    });
+    panel.appendChild(submitBtn);
+    chip.after(panel);
   }
 
   async handleFollowupSuggestion(suggestion = {}, button = null) {
