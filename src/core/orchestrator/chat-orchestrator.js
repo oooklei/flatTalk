@@ -5,28 +5,42 @@ import { fileURLToPath } from 'node:url';
 import { buildEnvelope } from '../../contracts/envelope.js';
 import { composeInteractions } from '../interaction-composer.js';
 import { classifyIntent } from '../intent-classifier/index.js';
-import { fillTemplateSlots, fillTravelWeatherRisk } from '../model-service.js';
+import { fillTemplateSlots, fillTravelWeatherRisk, fillTravelWeatherRiskCard } from '../model-service.js';
+import { extractCities } from '../city-extractor/index.js';
 import { renderTemplateCardResult } from '../render/template-card-renderer.js';
 import { identifyScene } from '../scene-router/index.js';
 import { createDataService } from '../../services/data-service.js';
 import { createRagService } from '../../services/rag-service.js';
 import { describeLibrary, discoverTemplates } from '../../template-card/index.js';
 import { getTraceLogger } from '../observability/trace-logger.js';
+import { getJialuFacilities, getJialuCenter } from '../../data/jialu_kangyang_center/index.js';
+import { enrich as nearbyEnrich } from '../../services/nearby-resource/nearby-augmentor.js';
+import {
+  loadActionResourceMap,
+  getActionResource,
+  buildFallbackActionPrompt,
+  buildFallbackContext,
+  SPECIAL_CASE_ACTION_KEYS,
+} from '../actions/fallback-prompt-builder.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(moduleDir, '../../..');
 const skillsRoot = path.join(projectRoot, 'src', 'skills');
 
-// 从上下文/业务数据中解析天气查询的城市名（优先 action 传入的目的地）
+// 从上下文/业务数据中解析天气查询的城市（优先 action 传入的目的地，返回数组以支持多城市）
 function resolveWeatherCity(request = {}, businessData = {}) {
   const params = request.context?.action_params || {};
   const fromParams = params.city || request.context?.city;
-  if (fromParams && String(fromParams).trim()) return String(fromParams).trim();
+  if (fromParams && String(fromParams).trim()) return [String(fromParams).trim()];
+  // 从预提取结果读取
+  const cities = businessData?.cities;
+  if (Array.isArray(cities) && cities.length) return cities;
   const bd = businessData || {};
   const jtd = bd.jtd || {};
   const product = jtd.selected_product || (Array.isArray(jtd.products) ? jtd.products[0] : null);
   const route = bd.route || (Array.isArray(bd.routes) ? bd.routes[0] : null);
-  return String(product?.destination || product?.city || route?.destination || bd.destination || '防城港').trim();
+  const fallback = String(product?.destination || product?.city || route?.destination || bd.primary_city || bd.destination || '防城港').trim();
+  return [fallback];
 }
 
 export function createChatOrchestrator(options = {}) {
@@ -69,16 +83,101 @@ export function createChatOrchestrator(options = {}) {
         mark('knowledge', '知识检索', { status: knowledge.status, source: knowledge.source, local_status: knowledge.local_status, remote_status: knowledge.remote_status, local_count: knowledge.local_count, remote_count: knowledge.remote_count });
         const businessData = await loadBusinessData({ sceneDecision: acceptedScene || sceneDecision, request, dataService });
         mark('business_data', '业务数据', { loaded: !!(businessData && Object.keys(businessData).length) });
+        // 城市预提取（仅 travel_route 场景）：从消息+业务数据中提取城市，注入 business_data
+        if (skillKey === 'travel_route') {
+          try {
+            const cityResult = await extractCities({
+              message: request.message || sceneInput.text,
+              business_data: businessData,
+              conversation_history: request.history,
+            });
+            if (cityResult?.primary) {
+              businessData.primary_city = cityResult.primary;
+              businessData.cities = cityResult.cities;
+            }
+            mark('city_extract', '城市提取', { primary: cityResult?.primary, cities: cityResult?.cities, source: cityResult?.source });
+          } catch (e) {
+            mark('city_extract', '城市提取', { error: e.message });
+          }
+        }
         const routedTemplateId = selectRoutedTemplateId(acceptedScene);
         // 天气风险动作：结合上下文城市，调用腾讯天气接口，由模型合成天气风险卡片
-        const weatherActionCity = (acceptedScene?.scene_key === 'travel_route' && request.context?.action_key === 'travel_route.check_weather_risk')
+        const weatherActionCities = (acceptedScene?.scene_key === 'travel_route' && request.context?.action_key === 'travel_route.check_weather_risk')
           ? resolveWeatherCity(request, businessData)
-          : null;
+          : [];
         let modelResult;
-        if (weatherActionCity) {
-          const weather = weatherService ? await weatherService.getWeather(weatherActionCity).catch(() => null) : null;
-          modelResult = fillTravelWeatherRisk({ city: weatherActionCity, weather, business_data: businessData });
-          mark('model', '天气风险研判', { city: weatherActionCity, weather_ok: !!(weather && weather.ok), source: weather?.source || 'none' });
+        const fallbackActionKey = request.context?.action_key
+          && !SPECIAL_CASE_ACTION_KEYS.includes(request.context.action_key)
+          ? request.context.action_key
+          : null;
+        const actionResourceMap = options.actionResourceMap ?? loadActionResourceMap();
+
+        if (weatherActionCities.length > 0) {
+          // 并行查询多城市天气
+          const weatherResults = await Promise.all(
+            weatherActionCities.map((city) =>
+              weatherService ? weatherService.getWeather(city).catch(() => null) : null
+            )
+          );
+          const primaryCity = weatherActionCities[0];
+          const primaryWeather = weatherResults[0];
+          modelResult = fillTravelWeatherRisk({
+            city: primaryCity,
+            weather: primaryWeather,
+            business_data: businessData,
+            all_cities: weatherActionCities.length > 1
+              ? weatherActionCities.map((city, i) => ({ city, weather: weatherResults[i] })).filter((c) => c.weather?.ok)
+              : null,
+          });
+          mark('model', '天气风险研判', {
+            cities: weatherActionCities,
+            primary_ok: !!(primaryWeather && primaryWeather.ok),
+            source: primaryWeather?.source || 'none',
+          });
+        } else if (fallbackActionKey) {
+          // 通用兜底：未被特例白名单覆盖的按钮动作，生成五要素提示词 → 调大模型 → 渲染。
+          const resource = getActionResource(fallbackActionKey, actionResourceMap);
+          const skillResources = Array.isArray(actionResourceMap?.actions)
+            ? actionResourceMap.actions.filter((a) => a.skill_key === (resource?.skill_key || skillKey))
+            : [];
+          let fallbackEvidence = [];
+          if (resource && resource.target === 'knowledge') {
+            const ev = await retrieveMultiKnowledge(ragService, {
+              skill_keys: [skillKey, resource.skill_key].filter(Boolean),
+              query: resource.label || fallbackActionKey,
+              limit: 3,
+            }).catch(() => ({ matches: [] }));
+            fallbackEvidence = ev.matches || [];
+          }
+          const fallbackPrompt = buildFallbackActionPrompt(
+            resource || { action_key: fallbackActionKey, label: fallbackActionKey, target: 'bff', endpoint: '（未知资源）', params_schema: {}, param_sources: {} },
+            buildFallbackContext(businessData, request),
+            skillResources,
+            { evidence: fallbackEvidence.map((m) => `[${m.collection || '知识库'}] ${m.text || ''}`).join('\n') },
+          );
+          if (typeof modelService.fillFallback === 'function') {
+            modelResult = await modelService.fillFallback({
+              prompt: fallbackPrompt,
+              label: resource?.label || fallbackActionKey,
+              endpoint: resource?.endpoint || '',
+              template_id: resource?.next_template_id,
+              business_data: businessData,
+            });
+          } else {
+            // 兼容未实现 fillFallback 的模型服务（如默认桩）：退化为模板填充，
+            // 仍按该动作的 next_template_id（缺省 routedTemplateId）渲染，保证不崩。
+            modelResult = await modelService.fillTemplateSlots({
+              message: fallbackPrompt,
+              skill_key: skillKey,
+              intent_context: intentContext,
+              template_id: resource?.next_template_id || routedTemplateId,
+              default_template_id: skillTemplates.defaultTemplateId,
+              template_library: skillTemplates.library,
+              evidence: knowledge.matches,
+              business_data: businessData,
+            });
+          }
+          mark('model', '按钮动作通用兜底', { action_key: fallbackActionKey, target: resource?.target, model: modelResult.model_used, status: modelResult.model_status });
         } else {
           modelResult = await modelService.fillTemplateSlots({
             message: sceneInput.text,
@@ -179,6 +278,11 @@ export function createChatOrchestrator(options = {}) {
 }
 
 async function loadIntentContext(sceneInput, options) {
+  // 如果请求中已携带 intent（如 followup 按钮），优先使用
+  const requestIntent = sceneInput.intent || sceneInput.intent_context?.intent;
+  if (requestIntent) {
+    return { intent: requestIntent, source: 'request_override' };
+  }
   if (options.intentClassifier) {
     return options.intentClassifier.classifyIntent(sceneInput, options.intentOptions ?? {});
   }
@@ -189,6 +293,7 @@ function normalizeRequest(request) {
   return {
     ...request,
     text: request.message || request.text || request.query || '',
+    intent: request.intent || request.intent_context?.intent || '',
   };
 }
 
@@ -224,15 +329,44 @@ function acceptScene(request, sceneDecision) {
 
 function selectRoutedTemplateId(sceneDecision) {
   if (!sceneDecision || sceneDecision.decision !== 'accept') return '';
-  if (sceneDecision.scene_key === 'common' && String(sceneDecision.intent || '').startsWith('elder_')) {
+
+  // 政策类场景：根据具体意图选择不同模板
+  if (sceneDecision.scene_key === 'common' && String(sceneDecision.intent || '').startsWith('elder_policy')) {
+    // 申请流程类 -> policy_apply_guide_card
+    if (sceneDecision.intent === 'elder_policy_apply') return 'policy_apply_guide_card';
+    // 补贴查询类 -> policy_list_card
+    if (sceneDecision.intent === 'elder_policy_benefit') return 'policy_list_card';
+    // 详情查询类 -> policy_detail_card
+    if (sceneDecision.intent === 'elder_policy_detail') return 'policy_detail_card';
+    // 默认 -> policy_card
     return 'policy_card';
   }
+
   if (sceneDecision.intent === 'meal_plan_weekly_plan') return 'weekly_plan';
   if (sceneDecision.scene_key === 'travel_route') {
     return sceneDecision.intent === 'travel_route_plan' ? 'travel_itinerary_card' : 'route_card';
   }
   if (sceneDecision.scene_key === 'meal_plan') return 'diet_card';
   if (sceneDecision.scene_key === 'health_risk_warning') return 'health_warning_card';
+  if (sceneDecision.scene_key === 'find_service') {
+    const intent = sceneDecision.intent;
+    if (intent === 'find_service_org') return 'org_profile';
+    if (intent === 'find_service_worker') return 'worker_profile';
+    if (intent === 'find_service_order') return 'order_preview';
+    if (intent === 'find_service_order_view') return 'order_status';
+    if (intent === 'find_service_catalog') return 'service_catalog';
+    return 'service_recommend';
+  }
+  if (sceneDecision.scene_key === 'dispatch_manage') {
+    const intent = sceneDecision.intent;
+    if (intent === 'dispatch_accept' || intent === 'dispatch_reject' || intent === 'dispatch_detail') return 'dispatch_detail';
+    if (intent === 'dispatch_work_order') return 'work_order';
+    if (intent === 'dispatch_status') return 'dispatch_status';
+    return 'dispatch_list';
+  }
+  if (sceneDecision.scene_key === 'nearby_resource') {
+    return 'nearby_map_overview';
+  }
   return '';
 }
 
@@ -330,6 +464,38 @@ async function loadBusinessData({ sceneDecision, request, dataService }) {
     return {
       ...tableData,
       remote,
+    };
+  }
+
+  if (sceneDecision?.scene_key === 'find_service' && typeof dataService.tableData.getFindServiceTables === 'function') {
+    return dataService.tableData.getFindServiceTables();
+  }
+
+  if (sceneDecision?.scene_key === 'dispatch_manage' && typeof dataService.tableData.getDispatchManageTables === 'function') {
+    return dataService.tableData.getDispatchManageTables();
+  }
+
+  if (sceneDecision?.scene_key === 'nearby_resource') {
+    // 拉取全量周边配套，分类/半径过滤与模板选择交由 fillNearbyResourceCard 按意图与语义完成
+    const facilities = getJialuFacilities({ type: '', maxDistance: 0, limit: 0 });
+    const center = getJialuCenter();
+
+    // ★ 三层富化：静态数据 + 腾讯地图补充 + Tavily 富化
+    const intent = request.context?.intent || request.context?.action_key || 'all';
+    let enrichedFacilities = facilities;
+    let enrichStats = null;
+    try {
+      const enrichResult = await nearbyEnrich(facilities, center, intent);
+      enrichedFacilities = enrichResult.facilities;
+      enrichStats = enrichResult.stats;
+    } catch (err) {
+      console.warn('[orchestrator] nearby enrichment failed, using raw facilities:', err.message);
+    }
+
+    return {
+      jialu_facilities: enrichedFacilities,
+      jialu_center: center,
+      _enrich_stats: enrichStats,
     };
   }
 
