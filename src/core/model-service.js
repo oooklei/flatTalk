@@ -21,6 +21,7 @@ export async function fillTemplateSlots({
   business_data = {},
   intent_context = {},
   knowledgeService = null,
+  weatherService = null,
 } = {}) {
   const selectedTemplateId = selectTemplateId({
     message,
@@ -39,6 +40,9 @@ export async function fillTemplateSlots({
   if (selectedTemplateId === 'route_card') {
     return fillRouteCard({ message, business_data });
   }
+  if (selectedTemplateId.startsWith('nearby_')) {
+    return fillNearbyResourceCard({ message, business_data, intent_context });
+  }
   if (selectedTemplateId === 'travel_itinerary_card') {
     return fillTravelItineraryCard({ message, business_data });
   }
@@ -47,6 +51,17 @@ export async function fillTemplateSlots({
   }
   if (selectedTemplateId === 'policy_card') {
     return fillPolicyCard({ message, knowledgeService });
+  }
+
+  if (selectedTemplateId === 'travel_weather_risk_card') {
+    return fillTravelWeatherRiskCard({ message, business_data, weatherService });
+  }
+
+  if (['service_recommend', 'service_catalog', 'org_profile', 'worker_profile', 'order_preview', 'order_status'].includes(selectedTemplateId)) {
+    return fillFindServiceCard({ message, business_data, selectedTemplateId });
+  }
+  if (['dispatch_list', 'dispatch_detail', 'work_order', 'dispatch_status'].includes(selectedTemplateId)) {
+    return fillDispatchManageCard({ message, business_data, selectedTemplateId });
   }
 
   const answerText = sanitizeText(message ? `已收到：${message}` : '已收到您的问题。');
@@ -82,12 +97,59 @@ function selectTemplateId({ message, template_id, default_template_id, template_
     || isWeeklyPlanText(message)
     || isStructuredWeekText(message);
   if (ids.includes('weekly_plan') && isWeekly) return 'weekly_plan';
-  if (ids.includes('policy_card') && isPolicyText(message)) return 'policy_card';
+
+  // 政策类模板智能选择
+  const policyTemplate = selectPolicyTemplate(message, ids, intent_context);
+  if (policyTemplate) return policyTemplate;
+
   if (ids.includes('diet_card') && isMealPlanText(text)) return 'diet_card';
   if (ids.includes('route_card') && isTravelRouteText(text)) return 'route_card';
+  if (ids.some((id) => id.startsWith('nearby_')) && isNearbyResourceText(text, intent_context)) return 'nearby_map_overview';
+  if (ids.some((id) => id.startsWith('service_')) && isFindServiceText(text)) return pickFindServiceTemplate(text, ids);
+  if (ids.some((id) => id.startsWith('dispatch_')) && isDispatchManageText(text)) return pickDispatchManageTemplate(text, ids);
   if (ids.includes('health_warning_card') && isHealthRiskText(text)) return 'health_warning_card';
   if (default_template_id && ids.includes(default_template_id)) return default_template_id;
   return ids[0] || default_template_id || 'answer';
+}
+
+/**
+ * 根据用户意图选择合适的政策模板
+ */
+function selectPolicyTemplate(message, availableIds, intent_context) {
+  if (!availableIds.some(id => id.startsWith('policy'))) return null;
+
+  const text = String(message || '');
+  const intent = intent_context?.intent || '';
+
+  // 申请流程类 -> policy_apply_guide_card
+  // 匹配：办理流程、申请流程、去哪办、需要什么材料、整理办理材料
+  const isApplyIntent = intent === 'elder_policy_apply'
+    || /怎么申请|如何申请|怎么办理|办理流程|申请流程|去哪办|哪里办理|需要什么材料|要哪些材料|申请条件|办理条件|整理办理材料/.test(text);
+  if (isApplyIntent && availableIds.includes('policy_apply_guide_card')) {
+    return 'policy_apply_guide_card';
+  }
+
+  // 政策详情类 -> policy_detail_card
+  // 匹配：详细内容、政策解读、全文、原文
+  const isDetailIntent = intent === 'elder_policy_detail'
+    || /详细内容|具体内容|政策解读|全文|原文|详细解读|是什么意思|怎么理解|主要内容|要点/.test(text);
+  if (isDetailIntent && availableIds.includes('policy_detail_card')) {
+    return 'policy_detail_card';
+  }
+
+  // 补贴类查询 -> policy_list_card
+  // 匹配：补贴条件、补贴政策、查询补贴、有什么补贴
+  const isBenefitIntent = intent === 'elder_policy_benefit'
+    || /补贴|津贴|长护险|养老金|养老保险/.test(text);
+  if (isBenefitIntent && availableIds.includes('policy_list_card')) {
+    return 'policy_list_card';
+  }
+
+  // 默认使用 policy_card 或 policy_list_card
+  if (availableIds.includes('policy_card')) return 'policy_card';
+  if (availableIds.includes('policy_list_card')) return 'policy_list_card';
+
+  return null;
 }
 
 function isMealPlanText(text) {
@@ -821,6 +883,585 @@ function isTravelRouteText(text) {
   return /travel|route|trip|tour|旅居|旅游|康养|路线|线路|行程|目的地|基地|广西|巴马|北海|桂林|预订|预算|交通/.test(String(text || ''));
 }
 
+function isNearbyResourceText(text, intent_context = {}) {
+  if (intent_context?.scene_key === 'nearby_resource') return true;
+  if (intent_context?.intent?.startsWith('nearby_resource.')) return true;
+  return /嘉路|康养中心|周边|附近|15公里|地图|民宿|景区|海鲜|垂钓|康养|医疗|餐馆|餐厅|游玩|景点|配套|资源|生活圈|分布|大屏|在哪|map|nearby|around/.test(String(text || ''));
+}
+
+// 腾讯地图 JS API Key（已验证可用的项目 key）。留空或占位符时卡片自动降级为 SVG 方位图。
+const NEARBY_TENCENT_JS_KEY = 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
+
+function fillNearbyResourceCard({ message = '', business_data = {}, intent_context = {} } = {}) {
+  // 取数：优先使用 orchestrator 注入的共享数据层结果（已为全量周边配套）
+  const facilities = Array.isArray(business_data?.jialu_facilities) ? business_data.jialu_facilities : [];
+  const center = business_data?.jialu_center || { lng: 108.166816, lat: 21.527905, name: '嘉路康养中心' };
+  const intent = intent_context?.intent || 'nearby_resource.all';
+  const radiusKm = parseInt(String(message).match(/(\d+)\s*(公里|千米|km)/i)?.[1] || '15', 10);
+
+  // 归一化全部 POI（真实字段：category/amap_type/biz_status/tel/open_time/service_tags/距离_公里）
+  const all = (facilities || []).map(nbToMarker).filter((m) => m.lng && m.lat);
+  const within = all.filter((m) => m.distance <= radiusKm); // 康养生活圈半径过滤
+  const stats = nbBuildStats(within);
+
+  // 决定分类与模板（基于意图 + 语义）
+  const { cat, template_id } = nbDecide({ message, intent });
+  const catMarkers = cat ? within.filter((m) => m.cat === cat) : within;
+
+  const center_json = JSON.stringify(center);
+  const base = {
+    centerName: center.name || '嘉路康养中心',
+    radiusKm,
+    map_key: NEARBY_TENCENT_JS_KEY,
+    center_json,
+    stats,
+    statsLabels: nbStatsLabels(stats),
+    category: cat,
+    categoryLabel: nbCatLabel(cat),
+  };
+
+  let markers = template_id === 'nearby_map_overview' ? within : catMarkers;
+  const total = markers.length;
+  const answerText = nbAnswerText({ template_id, cat, total, radiusKm, stats });
+  const data = { ...base, markers, markers_json: JSON.stringify(markers), total };
+
+  // 对比 / 推荐：提取 Top3（标签多、距离近优先）
+  if (template_id === 'nearby_compare' || template_id === 'nearby_recommend') {
+    const pool = catMarkers.length ? catMarkers : within;
+    data.picks = nbPickTop(pool, 3).map((m, i) => ({ ...nbWithReason(m), rank: i + 1 }));
+    data.picks_json = JSON.stringify(data.picks);
+  }
+  // 路线：编排一日康养游
+  if (template_id === 'nearby_map_route') {
+    data.routeStops = nbBuildRoute(within);
+    data.routeStops_json = JSON.stringify(data.routeStops);
+    markers = within;
+    data.markers = markers;
+    data.markers_json = JSON.stringify(markers);
+    data.total = markers.length;
+  }
+  // 雷达：步行可达（≤1.5km）
+  if (template_id === 'nearby_radar') {
+    data.walkItems = within.filter((m) => m.distance <= 1.5);
+    data.walkCount = data.walkItems.length;
+    data.walkItems_json = JSON.stringify(data.walkItems);
+  }
+  // 康养配套：养 + 住（康养小院/医疗）
+  if (template_id === 'nearby_wellness') {
+    const wi = within.filter((m) => m.cat === 'wellness' || m.cat === 'stay');
+    data.wellnessItems = wi;
+    data.wellnessItems_json = JSON.stringify(wi);
+    markers = wi;
+    data.markers = markers;
+    data.markers_json = JSON.stringify(markers);
+    data.total = wi.length;
+  }
+  // 语音摘要
+  if (template_id === 'nearby_summary') {
+    data.summaryText = nbSummaryText({ radiusKm, stats });
+  }
+
+  return sanitizeModelResult({
+    template_id,
+    answer_text: answerText,
+    answer: answerText,
+    data,
+    actions: nbActions(),
+    followup_suggestions: nbFollowups(),
+    template_fit_notes: ['nearby_resource_' + (cat || 'all')],
+  });
+}
+
+const NB_COLORS = {
+  stay: '#3B82A0', food: '#F2994A', spot: '#2BAE8E', leisure: '#8E6FD8',
+  shop: '#E08AC0', transit: '#6B7A8F', wellness: '#E5484D', other: '#9AA7B2',
+};
+
+const NB_EMOJI = {
+  stay: '🏠', food: '🍜', spot: '🏖️', leisure: '🎣',
+  shop: '🛍️', transit: '🚐', wellness: '🏥', other: '📍',
+};
+
+// 将原始 POI 映射为模板统一字段（评分字段真实数据为空，固定留空，改用距离/标签作质量信号）
+function nbToMarker(f) {
+  const cat = nbCat(f);
+  const raw = String(f.service_tags || '');
+  const tags = raw.split(/[,，、]/).map((s) => s.trim()).filter(Boolean);
+  return {
+    poi_id: f.poi_id || '',
+    name: f.name || f.名称 || '未命名',
+    address: f.address || f.地址 || '',
+    lng: parseFloat(f.lng ?? f.经度) || 0,
+    lat: parseFloat(f.lat ?? f.纬度) || 0,
+    distance: parseFloat(f['距离_公里'] ?? f.distance) || 0,
+    distance_text: (parseFloat(f['距离_公里'] ?? f.distance) || 0).toFixed(1),
+    category: f.category || '',
+    amap_type: f.amap_type || '',
+    cat,
+    color: NB_COLORS[cat] || NB_COLORS.other,
+    emoji: NB_EMOJI[cat] || NB_EMOJI.other,
+    biz_status: String(f.biz_status || '').trim(),
+    tel: f.tel || f.电话 || '',
+    open_time: String(f.open_time || '').trim(),
+    tags,
+    tags_text: tags.join('·'),
+    rating: '',
+    // ★ 富化字段透传
+    source: f._source || 'local',
+    enriched_description: f.enriched_description || '',
+    enriched_images: f.enriched_images || [],
+    enriched_rating_hint: f.enriched_rating_hint || '',
+  };
+}
+
+function nbCat(f) {
+  const cat = (String(f.category || '')).toLowerCase();
+  const amap = (String(f.amap_type || '')).toLowerCase();
+  if (/垂钓|钓鱼/.test(amap)) return 'leisure';
+  if (/药房|医药|保健|医疗|卫生|疾控|诊所|医院/.test(amap)) return 'wellness';
+  if (/购物|市场|超市|商店|便利店|专卖店|农副|特产/.test(amap)) return 'shop';
+  if (/海滨浴场|风景名胜|公园|广场|寺庙|教堂|纪念馆|科技馆|水族馆|观景点|景点|旅游|湿地/.test(amap)) return 'spot';
+  if (/体育休闲|休闲场所|度假|营地|游乐/.test(amap)) return 'leisure';
+  if (/餐饮|餐厅|酒楼|饭店|食|海鲜/.test(amap)) return 'food';
+  if (/住宿|酒店|旅馆|招待所|宾馆|客栈/.test(amap)) return 'stay';
+  if (/包车|租赁|停车场|车站|交通|道路/.test(amap)) return 'transit';
+  if (/民宿|康养小院|商务住宅/.test(cat)) return 'stay';
+  if (/餐厅|餐饮|美食|饭店|私房菜|大排档/.test(cat)) return 'food';
+  if (/景区|景点|滨海|海边/.test(cat)) return 'spot';
+  if (/垂钓|休闲|钓鱼/.test(cat)) return 'leisure';
+  if (/购物|特产|买/.test(cat)) return 'shop';
+  if (/包车|交通/.test(cat)) return 'transit';
+  if (/医养|养老/.test(cat)) return 'wellness';
+  return 'other';
+}
+
+function nbDecide({ message, intent }) {
+  const m = String(message || '');
+  const isIntent = (s) => intent === s;
+  const wantMap = /地图|分布|打点|标记|位置|在哪|大屏|标出来|看地图|周边分布|资源分布/.test(m);
+  const wantRoute = /规划|一天|路线|行程|怎么玩|怎么安排|攻略|itinera|玩法/.test(m);
+  const wantRadar = /步行|走路|可达|近一点|附近走|溜达|遛弯|走路能到/.test(m);
+  const wantCompare = /对比|比较|哪家好|哪个好|选哪个|挑一个|怎么选/.test(m);
+  const wantRecommend = /推荐|适合|给我挑|有个性的|个性化|精选|必去|必吃|挑几个/.test(m);
+  // 注意：「康养」二字因出现在中心名「嘉路康养中心」中过于宽泛，故仅匹配明确的康养/医养意图
+  const wantWellness = /康养配套|医养|养老设施|康养生态|适老|医疗康养/.test(m);
+  const wantSummary = /简单|语音|念|概括|小结|告诉我有什么|大概|罗列一下|一句话|语音播报/.test(m);
+
+  let cat = '';
+  if (isIntent('nearby_resource.stay')) cat = 'stay';
+  else if (isIntent('nearby_resource.food')) cat = 'food';
+  else if (isIntent('nearby_resource.spot')) cat = 'spot';
+  else if (isIntent('nearby_resource.leisure')) cat = 'leisure';
+  else if (isIntent('nearby_resource.shop')) cat = 'shop';
+  else if (isIntent('nearby_resource.transit')) cat = 'transit';
+  else if (isIntent('nearby_resource.wellness')) cat = 'wellness';
+  if (!cat) {
+    if (/民宿|住哪|住宿|康养小院|入住/.test(m)) cat = 'stay';
+    else if (/吃|餐厅|餐饮|美食|海鲜|私房菜|大排档/.test(m)) cat = 'food';
+    else if (/景区|景点|海边|滨海|游玩|玩/.test(m)) cat = 'spot';
+    else if (/垂钓|休闲|钓鱼|娱乐/.test(m)) cat = 'leisure';
+    else if (/购物|特产|买/.test(m)) cat = 'shop';
+    else if (/包车|交通|怎么去|出行/.test(m)) cat = 'transit';
+    else if (/医养|医疗/.test(m)) cat = 'wellness';
+  }
+
+  // 展示形态优先（与分类无关）
+  if (wantSummary) return { cat, template_id: 'nearby_summary' };
+  if (wantRoute) return { cat, template_id: 'nearby_map_route' };
+  if (wantRadar) return { cat, template_id: 'nearby_radar' };
+  if (wantCompare) return { cat, template_id: 'nearby_compare' };
+  if (wantRecommend) return { cat, template_id: 'nearby_recommend' };
+  if (wantMap) return { cat: cat || '', template_id: cat ? 'nearby_map_category' : 'nearby_map_overview' };
+  // 分类意图优先于 wellness（避免「康养小院」被误判为医养）
+  if (cat === 'wellness' || (wantWellness && !cat)) return { cat: cat || 'wellness', template_id: 'nearby_wellness' };
+  if (cat === 'stay') return { cat, template_id: 'nearby_stay_card' };
+  if (cat === 'food') return { cat, template_id: 'nearby_food_card' };
+  if (cat === 'spot') return { cat, template_id: 'nearby_spot_card' };
+  if (cat === 'leisure' || cat === 'shop' || cat === 'transit') return { cat, template_id: 'nearby_list' };
+  return { cat: '', template_id: 'nearby_map_overview' };
+}
+
+function nbCatLabel(cat) {
+  return {
+    stay: '民宿', food: '餐饮', spot: '景区', leisure: '休闲',
+    shop: '购物', transit: '交通', wellness: '康养', '': '全部',
+  }[cat] || '资源';
+}
+
+function nbBuildStats(within) {
+  const s = { stay: 0, food: 0, spot: 0, leisure: 0, shop: 0, transit: 0, wellness: 0, other: 0 };
+  within.forEach((m) => { s[m.cat] = (s[m.cat] || 0) + 1; });
+  s.total = within.length;
+  return s;
+}
+
+function nbStatsLabels(stats) {
+  const order = [
+    ['stay', '住', '🏠'], ['food', '吃', '🍜'], ['spot', '游', '🏖️'], ['leisure', '娱', '🎣'],
+    ['shop', '购', '🛍️'], ['transit', '行', '🚐'], ['wellness', '养', '🏥'],
+  ];
+  return order.map(([k, label, emoji]) => ({ key: k, label, emoji, count: stats[k] || 0, color: NB_COLORS[k] }));
+}
+
+function nbPickTop(pool, n) {
+  return pool.slice().sort((a, b) => (b.tags.length - a.tags.length) || (a.distance - b.distance)).slice(0, n);
+}
+
+function nbWithReason(m) {
+  let reason;
+  if (m.cat === 'wellness') reason = '医养配套，适老安心';
+  else if (m.tags && m.tags.length) reason = '招牌：' + m.tags_text;
+  else reason = '距中心仅 ' + (parseFloat(m.distance) || 0).toFixed(1) + 'km，出行方便';
+  return { ...m, reason };
+}
+
+function nbBuildRoute(within) {
+  const nearest = (c) => within.filter((m) => m.cat === c).sort((a, b) => a.distance - b.distance)[0];
+  const food2 = within.filter((m) => m.cat === 'food').sort((a, b) => a.distance - b.distance)[1];
+  const stops = [];
+  const stay = nearest('stay'); if (stay) stops.push({ ...stay, role: '入住·出发' });
+  const food1 = nearest('food'); if (food1) stops.push({ ...food1, role: '早餐' });
+  const spot = nearest('spot'); if (spot) stops.push({ ...spot, role: '滨海游玩' });
+  const lei = nearest('leisure'); if (lei) stops.push({ ...lei, role: '休闲体验' });
+  if (food2) stops.push({ ...food2, role: '午餐 / 晚餐' });
+  if (stay) stops.push({ ...stay, role: '返回·入住' });
+  return stops;
+}
+
+function nbAnswerText({ template_id, cat, total, radiusKm }) {
+  const catName = {
+    stay: '住宿（民宿/康养小院）', food: '特色餐饮', spot: '滨海景区', leisure: '垂钓休闲',
+    shop: '购物特产', transit: '包车交通', wellness: '医疗康养', '': '各类生活配套',
+  }[cat] || '各类生活配套';
+  if (template_id === 'nearby_summary') return `已生成嘉路康养中心 ${radiusKm} 公里生活圈语音摘要。`;
+  if (template_id === 'nearby_map_route') return '已为您编排一条「一日康养游」路线，串联周边精华配套。';
+  if (template_id === 'nearby_radar') return `已标注 ${radiusKm} 公里生活圈内可步行直达的配套。`;
+  if (template_id === 'nearby_wellness') return `已汇总嘉路周边康养配套（共 ${total} 个）。`;
+  return `已为您整理嘉路康养中心周边 ${radiusKm} 公里内的${catName}（共 ${total} 个）。`;
+}
+
+function nbActions() {
+  const cats = [
+    ['all', '全部', '嘉路周边全部配套'], ['stay', '住', '嘉路周边民宿和康养小院'],
+    ['food', '吃', '嘉路周边餐厅餐饮'], ['spot', '游', '嘉路周边滨海景区'],
+    ['leisure', '娱', '嘉路周边垂钓休闲'], ['shop', '购', '嘉路周边购物特产'],
+    ['transit', '行', '嘉路周边包车交通'], ['wellness', '养', '嘉路周边医疗康养'],
+  ];
+  const chips = cats.map(([k, label, prompt]) => ({
+    action_key: 'nearby_resource.' + k, label, params: {}, user_prompt: prompt,
+  }));
+  const toggles = [
+    { action_key: 'nearby_resource.compare', label: '同类对比', user_prompt: '嘉路周边同类资源对比' },
+    { action_key: 'nearby_resource.recommend', label: '智能推荐', user_prompt: '嘉路周边适合老人的推荐' },
+    { action_key: 'nearby_resource.route', label: '一日路线', user_prompt: '帮我规划嘉路周边一日康养游路线' },
+    { action_key: 'nearby_resource.radar', label: '步行可达', user_prompt: '嘉路周边步行能到的配套' },
+    { action_key: 'nearby_resource.wellness', label: '康养配套', user_prompt: '嘉路周边康养配套' },
+    { action_key: 'nearby_resource.summary', label: '语音摘要', user_prompt: '简单告诉我嘉路周边有什么配套' },
+  ];
+  return [...chips, ...toggles];
+}
+
+function nbFollowups() {
+  return [
+    { label: '只看滨海景区', user_prompt: '嘉路周边滨海景区分布图', action_key: 'nearby_resource.spot' },
+    { label: '附近能吃饭的', user_prompt: '嘉路周边餐厅餐饮推荐', action_key: 'nearby_resource.food' },
+    { label: '规划一日游', user_prompt: '帮我规划嘉路周边一日康养游路线', action_key: 'nearby_resource.route' },
+  ];
+}
+
+function nbSummaryText({ radiusKm, stats }) {
+  const parts = [];
+  if (stats.stay) parts.push(`住 ${stats.stay} 处（民宿、康养小院）`);
+  if (stats.food) parts.push(`吃 ${stats.food} 家（海鲜、私房菜）`);
+  if (stats.spot) parts.push(`游 ${stats.spot} 个滨海景区`);
+  if (stats.leisure) parts.push(`娱 ${stats.leisure} 处垂钓休闲`);
+  if (stats.shop) parts.push(`购 ${stats.shop} 处特产购物`);
+  if (stats.transit) parts.push(`行 ${stats.transit} 处包车交通`);
+  if (stats.wellness) parts.push(`养 ${stats.wellness} 处医疗康养`);
+  const body = parts.length ? parts.join('，') : '暂无配套收录';
+  return `嘉路康养中心 ${radiusKm} 公里康养生活圈共收录 ${stats.total} 个配套：${body}。想看哪类，点下方按钮看地图或清单。`;
+}
+
+function isFindServiceText(text) {
+  return /find_service|service|养老|护工|养老院|机构|上门|陪诊|助浴|助餐|康复|认知症|找服务|服务订单|预约服务|建单|下单/.test(String(text || ''));
+}
+
+function isDispatchManageText(text) {
+  return /dispatch|派单|工单|接单|拒单|调度|派工|抢单|改派|服务进度|订单进度|催单/.test(String(text || ''));
+}
+
+function pickFindServiceTemplate(message, ids) {
+  const t = String(message || '');
+  if (ids.includes('worker_profile') && /护工|人员|护理员|是谁|推荐人/.test(t)) return 'worker_profile';
+  if (ids.includes('org_profile') && /机构|养老院|护理站|中心|在哪里|哪家|入住/.test(t)) return 'org_profile';
+  if (ids.includes('order_preview') && /预约|下单|建单|提交订单|安排上门|我要订/.test(t)) return 'order_preview';
+  if (ids.includes('order_status') && /我的订单|订单状态|订单进度/.test(t)) return 'order_status';
+  if (ids.includes('service_catalog') && /目录|有哪些服务|全部服务|分类|都提供/.test(t)) return 'service_catalog';
+  if (ids.includes('service_recommend')) return 'service_recommend';
+  return ids.find((id) => id.startsWith('service_')) || 'service_recommend';
+}
+
+function pickDispatchManageTemplate(message, ids) {
+  const t = String(message || '');
+  if (ids.includes('dispatch_detail') && /接单|拒单|改派|这条派单|派单详情|处理派单/.test(t)) return 'dispatch_detail';
+  if (ids.includes('work_order') && /工单|工单详情|服务工单/.test(t)) return 'work_order';
+  if (ids.includes('dispatch_status') && /进度|状态|催单|改约|更新/.test(t)) return 'dispatch_status';
+  if (ids.includes('dispatch_list')) return 'dispatch_list';
+  return ids.find((id) => id.startsWith('dispatch_')) || 'dispatch_list';
+}
+
+function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
+  const bd = business_data || {};
+  const catalog = Array.isArray(bd.service_catalog) ? bd.service_catalog : [];
+  const orgs = Array.isArray(bd.orgs) ? bd.orgs : [];
+  const workers = Array.isArray(bd.workers) ? bd.workers : [];
+  const orders = Array.isArray(bd.orders) ? bd.orders : [];
+  const tpl = selectedTemplateId || 'service_recommend';
+  const msg = String(message || '');
+
+  if (tpl === 'service_catalog') {
+    const byCat = {};
+    for (const s of catalog) {
+      const cat = s.category || '其他';
+      (byCat[cat] = byCat[cat] || []).push(s);
+    }
+    const categories = Object.entries(byCat).map(([category, items]) => ({
+      category,
+      items: items.map((s) => ({ name: s.name, price: s.price_from, unit: s.unit, tags: (s.scene_tags || []).join('/') })),
+    }));
+    const answerText = `为您整理养老服务目录，共 ${catalog.length} 项可预约服务。`;
+    return sanitizeModelResult({
+      template_id: 'service_catalog',
+      answer_text: answerText, answer: answerText,
+      data: { sceneTitle: '养老服务目录', total: catalog.length, categories },
+      actions: [
+        { action_key: 'find_service.recommend', label: '智能推荐', params: {} },
+        { action_key: 'find_service.book', label: '去预约', params: {} },
+      ],
+      followup_suggestions: [],
+      template_fit_notes: [],
+    });
+  }
+
+  if (tpl === 'org_profile') {
+    const org = orgs[0] || {};
+    const answerText = `为您介绍服务机构：${org.org_name || '桂小养康养中心'}。`;
+    return sanitizeModelResult({
+      template_id: 'org_profile',
+      answer_text: answerText, answer: answerText,
+      data: {
+        orgName: org.org_name || '桂小养康养中心',
+        orgType: org.org_type || 'institution',
+        address: org.address || '',
+        scope: org.service_scope || '',
+        bedCount: org.bed_count || 0,
+        price: org.price_from || 0,
+        rating: org.rating || 0,
+        certified: org.certified ? '已认证' : '未认证',
+      },
+      actions: [
+        { action_key: 'find_service.book_org', label: '预约该机构', params: { org_id: org.org_id } },
+        { action_key: 'find_service.list_workers', label: '查看服务人员', params: { org_id: org.org_id } },
+      ],
+      followup_suggestions: [],
+      template_fit_notes: [],
+    });
+  }
+
+  if (tpl === 'worker_profile') {
+    const w = workers[0] || {};
+    const answerText = `为您推荐服务人员：${w.name || '韦芳'}。`;
+    return sanitizeModelResult({
+      template_id: 'worker_profile',
+      answer_text: answerText, answer: answerText,
+      data: {
+        name: w.name || '韦芳',
+        skillTags: (w.skill_tags || []).join('、'),
+        certLevel: w.cert_level || '',
+        area: w.service_area || '',
+        rating: w.rating || 0,
+        orderCount: w.order_count || 0,
+        available: w.available ? '可接单' : '暂不接单',
+      },
+      actions: [
+        { action_key: 'find_service.book_worker', label: '预约该人员', params: { worker_id: w.worker_id } },
+        { action_key: 'find_service.list_orgs', label: '看机构', params: {} },
+      ],
+      followup_suggestions: [],
+      template_fit_notes: [],
+    });
+  }
+
+  if (tpl === 'order_preview') {
+    const svc = catalog[0] || {};
+    const org = orgs[0] || {};
+    const answerText = `已为您生成「${svc.name || '上门护理'}」服务订单预览，确认后可派单。`;
+    return sanitizeModelResult({
+      template_id: 'order_preview',
+      answer_text: answerText, answer: answerText,
+      data: {
+        orderId: 'so_new',
+        elderName: '黄秀英',
+        serviceName: svc.name || '上门护理',
+        orgName: org.org_name || '',
+        price: svc.price_from || 0,
+        unit: svc.unit || '次',
+        expectedTime: '请选择上门时间',
+        confirmHint: '确认后将自动进入派单调度',
+      },
+      actions: [
+        { action_key: 'find_service.confirm_order', label: '确认下单', params: { service_id: svc.service_id } },
+        { action_key: 'find_service.edit_order', label: '修改', params: {} },
+      ],
+      followup_suggestions: [
+        { label: '指定护理人员', user_prompt: '请指定护理人员上门', action_key: 'find_service.book_worker' },
+      ],
+      template_fit_notes: [],
+    });
+  }
+
+  if (tpl === 'order_status') {
+    const answerText = `您当前有 ${orders.length} 条服务订单。`;
+    return sanitizeModelResult({
+      template_id: 'order_status',
+      answer_text: answerText, answer: answerText,
+      data: {
+        total: orders.length,
+        orders: orders.map((o) => ({
+          orderId: o.order_id, elderName: o.elder_name, serviceName: o.service_name,
+          status: o.status, expectedTime: o.expected_time,
+        })),
+      },
+      actions: [
+        { action_key: 'find_service.detail_order', label: '订单详情', params: { order_id: orders[0]?.order_id } },
+        { action_key: 'dispatch_manage.list', label: '查看派单', params: {} },
+      ],
+      followup_suggestions: [],
+      template_fit_notes: [],
+    });
+  }
+
+  const top = catalog.slice(0, 4).map((s) => ({
+    id: s.service_id, name: s.name, category: s.category,
+    price: s.price_from, unit: s.unit, tags: (s.scene_tags || []).join('/'), desc: s.description,
+  }));
+  const org = orgs[0] || {};
+  const w = workers.find((x) => x.available) || workers[0] || {};
+  const answerText = `已为您匹配 ${top.length} 项养老服务，并推荐机构「${org.org_name || ''}」与人员「${w.name || ''}」。`;
+  return sanitizeModelResult({
+    template_id: 'service_recommend',
+    answer_text: answerText, answer: answerText,
+    data: {
+      sceneTitle: '养老服务推荐',
+      summary: '根据老人情况为您匹配以下服务',
+      services: top,
+      total: catalog.length,
+      highlightOrg: { name: org.org_name || '', rating: org.rating || 0, scope: org.service_scope || '', price: org.price_from || 0 },
+      highlightWorker: { name: w.name || '', skill: (w.skill_tags || []).join('/'), rating: w.rating || 0 },
+    },
+    actions: [
+      { action_key: 'find_service.detail_service', label: '查看详情', params: { service_id: top[0]?.id } },
+      { action_key: 'find_service.book', label: '立即预约', params: { service_id: top[0]?.id } },
+      { action_key: 'find_service.catalog', label: '全部服务', params: {} },
+    ],
+    followup_suggestions: [
+      { label: '找护工上门', user_prompt: '我想找护工上门护理', action_key: 'find_service.list_workers' },
+      { label: '看养老机构', user_prompt: '有哪些养老机构可以入住', action_key: 'find_service.list_orgs' },
+    ],
+    template_fit_notes: [],
+  });
+}
+
+function fillDispatchManageCard({ message, business_data, selectedTemplateId }) {
+  const bd = business_data || {};
+  const dispatches = Array.isArray(bd.dispatch_orders) ? bd.dispatch_orders : [];
+  const orders = Array.isArray(bd.orders) ? bd.orders : [];
+  const tpl = selectedTemplateId || 'dispatch_list';
+  const msg = String(message || '');
+
+  if (tpl === 'dispatch_detail') {
+    const d = dispatches[0] || {};
+    const answerText = `派单 ${d.dispatch_id || ''} 当前状态：${d.status || '待接单'}。`;
+    return sanitizeModelResult({
+      template_id: 'dispatch_detail',
+      answer_text: answerText, answer: answerText,
+      data: {
+        dispatchId: d.dispatch_id || '', orderId: d.order_id || '', workerName: d.worker_name || '',
+        skill: d.skill_tag || '', status: d.status || '待接单', createdAt: d.created_at || '',
+        acceptedAt: d.accepted_at || '', rejectedReason: d.rejected_reason || '',
+      },
+      actions: [
+        { action_key: 'dispatch_manage.accept', label: '接单', params: { dispatch_id: d.dispatch_id } },
+        { action_key: 'dispatch_manage.reject', label: '拒单', params: { dispatch_id: d.dispatch_id } },
+        { action_key: 'dispatch_manage.reassign', label: '改派', params: { dispatch_id: d.dispatch_id } },
+      ],
+      followup_suggestions: [],
+      template_fit_notes: [],
+    });
+  }
+
+  if (tpl === 'work_order') {
+    const o = orders[0] || {};
+    const d = dispatches.find((x) => x.order_id === o.order_id) || {};
+    const answerText = `工单 ${o.order_id || ''}：${o.service_name || ''}，状态 ${o.status || ''}。`;
+    return sanitizeModelResult({
+      template_id: 'work_order',
+      answer_text: answerText, answer: answerText,
+      data: {
+        orderId: o.order_id || '', elderName: o.elder_name || '', serviceName: o.service_name || '',
+        orgName: o.org_name || '', status: o.status || '', expectedTime: o.expected_time || '',
+        linkedDispatch: d.dispatch_id || '',
+      },
+      actions: [
+        { action_key: 'dispatch_manage.status', label: '查派单进度', params: { order_id: o.order_id } },
+        { action_key: 'dispatch_manage.urge', label: '催单', params: { order_id: o.order_id } },
+      ],
+      followup_suggestions: [],
+      template_fit_notes: [],
+    });
+  }
+
+  if (tpl === 'dispatch_status') {
+    const d = dispatches[0] || {};
+    const answerText = `派单 ${d.dispatch_id || ''} 状态已更新为「${d.status || ''}」。`;
+    return sanitizeModelResult({
+      template_id: 'dispatch_status',
+      answer_text: answerText, answer: answerText,
+      data: {
+        dispatchId: d.dispatch_id || '', status: d.status || '', changedAt: d.accepted_at || d.created_at || '',
+        note: d.rejected_reason || '状态正常流转',
+      },
+      actions: [
+        { action_key: 'dispatch_manage.list', label: '返回派单列表', params: {} },
+      ],
+      followup_suggestions: [],
+      template_fit_notes: [],
+    });
+  }
+
+  const pending = dispatches.filter((d) => d.status === '待接单').length;
+  const answerText = `当前共有 ${dispatches.length} 条派单，其中 ${pending} 条待接单。`;
+  return sanitizeModelResult({
+    template_id: 'dispatch_list',
+    answer_text: answerText, answer: answerText,
+    data: {
+      total: dispatches.length, pending,
+      orders: dispatches.map((d) => ({
+        dispatchId: d.dispatch_id, orderId: d.order_id, workerName: d.worker_name,
+        skill: d.skill_tag, status: d.status, createdAt: d.created_at,
+      })),
+    },
+    actions: [
+      { action_key: 'dispatch_manage.accept_first', label: '接第一条', params: { dispatch_id: dispatches[0]?.dispatch_id } },
+      { action_key: 'dispatch_manage.detail', label: '派单详情', params: { dispatch_id: dispatches[0]?.dispatch_id } },
+    ],
+    followup_suggestions: [
+      { label: '查看工单', user_prompt: '查看对应的服务工单', action_key: 'dispatch_manage.work_order' },
+    ],
+    template_fit_notes: [],
+  });
+}
+
 function fillRouteCardLegacy({ message, business_data }) {
   const routes = Array.isArray(business_data?.routes) ? business_data.routes : [];
   const route = selectTravelRoute(message, routes);
@@ -863,6 +1504,7 @@ function fillRouteCardLegacy({ message, business_data }) {
         label: '查天气风险',
         user_prompt: '请检查这条旅居路线近期天气风险',
         action_key: 'travel_route.check_weather_risk',
+        params: { destination, city: destination },
       },
     ],
     template_fit_notes: [],
@@ -877,10 +1519,19 @@ function selectTravelRoute(message, routes) {
 }
 
 function inferDestination(message) {
-  if (/北海|海边|海滨/.test(message)) return '广西北海';
-  if (/桂林|山水/.test(message)) return '广西桂林';
+  // 优先匹配明确的城市名
+  if (/北海/.test(message)) return '广西北海';
+  if (/桂林/.test(message)) return '广西桂林';
   if (/南宁/.test(message)) return '广西南宁';
-  return '广西巴马';
+  if (/巴马/.test(message)) return '广西巴马';
+  if (/昆明/.test(message)) return '云南昆明';
+  if (/大理/.test(message)) return '云南大理';
+  if (/丽江/.test(message)) return '云南丽江';
+  if (/三亚/.test(message)) return '海南三亚';
+  if (/海口/.test(message)) return '海南海口';
+  if (/厦门/.test(message)) return '福建厦门';
+  // 如果没有匹配到，返回 null，让调用者使用其他来源
+  return null;
 }
 
 function inferBudget(message) {
@@ -917,12 +1568,28 @@ function buildTravelHighlights(healthTags, destination) {
   return [...new Set([...tags, destination.includes('北海') ? '海滨慢行' : '康养基地', '家属可陪同'])].slice(0, 5);
 }
 
-function buildItinerary(destination) {
-  return [
-    { day: 'D1', plan: `抵达${destination}，办理入住，完成健康情况确认，安排轻松周边散步。` },
-    { day: 'D2', plan: '上午康养活动或基地体验，下午低强度游览，晚间保留充分休息时间。' },
-    { day: 'D3', plan: '根据体力选择短途游览或返程，预留交通缓冲，避免赶行程。' },
-  ];
+function buildItinerary(destination, days = 3) {
+  // 根据实际天数构建行程
+  const itinerary = [];
+  const totalDays = Math.max(1, Math.min(30, parseInt(days) || 3));
+  
+  for (let i = 0; i < totalDays; i++) {
+    const dayNum = i + 1;
+    let plan = '';
+    
+    if (i === 0) {
+      plan = `抵达${destination}，办理入住，完成健康情况确认，安排轻松周边散步。`;
+    } else if (i === totalDays - 1) {
+      plan = '根据体力选择短途游览或返程，预留交通缓冲，避免赶行程。';
+    } else {
+      // 中间天数：康养活动或基地体验
+      plan = `第${dayNum}天康养活动或基地体验，下午低强度游览，晚间保留充分休息时间。`;
+    }
+    
+    itinerary.push({ day: `D${dayNum}`, plan });
+  }
+  
+  return itinerary;
 }
 
 function buildTravelHealthNotice(message) {
@@ -941,13 +1608,30 @@ function fillRouteCard({ message, business_data }) {
   }
 
   const route = selectTravelRoute(message, routes);
-  const destination = sanitizeText(product?.destination || product?.city || route?.destination || inferDestination(message));
+  const destination = sanitizeText(business_data?.primary_city || product?.destination || product?.city || route?.destination || inferDestination(message));
   const budgetLevel = sanitizeText(route?.budget_level || inferBudget(message));
   const priceLabel = sanitizeText(product?.price_label || '');
   const season = sanitizeText(route?.season || inferSeason(message));
   const bookingStatus = sanitizeText(buildJtdBookingStatus(jtd, product, route));
   const healthTags = sanitizeText((Array.isArray(product?.tags) && product.tags.length ? product.tags.join(',') : '') || route?.health_tags || '慢病友好,低强度,医疗可达');
   const productName = sanitizeText(product?.product_name || '');
+  
+  // 从产品数据中提取天数
+  const daysFromProduct = parseInt(product?.days || product?.nights || 0) + 1;
+  const daysFromTitle = parseInt(productName?.match(/(\d+)天/)?.[1] || 0);
+  const totalDays = daysFromProduct || daysFromTitle || 3;
+  
+  // 调试日志：检查产品数据
+  console.log('[fillRouteCard] product data:', {
+    productName,
+    days: product?.days,
+    nights: product?.nights,
+    daysFromProduct,
+    daysFromTitle,
+    totalDays,
+    raw: product?.raw,
+  });
+  
   const answerText = product
     ? (jtd.source_status === 'real_data'
         ? `已调用金跳动真实接口，为您匹配到${productName || destination}，可继续查看详情或做可售校验。`
@@ -970,12 +1654,12 @@ function fillRouteCard({ message, business_data }) {
       season,
       budgetLevel,
       priceLabel,
-      days: /四天|4天|four/i.test(message) ? '4天3晚' : '3天2晚',
+      days: /四天|4天|four/i.test(message) ? '4天3晚' : `${totalDays}天${totalDays - 1}晚`,
       suitable: inferTravelSuitable(message),
       bookingStatus,
       summary: buildRouteCardSummary({ product, productName, destination, jtd, priceLabel, budgetLevel }),
       highlights: buildTravelHighlights(healthTags, destination),
-      itinerary: buildItinerary(destination),
+      itinerary: buildItinerary(destination, totalDays),
       healthNotice: buildTravelHealthNotice(message),
       jtdStatus: jtd.source_status || '',
       productId: product?.product_id || '',
@@ -996,6 +1680,7 @@ function fillRouteCard({ message, business_data }) {
         label: '查天气风险',
         user_prompt: '请检查这条旅居路线近期天气风险',
         action_key: 'travel_route.check_weather_risk',
+        params: { city: destination },
       },
     ],
     template_fit_notes: product ? [`jtd_${jtd.source_status || 'unknown'}`] : [],
@@ -1008,8 +1693,14 @@ function fillTravelItineraryCard({ message, business_data }) {
   const destination = sanitizeText(routeData.destination || inferDestination(message));
   const productName = sanitizeText(String(routeData.routeTitle || '').replace(/康养旅居路线$/, '')) || destination;
   
+  // 从产品数据中提取天数
+  const product = business_data?.jtd?.selected_product || business_data?.jtd?.products?.[0];
+  const daysFromProduct = parseInt(product?.days || product?.nights || 0) + 1;
+  const daysFromTitle = parseInt(routeData.routeTitle?.match(/(\d+)天/)?.[1] || 0);
+  const totalDays = daysFromProduct || daysFromTitle || 3;
+  
   // 从 routeData.itinerary 或构建默认行程
-  const rawItinerary = Array.isArray(routeData.itinerary) ? routeData.itinerary : buildItinerary(destination);
+  const rawItinerary = Array.isArray(routeData.itinerary) ? routeData.itinerary : buildItinerary(destination, totalDays);
   // 确保 itinerary 中的每个 item 都有正确的格式
   const itinerary = rawItinerary.map((item, idx) => {
     // 如果 item 已经是正确的格式，直接返回
@@ -1025,10 +1716,10 @@ function fillTravelItineraryCard({ message, business_data }) {
         plan,
       };
     }
-    return buildItinerary(destination)[idx] || { day: `D${idx + 1}`, plan: '' };
+    return buildItinerary(destination, totalDays)[idx] || { day: `D${idx + 1}`, plan: '' };
   });
   
-  const days = itinerary.map((item, index) => buildItineraryDay(item, index, destination));
+  const days = itinerary.map((item, index) => buildItineraryDay(item, index, destination, itinerary.length));
   const sourceText = routeData.jtdStatus === 'real_data'
     ? '来源：金跳动真实接口'
     : routeData.jtdStatus === 'mock_vendor_data'
@@ -1077,14 +1768,116 @@ function inferWeatherRiskTips(forecasts = [], current = {}) {
 }
 
 // 天气风险研判：结合上下文（目的地城市）+ 腾讯天气接口结果，输出长者旅居风险提示卡片
-export function fillTravelWeatherRisk({ city = '', weather = null, business_data = {} } = {}) {
+export async function fillTravelWeatherRiskCard({ message, business_data, weatherService } = {}) {
+  // 打印完整的 selected_product 数据
+  const selectedProduct = business_data?.jtd?.selected_product;
+  console.log('[WeatherRiskCard] selected_product 详情:', JSON.stringify(selectedProduct, null, 2));
+  
+  console.log('[WeatherRiskCard] 输入参数:', { 
+    message: message?.slice(0, 100), 
+    business_data_keys: business_data ? Object.keys(business_data) : [],
+    jtd: business_data?.jtd ? Object.keys(business_data.jtd) : [],
+    selected_product: selectedProduct ? 'present' : 'missing',
+  });
+  
+  // 从消息或业务数据中提取城市（多种来源）
+  const fromMessage = inferDestination(message || '');
+  const fromJtdProduct = business_data?.jtd?.selected_product?.destination;
+  const fromJtdRoute = business_data?.jtd?.route?.destination;
+  const fromBusinessData = business_data?.destination;
+  const fromProductName = business_data?.jtd?.selected_product?.name;
+  
+  // 从产品名称中提取目的地
+  let fromProductExtract = null;
+  if (fromProductName) {
+    // 常见格式: "广西北海康养旅居三日体验" -> 提取 "广西北海"
+    // 或: "0730测试旅居路线5天4日游" -> 需要其他方式
+    const match = fromProductName.match(/(广西|云南|海南|福建|四川|浙江|江苏|广东|北京|上海)[^\s]*(市|州|县|地区|北海|桂林|巴马|昆明|大理|丽江|三亚|海口|厦门)/);
+    if (match) {
+      fromProductExtract = match[0];
+    } else {
+      // 尝试匹配城市名
+      const cityMatch = fromProductName.match(/(北海|桂林|巴马|昆明|大理|丽江|三亚|海口|厦门|巴马瑶族)/);
+      if (cityMatch) {
+        // 根据城市名补全省份
+        const cityProvinceMap = {
+          '北海': '广西北海', '桂林': '广西桂林', '巴马': '广西巴马', '巴马瑶族': '广西巴马',
+          '昆明': '云南昆明', '大理': '云南大理', '丽江': '云南丽江',
+          '三亚': '海南三亚', '海口': '海南海口',
+          '厦门': '福建厦门',
+        };
+        fromProductExtract = cityProvinceMap[cityMatch[0]] || cityMatch[0];
+      }
+    }
+  }
+  
+  // 优先级: 消息 > 产品目的地 > 路线目的地 > 产品名称提取 > 业务数据
   const cityName = sanitizeText(
-    city
-    || business_data?.jtd?.selected_product?.destination
-    || business_data?.destination
-    || '目的地'
+    fromMessage 
+    || fromJtdProduct 
+    || fromJtdRoute 
+    || fromProductExtract 
+    || fromBusinessData 
+    || null
   );
-  const ok = !!(weather && weather.ok);
+  
+  console.log('[WeatherRiskCard] 城市提取结果:', { 
+    fromMessage, 
+    fromJtdProduct, 
+    fromJtdRoute, 
+    fromProductExtract,
+    fromBusinessData,
+    cityName 
+  });
+  
+  // 如果没有提取到城市，提示用户
+  if (!cityName || cityName === '目的地') {
+    const answerText = `### 天气风险查询\n\n抱歉，我无法确定您要查询的目的地城市。请问您想查询哪个城市的天气？例如：\n\n- 广西北海\n- 云南昆明\n- 海南三亚\n\n您也可以直接说出城市名，如"北海天气如何"。`;
+    return sanitizeModelResult({
+      template_id: 'travel_weather_risk_card',
+      answer_text: answerText,
+      answer: answerText,
+      data: {
+        city: '',
+        ok: false,
+        degraded: true,
+        degradedNote: '请指定查询的目的地城市',
+        currentWeather: '',
+        forecasts: [],
+        riskTips: [{ text: '请提供目的地城市名称' }],
+      },
+      actions: [],
+      followup_suggestions: [
+        { text: '查询北海天气', action_key: 'travel_route.check_weather_risk', params: { city: '广西北海' } },
+        { text: '查询昆明天气', action_key: 'travel_route.check_weather_risk', params: { city: '云南昆明' } },
+        { text: '查询三亚天气', action_key: 'travel_route.check_weather_risk', params: { city: '海南三亚' } },
+      ],
+      template_fit_notes: ['missing_destination'],
+    });
+  }
+
+  let weather = null;
+  let ok = false;
+
+  // 调用天气服务获取实时天气
+  if (weatherService) {
+    try {
+      // 兼容不同的方法名：getWeatherByCity 或 getWeather
+      const getWeatherFn = weatherService.getWeatherByCity || weatherService.getWeather;
+      if (typeof getWeatherFn === 'function') {
+        weather = await getWeatherFn.call(weatherService, cityName);
+        ok = weather && weather.ok;
+        console.log('[WeatherRiskCard] 天气服务调用结果:', { city: cityName, ok, source: weather?.source, error: weather?.error });
+      } else {
+        console.error('[WeatherRiskCard] 天气服务没有 getWeather 或 getWeatherByCity 方法');
+      }
+    } catch (error) {
+      console.error('[WeatherRiskCard] 天气服务调用失败:', error.message);
+    }
+  } else {
+    console.log('[WeatherRiskCard] 天气服务未配置');
+  }
+
   const current = (weather && weather.current) || {};
   const forecasts = Array.isArray(weather?.forecasts) ? weather.forecasts : [];
   const tips = inferWeatherRiskTips(forecasts, current);
@@ -1145,7 +1938,7 @@ export function fillTravelWeatherRisk({ city = '', weather = null, business_data
   });
 }
 
-function buildItineraryDay(item = {}, index = 0, destination = '') {
+function buildItineraryDay(item = {}, index = 0, destination = '', totalDays = 3) {
   const day = sanitizeText(item.day || `D${index + 1}`);
   // plan 可能是字符串或对象，需要正确处理
   const planValue = item.plan;
@@ -1155,27 +1948,40 @@ function buildItineraryDay(item = {}, index = 0, destination = '') {
       ? planValue.text 
       : '';
   const plan = sanitizeText(planText);
-  const theme = index === 0
+  
+  // 根据天数位置确定主题
+  const isLastDay = index === totalDays - 1;
+  const theme = index === 0 
     ? `抵达${destination || '目的地'}`
-    : index === 1
-      ? '康养体验'
-      : '轻松返程';
-  const slots = index === 0
-    ? [
-        { time: '上午', text: `抵达${destination || '目的地'}，办理入住，熟悉周边环境。` },
-        { time: '下午', text: plan || '完成健康情况确认，安排轻松周边散步。' },
-        { time: '傍晚', text: '基地或酒店附近慢行，早些休息。' },
-      ]
-    : index === 1
-      ? [
-        { time: '上午', text: '参加康养活动或基地体验，控制步行强度。' },
-        { time: '下午', text: plan || '低强度游览，保留午休和补水时间。' },
-        { time: '傍晚', text: '清淡晚餐后休息，确认次日安排。' },
-      ]
-      : [
-        { time: '上午', text: plan || '根据体力选择短途游览或返程。' },
-        { time: '下午', text: '预留交通缓冲，避免赶行程。' },
-      ];
+    : isLastDay 
+      ? '轻松返程'
+      : `第${index + 1}天康养体验`;
+
+  // 根据天数位置构建行程时段
+  let slots = [];
+  
+  if (index === 0) {
+    // 第一天：抵达安顿
+    slots = [
+      { time: '上午', text: `抵达${destination || '目的地'}，办理入住，熟悉周边环境。` },
+      { time: '下午', text: plan || '完成健康情况确认，安排轻松周边散步。' },
+      { time: '傍晚', text: '基地或酒店附近慢行，早些休息。' },
+    ];
+  } else if (isLastDay) {
+    // 最后一天：返程
+    slots = [
+      { time: '上午', text: plan || '根据体力选择短途游览或返程。' },
+      { time: '下午', text: '预留交通缓冲，避免赶行程。' },
+    ];
+  } else {
+    // 中间天数：康养活动
+    slots = [
+      { time: '上午', text: '参加康养活动或基地体验，控制步行强度。' },
+      { time: '下午', text: plan || '低强度游览，保留午休和补水时间。' },
+      { time: '傍晚', text: '清淡晚餐后休息，确认次日安排。' },
+    ];
+  }
+
   return {
     day,
     theme,
@@ -1247,4 +2053,80 @@ function sanitizeText(value) {
     .replace(EVENT_HANDLER_PATTERN, '')
     .replace(SCRIPT_PROTOCOL_PATTERN, '')
     .trim();
+}
+
+// 兼容导出：旧函数名 fillTravelWeatherRisk 保留
+export function fillTravelWeatherRisk({ city, weather, business_data, all_cities }) {
+  // 直接调用新函数，但不调用天气服务（使用传入的天气数据）
+  const cityName = sanitizeText(city || business_data?.jtd?.selected_product?.destination || business_data?.destination || '目的地');
+  const ok = !!(weather && weather.ok);
+  const current = (weather && weather.current) || {};
+  const forecasts = Array.isArray(weather?.forecasts) ? weather.forecasts : [];
+  const tips = inferWeatherRiskTips(forecasts, current);
+
+  const lines = [`### ${cityName} 旅居天气风险研判`];
+  if (!ok) {
+    lines.push('> 暂未获取到该城市的实时天气（未配置腾讯天气接口或接口异常）。建议出行前关注当地气象预报，或稍后重试。');
+  } else {
+    lines.push(`**当前**：${current.weather || '—'}，${current.temp != null ? current.temp + '℃' : '—'}${current.windDir ? '，' + current.windDir + (current.windPower || '') : ''}。`);
+    if (forecasts.length) {
+      lines.push('', '**未来几天：**', '| 日期 | 天气 | 温度 | 风 |', '| --- | --- | --- | --- |');
+      for (const f of forecasts.slice(0, 5)) {
+        const w = f.weather || '—';
+        const t = `${f.tempDay != null ? f.tempDay + '°' : '—'}/${f.tempNight != null ? f.tempNight + '°' : '—'}`;
+        lines.push(`| ${f.date || f.week || '—'} | ${w} | ${t} | ${f.wind || '—'} |`);
+      }
+    }
+    lines.push('', '**长者风险提示：**');
+    for (const t of tips) lines.push(`- ${t}`);
+    if (weather?.updatedAt) lines.push(`\n_数据来源：腾讯天气（${weather.updatedAt}）_`);
+  }
+  // 多城市天气对比（如果 all_cities 存在且有多于1个城市）
+  if (Array.isArray(all_cities) && all_cities.length > 1) {
+    lines.push('');
+    lines.push('### 多城市天气对比');
+    for (const c of all_cities) {
+      const cur = c.weather?.current || {};
+      const tempStr = cur.temp != null ? cur.temp + '°C' : '';
+      const windStr = [cur.windDir, cur.windPower].filter(Boolean).join(' ') || '';
+      lines.push(`- **${c.city}**：${cur.weather || '未知'} ${tempStr} ${windStr}`.trim());
+    }
+  }
+  const answerText = lines.join('\n');
+
+  return sanitizeModelResult({
+    template_id: 'travel_weather_risk_card',
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      city: cityName,
+      ok,
+      degraded: !ok,
+      currentWeather: current.weather || '',
+      currentTemp: current.temp != null ? String(current.temp) : '',
+      currentWind: [current.windDir, current.windPower].filter(Boolean).join(' ') || '',
+      currentHumidity: current.humidity || '',
+      currentFeel: current.feelTemp != null ? String(current.feelTemp) : '',
+      updatedAt: weather?.updatedAt || '',
+      forecasts: forecasts.slice(0, 5).map((f) => ({
+        date: f.date || f.week || '',
+        weather: f.weather || '',
+        nightWeather: f.nightWeather || '',
+        tempDay: f.tempDay != null ? String(f.tempDay) : '',
+        tempNight: f.tempNight != null ? String(f.tempNight) : '',
+        wind: f.wind || '',
+      })),
+      riskTips: tips.map((t) => ({ text: t })),
+      degradedNote: ok ? '' : '暂未获取到实时天气，以下为通用提醒，请以当地实际预报为准。',
+    },
+    actions: [
+      { action_key: 'travel_route.replan', label: '调整行程避开恶劣天气', params: { destination: cityName } },
+    ],
+    followup_suggestions: [
+      { label: '查看可订状态', user_prompt: '请检查这条旅居路线近期是否可预订', action_key: 'travel_route.check_availability', params: { destination: cityName } },
+    ],
+    model_used: 'flatTalk.travel.weather',
+    model_status: ok ? 'ok' : 'degraded',
+    template_fit_notes: ['travel_weather_risk'],
+  });
 }
