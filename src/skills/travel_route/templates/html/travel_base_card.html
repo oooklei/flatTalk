@@ -8,9 +8,10 @@
   :root {
     --primary: #FF7826;
     --primary-gradient: linear-gradient(135deg, #FF7826 0%, #FF9A5C 100%);
-    --bg: #F8EAD9; --bg-white: #ffffff;
-    --ink: #3A3A3A; --ink-light: #666; --muted: #999999;
-    --border: #E5E5E5; --divider: #F0EBE3; --price: #FF4D4F;
+    --bg: #FFF8F0; --bg-white: #ffffff;
+    --ink: #2C2C2C; --ink-light: #666; --muted: #999999;
+    --border: #EDE4D8; --divider: #F0EBE3; --price: #FF7826;
+    --pin: #E74C3C;
   }
   * { box-sizing: border-box; }
   body {
@@ -19,125 +20,209 @@
     background: var(--bg); color: var(--ink);
   }
   .wrap { max-width: 640px; margin: 0 auto; }
+
   .chat-section-title {
+    display: flex; align-items: center; gap: 8px;
     font-size: 16px; font-weight: 700; color: var(--ink);
-    margin: 0 0 8px; padding: 8px 12px;
-    background: linear-gradient(135deg, #FFF7E6, #FFF3E0);
-    border-radius: 8px; border-left: 3px solid var(--primary);
+    margin: 0 0 10px;
   }
-  .intro { font-size: 14px; line-height: 1.7; margin-bottom: 10px; }
+  .chat-section-title .ico {
+    width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+    background: linear-gradient(145deg, #FF9A5C, #FF7826);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+  }
+
+  .intro {
+    font-size: 13px; line-height: 1.7; color: var(--ink-light);
+    margin: 0 0 12px;
+  }
+  .intro .why-title {
+    color: var(--ink); font-weight: 600; margin-bottom: 4px;
+  }
+  .intro .why-list {
+    margin: 4px 0 10px; padding: 0; list-style: none;
+  }
+  .intro .why-list li {
+    position: relative; padding-left: 1.4em; margin: 2px 0;
+  }
+  .pick-line {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    margin: 0 0 10px;
+  }
+
   .chat-hotel-card {
-    background: var(--bg-white); border: 1px solid var(--border);
-    border-radius: 12px; padding: 12px; margin-bottom: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 12px 12px;
+    margin-bottom: 12px;
+    position: relative;
   }
-  .chat-hotel-card.primary { border: 2px solid var(--primary); background: linear-gradient(180deg, #FFF9F2, #fff); }
+  .chat-hotel-card.primary {
+    border: 2px solid var(--primary);
+    box-shadow: 0 2px 10px rgba(255, 120, 38, 0.12);
+  }
   .chat-hotel-badge {
-    position: absolute; top: -8px; left: 12px; padding: 2px 10px;
-    background: var(--primary-gradient); color: #fff;
-    font-size: 11px; font-weight: 600; border-radius: 10px;
+    position: absolute; top: 0; left: 0;
+    padding: 4px 10px 4px 8px;
+    background: var(--primary); color: #fff;
+    font-size: 11px; font-weight: 700;
+    border-radius: 14px 0 10px 0;
+    display: inline-flex; align-items: center; gap: 3px;
   }
-  .chat-hotel-name { font-size: 15px; font-weight: 700; margin-top: 4px; }
-  .chat-hotel-sub { font-size: 12px; color: var(--muted); margin: 2px 0 6px; }
+  .chat-hotel-card.primary { padding-top: 28px; }
+
+  .chat-hotel-name {
+    font-size: 16px; font-weight: 800; line-height: 1.35;
+    margin: 0 0 4px;
+  }
+  .chat-hotel-sub {
+    font-size: 12px; color: var(--muted); margin: 0 0 6px;
+  }
+  .chat-hotel-addr {
+    display: flex; align-items: flex-start; gap: 4px;
+    font-size: 12px; color: var(--ink-light); margin: 0 0 10px; line-height: 1.5;
+  }
+  .chat-hotel-addr .pin {
+    color: var(--pin); flex-shrink: 0; font-size: 12px; line-height: 1.5;
+  }
+
   .chat-hotel-reason {
-    font-size: 12px; color: #2E7D32; background: #E8F5E9;
-    padding: 6px 8px; border-radius: 8px; line-height: 1.5; margin-bottom: 6px;
+    font-size: 12px; color: var(--ink-light); line-height: 1.65;
+    background: #F5F5F5; border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 10px;
   }
-  .chat-hotel-facts { font-size: 12px; color: var(--ink-light); line-height: 1.8; }
-  .chat-hotel-facts b { color: var(--ink); }
-  .chat-hotel-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--divider);
+  .chat-hotel-reason b,
+  .chat-hotel-reason strong { color: var(--ink); font-weight: 700; }
+
+  .chat-hotel-facts { font-size: 12px; }
+  .fact-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 7px 0; border-bottom: 1px solid #F3F0EA;
   }
-  .chat-hotel-price { font-size: 12px; color: var(--muted); }
-  .chat-hotel-price .num { font-size: 18px; font-weight: 800; color: var(--price); }
-  .chat-hotel-rating { font-size: 12px; color: #B8860B; font-weight: 600; }
-  .chat-hotel-actions { display: flex; gap: 6px; margin-top: 8px; }
-  .chat-btn {
-    flex: 1; text-align: center; padding: 8px 0; font-size: 13px; font-weight: 600;
-    border-radius: 8px; border: 1px solid var(--primary); color: var(--primary); background: #fff;
+  .fact-row:last-child { border-bottom: none; }
+  .fact-label {
+    flex-shrink: 0; width: 56px; color: var(--muted); font-weight: 500;
   }
-  .chat-btn.solid { background: var(--primary-gradient); color: #fff; border: none; }
-  .note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .fact-value { flex: 1; color: var(--ink); line-height: 1.5; }
+
+  .chat-hotel-pricebox {
+    margin-top: 10px;
+    background: #FFF4E8;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .chat-hotel-price {
+    font-size: 13px; color: var(--price); font-weight: 700; line-height: 1.4;
+  }
+  .chat-hotel-price .num {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+  }
+  .chat-hotel-total {
+    margin-top: 2px; font-size: 12px; color: var(--price); font-weight: 600;
+  }
+  .chat-hotel-rating {
+    margin-top: 4px; font-size: 11px; color: var(--muted); font-weight: 400;
+  }
+
+  .note {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.6;
+  }
+  .note::before {
+    content: "!";
+    flex-shrink: 0; width: 14px; height: 14px; margin-top: 2px;
+    border-radius: 50%; background: var(--primary); color: #fff;
+    font-size: 10px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="chat-section-title">{{title|🏨 康养基地推荐（按医养配套优先排序）}}</div>
-    <div class="intro">{{{intro|结合您的需求，为您优选以下康养旅居基地：}}}</div>
+    <div class="chat-section-title">
+      <span class="ico">🏨</span>
+      <span>{{title|旅居康养基地推荐}}</span>
+    </div>
+
+    <div class="intro">{{{intro|⏳ 为什么优先推荐康养基地而非普通酒店？}}}</div>
 
     {{#bases}}
     <div class="chat-hotel-card {{cardCls|}}">
       {{#badge}}<div class="chat-hotel-badge">{{.}}</div>{{/badge}}
-      <div class="chat-hotel-name">{{icon|🏨}} {{name|康养基地}}</div>
-      <div class="chat-hotel-sub">{{sub|📍 位置信息}}</div>
-      <div class="chat-hotel-reason">{{{reason|✅ 推荐理由}}}</div>
+      <div class="chat-hotel-name">{{name|康养基地}}</div>
+      <div class="chat-hotel-sub">{{sub|定位说明}}</div>
+      {{#address}}
+      <div class="chat-hotel-addr"><span class="pin">📍</span><span>{{.}}</span></div>
+      {{/address}}
+      <div class="chat-hotel-reason">{{{reason|推荐理由}}}</div>
       <div class="chat-hotel-facts">
-        {{#facts}}<div><b>{{label|项目}}：</b>{{value|—}}</div>{{/facts}}
+        {{#facts}}
+        <div class="fact-row">
+          <span class="fact-label">{{label|项目}}</span>
+          <span class="fact-value">{{value|—}}</span>
+        </div>
+        {{/facts}}
       </div>
-      <div class="chat-hotel-footer">
-        <div class="chat-hotel-price"><span class="num">¥{{price|—}}</span>{{priceUnit|/人/天}}　{{totalNote|}}</div>
-        <div class="chat-hotel-rating">⭐ {{rating|4.8}} {{ratingNote|}}</div>
-      </div>
-      <div class="chat-hotel-actions">
-        <div class="chat-btn solid">{{btnPrimary|查看详情}}</div>
-        <div class="chat-btn">{{btnSecondary|咨询顾问}}</div>
+      <div class="chat-hotel-pricebox">
+        <div class="chat-hotel-price"><span class="num">¥{{price|—}}</span>{{priceUnit|/人/天}}</div>
+        {{#totalNote}}<div class="chat-hotel-total">{{.}}</div>{{/totalNote}}
+        <div class="chat-hotel-rating">平台评分: {{rating|4.8}}{{ratingNote|}}</div>
       </div>
     </div>
     {{/bases}}
 
-    <div class="note">{{note|以上价格为旅居套餐参考价，含三餐与基础照护服务，以实际预订为准。}}</div>
+    <div class="note">{{note|以上价格仅供参考，以下门店实时为准。已自动过滤无电梯、远离医疗机构、无食堂的住宿。}}</div>
+    <!-- 紧密追问区 -->
+    {{compact_followups}}
   </div>
 
   <script type="application/json">
   {
-    "title": "🏨 康养基地推荐（按医养配套优先排序）",
-    "intro": "结合<strong>医养需求 + 三餐全包 + 适老化设施</strong>，为您优选防城港2家康养旅居基地：",
+    "title": "旅居康养基地推荐",
+    "intro": "<div class=\"why-title\">⏳ 为什么优先推荐康养基地而非普通酒店?</div><ul class=\"why-list\"><li>① 三餐营养餐全包，软烂适口，免去外出找餐烦恼</li><li>② 周边医疗配套近，方便慢病长者购药体检</li><li>③ 电梯/无障碍通道，适老化设计更安心</li><li>④ 棋牌、花园步道等社交活动，不孤单</li></ul><div class=\"pick-line\">为您精选2套适配方案:</div>",
     "bases": [
       {
         "cardCls": "primary",
-        "badge": "⭐ 首选推荐 · 医养配套最优",
-        "icon": "🏥",
-        "name": "防城港白浪滩康养旅居基地",
-        "sub": "📍 江山半岛白浪滩景区旁 · 距防城港市第一人民医院 750米",
-        "reason": "✅ 推荐理由：基地内设医务室与每日血压监测服务，配药品冷藏柜；距三甲医院仅750米，慢病老人旅居首选。",
+        "badge": "⭐ 首选推荐",
+        "name": "恒荣大酒店旅居康养基地",
+        "sub": "仙人山公园店 · 四星级康养定位",
+        "address": "广西防城港市港口区仙人山公园路88号",
+        "reason": "<b>推荐理由:</b> 位于市区核心，步行可达防城港市第一人民医院(800m)，楼下商超齐全。适合有用药需求的长者日常购药体检；酒店含电梯、无障碍通道，全包三餐营养餐。",
         "facts": [
-          { "label": "房型", "value": "海景双床房×2（含儿童加床）· 电梯直达 · 无障碍卫浴" },
-          { "label": "餐饮", "value": "三餐全包 · 低盐低糖长者餐 · 儿童营养餐" },
-          { "label": "照护", "value": "每日晨间血压/血糖监测 · 用药提醒 · 24h值班医护" },
-          { "label": "活动", "value": "晨间太极 · 手工课堂 · 海滩漫步团" }
+          { "label": "三餐配套", "value": "自助早餐+午餐晚餐营养套餐，软烂适口" },
+          { "label": "院内设施", "value": "花园步道、健身角、棋牌室、理疗室" },
+          { "label": "周边医疗", "value": "市第一人民医院 800m、仁爱药店 200m" },
+          { "label": "周边配套", "value": "仙人山公园步行5分钟、万达商圈 1.5km" }
         ],
-        "price": "268",
-        "priceUnit": "/人/天",
-        "totalNote": "10天3人约 ¥8,040",
-        "rating": "4.9",
-        "ratingNote": "医养口碑第1",
-        "btnPrimary": "查看详情",
-        "btnSecondary": "咨询顾问"
+        "price": "198",
+        "priceUnit": "/人/天 (含三餐住宿)",
+        "totalNote": "2人10天预估: ¥3,960",
+        "rating": "4.8/5.0",
+        "ratingNote": " · 起售价 ¥198/人/天"
       },
       {
         "cardCls": "",
         "badge": "",
-        "icon": "🌊",
-        "name": "簕山古渔村滨海康养公寓",
-        "sub": "📍 企沙镇簕山古渔村 · 距企沙镇卫生院 1.2公里",
-        "reason": "✅ 推荐理由：渔村慢生活节奏，赶海体验适合祖孙同乐；公寓配长者餐厅与应急呼叫铃。",
+        "name": "海景红树林康养基地",
+        "sub": "西湾海滨 · 自然生态康养定位",
+        "address": "广西防城港市港口区西湾大道168号",
+        "reason": "<b>推荐理由:</b> 紧邻红树林湿地公园，负氧离子高，适合呼吸道养护与慢生活节奏；含温泉泡池与海景步道，全包中式营养餐。",
         "facts": [
-          { "label": "房型", "value": "家庭套房（两室一厅）· 一楼免爬楼 · 防滑地面" },
-          { "label": "餐饮", "value": "三餐全包 · 海鲜时令餐（可定制软食）" },
-          { "label": "照护", "value": "应急呼叫铃 · 合作村医巡诊 · 代购药品" },
-          { "label": "活动", "value": "观潮赶海 · 渔家灯火晚会 · 亲子拾贝" }
+          { "label": "三餐配套", "value": "中式营养餐三餐全包，可定制软食" },
+          { "label": "院内设施", "value": "温泉泡池、海景步道、阅览角" },
+          { "label": "周边医疗", "value": "港口区医院 1.2km、社区卫生站 500m" },
+          { "label": "周边配套", "value": "西湾沙滩步行3分钟、红树林公园门口" }
         ],
-        "price": "218",
-        "priceUnit": "/人/天",
-        "totalNote": "10天3人约 ¥6,540",
-        "rating": "4.7",
-        "ratingNote": "亲子好评多",
-        "btnPrimary": "查看详情",
-        "btnSecondary": "咨询顾问"
+        "price": "268",
+        "priceUnit": "/人/天 (含三餐住宿)",
+        "totalNote": "2人10天预估: ¥5,360",
+        "rating": "4.7/5.0",
+        "ratingNote": " · 起售价 ¥268/人/天"
       }
     ],
-    "note": "以上价格为旅居套餐参考价，含三餐与基础照护服务，以实际预订为准。"
+    "note": "以上价格仅供参考，以下门店实时为准。已自动过滤无电梯、远离医疗机构、无食堂的住宿。"
   }
   </script>
 </body>

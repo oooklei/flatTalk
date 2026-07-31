@@ -7,10 +7,10 @@
 <style>
   :root {
     --primary: #FF7826;
-    --primary-gradient: linear-gradient(135deg, #FF7826 0%, #FF9A5C 100%);
-    --bg: #F8EAD9; --bg-white: #ffffff;
-    --ink: #3A3A3A; --ink-light: #666; --muted: #999999;
-    --border: #E5E5E5; --divider: #F0EBE3; --price: #FF4D4F;
+    --bg: #FFF8F0; --bg-white: #ffffff;
+    --ink: #2C2C2C; --ink-light: #666; --muted: #999999;
+    --border: #F0E6DA; --divider: #E5EDE5; --price: #FF7826;
+    --card-green: #EEF7EE;
   }
   * { box-sizing: border-box; }
   body {
@@ -18,101 +18,118 @@
     font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
     background: var(--bg); color: var(--ink);
   }
-  .card {
-    max-width: 640px; margin: 0 auto; background: var(--bg-white);
-    border-radius: 14px; padding: 14px; border: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
+  .card { max-width: 640px; margin: 0 auto; }
+
   .chat-section-title {
+    display: flex; align-items: center; gap: 8px;
     font-size: 16px; font-weight: 700; color: var(--ink);
-    margin: 0 0 8px; padding: 8px 12px;
-    background: linear-gradient(135deg, #FFF7E6, #FFF3E0);
-    border-radius: 8px; border-left: 3px solid var(--primary);
+    margin: 0 0 10px; padding: 10px 12px;
+    background: #FFF7ED; border-radius: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .chat-section-title .ico {
+    width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+    border: 1.5px solid #4CAF50; color: #4CAF50;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; background: #F1FBF1;
+  }
+
+  .sum-box {
+    background: var(--card-green);
+    border: 1px solid #D9ECDD;
+    border-radius: 14px;
+    padding: 4px 14px 14px;
   }
   .sum-rows { font-size: 13px; }
   .sum-row {
-    display: flex; justify-content: space-between; gap: 10px;
-    padding: 7px 0; border-bottom: 1px dashed var(--divider);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--divider);
   }
-  .sum-row:last-child { border-bottom: none; }
   .sum-label { color: var(--muted); flex-shrink: 0; }
-  .sum-value { text-align: right; color: var(--ink); font-weight: 500; }
+  .sum-value { text-align: right; color: var(--ink); font-weight: 700; line-height: 1.45; }
+
   .total {
     display: flex; justify-content: space-between; align-items: center;
-    margin-top: 8px; padding: 10px 12px; border-radius: 10px;
-    background: linear-gradient(135deg, #FFF7E6, #FFF3E0);
+    padding: 12px 0 4px; border-top: 1px solid var(--divider);
   }
-  .total-label { font-size: 13px; font-weight: 700; }
-  .total-price { font-size: 20px; font-weight: 800; color: var(--price); }
+  .total-label { font-size: 13px; color: var(--muted); }
+  .total-price { font-size: 18px; font-weight: 800; color: var(--price); }
   .total-price small { font-size: 12px; color: var(--muted); font-weight: 400; }
-  .actions { display: flex; gap: 8px; margin-top: 10px; }
-  .chat-btn {
-    flex: 1; text-align: center; padding: 10px 0; font-size: 14px; font-weight: 600;
-    border-radius: 10px; border: 1px solid var(--primary); color: var(--primary); background: #fff;
+
+  .more-box {
+    margin-top: 12px;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 12px 4px;
   }
-  .chat-btn.solid { background: var(--primary-gradient); color: #fff; border: none; }
-  .chat-follow-up { margin-top: 12px; }
-  .chat-follow-up-title { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .chat-follow-up-items { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chat-follow-up-item {
-    padding: 6px 12px; font-size: 12px; border-radius: 14px;
-    background: #fff; border: 1px solid var(--primary); color: var(--primary);
+  .more-title {
+    font-size: 13px; color: var(--ink-light); font-weight: 600;
+    margin: 0 0 4px; padding: 0 2px;
+  }
+  .more-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 2px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .more-item:last-child { border-bottom: none; }
+  .more-ico {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; background: #F5F5F5;
+  }
+  .more-ico.food { background: #FFE8EF; }
+  .more-ico.pack { background: #E8F2FF; }
+  .more-ico.act { background: #E8F8EE; }
+  .more-body { flex: 1; min-width: 0; }
+  .more-label {
+    font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.4;
+  }
+  .more-desc {
+    font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.45;
+  }
+  .more-arrow {
+    flex-shrink: 0; color: #CCC; font-size: 16px; font-weight: 400;
   }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="chat-section-title">{{title|📋 方案总结}}</div>
-    <div class="sum-rows">
-      {{#rows}}
-      <div class="sum-row">
-        <span class="sum-label">{{icon|📌}} {{label|项目}}</span>
-        <span class="sum-value">{{value|—}}</span>
+    <div class="chat-section-title">
+      <span class="ico">✓</span>
+      <span>{{title|旅居方案总结}}</span>
+    </div>
+
+    <div class="sum-box">
+      <div class="sum-rows">
+        {{#rows}}
+        <div class="sum-row">
+          <span class="sum-label">{{label|项目}}</span>
+          <span class="sum-value">{{value|—}}</span>
+        </div>
+        {{/rows}}
       </div>
-      {{/rows}}
-    </div>
-    <div class="total">
-      <span class="total-label">{{totalLabel|💰 预估总费用}}</span>
-      <span class="total-price">¥{{totalPrice|—}} <small>{{totalNote|}}</small></span>
-    </div>
-    <div class="actions">
-      <div class="chat-btn solid">{{btnPrimary|一键预订咨询}}</div>
-      <div class="chat-btn">{{btnSecondary|发给家人看看}}</div>
-    </div>
-    {{#followUps}}
-    <div class="chat-follow-up">
-      <div class="chat-follow-up-title">{{followTitle|💬 您还可以继续问我：}}</div>
-      <div class="chat-follow-up-items">
-        {{#items}}<span class="chat-follow-up-item">{{label|追问}}</span>{{/items}}
+      <div class="total">
+        <span class="total-label">{{totalLabel|预估总费用}}</span>
+        <span class="total-price">¥{{totalPrice|—}}<small>{{totalNote|}}</small></span>
       </div>
     </div>
-    {{/followUps}}
+    <!-- 紧密追问区 -->
+    {{compact_followups}}
   </div>
 
   <script type="application/json">
   {
-    "title": "📋 方案总结（防城港10天医养旅居）",
+    "title": "旅居方案总结",
     "rows": [
-      { "icon": "🏨", "label": "住宿", "value": "白浪滩康养旅居基地 · 海景双床房 · 10晚" },
-      { "icon": "🍚", "label": "餐饮", "value": "三餐全包（低盐低糖长者餐 + 儿童餐）" },
-      { "icon": "🏥", "label": "医养", "value": "每日血压监测 + 用药提醒 + 750米三甲医院" },
-      { "icon": "🌅", "label": "游玩", "value": "白浪滩 / 海洋公园 / 簕山古渔村（均适老化）" },
-      { "icon": "🚄", "label": "交通", "value": "南宁东↔防城港北 高铁往返 + 基地免费接送站" }
+      { "label": "目的地", "value": "防城港 · 滨海康养" },
+      { "label": "旅居天数", "value": "10天9晚" },
+      { "label": "出行人数", "value": "2人（2位长者）" },
+      { "label": "首选住宿", "value": "恒荣大酒店旅居康养基地" }
     ],
-    "totalLabel": "💰 预估总费用（3人10天）",
-    "totalPrice": "9,188",
-    "totalNote": "含住宿餐饮/高铁/包车",
-    "btnPrimary": "一键预订咨询",
-    "btnSecondary": "发给家人看看",
-    "followUps": {
-      "items": [
-        { "label": "帮我换成15天方案" },
-        { "label": "有没有更便宜的基地？" },
-        { "label": "轮椅租借怎么安排？" },
-        { "label": "把行程发到家庭群" }
-      ]
-    },
-    "followTitle": "💬 您还可以继续问我："
+    "totalLabel": "预估总费用",
+    "totalPrice": "3,960起",
+    "totalNote": ""
   }
   </script>
 </body>
