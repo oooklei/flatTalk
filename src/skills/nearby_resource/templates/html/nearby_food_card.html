@@ -41,7 +41,6 @@
             <div class="nb-row-actions">
               <a class="nb-btn nb-btn-primary" href="https://apis.map.qq.com/uri/v1/marker?marker=coord:{{lat}},{{lng}};title:{{name}}&referer=guixiaoyang" target="_blank">🧭 导航</a>
               {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
-              <button class="nb-btn" data-act="fav" data-poi="{{poi_id}}">⭐ 收藏</button>
             </div>
           </div>
         </div>
@@ -49,7 +48,7 @@
         {{^markers}}<div class="nb-empty">周边暂无餐饮配套收录</div>{{/markers}}
       </div>
       <!-- 紧密追问区 -->
-      {{compact_followups}}
+      {{{compact_followups}}}
     </section>
   </div>
   <script type="application/json">
