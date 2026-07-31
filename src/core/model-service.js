@@ -1,6 +1,5 @@
 import { createYz365Service } from '../services/yz365/index.js';
 import crypto from 'node:crypto';
-import { renderCompactFollowups } from './compact-followups/renderer.js';
 
 const HTML_TAG_PATTERN = /<[^>]*>/g;
 const EVENT_HANDLER_PATTERN = /\bon[a-z]+\s*=/gi;
@@ -57,6 +56,10 @@ export async function fillTemplateSlots({
 
   if (selectedTemplateId === 'travel_weather_risk_card') {
     return fillTravelWeatherRiskCard({ message, business_data, weatherService });
+  }
+
+  if (selectedTemplateId === 'service_emergency') {
+    return fillServiceEmergencyCard({ message, intent_context });
   }
 
   if (['service_recommend', 'service_catalog', 'org_profile', 'worker_profile', 'order_preview', 'order_status'].includes(selectedTemplateId)) {
@@ -594,7 +597,7 @@ function fillWeeklyPlan({ message, business_data }) {
     : buildWeeklyPlanItems(condition);
 
   const compactFollowups = [
-    { label: '调整饮食偏好', action_key: 'meal_plan.adjust_preference' },
+    { label: '按健康状况调整', action_key: 'meal_plan.adjust_for_condition' },
   ];
 
   return sanitizeModelResult({
@@ -727,7 +730,7 @@ function fillDietCard({ message, business_data }) {
   const answerText = buildAnswer(condition, mealType);
 
   const compactFollowups = [
-    { label: '换一个推荐', action_key: 'meal_plan.suggest_alternative' },
+    { label: '生成一周计划', action_key: 'meal_plan.generate_weekly_plan' },
   ];
 
   return sanitizeModelResult({
@@ -1006,7 +1009,7 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
   }
 
   const compactFollowups = [
-    { label: '收藏', action_key: 'nearby_resource.favorite' },
+    { label: '周边导航', action_key: 'nearby_resource.route' },
   ];
 
   return sanitizeModelResult({
@@ -1257,6 +1260,40 @@ function pickDispatchManageTemplate(message, ids) {
   if (ids.includes('dispatch_status') && /进度|状态|催单|改约|更新/.test(t)) return 'dispatch_status';
   if (ids.includes('dispatch_list')) return 'dispatch_list';
   return ids.find((id) => id.startsWith('dispatch_')) || 'dispatch_list';
+}
+
+/**
+ * SOS 紧急求助卡片
+ * 检测到紧急意图时渲染，提供 120 拨号、通知家属、标记安全 三个动作。
+ */
+function fillServiceEmergencyCard({ message = '', intent_context = {} } = {}) {
+  const keywords = Array.isArray(intent_context.keyword_match) && intent_context.keyword_match.length
+    ? intent_context.keyword_match.join('、')
+    : '紧急求助';
+  const emergencyPhone = process.env.SOS_DEFAULT_PHONE || '';
+  const emergencyName = process.env.SOS_DEFAULT_NAME || '家属';
+  const answerText = `检测到紧急情况（${keywords}），请立即拨打120或通知家属。`;
+
+  return sanitizeModelResult({
+    template_id: 'service_emergency',
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      matched_keywords: keywords,
+      emergency_phone: emergencyPhone,
+      emergency_name: emergencyName,
+    },
+    actions: [
+      { key: 'sos.call_120', label: '📞 立即拨打120' },
+      { key: 'sos.notify_family', label: '👪 通知家属' },
+      { key: 'sos.im_safe', label: '✓ 我已安全' },
+    ],
+    followup_suggestions: [
+      { key: 'sos.call_120', label: '拨打120' },
+      { key: 'sos.notify_family', label: '通知家属' },
+    ],
+    template_fit_notes: ['sos_emergency_card'],
+  });
 }
 
 function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
