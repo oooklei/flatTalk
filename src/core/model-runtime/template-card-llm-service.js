@@ -3,26 +3,29 @@ import { pickChatModel, publicModelName } from './model-registry.js';
 import { callOpenAiCompatibleModel } from './openai-compatible-client.js';
 import { loadPrompt } from './prompt-loader.js';
 import { createKnowledgeDataService } from '../../services/knowledge-data/index.js';
+import { createTencentWeatherAdapter } from '../../services/weather/tencent-weather.js';
 
 export function createTemplateCardModelService(options = {}) {
   const mode = options.modelMode || process.env.FLATTALK_MODEL_MODE || 'admin';
   const useMock = mode === 'mock' || options.runtimeMode === 'test';
   const knowledgeService = options.knowledgeService || createKnowledgeDataService();
+  const weatherService = options.weatherService || createTencentWeatherAdapter();
 
   return {
     async fillTemplateSlots(input = {}) {
-      if (useMock || shouldUseDeterministicTemplate(input)) {
-        const result = await fillTemplateSlotsMock({ ...input, knowledgeService });
-        return { ...result, model_status: useMock ? 'mock' : 'local_template', model_used: useMock ? 'mock' : 'local_template' };
+      if (useMock) {
+        const result = await fillTemplateSlotsMock({ ...input, knowledgeService, weatherService });
+        return { ...result, model_status: 'mock', model_used: 'mock' };
       }
 
       const model = pickChatModel({ registryPath: options.registryPath, modelId: options.modelId });
       if (!model) return fallback(input, 'no_available_model', '未找到可用 admin 模型');
 
-      const messages = buildMessages(input);
+      const templateFields = buildTemplateFields(input.template_library);
+      const messages = buildMessages({ ...input, template_fields: templateFields });
       const response = await callOpenAiCompatibleModel(model, messages, {
         fetchImpl: options.fetchImpl,
-        timeoutMs: options.timeoutMs,
+        timeoutMs: input.timeoutMs || options.timeoutMs || 8000,
         maxTokens: input.max_tokens || model.max_tokens,
         temperature: input.temperature ?? model.temperature ?? 0.3,
       });
@@ -37,20 +40,84 @@ export function createTemplateCardModelService(options = {}) {
         model_used: publicModelName(model),
       }, input);
     },
+
+    /**
+     * 按钮动作通用兜底：强制走真实 LLM（绕过本地确定性模板），
+     * 用 input.prompt（五要素提示词）作为 user message 调模型合成。
+     * mock 模式或无可用模型时返回离线兜底说明（含「兜底」字样）。
+     * 测试可通过 options.testModel 或 svc.testModel 注入模型强制走 LLM。
+     */
+    async fillFallback(input = {}) {
+      const templateId = input.template_id || input.templateId || 'answer';
+      if (useMock && !options.testModel) {
+        return buildFallbackMockAnswer(input, 'mock_mode');
+      }
+      const model = options.testModel || pickChatModel({ registryPath: options.registryPath, modelId: options.modelId });
+      if (!model) return buildFallbackMockAnswer(input, 'no_available_model');
+
+      const messages = [
+        { role: 'system', content: loadPrompt('template-card/system.md') },
+        { role: 'user', content: input.prompt || '' },
+      ];
+      const response = await callOpenAiCompatibleModel(model, messages, {
+        fetchImpl: input.fetchImpl || options.fetchImpl,
+        timeoutMs: input.timeoutMs || options.timeoutMs,
+        maxTokens: input.max_tokens || model.max_tokens,
+        temperature: input.temperature ?? model.temperature ?? 0.3,
+      });
+      if (!response.ok) return buildFallbackMockAnswer(input, response.status);
+      const parsed = parseModelJson(response.content);
+      if (!parsed) return buildFallbackMockAnswer(input, 'invalid_json', response.content);
+      const shaped = sanitizeShape({
+        ...parsed,
+        data: parsed,
+        model_status: 'ok',
+        model_used: publicModelName(model),
+      }, { template_id: templateId, template_library: [{ id: templateId }] });
+      // 兜底保证 answer_text 非空：优先取模型声明的 answer_text/answer，否则回退到 data.summary/title
+      if (!shaped.answer_text) {
+        shaped.answer_text = (shaped.data && (shaped.data.summary || shaped.data.title)) || shaped.title || '';
+      }
+      return shaped;
+    },
+
+    set testModel(m) { options.testModel = m; },
   };
 }
 
-function shouldUseDeterministicTemplate(input = {}) {
-  const templateId = input.template_id || input.templateId || '';
-  return input.skill_key === 'travel_route'
-    || input.skill_key === 'health_risk_warning'
-    || templateId === 'route_card'
-    || templateId === 'health_warning_card'
-    || templateId === 'health_risk_signal_card'
-    || templateId === 'health_risk_rule_card'
-    || templateId === 'policy_card'
-    || templateId === 'weekly_plan'
-    || templateId === 'diet_card';
+function buildFallbackMockAnswer(input = {}, status = 'mock_mode', rawReply = '') {
+  const templateId = input.template_id || input.templateId || 'answer';
+  const label = input.label || '该按钮动作';
+  const answerText = `[兜底动作] 已收到动作「${label}」，当前为离线/无模型模式，暂无法调用大模型生成内容。该动作将：${input.endpoint || '依据资源清单处理'}。${rawReply ? `\n（模型原始返回：${String(rawReply).slice(0, 200)}）` : ''}`;
+  return {
+    template_id: templateId,
+    template_key: templateId,
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      title: '桂小养兜底答复',
+      skill_name: '按钮动作兜底',
+      answer_text: answerText,
+      points: [],
+      risks: [],
+      suggestions: [],
+    },
+    actions: [],
+    followup_suggestions: [],
+    model_status: 'fallback_mock',
+    model_used: 'mock',
+    model_error_status: status,
+  };
+}
+
+function buildTemplateFields(library = []) {
+  if (!Array.isArray(library)) return [];
+  return library.map((t) => ({
+    id: t.id || '',
+    layout: t.layout || '',
+    match: t.match || t.description || '',
+    required: Array.isArray(t.required) ? t.required : [],
+  }));
 }
 
 function buildMessages(input) {
@@ -61,6 +128,7 @@ function buildMessages(input) {
     skill_key: input.skill_key || '',
     requested_template_id: input.template_id || input.templateId || '',
     template_library: input.template_library || [],
+    template_fields: input.template_fields || [],
     evidence: input.evidence || [],
     business_data: input.business_data || {},
   });
