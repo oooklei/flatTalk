@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { buildEnvelope } from '../../contracts/envelope.js';
-import { composeInteractions } from '../interaction-composer.js';
+import { composeInteractions, loadStaticFollowups } from '../interaction-composer.js';
 import { classifyIntent } from '../intent-classifier/index.js';
 import { fillTemplateSlots, fillTravelWeatherRisk, fillTravelWeatherRiskCard } from '../model-service.js';
 import { extractCities } from '../city-extractor/index.js';
@@ -191,12 +191,14 @@ export function createChatOrchestrator(options = {}) {
           });
           mark('model', '模板填充', { model: modelResult.model_used, status: modelResult.model_status, template_id: modelResult.template_id });
         }
-        const interactions = composeInteractions({ sceneDecision, modelResult });
+        const staticFollowups = loadStaticFollowups(skillKey, modelResult.template_id || routedTemplateId);
+        const interactions = composeInteractions({ sceneDecision, modelResult, staticFollowups });
         const renderResult = renderTemplateCardResult({
           templateDir: skillTemplates.templateDir,
           modelResult,
           actions: interactions.actions,
           followupSuggestions: interactions.followup_suggestions,
+          compactFollowups: interactions.compact_followups,
         });
         mark('render', '卡片渲染', { status: renderResult.render_status, template_id: renderResult.card?.templateId });
         const templateId = renderResult.card.templateId || modelResult.template_id || skillTemplates.defaultTemplateId;

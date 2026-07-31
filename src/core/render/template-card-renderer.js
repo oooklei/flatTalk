@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { renderCard, renderTemplate } from '../../template-card/index.js';
+import { renderCompactFollowups } from '../compact-followups/renderer.js';
 
 const COMMON_HTML = path.join(process.cwd(), 'src', 'skills', 'common', 'templates', 'html', 'common');
 const ANSWER_HTML = path.join(COMMON_HTML, 'answer.html');
@@ -17,7 +18,9 @@ export function renderTemplateCardResult({
   modelResult = {},
   actions = [],
   followupSuggestions = [],
+  compactFollowups = [],
 } = {}) {
+  const compactFollowupsHtml = renderCompactFollowups(compactFollowups);
   const llmJson = normalizeLlmJson({
     template_id: modelResult.template_id || modelResult.template_key || null,
     answer: modelResult.answer || modelResult.answer_text || '',
@@ -30,14 +33,14 @@ export function renderTemplateCardResult({
   try {
     card = renderCard(templateDir, {
       template_id: llmJson.template_id,
-      data: buildRenderData(llmJson),
+      data: buildRenderData(llmJson, compactFollowupsHtml),
     });
     pageHtml = card.pages[0] || '';
     // 兜底：未匹配到具体模板（仅命中通用默认模板）时，使用公共 answer 模板承载正常返回
     if ((card.reason === 'no-match-fallback' || card.reason === 'low-coverage-fallback') && card.templateId !== 'answer') {
       const tpl = readTpl(ANSWER_HTML);
       if (tpl) {
-        pageHtml = renderTemplate(tpl, buildRenderData(llmJson));
+        pageHtml = renderTemplate(tpl, buildRenderData(llmJson, compactFollowupsHtml));
         card = { ...card, templateId: 'answer', reason: 'answer-fallback' };
       }
     }
@@ -79,7 +82,7 @@ function normalizeLlmJson({ template_id, answer, data, actions, followups }) {
   };
 }
 
-function buildRenderData(llmJson) {
+function buildRenderData(llmJson, compactFollowupsHtml = '') {
   const rawData = llmJson.data && typeof llmJson.data === 'object' ? llmJson.data : {};
   const data = llmJson.template_id === 'weekly_plan' ? normalizeWeeklyPlanData(rawData) : rawData;
   return {
@@ -88,6 +91,7 @@ function buildRenderData(llmJson) {
     answer_text: llmJson.answer,
     actions: formatActionLabels(llmJson.actions),
     followup_suggestions: formatFollowupLabels(llmJson.followups),
+    compact_followups: compactFollowupsHtml,
   };
 }
 
