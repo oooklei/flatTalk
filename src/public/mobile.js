@@ -34,6 +34,11 @@ function safeJson(value, fallback) {
   }
 }
 
+function safeParseParams(datasetStr) {
+  if (!datasetStr) return {};
+  try { return JSON.parse(datasetStr); } catch (e) { return {}; }
+}
+
 function encodeFollowup(value = {}) {
   return encodeURIComponent(JSON.stringify(value || {}));
 }
@@ -1205,6 +1210,21 @@ class MobileApp {
         <button type="button" class="quick-btn" data-func="policy"><span class="quick-btn-icon">&#128203;</span><span class="quick-btn-text">&#26597;&#25919;&#31574;</span></button>
         <button type="button" class="quick-btn" data-func="travel"><span class="quick-btn-icon">&#9992;&#65039;</span><span class="quick-btn-text">&#26053;&#23621;&#35268;&#21010;</span></button>
       </div>
+      <div class="home-section-title">&#32039;&#24613;&#27714;&#21161;</div>
+      <div class="quick-actions">
+        <button type="button" class="quick-btn sos-btn-trigger" data-func="sos-120" style="background:#E5484D;color:#fff;border:none;">
+          <span class="quick-btn-icon" style="font-size:22px">&#128222;</span>
+          <span class="quick-btn-text" style="font-weight:700">&#25320;&#25171;120</span>
+        </button>
+        <button type="button" class="quick-btn sos-btn-trigger" data-func="sos-family" style="background:#0E7C86;color:#fff;border:none;">
+          <span class="quick-btn-icon" style="font-size:22px">&#128106;</span>
+          <span class="quick-btn-text" style="font-weight:700">&#36890;&#30693;&#23478;&#23646;</span>
+        </button>
+        <button type="button" class="quick-btn sos-btn-trigger" data-func="sos-chat" style="background:#f0f5f6;color:#E5484D;border:1px solid #E5484D;">
+          <span class="quick-btn-icon" style="font-size:22px">&#9888;&#65039;</span>
+          <span class="quick-btn-text" style="font-weight:700">SOS&#27714;&#21161;</span>
+        </button>
+      </div>
       <div class="ai-entry-bar" id="mobileAiEntry">
         <div class="ai-avatar-sm">AI</div>
         <div class="ai-entry-placeholder">&#26377;&#20160;&#20040;&#24819;&#35828;&#30340;&#65292;&#30452;&#25509;&#35828;...</div>
@@ -1219,6 +1239,9 @@ class MobileApp {
         else if (func === "search") { this.switchTab("chat"); this.sendMessage("\u627e\u670d\u52a1"); }
         else if (func === "policy") { this.switchTab("chat"); this.sendMessage("\u67e5\u653f\u7b56"); }
         else if (func === "travel") { this.switchTab("chat"); this.sendMessage("\u5e2e\u6211\u89c4\u5212\u65c5\u5c45\u8def\u7ebf"); }
+        else if (func === "sos-120") { window.location.href = "tel:120"; }
+        else if (func === "sos-family") { const ec = localStorage.getItem("emergency_contact_phone"); if (ec) { window.location.href = "tel:" + ec; } else { this.switchTab("chat"); this.sendMessage("\u6211\u8981\u901a\u77e5\u5bb6\u5c5e"); } }
+        else if (func === "sos-chat") { this.switchTab("chat"); this.sendMessage("\u6551\u547d\uff01\u7d27\u6025\u6c42\u52a9"); }
       });
     });
     page.querySelector("#mobileAiEntry")?.addEventListener("click", () => {
@@ -1891,10 +1914,13 @@ class MobileApp {
     const actionKey = chip.dataset.actionKey;
     if (!actionKey || this.state.sending) return;
 
-    const inputDef = chip.dataset.input ? JSON.parse(chip.dataset.input) : null;
+    let inputDef = null;
+    if (chip.dataset.input) {
+      try { inputDef = JSON.parse(chip.dataset.input); } catch (e) { inputDef = null; }
+    }
 
     if (!inputDef) {
-      const params = chip.dataset.params ? JSON.parse(chip.dataset.params) : {};
+      const params = safeParseParams(chip.dataset.params);
       this.handleAssistantAction({ action_key: actionKey, params, label: chip.textContent.trim() }, chip);
       return;
     }
@@ -1917,8 +1943,10 @@ class MobileApp {
     confirm.textContent = "✓";
     confirm.className = "compact-chip-confirm";
     const submit = () => {
-      const baseParams = chip.dataset.params ? JSON.parse(chip.dataset.params) : {};
-      baseParams[def.param_key] = input.value.trim();
+      const val = input.value.trim();
+      if (!val) return;
+      const baseParams = safeParseParams(chip.dataset.params);
+      baseParams[def.param_key] = val;
       this.handleAssistantAction({ action_key: actionKey, params: baseParams, label: chip.textContent.trim() }, chip);
     };
     confirm.addEventListener("click", submit);
@@ -1949,7 +1977,7 @@ class MobileApp {
     confirm.className = "compact-chip-confirm";
     confirm.addEventListener("click", () => {
       if (!select.value) return;
-      const baseParams = chip.dataset.params ? JSON.parse(chip.dataset.params) : {};
+      const baseParams = safeParseParams(chip.dataset.params);
       baseParams[def.param_key] = select.value;
       this.handleAssistantAction({ action_key: actionKey, params: baseParams, label: chip.textContent.trim() }, chip);
     });
@@ -1987,7 +2015,7 @@ class MobileApp {
     submitBtn.textContent = "提交";
     submitBtn.className = "compact-chip-confirm compact-form-submit";
     submitBtn.addEventListener("click", () => {
-      const params = chip.dataset.params ? JSON.parse(chip.dataset.params) : {};
+      const params = safeParseParams(chip.dataset.params);
       panel.querySelectorAll(".compact-form-field").forEach((f) => {
         if (f.value.trim()) params[f.dataset.fieldKey] = f.value.trim();
       });
@@ -2672,13 +2700,13 @@ window.addEventListener('message', (event) => {
     if (data.action_key !== 'travel_route.check_weather_risk') return;
     const app = window.GuiXiaoYangMobileApp;
     if (app && typeof app.handleAssistantAction === 'function') {
-      app.handleAssistantAction(null, {
+      app.handleAssistantAction({
         action_key: data.action_key,
         skill_key: 'travel_route',
         label: '查看天气风险',
         user_prompt: '请结合这条旅居路线和目的地，检查近期天气风险',
         params: { city: data.city || '' },
-      });
+      }, null);
     }
   } catch (e) { /* 忽略卡片消息异常 */ }
 });
