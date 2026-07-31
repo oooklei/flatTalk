@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_stay_card" data-layout="card">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>嘉路康养生活圈 · 住宿</title>
+  <link rel="stylesheet" href="./_design_tokens.css" />
+  <link rel="stylesheet" href="./_base.css" />
+</head>
+<body>
+  <div class="nb-wrap">
+    <section class="nb-card">
+      <div class="nb-head">
+        <div>
+          <h2 class="nb-title">🏠 住 · 民宿与康养小院</h2>
+          <p class="nb-sub">{{centerName}} 周边 {{radiusKm}}km · 共 {{total}} 处住宿配套</p>
+        </div>
+        <span class="nb-badge" style="background:var(--primary-weak);color:var(--primary)">适老优先</span>
+      </div>
+      <div class="nb-list">
+        {{#markers}}
+        <div class="nb-row">
+          <div class="nb-ico" style="background:{{color}}">{{emoji}}</div>
+          <div class="nb-row-main">
+            <div class="nb-row-top"><span class="nb-name">{{name}}</span><span class="nb-dist">{{distance_text}}km</span></div>
+            <div class="nb-addr">{{address}}</div>
+            <div class="nb-tags">{{#tags}}<span class="nb-tag">{{.}}</span>{{/tags}}</div>
+            <div class="nb-row-meta">
+              {{#biz_status}}<span>● {{biz_status}}</span>{{/biz_status}}
+              {{#open_time}}<span>⏰ {{open_time}}</span>{{/open_time}}
+              <span>距中心 {{distance_text}}km</span>
+            </div>
+            <div class="nb-row-actions">
+              <a class="nb-btn nb-btn-primary" href="https://apis.map.qq.com/uri/v1/marker?marker=coord:{{lat}},{{lng}};title:{{name}}&referer=guixiaoyang" target="_blank">🧭 导航</a>
+              {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
+            </div>
+          </div>
+        </div>
+        {{/markers}}
+        {{^markers}}<div class="nb-empty">周边暂无住宿配套收录</div>{{/markers}}
+      </div>
+      <!-- 紧密追问区 -->
+      {{compact_followups}}
+    </section>
+  </div>
+  <script type="application/json">
+  {
+    "centerName": "嘉路康养中心", "radiusKm": 15, "total": 3,
+    "markers": [
+      { "poi_id": "s1", "name": "海岸假日民宿", "address": "港口区某路12号", "distance_text": "0.8", "cat": "stay", "color": "#3B82A0", "emoji": "🏠", "biz_status": "营业中", "tel": "0770-1234567", "open_time": "24小时", "tags": ["近海", "适老电梯", "无障碍"], "tags_text": "近海·适老电梯·无障碍" },
+      { "poi_id": "s2", "name": "嘉路康养小院", "address": "康养中心内", "distance_text": "0.2", "cat": "stay", "color": "#3B82A0", "emoji": "🏠", "biz_status": "营业中", "tel": "0770-0000000", "open_time": "24小时", "tags": ["医养结合", "照护"], "tags_text": "医养结合·照护" },
+      { "poi_id": "s3", "name": "渔家小院", "address": "渔洲坪", "distance_text": "1.4", "cat": "stay", "color": "#3B82A0", "emoji": "🏠", "biz_status": "营业中", "tags": ["安静", "近海"], "tags_text": "安静·近海" }
+    ]
+  }
+  </script>
+</body>
+</html>

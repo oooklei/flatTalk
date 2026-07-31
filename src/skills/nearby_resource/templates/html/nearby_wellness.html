@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_wellness" data-layout="card">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>嘉路康养生活圈 · 康养配套</title>
+  <link rel="stylesheet" href="./_design_tokens.css" />
+  <link rel="stylesheet" href="./_base.css" />
+  <style>
+    .nb-row-desc { font-size: 12px; color: var(--ink-2); margin-top: 6px; line-height: 1.5; padding: 6px 8px; background: rgba(0,0,0,.02); border-radius: 6px; }
+    .nb-row-imgs { display: flex; gap: 6px; margin-top: 6px; }
+    .nb-row-imgs img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+    .nb-row-hint { font-size: 12px; color: #e6a23c; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="nb-wrap">
+    <section class="nb-card">
+      <div class="nb-head">
+        <div>
+          <h2 class="nb-title">🏥 康养配套生态</h2>
+          <p class="nb-sub">{{centerName}} 周边 {{radiusKm}}km · 康养小院 + 医疗保障共 {{total}} 处</p>
+        </div>
+        <span class="nb-badge" style="background:#FCE8E8;color:var(--wellness)">医养</span>
+      </div>
+      <div class="nb-list">
+        {{#wellnessItems}}
+        <div class="nb-row">
+          <div class="nb-ico" style="background:{{color}}">{{emoji}}</div>
+          <div class="nb-row-main">
+            <div class="nb-row-top"><span class="nb-name">{{name}}</span><span class="nb-dist">{{distance_text}}km</span></div>
+            <div class="nb-addr">{{address}}</div>
+            <div class="nb-tags">{{#tags}}<span class="nb-tag">{{.}}</span>{{/tags}}</div>
+            <div class="nb-row-meta">
+              {{#biz_status}}<span>● {{biz_status}}</span>{{/biz_status}}
+              {{#open_time}}<span>⏰ {{open_time}}</span>{{/open_time}}
+            </div>
+            {{#enriched_description}}<div class="nb-row-desc">{{enriched_description}}</div>{{/enriched_description}}
+            {{#enriched_images}}<div class="nb-row-imgs">{{#.}}<img src="{{.}}" alt="" loading="lazy" />{{/.}}</div>{{/enriched_images}}
+            {{#enriched_rating_hint}}<div class="nb-row-hint">⭐ {{enriched_rating_hint}}</div>{{/enriched_rating_hint}}
+            <div class="nb-row-actions">
+              <a class="nb-btn nb-btn-primary" href="https://apis.map.qq.com/uri/v1/marker?marker=coord:{{lat}},{{lng}};title:{{name}}&referer=guixiaoyang" target="_blank">🧭 导航</a>
+              {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
+            </div>
+          </div>
+        </div>
+        {{/wellnessItems}}
+        {{^wellnessItems}}<div class="nb-empty">周边暂无康养 / 医疗配套收录</div>{{/wellnessItems}}
+      </div>
+      <p class="nb-sub" style="padding:0 16px 14px">💡 康养小院与社区卫生服务中心联动，构成「住养 + 医养」一体化生活圈。</p>
+      <!-- 紧密追问区 -->
+      {{compact_followups}}
+    </section>
+  </div>
+  <script type="application/json">
+  {
+    "centerName": "嘉路康养中心", "radiusKm": 15, "total": 2,
+    "wellnessItems": [
+      { "poi_id": "w1", "name": "嘉路康养小院", "address": "康养中心内", "distance_text": "0.2", "cat": "stay", "color": "#3B82A0", "emoji": "🏠", "biz_status": "营业中", "tel": "0770-0000000", "tags": ["医养结合", "照护"], "tags_text": "医养结合·照护", "lat": 21.528, "lng": 108.167 },
+      { "poi_id": "w2", "name": "港口区社区卫生服务中心", "address": "港口区", "distance_text": "1.1", "cat": "wellness", "color": "#E5484D", "emoji": "🏥", "biz_status": "营业中", "open_time": "08:00-17:30", "tags": ["全科", "中医"], "tags_text": "全科·中医", "lat": 21.526, "lng": 108.163 }
+    ]
+  }
+  </script>
+</body>
+</html>

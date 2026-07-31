@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_spot_card" data-layout="card">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>嘉路康养生活圈 · 景区</title>
+  <link rel="stylesheet" href="./_design_tokens.css" />
+  <link rel="stylesheet" href="./_base.css" />
+  <style>
+    .nb-row-desc { font-size: 12px; color: var(--ink-2); margin-top: 6px; line-height: 1.5; padding: 6px 8px; background: rgba(0,0,0,.02); border-radius: 6px; }
+    .nb-row-imgs { display: flex; gap: 6px; margin-top: 6px; }
+    .nb-row-imgs img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+    .nb-row-hint { font-size: 12px; color: #e6a23c; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="nb-wrap">
+    <section class="nb-card">
+      <div class="nb-head">
+        <div>
+          <h2 class="nb-title">🏖️ 游 · 滨海景区</h2>
+          <p class="nb-sub">{{centerName}} 周边 {{radiusKm}}km · 共 {{total}} 个景区</p>
+        </div>
+        <span class="nb-badge" style="background:#E3F6EF;color:#1E8E6A">适老友好</span>
+      </div>
+      <div class="nb-list">
+        {{#markers}}
+        <div class="nb-row">
+          <div class="nb-ico" style="background:{{color}}">{{emoji}}</div>
+          <div class="nb-row-main">
+            <div class="nb-row-top"><span class="nb-name">{{name}}</span><span class="nb-dist">{{distance_text}}km</span></div>
+            <div class="nb-addr">{{address}}</div>
+            <div class="nb-tags">{{#tags}}<span class="nb-tag">{{.}}</span>{{/tags}}</div>
+            <div class="nb-row-meta">
+              {{#biz_status}}<span>● {{biz_status}}</span>{{/biz_status}}
+              {{#open_time}}<span>⏰ {{open_time}}</span>{{/open_time}}
+              <span>🌿 平缓步道·无障碍</span>
+            </div>
+            {{#enriched_description}}<div class="nb-row-desc">{{enriched_description}}</div>{{/enriched_description}}
+            {{#enriched_images}}<div class="nb-row-imgs">{{#.}}<img src="{{.}}" alt="" loading="lazy" />{{/.}}</div>{{/enriched_images}}
+            {{#enriched_rating_hint}}<div class="nb-row-hint">⭐ {{enriched_rating_hint}}</div>{{/enriched_rating_hint}}
+            <div class="nb-row-actions">
+              <a class="nb-btn nb-btn-primary" href="https://apis.map.qq.com/uri/v1/marker?marker=coord:{{lat}},{{lng}};title:{{name}}&referer=guixiaoyang" target="_blank">🧭 导航</a>
+              {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
+            </div>
+          </div>
+        </div>
+        {{/markers}}
+        {{^markers}}<div class="nb-empty">周边暂无景区收录</div>{{/markers}}
+      </div>
+      <p class="nb-sub" style="padding:0 16px 14px">💡 建议上午或傍晚前往，避开正午日晒；海边风大，老人注意保暖与防滑。</p>
+      <!-- 紧密追问区 -->
+      {{compact_followups}}
+    </section>
+  </div>
+  <script type="application/json">
+  {
+    "centerName": "嘉路康养中心", "radiusKm": 15, "total": 3,
+    "markers": [
+      { "poi_id": "p1", "name": "西湾滨海景区", "address": "西湾大道", "distance_text": "2.5", "cat": "spot", "color": "#2BAE8E", "emoji": "🏖️", "biz_status": "开放中", "open_time": "全天", "tags": ["海景", "日落", "栈道"], "tags_text": "海景·日落·栈道" },
+      { "poi_id": "p2", "name": "怪石滩景区", "address": "江山半岛", "distance_text": "4.1", "cat": "spot", "color": "#2BAE8E", "emoji": "🏖️", "biz_status": "开放中", "open_time": "全天", "tags": ["礁石", "赶海"], "tags_text": "礁石·赶海" },
+      { "poi_id": "p3", "name": "白浪滩", "address": "北仑河口", "distance_text": "6.3", "cat": "spot", "color": "#2BAE8E", "emoji": "🏖️", "biz_status": "开放中", "open_time": "全天", "tags": ["沙滩", "平缓"], "tags_text": "沙滩·平缓" }
+    ]
+  }
+  </script>
+</body>
+</html>

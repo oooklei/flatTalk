@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_list" data-layout="list">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>嘉路康养生活圈 · 资源清单</title>
+  <link rel="stylesheet" href="./_design_tokens.css" />
+  <link rel="stylesheet" href="./_base.css" />
+</head>
+<body>
+  <div class="nb-wrap">
+    <section class="nb-card">
+      <div class="nb-head">
+        <div>
+          <h2 class="nb-title">{{centerName}} · 周边配套清单</h2>
+          <p class="nb-sub">{{radiusKm}} 公里生活圈 · 共 {{total}} 个配套</p>
+        </div>
+        <span class="nb-badge">本地库</span>
+      </div>
+      <div class="nb-filters">
+        <div class="nb-chip active" data-cat="all"><span class="nb-emoji">📍</span>全部</div>
+        <div class="nb-chip" data-cat="stay"><span class="nb-emoji">🏠</span>住</div>
+        <div class="nb-chip" data-cat="food"><span class="nb-emoji">🍜</span>吃</div>
+        <div class="nb-chip" data-cat="spot"><span class="nb-emoji">🏖️</span>游</div>
+        <div class="nb-chip" data-cat="leisure"><span class="nb-emoji">🎣</span>娱</div>
+        <div class="nb-chip" data-cat="shop"><span class="nb-emoji">🛍️</span>购</div>
+        <div class="nb-chip" data-cat="transit"><span class="nb-emoji">🚐</span>行</div>
+        <div class="nb-chip" data-cat="wellness"><span class="nb-emoji">🏥</span>养</div>
+      </div>
+      <div class="nb-list">
+        {{#markers}}
+        <div class="nb-row" data-cat="{{cat}}">
+          <div class="nb-ico" style="background:{{color}}">{{emoji}}</div>
+          <div class="nb-row-main">
+            <div class="nb-row-top"><span class="nb-name">{{name}}</span><span class="nb-dist">{{distance_text}}km</span></div>
+            <div class="nb-addr">{{address}}</div>
+            <div class="nb-tags">{{#tags}}<span class="nb-tag">{{.}}</span>{{/tags}}</div>
+            <div class="nb-row-meta">
+              {{#biz_status}}<span>● {{biz_status}}</span>{{/biz_status}}
+              {{#open_time}}<span>⏰ {{open_time}}</span>{{/open_time}}
+            </div>
+            <div class="nb-row-actions">
+              <a class="nb-btn nb-btn-primary" href="https://apis.map.qq.com/uri/v1/marker?marker=coord:{{lat}},{{lng}};title:{{name}}&referer=guixiaoyang" target="_blank">🧭 导航</a>
+              {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
+            </div>
+          </div>
+        </div>
+        {{/markers}}
+        {{^markers}}<div class="nb-empty">该范围内暂无周边资源</div>{{/markers}}
+      </div>
+      <!-- 紧密追问区 -->
+      {{compact_followups}}
+    </section>
+  </div>
+  <script>
+    document.querySelectorAll('.nb-chip').forEach(function (c) {
+      c.addEventListener('click', function () {
+        var cat = c.getAttribute('data-cat');
+        document.querySelectorAll('.nb-chip').forEach(function (x) { x.classList.remove('active'); });
+        c.classList.add('active');
+        document.querySelectorAll('.nb-row').forEach(function (r) {
+          r.style.display = (cat === 'all' || r.getAttribute('data-cat') === cat) ? '' : 'none';
+        });
+      });
+    });
+  </script>
+  <script type="application/json">
+  {
+    "centerName": "嘉路康养中心", "radiusKm": 15, "total": 5, "category": "",
+    "markers": [
+      { "poi_id": "x1", "name": "海岸假日民宿", "address": "港口区某路12号", "distance_text": "0.8", "cat": "stay", "color": "#3B82A0", "emoji": "🏠", "biz_status": "营业中", "tel": "0770-1234567", "open_time": "24小时", "tags": ["近海", "适老"], "tags_text": "近海·适老" },
+      { "poi_id": "x2", "name": "渔家海鲜大排档", "address": "渔洲坪", "distance_text": "1.2", "cat": "food", "color": "#F2994A", "emoji": "🍜", "biz_status": "营业中", "tel": "0770-2233445", "open_time": "11:00-22:00", "tags": ["海鲜大排档", "私房菜"], "tags_text": "海鲜大排档·私房菜" },
+      { "poi_id": "x3", "name": "西湾滨海景区", "address": "西湾大道", "distance_text": "2.5", "cat": "spot", "color": "#2BAE8E", "emoji": "🏖️", "biz_status": "开放中", "tags": ["海景", "日落"], "tags_text": "海景·日落" },
+      { "poi_id": "x4", "name": "渔人码头垂钓场", "address": "渔洲坪码头", "distance_text": "3.1", "cat": "leisure", "color": "#8E6FD8", "emoji": "🎣", "biz_status": "营业中", "open_time": "06:00-20:00", "tags": ["垂钓"], "tags_text": "垂钓" },
+      { "poi_id": "x5", "name": "海特产购物店", "address": "港口区某路", "distance_text": "1.6", "cat": "shop", "color": "#E08AC0", "emoji": "🛍️", "biz_status": "营业中", "open_time": "09:00-21:00", "tags": ["特产"], "tags_text": "特产" }
+    ]
+  }
+  </script>
+</body>
+</html>

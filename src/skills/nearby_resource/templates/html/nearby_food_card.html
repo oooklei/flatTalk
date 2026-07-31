@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_food_card" data-layout="card">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>嘉路康养生活圈 · 餐饮</title>
+  <link rel="stylesheet" href="./_design_tokens.css" />
+  <link rel="stylesheet" href="./_base.css" />
+  <style>
+    .nb-row-desc { font-size: 12px; color: var(--ink-2); margin-top: 6px; line-height: 1.5; padding: 6px 8px; background: rgba(0,0,0,.02); border-radius: 6px; }
+    .nb-row-imgs { display: flex; gap: 6px; margin-top: 6px; }
+    .nb-row-imgs img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+    .nb-row-hint { font-size: 12px; color: #e6a23c; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="nb-wrap">
+    <section class="nb-card">
+      <div class="nb-head">
+        <div>
+          <h2 class="nb-title">🍜 吃 · 特色餐饮与海鲜</h2>
+          <p class="nb-sub">{{centerName}} 周边 {{radiusKm}}km · 共 {{total}} 家餐饮</p>
+        </div>
+        <span class="nb-badge" style="background:var(--accent-weak);color:var(--accent)">清淡适老</span>
+      </div>
+      <div class="nb-list">
+        {{#markers}}
+        <div class="nb-row">
+          <div class="nb-ico" style="background:{{color}}">{{emoji}}</div>
+          <div class="nb-row-main">
+            <div class="nb-row-top"><span class="nb-name">{{name}}</span><span class="nb-dist">{{distance_text}}km</span></div>
+            <div class="nb-addr">{{address}}</div>
+            <div class="nb-tags">{{#tags}}<span class="nb-tag">{{.}}</span>{{/tags}}</div>
+            <div class="nb-row-meta">
+              {{#biz_status}}<span>● {{biz_status}}</span>{{/biz_status}}
+              {{#open_time}}<span>⏰ {{open_time}}</span>{{/open_time}}
+            </div>
+            {{#enriched_description}}<div class="nb-row-desc">{{enriched_description}}</div>{{/enriched_description}}
+            {{#enriched_images}}<div class="nb-row-imgs">{{#.}}<img src="{{.}}" alt="" loading="lazy" />{{/.}}</div>{{/enriched_images}}
+            {{#enriched_rating_hint}}<div class="nb-row-hint">⭐ {{enriched_rating_hint}}</div>{{/enriched_rating_hint}}
+            <div class="nb-row-actions">
+              <a class="nb-btn nb-btn-primary" href="https://apis.map.qq.com/uri/v1/marker?marker=coord:{{lat}},{{lng}};title:{{name}}&referer=guixiaoyang" target="_blank">🧭 导航</a>
+              {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
+              <button class="nb-btn" data-act="fav" data-poi="{{poi_id}}">⭐ 收藏</button>
+            </div>
+          </div>
+        </div>
+        {{/markers}}
+        {{^markers}}<div class="nb-empty">周边暂无餐饮配套收录</div>{{/markers}}
+      </div>
+      <!-- 紧密追问区 -->
+      {{compact_followups}}
+    </section>
+  </div>
+  <script type="application/json">
+  {
+    "centerName": "嘉路康养中心", "radiusKm": 15, "total": 3,
+    "markers": [
+      { "poi_id": "f1", "name": "渔家海鲜大排档", "address": "渔洲坪", "distance_text": "1.2", "cat": "food", "color": "#F2994A", "emoji": "🍜", "biz_status": "营业中", "tel": "0770-2233445", "open_time": "11:00-22:00", "tags": ["海鲜大排档", "私房菜", "清淡可定制"], "tags_text": "海鲜大排档·私房菜·清淡可定制" },
+      { "poi_id": "f2", "name": "渔村饭店", "address": "港口区某路", "distance_text": "1.4", "cat": "food", "color": "#F2994A", "emoji": "🍜", "biz_status": "营业中", "tags": ["白切鸡", "海鲜"], "tags_text": "白切鸡·海鲜" },
+      { "poi_id": "f3", "name": "阿婆糖水铺", "address": "渔洲坪", "distance_text": "1.0", "cat": "food", "color": "#F2994A", "emoji": "🍜", "biz_status": "营业中", "open_time": "08:00-20:00", "tags": ["糖水", "养生"], "tags_text": "糖水·养生" }
+    ]
+  }
+  </script>
+</body>
+</html>
