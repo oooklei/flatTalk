@@ -40,11 +40,5 @@ export function matchHotCity(text) {
       matches.add(normalizeCity(city));
     }
   }
-  // 同时检查景点名
-  for (const [scenic, city] of Object.entries(SCENIC_TO_CITY)) {
-    if (text.includes(scenic)) {
-      matches.add(city);
-    }
-  }
   return Array.from(matches);
 }
