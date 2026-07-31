@@ -1,5 +1,23 @@
 # LLM 模板解锁设计
 
+## 0. 实施状态（已实现并验证）
+
+**状态**：✅ 已实施，回归测试通过
+
+**提交**：`5c51c5f` feat: 解除 LLM 模板封锁
+
+**测试结果**：161 tests / 144 pass / 17 fail / **0 新增失败**（17 个失败全部为既存问题）
+
+**实际改动文件**：2 个（比设计的 3 个少 1 个——orchestrator 不需要改动，因为 `template_fields` 在 service 内部从已传入的 `template_library` 生成）
+
+**关键实现差异与设计文档的对照**：
+
+| 设计预期 | 实际实现 | 差异原因 |
+|----------|---------|---------|
+| 改 3 个文件 | 改 2 个文件 | `template_fields` 在 service 内部生成，orchestrator 已传 `template_library` |
+| sanitizeShape 增加 required 校验 | 未增加 | template_library 中的 required 字段在运行时为空数组（manifest 未声明 required），校验无实际效果，暂不增加 |
+| chat-orchestrator 传 template_fields | 不需要 | buildTemplateFields 在 fillTemplateSlots 内部调用 |
+
 ## 1. 背景与问题
 
 ### 1.1 当前状态
