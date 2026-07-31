@@ -1,4 +1,6 @@
 import { createYz365Service } from '../services/yz365/index.js';
+import crypto from 'node:crypto';
+import { renderCompactFollowups } from './compact-followups/renderer.js';
 
 const HTML_TAG_PATTERN = /<[^>]*>/g;
 const EVENT_HANDLER_PATTERN = /\bon[a-z]+\s*=/gi;
@@ -591,6 +593,10 @@ function fillWeeklyPlan({ message, business_data }) {
     ? normalizeParsedWeek(parsedDays, condition)
     : buildWeeklyPlanItems(condition);
 
+  const compactFollowups = [
+    { label: '调整饮食偏好', action_key: 'meal_plan.adjust_preference' },
+  ];
+
   return sanitizeModelResult({
     template_id: 'weekly_plan',
     answer_text: answerText,
@@ -625,6 +631,7 @@ function fillWeeklyPlan({ message, business_data }) {
         action_key: 'meal_plan.adjust_for_condition',
       },
     ],
+    compact_followups: compactFollowups,
     template_fit_notes: [],
   });
 }
@@ -719,6 +726,10 @@ function fillDietCard({ message, business_data }) {
   const meals = buildMeals(mealType, items);
   const answerText = buildAnswer(condition, mealType);
 
+  const compactFollowups = [
+    { label: '换一个推荐', action_key: 'meal_plan.suggest_alternative' },
+  ];
+
   return sanitizeModelResult({
     template_id: 'diet_card',
     answer_text: answerText,
@@ -773,6 +784,7 @@ function fillDietCard({ message, business_data }) {
         action_key: 'meal_plan.adjust_for_condition',
       },
     ],
+    compact_followups: compactFollowups,
     template_fit_notes: [],
   });
 }
@@ -892,6 +904,36 @@ function isNearbyResourceText(text, intent_context = {}) {
 // 腾讯地图 JS API Key（已验证可用的项目 key）。留空或占位符时卡片自动降级为 SVG 方位图。
 const NEARBY_TENCENT_JS_KEY = 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
 
+/**
+ * 构建腾讯静态图 URL（降级中间层）
+ * 用于 JS API 加载失败时，提供比 SVG 更真实的地图截图。
+ */
+function buildStaticMapUrl(center, markers = [], options = {}) {
+  const wsKey = process.env.TENCENT_MAP_KEY || '';
+  const sk = process.env.TENCENT_MAP_SK || '';
+  if (!wsKey) return '';
+
+  const params = {
+    center: `${center.lat},${center.lng}`,
+    zoom: options.zoom || 11,
+    size: options.size || '600*420',
+  };
+  if (markers.length) {
+    params.markers = markers.slice(0, 30).map((m) =>
+      `coord:${m.lat},${m.lng};title:${(m.name || '').slice(0, 10)}`
+    ).join('|');
+  }
+  const signParams = { ...params, key: wsKey };
+  const sortedQuery = Object.keys(signParams).sort()
+    .map((k) => `${k}=${signParams[k]}`).join('&');
+  let url = `https://apis.map.qq.com/ws/staticmap/v2?${sortedQuery}`;
+  if (sk) {
+    const sig = crypto.createHash('md5').update(`/ws/staticmap/v2?${sortedQuery}${sk}`, 'utf8').digest('hex');
+    url += '&sig=' + sig;
+  }
+  return url;
+}
+
 function fillNearbyResourceCard({ message = '', business_data = {}, intent_context = {} } = {}) {
   // 取数：优先使用 orchestrator 注入的共享数据层结果（已为全量周边配套）
   const facilities = Array.isArray(business_data?.jialu_facilities) ? business_data.jialu_facilities : [];
@@ -922,6 +964,8 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
 
   let markers = template_id === 'nearby_map_overview' ? within : catMarkers;
   const total = markers.length;
+  // 生成静态图降级 URL（用 WebService Key+SK 签名，与前端 JS Key 独立）
+  base.static_map_url = buildStaticMapUrl(center, markers.slice(0, 30));
   const answerText = nbAnswerText({ template_id, cat, total, radiusKm, stats });
   const data = { ...base, markers, markers_json: JSON.stringify(markers), total };
 
@@ -961,6 +1005,10 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
     data.summaryText = nbSummaryText({ radiusKm, stats });
   }
 
+  const compactFollowups = [
+    { label: '收藏', action_key: 'nearby_resource.favorite' },
+  ];
+
   return sanitizeModelResult({
     template_id,
     answer_text: answerText,
@@ -968,6 +1016,7 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
     data,
     actions: nbActions(),
     followup_suggestions: nbFollowups(),
+    compact_followups: compactFollowups,
     template_fit_notes: ['nearby_resource_' + (cat || 'all')],
   });
 }
@@ -1644,6 +1693,10 @@ function fillRouteCard({ message, business_data }) {
     source_status: jtd.source_status,
   } : { destination };
 
+  const compactFollowups = [
+    { label: '查天气风险', action_key: 'travel_route.check_weather_risk', params: { city: destination } },
+  ];
+
   return sanitizeModelResult({
     template_id: 'route_card',
     answer_text: answerText,
@@ -1683,6 +1736,7 @@ function fillRouteCard({ message, business_data }) {
         params: { city: destination },
       },
     ],
+    compact_followups: compactFollowups,
     template_fit_notes: product ? [`jtd_${jtd.source_status || 'unknown'}`] : [],
   });
 }
