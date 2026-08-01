@@ -593,11 +593,29 @@ class MobileApp {
       this.state.debugEnabled = this.state.config.production !== true && this.state.config.showTemplatePanel !== false;
     }
     if (!this.auth.token && !this.auth.roleKey) {
-      this.renderLogin();
-      return;
+      // 无真实 SSO 用户时，尝试自动使用默认模拟用户（开发/测试环境）
+      const devPresets = (this.state.config && this.state.config.devSsoPresets) || [];
+      const defaultPreset = devPresets.find((p) => p.key === "c_family") || devPresets[0];
+      if (defaultPreset && this.state.config.production !== true) {
+        this.auth = {
+          token: defaultPreset.token,
+          userToken: defaultPreset.token,
+          roleKey: defaultPreset.roleKey,
+          elderScope: defaultPreset.elderScope || "elder_unbound",
+          terminal: defaultPreset.terminal || "H5",
+          authLevel: defaultPreset.authLevel || "mock",
+          userName: defaultPreset.userName || "",
+          orgName: defaultPreset.orgName || "",
+          presetKey: defaultPreset.key || "",
+        };
+        saveAuth(this.auth);
+      } else {
+        this.renderLogin();
+        return;
+      }
     }
-    // 启动时获取用户位置（异步，不阻塞 UI）
-    this._initLocation();
+    // 启动时获取用户位置（异步，不阻塞 UI），定位完成后触发天气加载
+    this._initLocation().then(() => this._loadWeatherAsync()).catch(() => this._loadWeatherAsync());
     try {
       await this.loadBootstrap();
     } catch (e) {
@@ -625,6 +643,53 @@ class MobileApp {
     } catch (e) {
       console.warn("[Mobile] location detect failed:", e);
     }
+  }
+
+  async _loadWeatherAsync() {
+    // 先尝试读缓存（30分钟有效期）
+    const CACHE_KEY = "gxy_weather_cache";
+    try {
+      const cached = safeJson(localStorage.getItem(CACHE_KEY), null);
+      if (cached && cached.timestamp && Date.now() - cached.timestamp < 30 * 60 * 1000) {
+        this._updateWeatherDisplay(cached.text);
+        return;
+      }
+    } catch (e) { /* ignore */ }
+
+    // 等定位完成后再请求天气
+    const location = this.state.location || {};
+    const city = location.city || location.province || "";
+    if (!city) {
+      this._updateWeatherDisplay("\u6674\uff0c\u9002\u5408\u6563\u6b65");
+      return;
+    }
+
+    try {
+      const resp = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+      const data = await resp.json();
+      let weatherText = "";
+      if (data.ok && data.weather) {
+        const w = data.weather;
+        const casts = w.casts || [];
+        const today = casts[0] || {};
+        const desc = today.weather || w.weather || "\u6674";
+        const temp = today.degree || today.temperature || w.temperature || "";
+        weatherText = `${desc}${temp ? "\uff0c" + temp + "\u00b0C" : ""}\uff0c\u9002\u5408\u6563\u6b65`;
+      } else {
+        weatherText = "\u6674\uff0c\u9002\u5408\u6563\u6b65";
+      }
+      this._updateWeatherDisplay(weatherText);
+      // 写缓存
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ text: weatherText, timestamp: Date.now() }));
+    } catch (e) {
+      console.warn("[Mobile] weather load failed:", e);
+      this._updateWeatherDisplay("\u6674\uff0c\u9002\u5408\u6563\u6b65");
+    }
+  }
+
+  _updateWeatherDisplay(text) {
+    const el = screen.querySelector(".weather-info");
+    if (el) el.textContent = text;
   }
 
   async _loadConversationsFromBackend() {
@@ -753,7 +818,7 @@ class MobileApp {
     const { profile } = this.state.bootstrap || {};
     const userName = profile?.user?.real_name || "\u7528\u6237";
     const greeting = this._getGreeting();
-    const weatherText = "\u4eca\u65e5\u5929\u6c14\u6674\uff0c26\u00b0C\uff0c\u9002\u5408\u6563\u6b65";
+    const weatherText = "\u52a0\u8f7d\u4e2d...";
     screen.classList.add("mobile-app");
     screen.innerHTML = `
       <header class="mobile-header">
@@ -2512,11 +2577,11 @@ class MobileApp {
           ${mobileIconSvg("close")}
         </button>
       </div>
-    `).join("") : `<p class="history-empty">鏆傛棤瀵硅瘽璁板綍</p>`;
+    `).join("") : `<p class="history-empty">鏆傛棤对话记录</p>`;
     host.innerHTML = `
       <div class="mobile-modal-backdrop">
         <section class="mobile-dialog">
-          <header><div><h2>瀵硅瘽璁板綍</h2><p>鏈€杩戠殑瀵硅瘽銆佺瓟澶嶇姸鎬佷笌鏀惰棌鎯呭喌</p></div><button type="button" id="closeHistory">${mobileIconSvg("close")}</button></header>
+          <header><div><h2>对话记录</h2><p>鏈€杩戠殑瀵硅瘽銆佺瓟澶嶇姸鎬佷笌鏀惰棌鎯呭喌</p></div><button type="button" id="closeHistory">${mobileIconSvg("close")}</button></header>
           <div class="mobile-history-list">${items}</div>
         </section>
       </div>
@@ -2998,20 +3063,19 @@ class MobileApp {
 window.FlatTalkMobileApp = new MobileApp();
 
 // 卡片内按钮（如行程卡「查看天气风险」）通过 postMessage 触发技能动作。
-// 卡片运行在同源 iframe（srcdoc）中，可直接向父窗口发消息；此处仅响应已知动作键。
+// 卡片运行在同源 iframe（srcdoc）中，可直接向父窗口发消息；此处分发到 handleAssistantAction。
 window.addEventListener('message', (event) => {
   try {
     const data = event.data;
     if (!data || data.type !== 'flattalk_card_action') return;
-    if (data.action_key !== 'travel_route.check_weather_risk') return;
     const app = window.FlatTalkMobileApp;
     if (app && typeof app.handleAssistantAction === 'function') {
       app.handleAssistantAction({
-        action_key: data.action_key,
-        skill_key: 'travel_route',
-        label: '查看天气风险',
-        user_prompt: '请结合这条旅居路线和目的地，检查近期天气风险',
-        params: { city: data.city || '' },
+        action_key: data.action_key || '',
+        skill_key: data.skill_key || '',
+        label: data.label || '',
+        user_prompt: data.user_prompt || '',
+        params: data.params || {},
       }, null);
     }
   } catch (e) { /* 忽略卡片消息异常 */ }

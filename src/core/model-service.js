@@ -1,4 +1,5 @@
 import { createYz365Service } from '../services/yz365/index.js';
+import { createShezhenService } from '../services/shezhen/shezhen-service.js';
 import crypto from 'node:crypto';
 
 const HTML_TAG_PATTERN = /<[^>]*>/g;
@@ -12,6 +13,15 @@ function getYz365Service() {
     yz365Service = createYz365Service();
   }
   return yz365Service;
+}
+
+// 云诊舌诊服务实例（延迟初始化）
+let shezhenService = null;
+function getShezhenService() {
+  if (!shezhenService) {
+    shezhenService = createShezhenService();
+  }
+  return shezhenService;
 }
 
 export async function fillTemplateSlots({
@@ -69,7 +79,9 @@ export async function fillTemplateSlots({
     return fillDispatchManageCard({ message, business_data, selectedTemplateId });
   }
 
-  const answerText = sanitizeText(message ? `已收到：${message}` : '已收到您的问题。');
+  const answerText = sanitizeText(message
+    ? `抱歉，我暂时无法处理「${message}」，请稍后重试或换个问法。`
+    : '抱歉，我暂时无法处理您的请求，请稍后重试。');
   return sanitizeModelResult({
     template_id: selectedTemplateId || 'answer',
     answer_text: answerText,
@@ -80,8 +92,8 @@ export async function fillTemplateSlots({
       answer_text: answerText,
       answer: answerText,
       metrics: [
-        { label: '处理状态', value: '已接收' },
-        { label: '下一步', value: '请补充老人情况' },
+        { label: '处理状态', value: '降级兜底' },
+        { label: '下一步', value: '请稍后重试或换个问法' },
       ],
     },
     actions: [],
@@ -264,11 +276,13 @@ async function fillHealthWarningCard({ message, business_data, selectedTemplateI
   
   let yzData = null;
   let hasYzData = false;
-  
+  let shezhenData = null;
+  let hasShezhenData = false;
+
   try {
     const service = yz365Service || getYz365Service();
     const yzResult = await service.getElderHealthCheck(elderName);
-    
+
     if (yzResult.ok && yzResult.total > 0) {
       hasYzData = true;
       yzData = service.buildHealthRiskData(yzResult, elderName);
@@ -277,10 +291,26 @@ async function fillHealthWarningCard({ message, business_data, selectedTemplateI
     console.error('[YZ365] 云诊服务调用失败:', error.message);
   }
 
-  // 如果有云诊数据，使用云诊数据构建卡片
-  if (hasYzData && yzData?.hasData) {
-    const data = buildHealthWarningDataFromYz365(yzData, selectedTemplateId);
-    const answerText = `已为${data.elderName}完成健康风险研判（基于云诊365体检报告），风险等级：${data.level}。体检时间：${data.checkTime || '近期'}，健康指数：${data.healthIndex || '暂无'}。`;
+  // 云诊舌诊（与云诊365并列的远程数据来源）
+  try {
+    const szService = shezhenService || getShezhenService();
+    const szResult = await szService.getElderReports({});
+    if (szResult.ok && szResult.total > 0) {
+      hasShezhenData = true;
+      shezhenData = szService.buildHealthRiskData(szResult, elderName);
+    }
+  } catch (error) {
+    console.error('[SHEZHEN] 云诊舌诊服务调用失败:', error.message);
+  }
+
+  // 命中任一远程数据源，合并构建卡片
+  if ((hasYzData && yzData?.hasData) || (hasShezhenData && shezhenData?.hasData)) {
+    const data = buildHealthWarningDataFromRemote({ yzData, shezhenData, selectedTemplateId, elderName });
+    const sources = [
+      hasYzData && yzData?.hasData ? '云诊365体检报告' : null,
+      hasShezhenData && shezhenData?.hasData ? '云诊舌诊报告' : null,
+    ].filter(Boolean).join(' + ');
+    const answerText = `已为${data.elderName}完成健康风险研判（基于${sources}），风险等级：${data.level}。检测时间：${data.checkTime || '近期'}。`;
     return sanitizeModelResult({
       template_id: selectedTemplateId,
       answer_text: answerText,
@@ -297,7 +327,7 @@ async function fillHealthWarningCard({ message, business_data, selectedTemplateI
         { label: '查看风险规则命中', user_prompt: '查看风险规则命中', action_key: 'health_risk_warning.view_rule_detail' },
         { label: '转人工复核', user_prompt: '转人工复核', action_key: 'health_risk_warning.request_manual_review' },
       ],
-      template_fit_notes: ['yz365_health_risk_warning'],
+      template_fit_notes: ['yz365_health_risk_warning', 'shezhen_health_risk_warning'],
     });
   }
 
@@ -408,6 +438,104 @@ function buildHealthWarningDataFromYz365(yzData, selectedTemplateId) {
     nextSteps: '建议根据体检结果调整日常照护方案；如有异常指标请及时就医。',
     sourceLabel: '云诊365体检报告',
     pdfUrl: yzData.pdfUrl,
+  };
+}
+
+function buildShezhenCardParts(shezhenData, selectedTemplateId) {
+  const signals = [];
+  if (shezhenData.healthIndex) {
+    signals.push({
+      type: '健康指数',
+      value: String(shezhenData.healthIndex),
+      status: shezhenData.level === '一般' ? 'normal' : 'abnormal',
+      status_label: shezhenData.level === '一般' ? '正常' : '异常',
+      source: '云诊舌诊',
+    });
+  }
+  for (const constitution of (shezhenData.constitutionNames || [])) {
+    signals.push({ type: '体质', value: constitution, status: 'normal', status_label: '正常', source: '云诊舌诊' });
+  }
+  if (shezhenData.summary) {
+    signals.push({ type: '舌诊结论', value: shezhenData.summary, status: 'abnormal', status_label: '异常', source: '云诊舌诊' });
+  }
+
+  const rules = (shezhenData.matchedRules || []).map((rule) => ({
+    ruleName: rule.riskName || rule.diseaseName || '未知风险',
+    riskLevel: rule.warningLevel || '一般',
+    ruleLevelStatus: rule.warningLevel === '紧急' ? 'abnormal' : 'normal',
+    condition: rule.tip || '',
+  }));
+
+  return {
+    level: shezhenData.level || '一般',
+    elderName: shezhenData.elderName,
+    elderAge: shezhenData.elderAge,
+    elderSex: shezhenData.elderSex,
+    checkTime: shezhenData.checkTime,
+    healthIndex: shezhenData.healthIndex,
+    pdfUrl: shezhenData.pdfUrl,
+    signals,
+    rules,
+  };
+}
+
+function buildHealthWarningDataFromRemote({ yzData, shezhenData, selectedTemplateId, elderName }) {
+  const levelRank = { '一般': 1, '关注': 2, '紧急': 3 };
+  const signals = [];
+  const rules = [];
+  let level = '一般';
+  let meta = null;
+  const bump = (l) => { if ((levelRank[l] || 0) > (levelRank[level] || 0)) level = l; };
+
+  if (yzData && yzData.hasData) {
+    const yz = buildHealthWarningDataFromYz365(yzData, selectedTemplateId);
+    signals.push(...yz.signals);
+    rules.push(...yz.rules);
+    bump(yz.level);
+    meta = yzData;
+  }
+  if (shezhenData && shezhenData.hasData) {
+    const sz = buildShezhenCardParts(shezhenData, selectedTemplateId);
+    signals.push(...sz.signals);
+    rules.push(...sz.rules);
+    bump(sz.level);
+    meta = shezhenData;
+  }
+
+  const isSignalCard = selectedTemplateId === 'health_risk_signal_card';
+  const isRuleCard = selectedTemplateId === 'health_risk_rule_card';
+  const levelColorMap = { '一般': '#68b032', '关注': '#e8a020', '紧急': '#e54d42' };
+  const levelIconMap = { '一般': '✓', '关注': '⚠', '紧急': '⚡' };
+  const sourceLabel = [
+    yzData && yzData.hasData ? '云诊365' : null,
+    shezhenData && shezhenData.hasData ? '云诊舌诊' : null,
+  ].filter(Boolean).join(' + ');
+
+  return {
+    badge: isSignalCard ? '设备信号' : isRuleCard ? '风险规则' : '健康风险预警',
+    elderName: meta?.elderName || elderName || '未知',
+    elderAge: meta?.elderAge || '未知',
+    elderSex: meta?.elderSex || '未知',
+    checkTime: meta?.checkTime || '未知',
+    healthIndex: meta?.healthIndex,
+    assessTime: new Date().toISOString().slice(0, 16).replace('T', ' '),
+    level,
+    levelColor: levelColorMap[level] || '#68b032',
+    levelIcon: levelIconMap[level] || '✓',
+    summary: `综合预警等级：${level}；数据来源：${sourceLabel}`,
+    signals_count: signals.length,
+    signals,
+    rules_count: rules.length,
+    rules,
+    actions_count: 3,
+    recommendedActions: [
+      { action: '根据体检结果调整生活习惯', owner: '家属/护理员', priority: '高', priorityStatus: 'high' },
+      { action: '定期复查异常指标', owner: '家属/护理员', priority: '高', priorityStatus: 'high' },
+      { action: '保持健康饮食和适量运动', owner: '老人/护理员', priority: '中', priorityStatus: 'mid' },
+    ],
+    nextSteps: '建议根据体检结果调整日常照护方案；如有异常指标请及时就医。',
+    sourceLabel,
+    pdfUrl: yzData?.pdfUrl,
   };
 }
 
@@ -976,6 +1104,7 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
   const facilities = Array.isArray(business_data?.jialu_facilities) ? business_data.jialu_facilities : [];
   const center = business_data?.jialu_center || { lng: 108.166816, lat: 21.527905, name: '嘉路康养中心' };
   const intent = intent_context?.intent || 'nearby_resource.all';
+  const actionKey = intent_context?.action_key || '';
   const radiusKm = parseInt(String(message).match(/(\d+)\s*(公里|千米|km)/i)?.[1] || '15', 10);
 
   // 归一化全部 POI（真实字段：category/amap_type/biz_status/tel/open_time/service_tags/距离_公里）
@@ -984,7 +1113,7 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
   const stats = nbBuildStats(within);
 
   // 决定分类与模板（基于意图 + 语义）
-  const { cat, template_id } = nbDecide({ message, intent });
+  const { cat, template_id } = nbDecide({ message, intent, actionKey });
   const catMarkers = cat ? within.filter((m) => m.cat === cat) : within;
 
   const center_json = JSON.stringify(center);
@@ -1136,7 +1265,7 @@ function nbCat(f) {
   return 'other';
 }
 
-function nbDecide({ message, intent }) {
+function nbDecide({ message, intent, actionKey }) {
   const m = String(message || '');
   const isIntent = (s) => intent === s;
   const wantMap = /地图|分布|打点|标记|位置|在哪|大屏|标出来|看地图|周边分布|资源分布/.test(m);
@@ -1149,13 +1278,23 @@ function nbDecide({ message, intent }) {
   const wantSummary = /简单|语音|念|概括|小结|告诉我有什么|大概|罗列一下|一句话|语音播报/.test(m);
 
   let cat = '';
-  if (isIntent('nearby_resource.stay')) cat = 'stay';
-  else if (isIntent('nearby_resource.food')) cat = 'food';
-  else if (isIntent('nearby_resource.spot')) cat = 'spot';
-  else if (isIntent('nearby_resource.leisure')) cat = 'leisure';
-  else if (isIntent('nearby_resource.shop')) cat = 'shop';
-  else if (isIntent('nearby_resource.transit')) cat = 'transit';
-  else if (isIntent('nearby_resource.wellness')) cat = 'wellness';
+  // 优先从 action_key 推断分类（bypass 路径）
+  if (actionKey === 'nearby_resource.stay') cat = 'stay';
+  else if (actionKey === 'nearby_resource.food') cat = 'food';
+  else if (actionKey === 'nearby_resource.spot') cat = 'spot';
+  else if (actionKey === 'nearby_resource.leisure') cat = 'leisure';
+  else if (actionKey === 'nearby_resource.shop') cat = 'shop';
+  else if (actionKey === 'nearby_resource.transit') cat = 'transit';
+  else if (actionKey === 'nearby_resource.wellness' || actionKey === 'nearby_resource.medical') cat = 'wellness';
+  if (!cat) {
+    if (isIntent('nearby_resource.stay')) cat = 'stay';
+    else if (isIntent('nearby_resource.food')) cat = 'food';
+    else if (isIntent('nearby_resource.spot')) cat = 'spot';
+    else if (isIntent('nearby_resource.leisure')) cat = 'leisure';
+    else if (isIntent('nearby_resource.shop')) cat = 'shop';
+    else if (isIntent('nearby_resource.transit')) cat = 'transit';
+    else if (isIntent('nearby_resource.wellness')) cat = 'wellness';
+  }
   if (!cat) {
     if (/民宿|住哪|住宿|康养小院|入住/.test(m)) cat = 'stay';
     else if (/吃|餐厅|餐饮|美食|海鲜|私房菜|大排档/.test(m)) cat = 'food';

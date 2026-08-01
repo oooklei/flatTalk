@@ -36,7 +36,7 @@ const detailIntentTerms = [
 export const elderPolicyRuleSet = {
   scene_key: 'common',
   default_intent: 'elder_policy_consult',
-  threshold: 6,
+  threshold: 8,
   template_candidates: [
     'policy_apply_guide_card',
     'policy_detail_card',

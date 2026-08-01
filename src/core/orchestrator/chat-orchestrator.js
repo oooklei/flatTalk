@@ -12,6 +12,8 @@ import { identifyScene } from '../scene-router/index.js';
 import { resolveTemplateId } from '../scene-router/intent-template-map.js';
 import { createDataService } from '../../services/data-service.js';
 import { createRagService } from '../../services/rag-service.js';
+import { createOrderService } from '../../services/order/order-service.js';
+import { createWorkorderService } from '../../services/workorder/workorder-service.js';
 import { describeLibrary, discoverTemplates } from '../../template-card/index.js';
 import { getTraceLogger } from '../observability/trace-logger.js';
 import { getJialuFacilities, getJialuCenter } from '../../data/jialu_kangyang_center/index.js';
@@ -149,9 +151,13 @@ export function createChatOrchestrator(options = {}) {
             dataService,
           });
           mark('followup_data', '追问业务数据', { loaded: !!(fBusinessData && Object.keys(fBusinessData).length) });
-          // 本地确定性模板填充（不走 LLM）
-          const fModelResult = await fillTemplateSlots({
+          // 走真实 LLM 填充（如有 modelService），否则回退本地确定性
+          const fillFn = (modelService && typeof modelService.fillTemplateSlots === 'function')
+            ? modelService.fillTemplateSlots
+            : fillTemplateSlots;
+          const fModelResult = await fillFn({
             message: sceneInput.text,
+            skill_key: fSkillKey,
             template_id: fTemplateId,
             default_template_id: fSkillTemplates.defaultTemplateId,
             template_library: fSkillTemplates.library,
@@ -495,7 +501,8 @@ function acceptScene(request, sceneDecision) {
     };
   }
 
-  // ★ SceneTransitionManager：统一决策
+  // ★ SceneTransitionManager：仅处理 AMBIGUOUS（消歧）和 CONTINUE（延续词）
+  // ROUTE/FALLBACK 回退到原有逻辑，避免过度干预
   const candidates = sceneDecision?.candidates || [];
   const transition = decideTransition(candidates, {
     previous_scene: request.previous_scene || request.context?.previous_scene,
@@ -507,21 +514,12 @@ function acceptScene(request, sceneDecision) {
     return resolveAmbiguity(transition.candidates, request);
   }
 
-  // FALLBACK：answer 兜底
-  if (transition.type === TRANSITION_TYPE.FALLBACK) {
-    return null; // 返回 null，让上游走 common/answer
-  }
-
-  // CONTINUE：延续旧场景
+  // CONTINUE：延续旧场景（含延续词）
   if (transition.type === TRANSITION_TYPE.CONTINUE) {
     return transition.scene;
   }
 
-  // ROUTE：直接路由（accept 或 review 均可路由）
-  if (transition.type === TRANSITION_TYPE.ROUTE && transition.scene) {
-    return transition.scene;
-  }
-
+  // 原有逻辑：accept→路由，否则 null→answer
   return sceneDecision?.decision === 'accept' ? sceneDecision : null;
 }
 
@@ -636,11 +634,43 @@ async function loadBusinessData({ sceneDecision, request, dataService }) {
   }
 
   if (sceneDecision?.scene_key === 'find_service' && typeof dataService.tableData.getFindServiceTables === 'function') {
-    return dataService.tableData.getFindServiceTables();
+    const tableData = await dataService.tableData.getFindServiceTables();
+    // 远程订单取数即入库（容错，不阻塞主流程）；service 内部已写入 find_service 知识库
+    let orders = null;
+    try {
+      const params = { ...(request.context?.action_params || request.params || {}) };
+      params.elderId = params.elderId || request.elder_id || request.context?.elder_id;
+      const orderSvc = createOrderService();
+      const res = params.orderId
+        ? await orderSvc.getOrderDetail(params.orderId)
+        : await orderSvc.getOrderPage(params);
+      if (res?.ok) {
+        orders = { ok: true, source_status: res.source_status || 'real_data', data: res.data };
+      }
+    } catch (err) {
+      console.warn('[orchestrator] order remote fetch failed:', err.message);
+    }
+    return { ...tableData, orders };
   }
 
   if (sceneDecision?.scene_key === 'dispatch_manage' && typeof dataService.tableData.getDispatchManageTables === 'function') {
-    return dataService.tableData.getDispatchManageTables();
+    const tableData = await dataService.tableData.getDispatchManageTables();
+    // 远程工单取数即入库（容错，不阻塞主流程）；service 内部已写入 dispatch_manage 知识库
+    let workorders = null;
+    try {
+      const params = { ...(request.context?.action_params || request.params || {}) };
+      params.elderId = params.elderId || request.elder_id || request.context?.elder_id;
+      const wSvc = createWorkorderService();
+      const res = params.workOrderId
+        ? await wSvc.getWorkorderDetail(params.workOrderId)
+        : await wSvc.getWorkorderPage(params);
+      if (res?.ok) {
+        workorders = { ok: true, source_status: res.source_status || 'real_data', data: res.data };
+      }
+    } catch (err) {
+      console.warn('[orchestrator] workorder remote fetch failed:', err.message);
+    }
+    return { ...tableData, workorders };
   }
 
   if (sceneDecision?.scene_key === 'nearby_resource') {

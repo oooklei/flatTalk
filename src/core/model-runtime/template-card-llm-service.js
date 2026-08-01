@@ -25,7 +25,7 @@ export function createTemplateCardModelService(options = {}) {
       const messages = buildMessages({ ...input, template_fields: templateFields });
       const response = await callOpenAiCompatibleModel(model, messages, {
         fetchImpl: options.fetchImpl,
-        timeoutMs: input.timeoutMs || options.timeoutMs || 8000,
+        timeoutMs: input.timeoutMs || options.timeoutMs || 45000,
         maxTokens: input.max_tokens || model.max_tokens,
         temperature: input.temperature ?? model.temperature ?? 0.3,
       });
