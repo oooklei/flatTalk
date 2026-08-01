@@ -6,8 +6,9 @@ import { createFindServiceAgent } from './agents/find-service-agent.js';
 import { createHealthRiskAgent } from './agents/health-risk-agent.js';
 import { createDispatchManageAgent } from './agents/dispatch-manage-agent.js';
 import { createCommonAgent } from './agents/common-agent.js';
+import { LEVEL_1 as SOS_LEVEL_1, LEVEL_2 as SOS_LEVEL_2 } from '../intent-classifier/emergency-detector.js';
 
-const SOS_TERMS = ['胸痛', '昏迷', '呼吸困难', '中风', '抽搐', '大出血', '急救', '120', '晕倒', '坠床', '噎住', '窒息'];
+const SOS_TERMS = [...SOS_LEVEL_1, ...SOS_LEVEL_2];
 
 export function createSupervisor() {
   const registry = createAgentRegistry();

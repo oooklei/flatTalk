@@ -458,7 +458,13 @@ export function createChatOrchestrator(options = {}) {
 }
 
 async function loadIntentContext(sceneInput, options) {
-  // 如果请求中已携带 intent（如 followup 按钮），优先使用
+  // SOS 检测前置：无论是否有 intent override，都先扫描紧急关键词
+  const { detectEmergency } = await import('../intent-classifier/emergency-detector.js');
+  const emergency = detectEmergency({ text: sceneInput.text });
+  if (emergency.matched && (emergency.intent_type === 'SOS' || emergency.urgency_level === 'P0')) {
+    return { ...emergency, source: 'emergency_precheck' };
+  }
+
   const requestIntent = sceneInput.intent || sceneInput.intent_context?.intent;
   if (requestIntent) {
     return { intent: requestIntent, source: 'request_override' };

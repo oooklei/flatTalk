@@ -1,8 +1,8 @@
 import { INTENT_TYPES, URGENCY_LEVELS } from './schema.js';
 import { analyzeTone } from './tone-analysis.js';
 
-const LEVEL_1 = ['救命', '昏迷', '晕倒', '不能呼吸', '喘不过气', '胸痛', '中风', '抽搐', '大出血', 'SOS', 'sos', '120', '999', '急救', '求救', '救护车', '叫救护车', '打120'];
-const LEVEL_2 = ['摔倒', '头晕', '心慌', '发烧', '高烧', '剧痛', '呕吐', '血压很高', '血糖很高', '不舒服', '很难受', '撑不住', '快不行了', '呼吸困难'];
+export const LEVEL_1 = ['救命', '昏迷', '晕倒', '不能呼吸', '喘不过气', '胸痛', '中风', '抽搐', '大出血', 'SOS', 'sos', '120', '999', '急救', '求救', '救护车', '叫救护车', '打120'];
+export const LEVEL_2 = ['摔倒', '头晕', '心慌', '发烧', '高烧', '剧痛', '呕吐', '血压很高', '血糖很高', '不舒服', '很难受', '撑不住', '快不行了', '呼吸困难'];
 
 export function detectEmergency(input = {}) {
   const text = String(input.text || input.message || '').trim();
