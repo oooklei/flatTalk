@@ -493,6 +493,13 @@ function normalizeRequest(request) {
   };
 }
 
+async function injectHistory(request, contextManager, skillKey) {
+  if (!contextManager || !request.conversation_id) return [];
+  try {
+    return await contextManager.buildHistory(request.conversation_id, skillKey);
+  } catch { return []; }
+}
+
 async function applySmartFallback(modelResult, input, smartFallbackHandler, contextManager) {
   if (!smartFallbackHandler || !smartFallbackHandler.shouldFallback(modelResult)) return modelResult;
   let history = [];
