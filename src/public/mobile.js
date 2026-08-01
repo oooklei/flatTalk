@@ -602,6 +602,7 @@ class MobileApp {
       await this.loadBootstrap();
     } catch (e) {
       console.error("[Mobile] loadBootstrap failed, rendering shell anyway:", e);
+      this.state.bootstrap = this.state.bootstrap || { messages: [], todos: [], orders: [], workOrders: [] };
     }
     // 如果本地没有对话历史，则从后端加载
     if (this.state.conversations.length === 0) {
@@ -1255,7 +1256,7 @@ class MobileApp {
 
   renderService() {
     const page = screen.querySelector('[data-page="service"]');
-    const data = this.state.bootstrap;
+    const data = this.state.bootstrap || { messages: [], todos: [], orders: [], workOrders: [] };
     page.innerHTML = `
       <div class="section-heading-row">
         <h2 class="section-title">&#26381;&#21153;</h2>
@@ -1279,7 +1280,7 @@ class MobileApp {
   }
 
   renderProfile() {
-    const { profile } = this.state.bootstrap;
+    const profile = this.state.bootstrap?.profile || { user: {}, elders: [] };
     const page = screen.querySelector('[data-page="profile"]');
     page.innerHTML = `
       <h2 class="section-title">&#26381;&#21153;&#26723;&#26696;</h2>
@@ -1296,7 +1297,7 @@ class MobileApp {
   }
 
   renderArchive(profile) {
-    const user = profile.user;
+    const user = profile?.user || {};
     const privateFields = user.terminal === "B"
       ? [["管理机构", user.org_name], ["服务床位", "128 张，当前入住 91 人"], ["今日工单", "待派 6 单，处理中 14 单"], ["风险提醒", "2 条待复核"]]
       : [["管辖区域", user.org_name], ["重点老人", "80 岁以上 326 人，失能 47 人"], ["待办事项", "补贴复核 12 件，能力评估 8 件"], ["数据权限", user.elder_scope]];
@@ -1599,7 +1600,7 @@ class MobileApp {
     if (options.record === false) return;
     const conversation = this.currentConversation();
     if (!conversation) return;
-    conversation.messages.push({ role: kind, content: safeText, markdown: Boolean(options.markdown), html: options.html ? sanitizeHtmlCard(options.html) : "", at: Date.now() });
+    conversation.messages.push({ role: kind, content: safeText, markdown: Boolean(options.markdown), html: options.html ? sanitizeHtmlCard(options.html) : "", agent_key: options.meta?.agent_key || "", at: Date.now() });
     conversation.updatedAt = Date.now();
     if (kind === "user") {
       conversation.latestQuestion = safeText;
@@ -1610,6 +1611,17 @@ class MobileApp {
       conversation.status = options.error ? "\u7b54\u590d\u5f02\u5e38" : "\u5df2\u7b54\u590d";
     }
     this.persistHistory();
+  }
+
+  addSystemNotice(text) {
+    const notice = document.createElement("div");
+    notice.className = "mobile-system-notice";
+    notice.textContent = text;
+    const wrap = screen || document.getElementById("messageList");
+    if (wrap) {
+      wrap.appendChild(notice);
+      wrap.scrollTo?.({ top: wrap.scrollHeight, behavior: "smooth" });
+    }
   }
 
   updateLastAiBubble(text, options = {}) {
@@ -1826,10 +1838,21 @@ class MobileApp {
 
   handleRemoteResult(body) {
     const normalizedBody = this.normalizeDebugResult(body);
+    // ★ Agent 切换提示
+    if (normalizedBody.agent_switched && normalizedBody.agent_from) {
+      const agentNames = {
+        meal_plan: '膳食助手', travel_route: '旅居助手', nearby_resource: '周边助手',
+        find_service: '服务助手', health_risk_warning: '健康预警', dispatch_manage: '调度助手', common: '桂小养',
+      };
+      const fromName = agentNames[normalizedBody.agent_from] || normalizedBody.agent_from;
+      const toName = agentNames[normalizedBody.agent_key] || normalizedBody.agent_key || '桂小养';
+      this.addSystemNotice(`已从「${fromName}」切换到「${toName}」，之前的话题随时可以回来`);
+    }
     const answer = sanitizeAssistantText(normalizedBody.answer || normalizedBody.answer_text || normalizedBody.message || normalizedBody.error || "\u670d\u52a1\u5df2\u54cd\u5e94\u3002");
     const fallbackHtml = renderSafeHtmlFallback(normalizedBody);
     const routeMeta = {
       skill_key: normalizedBody.skill_key || "",
+      agent_key: normalizedBody.agent_key || normalizedBody.skill_key || "",
       template_id: normalizedBody.template_id || normalizedBody.template_key || "",
       scene_key: normalizedBody.route?.scene_key || "",
       intent: normalizedBody.intent || "",
@@ -1839,10 +1862,9 @@ class MobileApp {
     this.state.latestAnswer = answer;
     this.updateLastAiBubble(answer, { markdown: !fallbackHtml, html: fallbackHtml, error: normalizedBody.ok === false, meta: routeMeta });
     this.appendAssistantActions(normalizedBody);
+    this.appendCompactFollowups(normalizedBody);
     this.appendFollowupSuggestions(normalizedBody);
-    const lastBubbles = screen.querySelectorAll(".bubble.ai");
-    const lastCard = lastBubbles[lastBubbles.length - 1];
-    if (lastCard) this.bindCompactFollowups(lastCard);
+    this.appendAmbiguityOptions(normalizedBody);
     this.upsertTemplateTab(normalizedBody);
     this.renderTemplatePanel(normalizedBody);
     // 鍙充晶璋冩祴鍗＄墖鑻ュ凡鎵撳紑锛屽垯鑷姩鍒锋柊
@@ -1881,6 +1903,46 @@ class MobileApp {
     last.querySelectorAll("[data-mobile-action]").forEach((button) => {
       button.addEventListener("click", () => this.handleAssistantAction(decodeFollowup(button.dataset.mobileAction), button));
     });
+  }
+
+  // 消歧选项渲染：当返回 ambiguity_options 时，渲染为大按钮选择列表
+  appendAmbiguityOptions(result = {}) {
+    const options = Array.isArray(result.ambiguity_options) ? result.ambiguity_options : [];
+    if (!options.length) return;
+    const bubbles = screen.querySelectorAll(".bubble.ai");
+    const last = bubbles[bubbles.length - 1];
+    if (!last) return;
+    const oldBar = last.querySelector(".ambiguity-options-bar");
+    if (oldBar) oldBar.remove();
+    const buttonsHtml = options.map((opt) =>
+      `<button type="button" class="ambiguity-option-btn" data-scene="${escapeHtml(opt.scene_key || "")}" data-label="${escapeHtml(opt.label || "")}" ` +
+      `style="display:block;width:100%;padding:14px;margin:6px 0;border:1.5px solid #e0e0e0;border-radius:12px;` +
+      `background:#fff;cursor:pointer;text-align:left;font-size:15px;color:#333;transition:all 0.2s;">` +
+      `<span style="font-size:20px;margin-right:8px;">${escapeHtml(opt.icon || "")}</span>` +
+      `<strong>${escapeHtml(opt.label || "")}</strong>` +
+      `<span style="display:block;color:#888;font-size:13px;margin-top:2px;">${escapeHtml(opt.desc || "")}</span>` +
+      `</button>`
+    ).join("");
+    const container = document.createElement("div");
+    container.className = "ambiguity-options-bar";
+    container.style.cssText = "margin-top:12px;";
+    container.innerHTML = buttonsHtml;
+    container.querySelectorAll(".ambiguity-option-btn").forEach((btn) => {
+      btn.addEventListener("mouseenter", () => {
+        btn.style.borderColor = "#4CAF50";
+        btn.style.background = "#f1f8e9";
+      });
+      btn.addEventListener("mouseleave", () => {
+        btn.style.borderColor = "#e0e0e0";
+        btn.style.background = "#fff";
+      });
+      btn.addEventListener("click", () => {
+        const label = btn.getAttribute("data-label");
+        // 点击后以选项标签作为新消息发送（走完整 scene-router）
+        this.sendMessage(label);
+      });
+    });
+    last.appendChild(container);
   }
 
   async handleAssistantAction(action = {}, button = null) {
@@ -1966,12 +2028,23 @@ class MobileApp {
     });
   }
 
-  bindCompactFollowups(cardEl) {
-    if (!cardEl) return;
-    const chips = cardEl.querySelectorAll(".compact-chip:not([data-bound])");
-    chips.forEach((chip) => {
-      chip.setAttribute("data-bound", "1");
-      chip.addEventListener("click", (e) => this.handleCompactChipClick(e));
+  appendCompactFollowups(result = {}) {
+    const items = Array.isArray(result.compact_followups) ? result.compact_followups : [];
+    if (!items.length) return;
+    const bubbles = screen.querySelectorAll(".bubble.ai");
+    const last = bubbles[bubbles.length - 1];
+    if (!last) return;
+    const oldBar = last.querySelector(".mobile-compact-bar");
+    if (oldBar) oldBar.remove();
+    const buttons = items.map((item) => {
+      const inputAttr = item.input ? ` data-input="${encodeURIComponent(JSON.stringify(item.input))}"` : "";
+      const paramsAttr = item.params ? ` data-params="${encodeURIComponent(JSON.stringify(item.params))}"` : "";
+      const actionAttr = item.action_key ? ` data-action-key="${item.action_key}"` : "";
+      return `<button type="button" class="mobile-followup-btn mobile-compact-btn"${actionAttr}${paramsAttr}${inputAttr}>${escapeHtml(item.label || "")}</button>`;
+    }).join("");
+    last.insertAdjacentHTML("beforeend", `<div class="mobile-followup-bar mobile-compact-bar">${buttons}</div>`);
+    last.querySelectorAll(".mobile-compact-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => this.handleCompactChipClick(e));
     });
   }
 
@@ -1982,16 +2055,17 @@ class MobileApp {
 
     let inputDef = null;
     if (chip.dataset.input) {
-      try { inputDef = JSON.parse(chip.dataset.input); } catch (e) { inputDef = null; }
+      try { inputDef = JSON.parse(decodeURIComponent(chip.dataset.input)); } catch (e) { inputDef = null; }
     }
 
     if (!inputDef) {
-      const params = safeParseParams(chip.dataset.params);
-      this.handleAssistantAction({ action_key: actionKey, params, label: chip.textContent.trim() }, chip);
+      let baseParams = {};
+      if (chip.dataset.params) { try { baseParams = JSON.parse(decodeURIComponent(chip.dataset.params)); } catch (e) {} }
+      this.handleAssistantAction({ action_key: actionKey, params: baseParams, label: chip.textContent.trim() }, chip);
       return;
     }
 
-    document.querySelectorAll(".compact-chip-expand").forEach((el) => el.remove());
+    document.querySelectorAll(".mobile-compact-expand").forEach((el) => el.remove());
 
     if (inputDef.type === "text") this.expandCompactTextInput(chip, inputDef, actionKey);
     else if (inputDef.type === "select") this.expandCompactSelect(chip, inputDef, actionKey);
@@ -2000,18 +2074,19 @@ class MobileApp {
 
   expandCompactTextInput(chip, def, actionKey) {
     const wrap = document.createElement("span");
-    wrap.className = "compact-chip-expand";
+    wrap.className = "mobile-compact-expand";
     const input = document.createElement("input");
     input.type = "text";
     input.placeholder = def.placeholder || "";
-    input.className = "compact-chip-input";
+    input.className = "mobile-compact-input";
     const confirm = document.createElement("button");
     confirm.textContent = "✓";
-    confirm.className = "compact-chip-confirm";
+    confirm.className = "mobile-followup-btn mobile-compact-confirm";
     const submit = () => {
       const val = input.value.trim();
       if (!val) return;
-      const baseParams = safeParseParams(chip.dataset.params);
+      let baseParams = {};
+      if (chip.dataset.params) { try { baseParams = JSON.parse(decodeURIComponent(chip.dataset.params)); } catch (e) {} }
       baseParams[def.param_key] = val;
       this.handleAssistantAction({ action_key: actionKey, params: baseParams, label: chip.textContent.trim() }, chip);
     };
@@ -2024,9 +2099,9 @@ class MobileApp {
 
   expandCompactSelect(chip, def, actionKey) {
     const wrap = document.createElement("span");
-    wrap.className = "compact-chip-expand";
+    wrap.className = "mobile-compact-expand";
     const select = document.createElement("select");
-    select.className = "compact-chip-select";
+    select.className = "mobile-compact-input";
     const placeholder = document.createElement("option");
     placeholder.textContent = def.placeholder || "请选择";
     placeholder.value = "";
@@ -2035,15 +2110,16 @@ class MobileApp {
     select.appendChild(placeholder);
     for (const opt of def.options || []) {
       const o = document.createElement("option");
-      o.value = opt; o.textContent = opt;
+      o.value = opt.value || opt; o.textContent = opt.label || opt;
       select.appendChild(o);
     }
     const confirm = document.createElement("button");
     confirm.textContent = "✓";
-    confirm.className = "compact-chip-confirm";
+    confirm.className = "mobile-followup-btn mobile-compact-confirm";
     confirm.addEventListener("click", () => {
       if (!select.value) return;
-      const baseParams = safeParseParams(chip.dataset.params);
+      let baseParams = {};
+      if (chip.dataset.params) { try { baseParams = JSON.parse(decodeURIComponent(chip.dataset.params)); } catch (e) {} }
       baseParams[def.param_key] = select.value;
       this.handleAssistantAction({ action_key: actionKey, params: baseParams, label: chip.textContent.trim() }, chip);
     });
@@ -2053,10 +2129,10 @@ class MobileApp {
 
   expandCompactForm(chip, def, actionKey) {
     const panel = document.createElement("div");
-    panel.className = "compact-chip-expand compact-form-panel";
+    panel.className = "mobile-compact-expand mobile-compact-form";
     for (const field of def.fields || []) {
       const row = document.createElement("div");
-      row.className = "compact-form-row";
+      row.className = "mobile-compact-form-row";
       const label = document.createElement("label");
       label.textContent = field.label || "";
       let input;
@@ -2064,7 +2140,7 @@ class MobileApp {
         input = document.createElement("select");
         for (const opt of field.options || []) {
           const o = document.createElement("option");
-          o.value = opt; o.textContent = opt;
+          o.value = opt.value || opt; o.textContent = opt.label || opt;
           input.appendChild(o);
         }
       } else {
@@ -2073,16 +2149,17 @@ class MobileApp {
         input.placeholder = field.placeholder || "";
       }
       input.dataset.fieldKey = field.key;
-      input.className = "compact-form-field";
+      input.className = "mobile-compact-input mobile-compact-form-field";
       row.append(label, input);
       panel.appendChild(row);
     }
     const submitBtn = document.createElement("button");
     submitBtn.textContent = "提交";
-    submitBtn.className = "compact-chip-confirm compact-form-submit";
+    submitBtn.className = "mobile-followup-btn mobile-compact-confirm";
     submitBtn.addEventListener("click", () => {
-      const params = safeParseParams(chip.dataset.params);
-      panel.querySelectorAll(".compact-form-field").forEach((f) => {
+      let params = {};
+      if (chip.dataset.params) { try { params = JSON.parse(decodeURIComponent(chip.dataset.params)); } catch (e) {} }
+      panel.querySelectorAll(".mobile-compact-form-field").forEach((f) => {
         if (f.value.trim()) params[f.dataset.fieldKey] = f.value.trim();
       });
       this.handleAssistantAction({ action_key: actionKey, params, label: chip.textContent.trim() }, chip);

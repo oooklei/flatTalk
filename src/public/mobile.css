@@ -281,90 +281,48 @@ button {
   transform: scale(0.97);
 }
 
-/* === 紧密追问胶囊 === */
-.compact-followups {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 10px 14px 6px;
+/* === 紧密追问（复用普通追问样式） === */
+.mobile-compact-bar {
+  border-top: 1px dashed #e0e0e0;
+  padding-top: 8px;
 }
-.compact-chip {
-  padding: 6px 14px;
-  border-radius: 16px;
-  font-size: 13px;
-  border: 1px solid #d8e6dc;
-  background: #f7fbf8;
-  color: #2f6f4e;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.compact-chip:hover { background: #edf8f0; }
-.compact-chip:active { transform: scale(0.97); }
-.compact-chip--primary {
-  background: #2f6f4e;
-  color: #fff;
-  border-color: #2f6f4e;
-}
-.compact-chip--danger {
-  background: #fff0f0;
-  color: #c44;
-  border-color: #fcc;
-}
-.compact-chip--input::after {
-  content: " ▾";
-  font-size: 10px;
-  opacity: 0.6;
-}
-.compact-chip-expand {
+.mobile-compact-expand {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  margin-top: 6px;
 }
-.compact-chip-input,
-.compact-chip-select {
-  padding: 5px 8px;
+.mobile-compact-input {
+  padding: 6px 10px;
   border: 1px solid #d8e6dc;
-  border-radius: 12px;
-  font-size: 13px;
+  border-radius: 999px;
+  font-size: 12px;
   outline: none;
-  max-width: 140px;
+  max-width: 160px;
+  background: #fff;
 }
-.compact-chip-confirm {
-  padding: 4px 10px;
-  border: none;
-  border-radius: 12px;
-  background: #2f6f4e;
-  color: #fff;
-  font-size: 13px;
-  cursor: pointer;
+.mobile-compact-confirm {
+  padding: 5px 10px !important;
+  font-size: 12px !important;
 }
-.compact-form-panel {
-  display: flex;
+.mobile-compact-form {
   flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
   padding: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
-  margin-top: 6px;
 }
-.compact-form-row {
+.mobile-compact-form-row {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.compact-form-row label {
+.mobile-compact-form-row label {
   font-size: 13px;
   color: #666;
   min-width: 60px;
 }
-.compact-form-field {
-  flex: 1;
-  padding: 5px 8px;
-  border: 1px solid #d8e6dc;
-  border-radius: 8px;
-  font-size: 13px;
-}
-.compact-form-submit { align-self: flex-end; }
 
 .mobile-action-bar {
   display: flex;
@@ -410,6 +368,19 @@ button {
 
 .tab-button.active .tab-icon { color: #e87d32; }
 .tab-button.active .tab-text { color: #e87d32; font-weight: 600; }
+
+/* ── Agent 切换系统提示 ── */
+.mobile-system-notice {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  padding: 6px 16px;
+  margin: 4px auto;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 12px;
+  max-width: 85%;
+  line-height: 1.4;
+}
 
 .quick-grid {
   display: grid;
