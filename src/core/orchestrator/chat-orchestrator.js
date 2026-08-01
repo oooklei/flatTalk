@@ -54,6 +54,7 @@ export function createChatOrchestrator(options = {}) {
   const ragService = options.ragService ?? createRagService({ knowledgeData: dataService.knowledgeData });
   const modelService = options.modelService ?? { fillTemplateSlots };
   const weatherService = options.weatherService ?? null;
+  const contextManager = options.contextManager ?? null;
 
   return {
     async run(request = {}) {
@@ -87,6 +88,7 @@ export function createChatOrchestrator(options = {}) {
             template_library: sosSkillTemplates.library,
             evidence: [],
             business_data: {},
+            conversation_history: [],
           });
           const sosInteractions = composeInteractions({ sceneDecision: { scene_key: sosSkillKey, intent: 'SOS', decision: 'accept', confidence: 0.95 }, modelResult: sosModelResult, staticFollowups: loadStaticFollowups(sosSkillKey, sosTemplateId) });
           const sosRenderResult = renderTemplateCardResult({
@@ -163,6 +165,7 @@ export function createChatOrchestrator(options = {}) {
             template_library: fSkillTemplates.library,
             business_data: fBusinessData,
             intent_context: { intent: `${fSkillKey}.followup`, action_key: request.context?.action_key, action_params: request.context?.action_params },
+            conversation_history: await injectHistory(request, contextManager, fSkillKey),
           });
           mark('followup_fill', '追问模板填充', { template_id: fModelResult.template_id });
           const fStaticFollowups = loadStaticFollowups(fSkillKey, fModelResult.template_id || fTemplateId);

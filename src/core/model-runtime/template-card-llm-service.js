@@ -121,6 +121,7 @@ function buildTemplateFields(library = []) {
 }
 
 function buildMessages(input) {
+  const historyText = formatHistoryText(input.conversation_history);
   const system = loadPrompt('template-card/system.md');
   const user = loadPrompt('template-card/fill-template.md', {
     user_message: input.message || '',
@@ -131,11 +132,24 @@ function buildMessages(input) {
     template_fields: input.template_fields || [],
     evidence: input.evidence || [],
     business_data: input.business_data || {},
+    conversation_history: historyText,
   });
-  return [
+  const messages = [
     { role: 'system', content: system },
-    { role: 'user', content: user },
   ];
+  const history = Array.isArray(input.conversation_history) ? input.conversation_history : [];
+  for (const msg of history) {
+    if (msg.role && msg.content) messages.push({ role: msg.role, content: msg.content });
+  }
+  messages.push({ role: 'user', content: user });
+  return messages;
+}
+
+function formatHistoryText(history = []) {
+  if (!Array.isArray(history) || history.length === 0) return '无';
+  return history
+    .map((msg) => `[${msg.role === 'user' ? '用户' : '助手'}] ${msg.content}`)
+    .join('\n');
 }
 
 function parseModelJson(text) {

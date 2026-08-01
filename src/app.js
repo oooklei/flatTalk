@@ -139,6 +139,10 @@ export function createApp(env = { runtimeMode: 'local' }) {
         return handleQueueAction(req, res, { chatState });
       }
 
+      if (req.method === 'POST' && url.pathname === '/api/input/voice') {
+        return handleVoiceInput(req, res, { asrEndpoint: env.asrEndpoint, json, readJson });
+      }
+
       if (req.method === 'POST' && url.pathname === '/api/open/v1/chat/completions') {
         const auth = verifyOpenApiKey(req);
         if (!auth.ok) return json(res, 401, { ok: false, error: 'invalid_api_key', message: auth.message });
@@ -355,6 +359,49 @@ function handleMobileBootstrap(req, res, url) {
   return json(res, 200, { ok: true, ...bootstrap });
 }
 
+async function handleVoiceInput(req, res, { asrEndpoint, json, readJson }) {
+  const body = await readJson(req);
+  const audioBase64 = body.audioBase64 || '';
+
+  if (!audioBase64) {
+    return json(res, 200, { ok: true, input: { voiceOk: false, warning: '未收到有效录音数据' } });
+  }
+  if (!asrEndpoint) {
+    return json(res, 200, { ok: true, input: { voiceOk: false, warning: '语音识别服务未配置（ASR_ENDPOINT 缺失）' } });
+  }
+
+  // 从 data URL 中提取纯 base64 音频数据
+  const base64Data = audioBase64.replace(/^data:audio\/[^;]+;base64,/, '');
+  const audioBuffer = Buffer.from(base64Data, 'base64');
+
+  try {
+    const asrResponse = await fetch(asrEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'audio/wav' },
+      body: audioBuffer,
+    });
+
+    if (!asrResponse.ok) {
+      const errText = await asrResponse.text().catch(() => '');
+      console.error('[ASR] 服务返回错误:', asrResponse.status, errText);
+      return json(res, 200, { ok: true, input: { voiceOk: false, warning: `语音识别服务异常（HTTP ${asrResponse.status}）` } });
+    }
+
+    const asrResult = await asrResponse.json().catch(() => ({}));
+    // 兼容多种 ASR 响应字段
+    const text = asrResult.text || asrResult.result || asrResult.transcript
+      || asrResult.data?.text || asrResult.data?.result || '';
+
+    if (text) {
+      return json(res, 200, { ok: true, input: { voiceOk: true, text } });
+    }
+    return json(res, 200, { ok: true, input: { voiceOk: false, warning: '语音未识别出有效文字，请靠近麦克风再试' } });
+  } catch (err) {
+    console.error('[ASR] 请求失败:', err.message);
+    return json(res, 200, { ok: true, input: { voiceOk: false, warning: `语音识别服务连接失败：${err.message}` } });
+  }
+}
+
 async function handleConversationList(res, { stateStore }) {
   const sessionStore = createSessionStore({ stateStore });
   const conversations = await sessionStore.listConversations();
@@ -450,9 +497,9 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
         reenter_chat: reenterChat,
         location: body.location || null,
         unsupported_action_key: body.unsupported_action_key || body.unsupportedActionKey || '',
+        previous_turn_id: previous?.turn_id || '',
         ...(followup ? {
           previous_scene: previous?.envelope?.skill_key,
-          previous_turn_id: previous?.turn_id,
           followup_source: body.followup_source || body.source || '',
         } : {}),
         // ★ ContextSnapshot 注入：从上一轮 envelope 提取上下文快照

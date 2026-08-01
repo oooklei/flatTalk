@@ -20,6 +20,9 @@
 【业务表数据】
 {{business_data}}
 
+【最近对话历史】
+{{conversation_history}}
+
 输出格式必须是：
 
 {
