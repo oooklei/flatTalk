@@ -277,11 +277,14 @@ export function composeInteractions({ sceneDecision = {}, modelResult = {}, stat
 
   // compact_followups 的 action_key 集合，用于从 actions 中去重
   const compactActionKeys = new Set(compactFollowups.map((f) => f.action_key).filter(Boolean));
+  // compact_followups 的归一化 user_prompt 集合，用于按文案相似度进一步去重
+  const compactPrompts = new Set(compactFollowups.map((f) => normalizePrompt(f.user_prompt)).filter(Boolean));
 
   let actions = [...modelActions, ...defaultActions]
     .filter((action) => isActionAllowed(action, allowed))
     .filter(uniqueAction)
     .filter((action) => !compactActionKeys.has(action.action_key))
+    .filter((action) => !compactPrompts.has(normalizePrompt(action.user_prompt)))
     .slice(0, 4);
   actions = filterByScene(actions, sceneKey);
 
@@ -336,4 +339,8 @@ function isFollowupAllowed(followup, allowed) {
 
 function normalizeFollowupKey(value) {
   return String(value || '').replace(/[？?。！!，,\s]/g, '').trim();
+}
+
+function normalizePrompt(text) {
+  return String(text || '').trim().toLowerCase().replace(/\s+/g, '');
 }
