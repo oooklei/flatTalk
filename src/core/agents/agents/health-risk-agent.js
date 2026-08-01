@@ -1,9 +1,25 @@
 import { createBaseAgent } from '../base-agent.js';
 
-const healthRiskAlertTerms = ['胸痛', '昏迷', '呼吸困难', '中风', '抽搐', '大出血', '急救', '120', '晕倒', '摔跤', '跌倒'];
-const healthRiskVitalTerms = ['血压', '血糖', '心率', '体温', '血氧', '脉搏'];
-const healthRiskIntentTerms = ['预警', '警报', '异常', '超标', '危险', '紧急', '不舒服', '头晕', '恶心'];
-const boundaryTerms = ['膳食', '饮食', '食谱', '旅居', '旅游', '护工', '机构', '周边', '附近', '派单', '工单'];
+// 与 scene-router/rules/health-risk-warning.js evidence_groups 对齐
+// 注意：急性急救词（胸痛/昏迷/120 等）在该场景 rule 中是 conflicts.acute_health_risk 惩罚词，
+// 不应作为本 agent 正向 evidence——急症由 supervisor SOS 机制接管。
+const healthRiskAlertTerms = [
+  '健康风险', '风险预警', '健康预警', '预警', '风险研判', '报警', '异常信号',
+  '风险等级', '信号', '研判',
+  '健康报告', '完整报告', '预警提示', '风险提示',
+];
+const healthRiskVitalTerms = [
+  '血压高', '血压偏高', '高血压', '血糖高', '血糖异常', '低血糖', '心率异常',
+  '跌倒', '跌倒风险', '居家安全', '夜间离床', '呼吸异常', '血氧异常',
+  '血压', '血糖', '心率', '风险', '偏高', '异常', '报告', '评估',
+  '怎么办', '有什么风险', '需要注意',
+];
+const healthRiskIntentTerms = ['研判', '判定', '评估', '分析', '提醒', '预警值', '阈值'];
+const elderConstraintTerms = ['老人', '长者', '长辈', '父母', '家属', '护理员', '慢病', '康复'];
+
+const boundaryTerms = [
+  '膳食', '饮食', '食谱', '旅居', '旅游', '护工', '机构', '周边', '附近', '派单', '工单',
+];
 const boundaryMap = {
   '膳食': 'meal_plan', '饮食': 'meal_plan', '食谱': 'meal_plan',
   '旅居': 'travel_route', '旅游': 'travel_route',
@@ -16,9 +32,10 @@ export function createHealthRiskAgent() {
   return createBaseAgent({
     key: 'health_risk_warning', name: '健康预警助手', actionPrefix: 'health_risk_warning',
     evidenceGroups: [
-      { group: 'alert', weight: 4, terms: healthRiskAlertTerms },
-      { group: 'vital', weight: 1.5, terms: healthRiskVitalTerms },
-      { group: 'intent', weight: 3, terms: healthRiskIntentTerms },
+      { group: 'health_risk_alert', weight: 4, terms: healthRiskAlertTerms },
+      { group: 'health_risk_vital', weight: 1.5, terms: healthRiskVitalTerms },
+      { group: 'health_risk_intent', weight: 3, terms: healthRiskIntentTerms },
+      { group: 'elder_constraint', weight: 1.5, terms: elderConstraintTerms },
     ],
     boundaryTerms, boundaryMap, threshold: 4,
   });

@@ -230,12 +230,28 @@ const FOLLOWUP_POLICIES = {
   'common.policy': DEFAULT_FOLLOWUPS_BY_POLICY,
   'meal_plan.diet': DEFAULT_FOLLOWUPS_BY_MEAL,
   'meal_plan.weekly': DEFAULT_FOLLOWUPS_BY_MEAL,
+  'meal_plan.default': [
+    { label: '一周食谱', user_prompt: '帮我生成一周食谱', action_key: 'meal_plan.generate_weekly_plan' },
+    { label: '今日三餐', user_prompt: '今天吃什么', action_key: 'meal_plan.daily_diet' },
+    { label: '换一天', user_prompt: '换一天的食谱', action_key: 'meal_plan.daily_diet' },
+  ],
   'health_risk_warning.default': DEFAULT_FOLLOWUPS_BY_HEALTH,
   'travel_route.default': DEFAULT_FOLLOWUPS_BY_TRAVEL,
   'find_service.default': DEFAULT_FOLLOWUPS_BY_SERVICE,
   'dispatch_manage.default': DEFAULT_FOLLOWUPS_BY_DISPATCH,
   'nearby_resource.default': DEFAULT_FOLLOWUPS_BY_NEARBY,
 };
+
+function filterByScene(items, sceneKey) {
+  if (!sceneKey) return items;
+  const prefix = sceneKey + '.';
+  return items.filter(item => {
+    if (item.action_key && !item.action_key.startsWith(prefix)) {
+      return false;
+    }
+    return true;
+  });
+}
 
 export function composeInteractions({ sceneDecision = {}, modelResult = {}, staticFollowups = [] } = {}) {
   if (sceneDecision.decision !== 'accept') {
@@ -246,6 +262,7 @@ export function composeInteractions({ sceneDecision = {}, modelResult = {}, stat
   }
 
   const allowed = new Set(sceneDecision.actions_allowed || []);
+  const sceneKey = sceneDecision.scene_key || '';
   const modelActions = Array.isArray(modelResult.actions) ? modelResult.actions : [];
   const defaultActions = DEFAULT_ACTIONS_BY_SCENE[sceneDecision.scene_key] || [];
   const modelFollowups = Array.isArray(modelResult.followup_suggestions) ? modelResult.followup_suggestions : [];
@@ -254,20 +271,30 @@ export function composeInteractions({ sceneDecision = {}, modelResult = {}, stat
   const followupPolicy = sceneDecision.followup_policy || '';
   const defaultFollowups = FOLLOWUP_POLICIES[followupPolicy] || [];
 
-  const actions = [...modelActions, ...defaultActions]
-    .filter((action) => isActionAllowed(action, allowed))
-    .filter(uniqueAction)
-    .slice(0, 4);
-
   const compactFollowups = Array.isArray(modelResult.compact_followups)
     ? modelResult.compact_followups
     : [];
 
-  const rawFollowups = [...staticFollowups, ...modelFollowups, ...defaultFollowups]
+  // compact_followups 的 action_key 集合，用于从 actions 中去重
+  const compactActionKeys = new Set(compactFollowups.map((f) => f.action_key).filter(Boolean));
+
+  let actions = [...modelActions, ...defaultActions]
+    .filter((action) => isActionAllowed(action, allowed))
+    .filter(uniqueAction)
+    .filter((action) => !compactActionKeys.has(action.action_key))
+    .slice(0, 4);
+  actions = filterByScene(actions, sceneKey);
+
+  // actions 的 action_key 集合，用于从 followups 中去重（避免按钮和追问重复）
+  const actionKeys = new Set(actions.map((a) => a.action_key).filter(Boolean));
+
+  let rawFollowups = [...staticFollowups, ...modelFollowups, ...defaultFollowups]
     .filter((followup) => isFollowupAllowed(followup, allowed))
     .filter(uniqueFollowup)
+    .filter((followup) => !actionKeys.has(followup.action_key))
     .map((followup) => ({ ...followup, category: followup.category === 'other' ? 'other' : 'tight' }))
     .sort((a, b) => (CATEGORY_RANK[a.category] ?? 0) - (CATEGORY_RANK[b.category] ?? 0));
+  rawFollowups = filterByScene(rawFollowups, sceneKey);
 
   return {
     actions,
