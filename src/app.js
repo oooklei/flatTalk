@@ -31,6 +31,7 @@ import {
 import { TABLE_SCHEMAS } from './services/table-data/schemas.js';
 
 const DEV_PRESETS = getDevSsoPresets();
+const CLIENT_DEV_PRESETS = DEV_PRESETS.slice(0, 8);
 const DEV_PRESET_MAP = new Map(DEV_PRESETS.map((preset) => [preset.key, preset]));
 
 export function createApp(env = { runtimeMode: 'local' }) {
@@ -91,7 +92,7 @@ export function createApp(env = { runtimeMode: 'local' }) {
           businessSsoEnabled: accessCfg.sso?.enabled === true,
           businessSsoRemoteConfigured: Boolean(accessCfg.sso?.token_check_url),
           businessSsoPresets: [],
-          devSsoPresets: DEV_PRESETS,
+          devSsoPresets: CLIENT_DEV_PRESETS,
         });
       }
 
@@ -305,6 +306,11 @@ function buildDataServiceOptions(env) {
           defaultCollections: env.knowledgeDefaultCollections || '广西养老办事指引知识库,广西养老政策知识库',
         },
       },
+    travelData: {
+      jtdOptions: {
+        ...(env.runtimeMode === 'test' ? { mode: 'mock' } : {}),
+      },
+    },
   };
 }
 
@@ -493,11 +499,11 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
       role: body.role || body.roleKey || 'elder_family',
       elder_id: body.elder_id,
       context: {
-        active_agent: previous?.envelope?.agent_key || previous?.envelope?.skill_key || '',
+        active_agent: reenterChat ? '' : (previous?.envelope?.agent_key || previous?.envelope?.skill_key || ''),
         last_template: previous?.envelope?.template_id || '',
         ...(body.context || {}),
-        action_key: body.action_key || body.actionKey || '',
-        action_params: body.params || {},
+        action_key: reenterChat ? '' : (body.action_key || body.actionKey || ''),
+        action_params: reenterChat ? {} : (body.params || {}),
         reenter_chat: reenterChat,
         location: body.location || null,
         unsupported_action_key: body.unsupported_action_key || body.unsupportedActionKey || '',
@@ -1054,7 +1060,12 @@ async function handleMapLocateByIP(req, res, url) {
       source: 'tencent_map',
     });
   } catch (e) {
-    return json(res, 500, { ok: false, error: e.message });
+    // API 失败（配额耗尽/签名错误等）→ 返回 200 + 空结果，前端降级到默认坐标
+    return json(res, 200, {
+      ok: false,
+      result: null,
+      error: e.message,
+    });
   }
 }
 

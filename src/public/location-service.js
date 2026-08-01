@@ -53,10 +53,11 @@
 
   async function ipLocation() {
     const res = await fetch('/api/open/v1/map/locate-by-ip');
-    if (!res.ok) throw new Error('ip_locate_failed');
-    const data = await res.json();
-    if (data.lat && data.lng) return { lat: data.lat, lng: data.lng, source: 'ip', accuracy: data.accuracy || null };
-    throw new Error('ip_locate_empty');
+    const data = await res.json().catch(() => ({}));
+    if (data.ok && data.result?.location) {
+      return { lat: data.result.location.lat, lng: data.result.location.lng, source: 'ip', accuracy: null };
+    }
+    throw new Error('ip_locate_unavailable');
   }
 
   async function detect() {
