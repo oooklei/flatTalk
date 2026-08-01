@@ -85,6 +85,16 @@ export async function fillTemplateSlots({
     return fillDispatchManageCard({ message, business_data, selectedTemplateId });
   }
 
+  if (selectedTemplateId === 'meal_timeline_card') {
+    return fillMealTimelineCard({ message, business_data });
+  }
+  if (selectedTemplateId === 'meal_overview_card') {
+    return fillMealOverviewCard({ message, business_data });
+  }
+  if (selectedTemplateId === 'travel_base_card') {
+    return fillTravelBaseCard({ message, business_data });
+  }
+
   const answerText = sanitizeText(message
     ? `抱歉，我暂时无法处理「${message}」，请稍后重试或换个问法。`
     : '抱歉，我暂时无法处理您的请求，请稍后重试。');
@@ -1766,6 +1776,47 @@ function fillDispatchManageCard({ message, business_data, selectedTemplateId }) 
       { label: '查看工单', user_prompt: '查看对应的服务工单', action_key: 'dispatch_manage.work_order' },
     ],
     template_fit_notes: [],
+  });
+}
+
+function fillMealTimelineCard({ message }) {
+  const meals = [
+    { mealName: '早餐', mealEmoji: '🌅', mealTime: '07:00', mealTotal: '约320kcal', dotCls: 'dot-breakfast',
+      foods: [{ foodName: '小米粥', cal: 120 }, { foodName: '水煮蛋', cal: 70 }, { foodName: '全麦面包', cal: 130 }] },
+    { mealName: '午餐', mealEmoji: '☀️', mealTime: '12:00', mealTotal: '约520kcal', dotCls: 'dot-lunch',
+      foods: [{ foodName: '杂粮饭', cal: 200 }, { foodName: '清蒸鱼', cal: 180 }, { foodName: '青菜', cal: 140 }] },
+    { mealName: '晚餐', mealEmoji: '🌙', mealTime: '18:00', mealTotal: '约430kcal', dotCls: 'dot-dinner',
+      foods: [{ foodName: '番茄豆腐汤', cal: 150 }, { foodName: '时蔬', cal: 120 }, { foodName: '燕麦粥', cal: 160 }] },
+  ];
+  return sanitizeModelResult({
+    template_id: 'meal_timeline_card',
+    answer_text: '已为老人安排今日饮食时间线',
+    data: { bannerTitle: '今日饮食时间线', meals, ratios: [{ label: '碳水', pct: 55 }, { label: '蛋白', pct: 25 }, { label: '脂肪', pct: 20 }] },
+    actions: [], followup_suggestions: [],
+  });
+}
+
+function fillMealOverviewCard({ message }) {
+  return sanitizeModelResult({
+    template_id: 'meal_overview_card',
+    answer_text: '本周膳食概览',
+    data: { title: '本周膳食概览', totalCalories: '约8400kcal', avgDaily: '约1200kcal', days: 7, compliance: '90%' },
+    actions: [], followup_suggestions: [],
+  });
+}
+
+function fillTravelBaseCard({ message, business_data }) {
+  const bases = ((business_data?.jtd?.products) || []).slice(0, 3).map((p) => ({
+    name: p.name || p.title || '康养基地',
+    location: p.destination || p.city || '防城港',
+    price: p.price || '面议',
+    features: p.features || ['慢病康复', '海滨气候'],
+  }));
+  return sanitizeModelResult({
+    template_id: 'travel_base_card',
+    answer_text: '为您推荐以下康养基地',
+    data: { title: '康养基地推荐', bases: bases.length ? bases : [{ name: '防城港滨海康养中心', location: '防城港', price: '3000元/月起', features: ['慢病康复', '海滨气候'] }] },
+    actions: [], followup_suggestions: [],
   });
 }
 

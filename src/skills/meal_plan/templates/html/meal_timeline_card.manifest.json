@@ -3,5 +3,32 @@
   "description": "时间线式膳食流程，按时间顺序纵向展示三餐，适合移动端",
   "layout": "vertical",
   "match": "时间线式膳食流程：按时间顺序纵向展示三餐，含顶部画像横幅、营养比例面板与相关建议，适合移动端/按餐次阅读。字段：bannerTitle,suitable,totalCal,salt,meals[{mealName,mealEmoji,mealTime,mealTotal,dotCls,foods[{foodName,cal}]}],ratios[{name,pct,width,color}],related[{relIcon,relText}]",
-  "required": ["meals", "bannerTitle"]
+  "required": ["meals", "bannerTitle"],
+  "data_schema": {
+    "bannerTitle": { "type": "string", "example": "今日饮食时间线" },
+    "meals": {
+      "type": "array",
+      "items": {
+        "mealName": { "type": "string", "example": "早餐" },
+        "mealEmoji": { "type": "string", "example": "🌅" },
+        "mealTime": { "type": "string", "example": "07:00" },
+        "mealTotal": { "type": "string", "example": "约320kcal" },
+        "dotCls": { "type": "string", "example": "dot-breakfast" },
+        "foods": {
+          "type": "array",
+          "items": {
+            "foodName": { "type": "string", "example": "小米粥" },
+            "cal": { "type": "number", "example": 120 }
+          }
+        }
+      }
+    },
+    "ratios": {
+      "type": "array",
+      "items": {
+        "label": { "type": "string", "example": "碳水" },
+        "pct": { "type": "number", "example": 55 }
+      }
+    }
+  }
 }

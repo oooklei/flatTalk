@@ -117,6 +117,7 @@ function buildTemplateFields(library = []) {
     layout: t.layout || '',
     match: t.match || t.description || '',
     required: Array.isArray(t.required) ? t.required : [],
+    data_schema: t.data_schema || null,
   }));
 }
 

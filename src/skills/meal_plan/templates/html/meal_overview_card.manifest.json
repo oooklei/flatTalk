@@ -3,5 +3,12 @@
   "description": "每日膳食总览，三栏概览式布局，含汇总卡+三餐分栏+营养比例条",
   "layout": "grid",
   "match": "每日膳食总览：顶部汇总卡 + 三餐分栏卡片 + 营养比例条 + 相关建议，三栏概览式布局。适用长者/慢病/减重人群的膳食概览。字段：pageTitle,summaryTitle,summaryDesc,stats[{value,label}],meals[{mealName,mealEmoji,mealTotal,foods[{foodName,cal}]}],ratios[{name,pct,width,barCls}],related[{relIcon,relText}]",
-  "required": ["meals", "summaryTitle"]
+  "required": ["meals", "summaryTitle"],
+  "data_schema": {
+    "title": { "type": "string", "example": "本周膳食概览" },
+    "totalCalories": { "type": "string", "example": "约8400kcal" },
+    "avgDaily": { "type": "string", "example": "约1200kcal" },
+    "days": { "type": "number", "example": 7 },
+    "compliance": { "type": "string", "example": "90%" }
+  }
 }
