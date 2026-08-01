@@ -2267,6 +2267,7 @@ class MobileApp {
           user_prompt: prompt,
           execute_action: canExecuteAction,
           reenter_chat: !canExecuteAction,
+          followup_source: canExecuteAction ? "action_button" : "followup",
           conversation_id: conversation?.id || "",
           roleKey: this.auth.roleKey,
           channel: "mobile",

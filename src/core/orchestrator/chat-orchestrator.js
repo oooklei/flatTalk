@@ -519,8 +519,10 @@ function acceptScene(request, sceneDecision) {
     return transition.scene;
   }
 
-  // 原有逻辑：accept→路由，否则 null→answer
-  return sceneDecision?.decision === 'accept' ? sceneDecision : null;
+  // 原有逻辑：accept/review→路由，否则 null→answer
+  if (sceneDecision?.decision === 'accept') return sceneDecision;
+  if (sceneDecision?.decision === 'review' && sceneDecision?.confidence >= 0.55) return sceneDecision;
+  return null;
 }
 
 function selectRoutedTemplateId(sceneDecision, availableIds = []) {

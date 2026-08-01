@@ -97,6 +97,54 @@
       "params_schema": {},
       "param_sources": {},
       "next_template_id": "order_status"
+    },
+    {
+      "action_key": "nearby_resource.all",
+      "label": "全部资源",
+      "skill_key": "nearby_resource",
+      "target": "bff",
+      "description": "展示嘉路康养中心周边全部资源概览。",
+      "when": "用户点击「全部资源」时触发。",
+      "endpoint": "（bff 内部能力，查询 nearby_resources 表）",
+      "params_schema": {},
+      "param_sources": {},
+      "next_template_id": "nearby_map_overview"
+    },
+    {
+      "action_key": "nearby_resource.medical",
+      "label": "只看医疗",
+      "skill_key": "nearby_resource",
+      "target": "bff",
+      "description": "筛选展示周边医疗类资源（卫生所、药店、诊所）。",
+      "when": "用户点击「只看医疗」时触发。",
+      "endpoint": "（bff 内部能力，按 category=medical 过滤）",
+      "params_schema": { "category": "string" },
+      "param_sources": { "category": "固定 medical" },
+      "next_template_id": "nearby_wellness"
+    },
+    {
+      "action_key": "nearby_resource.food",
+      "label": "只看餐馆",
+      "skill_key": "nearby_resource",
+      "target": "bff",
+      "description": "筛选展示周边餐饮类资源。",
+      "when": "用户点击「只看餐馆」时触发。",
+      "endpoint": "（bff 内部能力，按 category=food 过滤）",
+      "params_schema": { "category": "string" },
+      "param_sources": { "category": "固定 food" },
+      "next_template_id": "nearby_food_card"
+    },
+    {
+      "action_key": "nearby_resource.leisure",
+      "label": "只看游玩",
+      "skill_key": "nearby_resource",
+      "target": "bff",
+      "description": "筛选展示周边休闲娱乐类资源（景区、海滩等）。",
+      "when": "用户点击「只看游玩」时触发。",
+      "endpoint": "（bff 内部能力，按 category=leisure 过滤）",
+      "params_schema": { "category": "string" },
+      "param_sources": { "category": "固定 leisure" },
+      "next_template_id": "nearby_list"
     }
   ]
 }

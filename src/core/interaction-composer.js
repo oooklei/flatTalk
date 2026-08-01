@@ -40,10 +40,10 @@ const DEFAULT_ACTIONS_BY_SCENE = {
     { action_key: 'health_risk_warning.request_manual_review', label: '请求人工复核', params: {} },
   ],
   nearby_resource: [
-    { action_key: 'nearby_resource.all', label: '全部资源', params: {} },
-    { action_key: 'nearby_resource.medical', label: '只看医疗', params: {} },
-    { action_key: 'nearby_resource.food', label: '只看餐馆', params: {} },
-    { action_key: 'nearby_resource.leisure', label: '只看游玩', params: {} },
+    { action_key: 'nearby_resource.all', label: '全部资源', skill_key: 'nearby_resource', params: {} },
+    { action_key: 'nearby_resource.medical', label: '只看医疗', skill_key: 'nearby_resource', params: {} },
+    { action_key: 'nearby_resource.food', label: '只看餐馆', skill_key: 'nearby_resource', params: {} },
+    { action_key: 'nearby_resource.leisure', label: '只看游玩', skill_key: 'nearby_resource', params: {} },
   ],
   find_service: [
     { action_key: 'find_service.recommend', label: '智能推荐', params: {} },

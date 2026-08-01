@@ -57,7 +57,13 @@ export async function fillTemplateSlots({
   if (selectedTemplateId === 'travel_itinerary_card') {
     return fillTravelItineraryCard({ message, business_data });
   }
-  if (selectedTemplateId === 'health_warning_card' || selectedTemplateId === 'health_risk_signal_card' || selectedTemplateId === 'health_risk_rule_card') {
+  if (selectedTemplateId === 'health_warning_card'
+   || selectedTemplateId === 'health_risk_signal_card'
+   || selectedTemplateId === 'health_risk_rule_card'
+   || selectedTemplateId === 'risk_assessment_card'
+   || selectedTemplateId === 'health_report_card'
+   || selectedTemplateId === 'risk_warning_card'
+   || selectedTemplateId === 'dietary_regimen_card') {
     return fillHealthWarningCard({ message, business_data, selectedTemplateId });
   }
   if (selectedTemplateId === 'policy_card') {

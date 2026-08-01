@@ -50,7 +50,7 @@ export const elderPolicyRuleSet = {
   followup_policy: 'common.policy',
   evidence_groups: [
     { group: 'policy_topic', weight: 4, terms: policyTopicTerms },
-    { group: 'service_intent', weight: 2.5, terms: serviceIntentTerms },
+    { group: 'service_intent', weight: 1.5, terms: serviceIntentTerms },
     { group: 'assistant_usage', weight: 4, terms: assistantUsageTerms },
     { group: 'elder_context', weight: 1.5, terms: elderTerms },
   ],
