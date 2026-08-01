@@ -11,6 +11,8 @@ import { getEmbedByToken, readAccess } from './admin/access.js';
 import { handleDebugApi } from './api/debug.js';
 import { buildEnvelope } from './contracts/envelope.js';
 import { dispatchAction } from './core/actions/action-dispatcher.js';
+import { createSmartFallbackHandler } from './core/fallback/smart-fallback-handler.js';
+import { createContextManager } from './core/conversation/context-manager.js';
 import { createSessionStore } from './core/conversation/session-store.js';
 import { classifyIntent } from './core/intent-classifier/index.js';
 import { createTemplateCardModelService } from './core/model-runtime/template-card-llm-service.js';
@@ -49,6 +51,8 @@ export function createApp(env = { runtimeMode: 'local' }) {
     sessionStore: createSessionStore({ stateStore, repository: dataService?.tableData?.repository || null }),
     logger,
   };
+  const contextManager = createContextManager({ sessionStore: chatState.sessionStore });
+  const smartFallbackHandler = createSmartFallbackHandler({ modelClient: modelService });
 
   return async function handleRequest(req, res) {
     const url = new URL(req.url || '/', 'http://localhost');
@@ -116,11 +120,11 @@ export function createApp(env = { runtimeMode: 'local' }) {
       }
 
       if (req.method === 'POST' && url.pathname === '/api/chat/message') {
-        return handleChat(req, res, { dataService, chatState, modelService, weatherService });
+        return handleChat(req, res, { dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler });
       }
 
       if (req.method === 'POST' && url.pathname === '/api/chat/followup') {
-        return handleChat(req, res, { followup: true, dataService, chatState, modelService, weatherService });
+        return handleChat(req, res, { followup: true, dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler });
       }
 
       if (req.method === 'POST' && url.pathname === '/api/chat/action') {
@@ -447,7 +451,7 @@ async function handleConversationHarvestSync(req, res, { stateStore }) {
   });
 }
 
-async function handleChat(req, res, { followup = false, dataService, chatState, modelService, weatherService } = {}) {
+async function handleChat(req, res, { followup = false, dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler } = {}) {
   const body = await readJson(req);
   const startedAt = Date.now();
   const conversationId = body.conversation_id || body.conversationId || makeId('conv');
@@ -509,7 +513,7 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
           previous_intent: previous.envelope.context_snapshot.intent,
         } : {}),
       },
-    }, { dataService, modelService, weatherService });
+    }, { dataService, modelService, weatherService, contextManager, smartFallbackHandler });
 
     await sessionStore.appendTurn(conversationId, { turn_id: turnId, user_message: message, envelope });
     chatState.logger?.write?.({ type: 'chat_turn', ...summarizeEnvelope(envelope, startedAt) });

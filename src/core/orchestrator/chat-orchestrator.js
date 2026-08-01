@@ -28,10 +28,13 @@ import {
 import { decideTransition, TRANSITION_TYPE } from '../scene-router/scene-transition-manager.js';
 import { resolveAmbiguity } from '../scene-router/ambiguity-resolver.js';
 import { buildSnapshot } from '../../core/conversation/context-snapshot.js';
+import { createSupervisor } from '../agents/supervisor.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(moduleDir, '../../..');
 const skillsRoot = path.join(projectRoot, 'src', 'skills');
+
+const _supervisorForGuard = createSupervisor();
 
 // 从上下文/业务数据中解析天气查询的城市（优先 action 传入的目的地，返回数组以支持多城市）
 function resolveWeatherCity(request = {}, businessData = {}) {
@@ -55,6 +58,7 @@ export function createChatOrchestrator(options = {}) {
   const modelService = options.modelService ?? { fillTemplateSlots };
   const weatherService = options.weatherService ?? null;
   const contextManager = options.contextManager ?? null;
+  const smartFallbackHandler = options.smartFallbackHandler ?? null;
 
   return {
     async run(request = {}) {
@@ -157,7 +161,7 @@ export function createChatOrchestrator(options = {}) {
           const fillFn = (modelService && typeof modelService.fillTemplateSlots === 'function')
             ? modelService.fillTemplateSlots
             : fillTemplateSlots;
-          const fModelResult = await fillFn({
+          let fModelResult = await fillFn({
             message: sceneInput.text,
             skill_key: fSkillKey,
             template_id: fTemplateId,
@@ -168,6 +172,9 @@ export function createChatOrchestrator(options = {}) {
             conversation_history: await injectHistory(request, contextManager, fSkillKey),
           });
           mark('followup_fill', '追问模板填充', { template_id: fModelResult.template_id });
+          fModelResult = await applySmartFallback(fModelResult, {
+            message: sceneInput.text, skill_key: fSkillKey, conversation_id: request.conversation_id,
+          }, smartFallbackHandler, contextManager);
           const fStaticFollowups = loadStaticFollowups(fSkillKey, fModelResult.template_id || fTemplateId);
           const fInteractions = composeInteractions({
             sceneDecision: { scene_key: fSkillKey, intent: `${fSkillKey}.followup`, decision: 'accept', confidence: 1 },
@@ -241,7 +248,9 @@ export function createChatOrchestrator(options = {}) {
           { ...(options.sceneOptions ?? {}), ...(thresholdsByScene ? { thresholdsByScene } : {}) },
         );
         mark('scene_route', '场景路由', { scene_key: sceneDecision?.scene_key, decision: sceneDecision?.decision, confidence: sceneDecision?.confidence });
-        const acceptedScene = acceptScene(request, sceneDecision);
+        console.error('[FLOW-DEBUG] sceneDecision=', sceneDecision && JSON.stringify({ scene_key: sceneDecision.scene_key, decision: sceneDecision.decision, confidence: sceneDecision.confidence }));
+        const acceptedScene = await acceptScene(request, sceneDecision);
+        console.error('[FLOW-DEBUG] acceptedScene=', acceptedScene && JSON.stringify({ scene_key: acceptedScene.scene_key, decision: acceptedScene.decision }));
         const skillKey = acceptedScene?.scene_key || 'common';
         const skillTemplates = resolveSkillTemplates(skillKey);
         const knowledge = acceptedScene
@@ -366,6 +375,9 @@ export function createChatOrchestrator(options = {}) {
             business_data: businessData,
           });
           mark('model', '模板填充', { model: modelResult.model_used, status: modelResult.model_status, template_id: modelResult.template_id });
+          modelResult = await applySmartFallback(modelResult, {
+            message: sceneInput.text, skill_key: skillKey, conversation_id: request.conversation_id,
+          }, smartFallbackHandler, contextManager);
         }
         const staticFollowups = loadStaticFollowups(skillKey, modelResult.template_id || routedTemplateId);
         const interactions = composeInteractions({ sceneDecision, modelResult, staticFollowups });
@@ -483,17 +495,53 @@ function normalizeRequest(request) {
   };
 }
 
-function acceptScene(request, sceneDecision) {
+async function applySmartFallback(modelResult, input, smartFallbackHandler, contextManager) {
+  if (!smartFallbackHandler || !smartFallbackHandler.shouldFallback(modelResult)) return modelResult;
+  let history = [];
+  if (contextManager && input.conversation_id) {
+    try { history = await contextManager.buildHistory(input.conversation_id, input.skill_key); } catch {}
+  }
+  return smartFallbackHandler.generateNaturalAnswer({
+    message: input.message || '',
+    skill_key: input.skill_key || 'common',
+    conversation_history: history,
+  });
+}
+
+async function acceptScene(request, sceneDecision) {
   const forcedSceneKey = normalizeForcedSkillKey(request.skill_key || request.skillKey);
   if (forcedSceneKey) {
-    return {
-      scene_key: forcedSceneKey,
-      intent: request.intent || `${forcedSceneKey}.forced`,
-      decision: 'accept',
-      confidence: 1,
-      routed: true,
-      forced: true,
-    };
+    // Guard: check if user input actually matches the forced skill
+    try {
+      const route = await _supervisorForGuard.route({
+        message: request.message || request.text || '',
+        context: { active_agent: forcedSceneKey },
+      });
+      console.error('[GUARD-DEBUG] route=', JSON.stringify(route), 'forced=', forcedSceneKey);
+      // If supervisor routes to same agent, or doesn't switch away — keep forced
+      if (route.agentKey === forcedSceneKey || !route.switched) {
+        return {
+          scene_key: forcedSceneKey,
+          intent: request.intent || `${forcedSceneKey}.forced`,
+          decision: 'accept',
+          confidence: 1,
+          routed: true,
+          forced: true,
+        };
+      }
+      // Supervisor says different agent — fall through to normal routing
+    } catch (e) {
+      console.error('[GUARD-DEBUG] CATCH fired:', e && e.message);
+      // If guard fails, keep forced as fallback
+      return {
+        scene_key: forcedSceneKey,
+        intent: request.intent || `${forcedSceneKey}.forced`,
+        decision: 'accept',
+        confidence: 1,
+        routed: true,
+        forced: true,
+      };
+    }
   }
 
   const previousSceneKey = request.context?.previous_turn_id
