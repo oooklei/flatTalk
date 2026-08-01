@@ -442,6 +442,8 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
       role: body.role || body.roleKey || 'elder_family',
       elder_id: body.elder_id,
       context: {
+        active_agent: previous?.envelope?.agent_key || previous?.envelope?.skill_key || '',
+        last_template: previous?.envelope?.template_id || '',
         ...(body.context || {}),
         action_key: body.action_key || body.actionKey || '',
         action_params: body.params || {},
@@ -452,6 +454,12 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
           previous_scene: previous?.envelope?.skill_key,
           previous_turn_id: previous?.turn_id,
           followup_source: body.followup_source || body.source || '',
+        } : {}),
+        // ★ ContextSnapshot 注入：从上一轮 envelope 提取上下文快照
+        ...(previous?.envelope?.context_snapshot ? {
+          previous_scene: previous.envelope.context_snapshot.scene,
+          previous_template: previous.envelope.context_snapshot.template_id,
+          previous_intent: previous.envelope.context_snapshot.intent,
         } : {}),
       },
     }, { dataService, modelService, weatherService });
@@ -495,6 +503,12 @@ async function handleChatAction(req, res, { dataService, modelService, logger, c
         previous_scene: previous?.envelope?.skill_key,
         previous_turn_id: previous?.turn_id,
         previous_template_id: previous?.envelope?.template_id,
+        // ★ ContextSnapshot 注入：从上一轮 envelope 提取上下文快照
+        ...(previous?.envelope?.context_snapshot ? {
+          previous_scene: previous.envelope.context_snapshot.scene,
+          previous_template: previous.envelope.context_snapshot.template_id,
+          previous_intent: previous.envelope.context_snapshot.intent,
+        } : {}),
       },
     }, {
       runSkill: (request) => runLocalSkill({

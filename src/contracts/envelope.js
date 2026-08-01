@@ -6,6 +6,8 @@ export function buildEnvelope(input = {}) {
     conversation_id: input.conversation_id || '',
     turn_id: input.turn_id || makeId('turn'),
     skill_key: input.skill_key || 'common',
+    agent_key: input.agent_key || input.skill_key || '',
+    agent_switched: input.agent_switched || input.route_extras?.agent_switched || false,
     intent: input.intent || 'common.chat',
     template_id: input.template_id || 'common.answer.v1',
     template_key: input.template_key || input.template_id || 'common.answer.v1',

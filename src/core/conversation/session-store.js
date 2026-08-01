@@ -9,11 +9,31 @@ export class SessionStore {
   async getOrCreate(conversationId) {
     const id = conversationId || makeId('conv');
     const existing = await this.stateStore.getJson(conversationKey(id));
-    if (existing) return existing;
+    if (existing) {
+      // 向后兼容：确保 agents 结构存在
+      if (!existing.agents) {
+        existing.agents = {};
+        if (existing.turns && existing.turns.length > 0) {
+          existing.agents.common = {
+            turns: existing.turns,
+            last_template: existing.turns.at(-1)?.envelope?.template_id || '',
+            scoped_data: {},
+            frozen: false,
+          };
+        }
+      }
+      if (!existing.global_context) {
+        existing.global_context = {};
+      }
+      return existing;
+    }
 
     return {
       conversation_id: id,
       turns: [],
+      agents: {},
+      active_agent: '',
+      global_context: {},
       updated_at: new Date().toISOString(),
     };
   }
@@ -27,6 +47,24 @@ export class SessionStore {
     };
     session.turns.push(nextTurn);
     session.updated_at = new Date().toISOString();
+
+    // per-agent turns 隔离
+    const agentKey = nextTurn.envelope?.agent_key || nextTurn.envelope?.skill_key || 'common';
+    if (!session.agents[agentKey]) {
+      session.agents[agentKey] = { turns: [], last_template: '', scoped_data: {}, frozen: false };
+    }
+    session.agents[agentKey].turns.push(nextTurn);
+    session.agents[agentKey].last_template = nextTurn.envelope?.template_id || session.agents[agentKey].last_template;
+    session.agents[agentKey].frozen = false;
+    session.active_agent = agentKey;
+
+    // 冻结其他 Agent
+    for (const key of Object.keys(session.agents)) {
+      if (key !== agentKey) {
+        session.agents[key].frozen = true;
+      }
+    }
+
     await this.save(session);
 
     // 持久化到数据库（conversation_turns 表）
@@ -35,8 +73,9 @@ export class SessionStore {
         await this.repository.create('conversation_turns', {
           turn_id: nextTurn.turn_id,
           conversation_id: session.conversation_id,
-          skill_key: nextTurn.envelope?.skill_key || nextTurn.skill_key || '',
-          template_id: nextTurn.envelope?.template_id || nextTurn.template_id || '',
+          agent_key: agentKey,
+          skill_key: nextTurn.envelope?.skill_key || agentKey,
+          template_id: nextTurn.envelope?.template_id || '',
           created_at: nextTurn.created_at,
         });
       } catch (err) {
@@ -88,6 +127,16 @@ export class SessionStore {
   async getPreviousTurn(conversationId) {
     const session = await this.getOrCreate(conversationId);
     return session.turns.at(-1) || null;
+  }
+
+  async getAgentContext(conversationId, agentKey) {
+    const session = await this.getOrCreate(conversationId);
+    return session.agents?.[agentKey] || null;
+  }
+
+  async getGlobalContext(conversationId) {
+    const session = await this.getOrCreate(conversationId);
+    return session.global_context || {};
   }
 
   async listConversations() {

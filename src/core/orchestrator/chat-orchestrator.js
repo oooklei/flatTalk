@@ -23,6 +23,9 @@ import {
   buildFallbackContext,
   SPECIAL_CASE_ACTION_KEYS,
 } from '../actions/fallback-prompt-builder.js';
+import { decideTransition, TRANSITION_TYPE } from '../scene-router/scene-transition-manager.js';
+import { resolveAmbiguity } from '../scene-router/ambiguity-resolver.js';
+import { buildSnapshot } from '../../core/conversation/context-snapshot.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(moduleDir, '../../..');
@@ -99,6 +102,8 @@ export function createChatOrchestrator(options = {}) {
             answer_text: sosModelResult.answer_text || '检测到紧急情况，请立即拨打120或点击下方按钮求助。',
             intent: 'SOS',
             skill_key: sosSkillKey,
+            agent_key: request.context?.agent_key || sosSkillKey,
+            agent_switched: request.context?.agent_switched || false,
             scene_key: sosSkillKey,
             template_id: sosTemplateId,
             routed: true,
@@ -125,6 +130,13 @@ export function createChatOrchestrator(options = {}) {
 
         // ★ 轻量追问短路：followup 按钮触发且 skill_key 已知时，跳过意图/场景/知识检索，
         //    直接走 模板解析→业务数据→本地模板填充→渲染，避免完整 16 步流水线
+        console.log('[bypass-check]', {
+          has_followup_source: !!request.context?.followup_source,
+          followup_source: request.context?.followup_source,
+          skill_key: request.skill_key,
+          reenter_chat: request.context?.reenter_chat,
+          action_key: request.context?.action_key,
+        });
         if (request.context?.followup_source && request.skill_key && !request.context?.reenter_chat) {
           mark('followup_bypass', '轻量追问', { skill_key: request.skill_key, action_key: request.context?.action_key });
           const fSkillKey = request.skill_key;
@@ -144,7 +156,7 @@ export function createChatOrchestrator(options = {}) {
             default_template_id: fSkillTemplates.defaultTemplateId,
             template_library: fSkillTemplates.library,
             business_data: fBusinessData,
-            intent_context: { intent: `${fSkillKey}.followup` },
+            intent_context: { intent: `${fSkillKey}.followup`, action_key: request.context?.action_key, action_params: request.context?.action_params },
           });
           mark('followup_fill', '追问模板填充', { template_id: fModelResult.template_id });
           const fStaticFollowups = loadStaticFollowups(fSkillKey, fModelResult.template_id || fTemplateId);
@@ -401,6 +413,7 @@ export function createChatOrchestrator(options = {}) {
 
         return {
           ...envelope,
+          context_snapshot: buildSnapshot(envelope),
           answer: envelope.answer_text,
           llm: renderResult.llm,
           card: renderResult.card,
@@ -480,6 +493,33 @@ function acceptScene(request, sceneDecision) {
       routed: true,
       continued: true,
     };
+  }
+
+  // ★ SceneTransitionManager：统一决策
+  const candidates = sceneDecision?.candidates || [];
+  const transition = decideTransition(candidates, {
+    previous_scene: request.previous_scene || request.context?.previous_scene,
+    message: request.message || request.text || '',
+  });
+
+  // AMBIGUOUS：消歧追问
+  if (transition.type === TRANSITION_TYPE.AMBIGUOUS) {
+    return resolveAmbiguity(transition.candidates, request);
+  }
+
+  // FALLBACK：answer 兜底
+  if (transition.type === TRANSITION_TYPE.FALLBACK) {
+    return null; // 返回 null，让上游走 common/answer
+  }
+
+  // CONTINUE：延续旧场景
+  if (transition.type === TRANSITION_TYPE.CONTINUE) {
+    return transition.scene;
+  }
+
+  // ROUTE：直接路由（accept 或 review 均可路由）
+  if (transition.type === TRANSITION_TYPE.ROUTE && transition.scene) {
+    return transition.scene;
   }
 
   return sceneDecision?.decision === 'accept' ? sceneDecision : null;
