@@ -248,9 +248,7 @@ export function createChatOrchestrator(options = {}) {
           { ...(options.sceneOptions ?? {}), ...(thresholdsByScene ? { thresholdsByScene } : {}) },
         );
         mark('scene_route', '场景路由', { scene_key: sceneDecision?.scene_key, decision: sceneDecision?.decision, confidence: sceneDecision?.confidence });
-        console.error('[FLOW-DEBUG] sceneDecision=', sceneDecision && JSON.stringify({ scene_key: sceneDecision.scene_key, decision: sceneDecision.decision, confidence: sceneDecision.confidence }));
         const acceptedScene = await acceptScene(request, sceneDecision);
-        console.error('[FLOW-DEBUG] acceptedScene=', acceptedScene && JSON.stringify({ scene_key: acceptedScene.scene_key, decision: acceptedScene.decision }));
         const skillKey = acceptedScene?.scene_key || 'common';
         const skillTemplates = resolveSkillTemplates(skillKey);
         const knowledge = acceptedScene
@@ -517,7 +515,6 @@ async function acceptScene(request, sceneDecision) {
         message: request.message || request.text || '',
         context: { active_agent: forcedSceneKey },
       });
-      console.error('[GUARD-DEBUG] route=', JSON.stringify(route), 'forced=', forcedSceneKey);
       // If supervisor routes to same agent, or doesn't switch away — keep forced
       if (route.agentKey === forcedSceneKey || !route.switched) {
         return {
@@ -529,9 +526,20 @@ async function acceptScene(request, sceneDecision) {
           forced: true,
         };
       }
-      // Supervisor says different agent — fall through to normal routing
-    } catch (e) {
-      console.error('[GUARD-DEBUG] CATCH fired:', e && e.message);
+      // Supervisor routed to a different agent — trust the supervisor's match
+      const guardKey = normalizeForcedSkillKey(route.agentKey);
+      if (guardKey) {
+        return {
+          scene_key: guardKey,
+          intent: request.intent || `${guardKey}.guard`,
+          decision: 'accept',
+          confidence: 1,
+          routed: true,
+          guarded: true,
+        };
+      }
+      // guardKey invalid — fall through to normal routing
+    } catch {
       // If guard fails, keep forced as fallback
       return {
         scene_key: forcedSceneKey,
