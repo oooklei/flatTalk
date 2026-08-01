@@ -11,6 +11,7 @@ import path from 'node:path';
 import { discoverTemplates, describeLibrary } from './discover.js';
 import { selectTemplate } from './select.js';
 import { renderTemplate, escapeHtml } from './render.js';
+import { injectBridge } from '../core/render/bridge-injector.js';
 
 const FOLLOWUP_CSS = `
 .tc-followups{box-sizing:border-box;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
@@ -116,7 +117,7 @@ export function renderCard(dir, json, options = {}) {
     score,             // 匹配度
     cardCount: records.length,
     pageCount: pages.length,
-    pages,             // string[] 每页一份完整 HTML
+    pages: pages.map(injectBridge), // string[] 每页一份完整 HTML（注入卡片交互桥接脚本）
     library: describeLibrary(templates), // 可选：把这份清单回传给模型做精确选择
   };
 }
