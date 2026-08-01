@@ -1,5 +1,6 @@
 {
   "id": "meal_timeline_card",
+  "description": "时间线式膳食流程，按时间顺序纵向展示三餐，适合移动端",
   "layout": "vertical",
   "match": "时间线式膳食流程：按时间顺序纵向展示三餐，含顶部画像横幅、营养比例面板与相关建议，适合移动端/按餐次阅读。字段：bannerTitle,suitable,totalCal,salt,meals[{mealName,mealEmoji,mealTime,mealTotal,dotCls,foods[{foodName,cal}]}],ratios[{name,pct,width,color}],related[{relIcon,relText}]",
   "required": ["meals", "bannerTitle"]

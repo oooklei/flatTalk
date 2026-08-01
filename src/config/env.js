@@ -4,6 +4,12 @@ export function loadEnv() {
   return {
     host: process.env.FLATTALK_HOST || "127.0.0.1",
     port: Number(process.env.FLATTALK_PORT || 5298),
+    
+    // HTTPS 配置（用于话筒等需要安全上下文的功能）
+    sslPort: Number(process.env.FLATTALK_SSL_PORT || 5444),
+    sslKey: process.env.FLATTALK_SSL_KEY || "",
+    sslCert: process.env.FLATTALK_SSL_CERT || "",
+    
     runtimeMode: process.env.FLATTALK_RUNTIME_MODE || "local",
     pgUrl: process.env.FLATTALK_PG_URL || process.env.FLATTALK_TAG_SYSTEM_PG_URL || process.env.TAG_SYSTEM_PG_URL || "",
     redisUrl: process.env.FLATTALK_REDIS_URL || process.env.TAG_SYSTEM_REDIS_URL || "",

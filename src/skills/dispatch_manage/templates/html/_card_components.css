@@ -1,0 +1,21 @@
+/* dispatch_manage 派单组件样式 —— 忠实复刻 v4 原型供应商派单页 DOM，配色改用蓝色令牌 */
+.supplier-order-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px;max-width:420px;margin:0 auto;}
+.supplier-order-card h3{margin:0 0 10px;font-size:15px;color:var(--ink);}
+.supplier-order-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line);}
+.supplier-order-row:last-child{border-bottom:none;}
+.supplier-order-label{color:var(--muted);}
+.supplier-order-value{color:var(--ink);font-weight:600;text-align:right;}
+.veto-tip{font-size:14px;font-weight:600;color:var(--ink);margin:16px 0 6px;}
+.veto-desc{font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.supplier-action-btns{display:flex;gap:10px;}
+.supplier-action-btns button{flex:1;border-radius:10px;padding:12px;font-size:14px;font-weight:600;}
+.btn-reject{border:1px solid var(--line);background:#fff;color:var(--danger);}
+.btn-transfer{border:1px solid var(--primary);background:#fff;color:var(--primary);}
+.btn-accept{border:none;background:var(--grad);color:#fff;}
+.reject-reasons{display:flex;flex-wrap:wrap;gap:8px;}
+.reject-reason{border:1px solid var(--line);border-radius:999px;padding:8px 13px;background:#fff;font-size:13px;color:var(--ink);}
+.transfer-list{display:flex;flex-direction:column;gap:10px;}
+.transfer-item{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff;}
+.transfer-item-name{font-size:14px;font-weight:700;color:var(--ink);}
+.transfer-item-meta{font-size:12px;color:var(--muted);margin-top:3px;}
+.order-submit{width:100%;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;background:var(--grad);color:#fff;}

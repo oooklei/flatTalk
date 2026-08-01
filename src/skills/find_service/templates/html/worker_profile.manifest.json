@@ -1,0 +1,7 @@
+{
+  "id": "worker_profile",
+  "description": "护理人员详情档案，展示资质/经验/评分/专长",
+  "layout": "vertical",
+  "match": "护工、护理人员、护理员、推荐人员、上门人员、服务人员详情",
+  "required": ["name", "certLevel", "area", "skillTags", "available"]
+}

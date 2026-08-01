@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --primary: #FF7826;
+    --bg: #FFF8F0;
+    --bg-white: #ffffff;
+    --ink: #2C2C2C;
+    --ink-light: #666;
+    --muted: #999999;
+    --border: #EDE4D8;
+    --divider: #F0EBE3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .card {
+    max-width: 640px; margin: 0 auto;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .chat-section-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 10px; padding: 10px 12px;
+    background: #FFF7ED;
+    border-radius: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .chat-section-title .ico {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    background: linear-gradient(145deg, #A78BFA, #7C5CFC);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+  }
+  .intro {
+    font-size: 13px; color: var(--ink); line-height: 1.6;
+    margin: 0 0 4px; padding: 0 2px;
+  }
+  .group-list { margin-top: 4px; }
+  .chat-medical-row {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 14px 2px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .chat-medical-row:last-child { border-bottom: none; }
+  .chat-medical-ico {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    background: #F7F4FF;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .chat-medical-body { flex: 1; min-width: 0; }
+  .chat-medical-title {
+    font-size: 14px; font-weight: 700; color: var(--ink);
+    margin: 0 0 4px;
+  }
+  .chat-medical-items {
+    font-size: 12px; line-height: 1.65; color: var(--ink-light);
+  }
+  .chat-medical-items b { color: var(--ink); }
+  .foot {
+    margin-top: 8px; padding-top: 4px;
+  }
+  .tip, .note {
+    font-size: 12px; color: var(--muted); line-height: 1.65;
+    margin: 8px 0 0;
+  }
+  .tip b, .note b { color: var(--ink-light); font-weight: 600; }
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
+</style>
+</head>
+<body>
+<div class="tc-deck" data-layout="vertical"><div class="tc-card">
+  <div class="card">
+    <div class="chat-section-title">
+      <span class="ico">✚</span>
+      <span>医养配套方案</span>
+    </div>
+
+    
+    <div class="intro"></div>
+    
+
+    <div class="group-list">
+    
+      <div class="chat-medical-row">
+        <div class="chat-medical-ico">🏥</div>
+        <div class="chat-medical-body">
+          <div class="chat-medical-title">就近医疗</div>
+          <div class="chat-medical-items">
+            <div>首选基地距市第一人民医院仅 800m，步行可达</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="chat-medical-row">
+        <div class="chat-medical-ico">💊</div>
+        <div class="chat-medical-body">
+          <div class="chat-medical-title">便民购药</div>
+          <div class="chat-medical-items">
+            <div>基地楼下 200m 有仁爱大药房，常见药品齐全</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="chat-medical-row">
+        <div class="chat-medical-ico">🚗</div>
+        <div class="chat-medical-body">
+          <div class="chat-medical-title">出行协助</div>
+          <div class="chat-medical-items">
+            <div>基地管家可协助叫车、预约诊所</div>
+          </div>
+        </div>
+      </div>
+    
+    </div>
+
+    <div class="foot">
+      <div class="tip">💡 常规酒店无驻场医护，建议选择近市区医院的康养基地。建议自备基础检测设备。</div>
+      
+      <div class="note"></div>
+      
+    </div>
+  </div>
+
+  
+</div></div>
+
+</body>
+</html>

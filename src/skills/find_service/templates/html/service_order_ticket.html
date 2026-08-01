@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>预定成功</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：下单成功凭证。展示订单号/服务/预约人/电话/日期/归属机构/状态。返回首页由追问按钮体现。 -->
+  <article class="nb-card" data-layout="vertical">
+    <section class="ticket-view">
+      <div class="ticket-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <h3>预定成功</h3>
+      <p>{{ticket_desc}}</p>
+      <div class="ticket-card">
+        <div class="ticket-row"><span class="ticket-label">订单编号</span><span class="ticket-value">{{order_no}}</span></div>
+        <div class="ticket-row"><span class="ticket-label">服务名称</span><span class="ticket-value">{{service_name}}</span></div>
+        <div class="ticket-row"><span class="ticket-label">预约人</span><span class="ticket-value">{{name}}</span></div>
+        <div class="ticket-row"><span class="ticket-label">联系电话</span><span class="ticket-value">{{phone}}</span></div>
+        <div class="ticket-row"><span class="ticket-label">预约日期</span><span class="ticket-value">{{date}}</span></div>
+        <div class="ticket-row"><span class="ticket-label">归属机构</span><span class="ticket-value">{{org}}</span></div>
+        <div class="ticket-row"><span class="ticket-label">状态</span><span class="ticket-value"><span class="status-badge {{status_class}}">{{status}}</span></span></div>
+      </div>
+    </section>
+  </article>
+
+  <script type="application/json">
+  {
+    "ticket_desc": "您的服务预定已提交，工作人员将尽快与您联系确认。",
+    "order_no": "GD5505637938",
+    "service_name": "居家深度清洁",
+    "name": "张大爷",
+    "phone": "13800005678",
+    "date": "2026-08-01",
+    "org": "桂林夕阳红养老服务中心",
+    "status": "待确认",
+    "status_class": ""
+  }
+  </script>
+</body>
+</html>

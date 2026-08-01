@@ -7,6 +7,7 @@ export function createKnowledgeRetriever({ chunkStore, vectorStore, remoteAdapte
       const seen = new Set();
       const local = [];
       for (const sk of skillKeys) {
+        // common 检索全部本地内容（保持向后兼容），其他 skill_key 只检索对应分类
         const chunks = sk === 'common' ? await chunkStore.listAll() : await chunkStore.listBySkill(sk);
         const matches = await vectorStore.search({ query, chunks, limit });
         for (const m of matches) {

@@ -1,0 +1,39 @@
+/* 嘉路康养中心 · 周边资源模板统一设计令牌
+ * 被所有 nearby_* 模板以 <link rel="stylesheet"> 引用，模板卡片系统会自动内联。
+ * 修改此处即可统一全技能配色与质感，避免各模板漂移。 */
+:root {
+  /* 主色：康养海青 + 暖珊瑚（服务/CTA） */
+  --primary: #0E7C86;
+  --primary-weak: #E3F2F3;
+  --accent: #F2994A;
+  --accent-weak: #FDEDE0;
+
+  /* 表面与文字 */
+  --bg: #F6F9FA;
+  --card: #FFFFFF;
+  --card-2: #F8FBFC;
+  --ink: #1F2A33;
+  --ink-2: #43515C;
+  --muted: #6B7A8F;
+  --border: #E3EAEE;
+  --line: #EEF3F5;
+
+  /* 阴影 / 圆角（适老友好） */
+  --shadow: 0 6px 22px rgba(16, 52, 60, .10);
+  --shadow-sm: 0 2px 8px rgba(16, 52, 60, .08);
+  --radius: 16px;
+  --radius-sm: 12px;
+
+  /* 分类色（与数据层 CATEGORY_META 对齐） */
+  --stay: #3B82A0;     /* 住 · 海蓝 */
+  --food: #F2994A;     /* 吃 · 暖橙 */
+  --spot: #2BAE8E;     /* 游 · 绿 */
+  --leisure: #8E6FD8;  /* 娱 · 紫 */
+  --shop: #E08AC0;     /* 购 · 粉 */
+  --transit: #6B7A8F;  /* 行 · 灰蓝 */
+  --wellness: #E5484D; /* 养/医 · 红 */
+  --other: #9AA7B2;    /* 其他 */
+
+  /* 触控最小尺寸（适老 ≥44px） */
+  --tap: 44px;
+}

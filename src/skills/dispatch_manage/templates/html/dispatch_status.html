@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>派单状态更新</title>
+  <style>
+    :root { --primary:#2C7BE5; --grad:linear-gradient(135deg,#2C7BE5 0%,#5AA0F2 100%); --bg:#EEF4FE; --card:#fff; --ink:#2E3A49; --muted:#8A98AA; --border:#DCE7F7; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:14px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+    .card { max-width:420px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .hero { padding:16px; background:var(--grad); color:#fff; }
+    h1 { margin:0; font-size:18px; }
+    .section { padding:12px 14px; border-top:1px solid var(--border); }
+    .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+    .row:last-child { border-bottom:none; }
+    .row .k { color:var(--muted); }
+    .row .v { font-weight:600; }
+    .note { margin-top:10px; padding:10px; border-radius:10px; background:#EAF2FE; color:var(--primary); font-size:12px; line-height:1.5; }
+  </style>
+</head>
+<body>
+  <article class="card" data-layout="vertical">
+    <header class="hero"><h1>派单状态已更新</h1></header>
+    <section class="section">
+      <div class="row"><span class="k">派单号</span><span class="v">{{dispatchId}}</span></div>
+      <div class="row"><span class="k">当前状态</span><span class="v">{{status}}</span></div>
+      <div class="row"><span class="k">更新时间</span><span class="v">{{changedAt}}</span></div>
+      <div class="note">{{note}}</div>
+    </section>
+  </article>
+  <script type="application/json">
+  {
+    "dispatchId": "dp_2001",
+    "status": "已接单",
+    "changedAt": "2026-07-30 09:20",
+    "note": "状态正常流转"
+  }
+  </script>
+</body>
+</html>

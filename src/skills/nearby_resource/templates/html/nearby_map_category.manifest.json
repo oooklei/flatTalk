@@ -1,0 +1,7 @@
+{
+  "id": "nearby_map_category",
+  "layout": "map",
+  "match": "分布|单类|只看|类别|分类|深度",
+  "required": ["markers_json", "center_json", "centerName", "radiusKm", "map_key", "category"],
+  "description": "嘉路康养中心周边单类资源深度分布图（如滨海景区/民宿），按选定分类着色打点，支持类别切换与密度浏览。"
+}

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_map_route" data-layout="map">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>嘉路康养生活圈 · 一日康养游路线</title>
+  <link rel="stylesheet" href="./_design_tokens.css" />
+  <link rel="stylesheet" href="./_base.css" />
+  <style>
+    .nb-card { max-width: 760px; margin: 0 auto; background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .nb-head { padding: 14px 16px; display: flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--primary) 0%, #0B5C63 100%); color: #fff; }
+    .nb-head .pin { width: 30px; height: 30px; flex: none; border-radius: 9px; background: rgba(255,255,255,.18);
+      display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .nb-head h1 { margin: 0; font-size: 16px; font-weight: 600; }
+    .nb-head .src { margin-left: auto; font-size: 11px; opacity: .85; background: rgba(255,255,255,.16); padding: 3px 8px; border-radius: 999px; }
+    .nb-body { display: grid; grid-template-columns: 1.1fr 1fr; }
+    @media (max-width: 620px) { .nb-body { grid-template-columns: 1fr; } }
+    .nb-map { position: relative; min-height: 430px; background: #eef2f7; }
+    #mapCanvas { width: 100%; height: 430px; display: block; }
+    .nb-svg-fallback { display: none; width: 100%; height: 430px; }
+    .nb-svg-fallback.show { display: block; }
+    .nb-static-img { display: none; width: 100%; height: 430px; object-fit: cover; }
+    .nb-static-img.show { display: block; }
+    .nb-steps { max-height: 460px; overflow-y: auto; padding: 12px; border-left: 1px solid var(--border); }
+    @media (max-width: 620px) { .nb-steps { border-left: 0; border-top: 1px solid var(--border); max-height: 340px; } }
+    .nb-step { display: flex; gap: 11px; padding: 9px 0; position: relative; }
+    .nb-step:not(:last-child)::before { content: ""; position: absolute; left: 15px; top: 36px; bottom: -6px; width: 2px; background: var(--line); }
+    .nb-no { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; z-index: 1; }
+    .nb-step .nm { font-size: 14px; font-weight: 700; }
+    .nb-step .role { display: inline-block; font-size: 11px; color: var(--primary); background: var(--primary-weak); padding: 1px 7px; border-radius: 999px; margin-left: 6px; }
+    .nb-step .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .nav-link { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 12.5px; }
+  </style>
+</head>
+<body>
+  <article class="nb-card">
+    <header class="nb-head">
+      <div class="pin">🧭</div>
+      <h1>{{centerName}} · 一日康养游路线</h1>
+      <div class="src">本地知识库</div>
+    </header>
+    <div class="nb-body">
+      <div class="nb-map">
+        <div id="mapCanvas"></div>
+      <img class="nb-static-img" id="staticMapImg" alt="地图预览" />
+      <svg class="nb-svg-fallback" id="svgFallback" viewBox="0 0 400 430" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="nb-steps" id="stepsBox"></div>
+    </div>
+  </article>
+
+  <script id="nearby-route" type="application/json">{{{routeStops_json}}}</script>
+  <script id="nearby-center" type="application/json">{{{center_json}}}</script>
+
+  <script>
+    (function () {
+      var SAMPLE = [
+        { poi_id:'s1', name:'海岸假日民宿', role:'入住·出发', lng:108.172, lat:21.531, distance:0.8, cat:'stay', color:'#3B82A0', emoji:'🏠', biz_status:'营业中', tel:'0770-1234567', open_time:'24小时', tags:['近海'], tags_text:'近海' },
+        { poi_id:'s2', name:'渔家海鲜大排档', role:'早餐', lng:108.160, lat:21.524, distance:1.2, cat:'food', color:'#F2994A', emoji:'🍜', biz_status:'营业中', tel:'0770-2233445', open_time:'11:00-22:00', tags:['私房菜'], tags_text:'私房菜' },
+        { poi_id:'s3', name:'西湾滨海景区', role:'滨海游玩', lng:108.150, lat:21.540, distance:2.5, cat:'spot', color:'#2BAE8E', emoji:'🏖️', biz_status:'开放中', tel:'', open_time:'全天', tags:['海景'], tags_text:'海景' },
+        { poi_id:'s4', name:'渔人码头垂钓场', role:'休闲体验', lng:108.158, lat:21.520, distance:3.1, cat:'leisure', color:'#8E6FD8', emoji:'🎣', biz_status:'营业中', tel:'', open_time:'06:00-20:00', tags:['垂钓'], tags_text:'垂钓' },
+        { poi_id:'s2b', name:'渔村饭店', role:'午餐 / 晚餐', lng:108.162, lat:21.526, distance:1.4, cat:'food', color:'#F2994A', emoji:'🍜', biz_status:'营业中', tel:'', open_time:'10:00-21:00', tags:['海鲜'], tags_text:'海鲜' }
+      ];
+      var PAYLOAD = [];
+      try { PAYLOAD = JSON.parse(document.getElementById('nearby-route').textContent); } catch (e) {}
+      if (!PAYLOAD || !PAYLOAD.length) PAYLOAD = SAMPLE;
+      var CENTER = { lng: 108.166816, lat: 21.527905, name: '{{centerName}}' };
+      try { var c = JSON.parse(document.getElementById('nearby-center').textContent); if (c && c.lat) CENTER = c; } catch (e) {}
+      var MAP_KEY = '{{map_key}}';
+      var SVG_FALLBACK = (!MAP_KEY || MAP_KEY === 'YOUR_TENCENT_JS_KEY');
+      var STATIC_MAP_URL = '{{static_map_url}}';
+      var mapLoadTimer = null;
+      var map = null;
+
+      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/marker?marker=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&referer=flattalk'; }
+      function renderSteps() {
+        var box = document.getElementById('stepsBox');
+        box.innerHTML = PAYLOAD.map(function (p, i) {
+          var tg = p.tags_text ? ('<span style="color:var(--primary)">🏷 ' + p.tags_text + '</span>') : '';
+          return '<div class="nb-step">' +
+            '<div class="nb-no">' + (i + 1) + '</div>' +
+            '<div><div class="nm">' + (p.emoji || '📍') + ' ' + (p.name || '未命名') + '<span class="role">' + (p.role || '') + '</span></div>' +
+            '<div class="meta">' + (parseFloat(p.distance) || 0).toFixed(1) + 'km · ' + (p.biz_status || '营业中') + ' ' + tg + '</div>' +
+            '<div class="meta"><a class="nav-link" href="' + navUrl(p) + '" target="_blank">🧭 导航前往</a></div></div>' +
+            '</div>';
+        }).join('');
+      }
+      function renderSVG() {
+        var svg = document.getElementById('svgFallback'); svg.classList.add('show');
+        document.getElementById('mapCanvas').style.display = 'none';
+        var cx = 200, cy = 215, R = 160, html = '<circle cx="' + cx + '" cy="' + cy + '" r="6" fill="#0E7C86"/>';
+        var pts = [];
+        PAYLOAD.forEach(function (p, i) { var ang = (i / PAYLOAD.length) * Math.PI * 2; var x = cx + R * Math.cos(ang), y = cy + R * Math.sin(ang); pts.push([x, y]); html += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="9" fill="' + (p.color || '#0E7C86') + '" stroke="#fff" stroke-width="2"/>'; html += '<text x="' + x.toFixed(1) + '" y="' + (y - 12).toFixed(1) + '" text-anchor="middle" font-size="10" fill="#333">' + (i + 1) + '</text>'; });
+        var path = pts.map(function (q, i) { return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' ') + 'Z';
+        html = '<path d="' + path + '" fill="none" stroke="#0E7C86" stroke-width="2" stroke-dasharray="5 4"/>' + html;
+        svg.innerHTML = html;
+      }
+      function showStaticMap() {
+        var img = document.getElementById('staticMapImg');
+        if (STATIC_MAP_URL && img) {
+          img.onerror = function () { img.classList.remove('show'); renderSVG(); };
+          img.onload = function () { document.getElementById('mapCanvas').style.display = 'none'; };
+          img.src = STATIC_MAP_URL;
+          img.classList.add('show');
+        } else { renderSVG(); }
+      }
+      function init() {
+        renderSteps();
+        if (SVG_FALLBACK) { renderSVG(); return; }
+        mapLoadTimer = setTimeout(function () {
+          if (typeof TMap === 'undefined') { console.warn('[地图] 加载超时，降级到静态图'); showStaticMap(); }
+        }, 3000);
+        if (typeof TMap === 'undefined' && !window.__nbLoading) {
+          window.__nbLoading = true;
+          var s = document.createElement('script');
+          s.src = 'https://map.qq.com/api/gljs?v=1.exp&key=' + encodeURIComponent(MAP_KEY) + '&libraries=visualization';
+          s.onerror = function () { clearTimeout(mapLoadTimer); showStaticMap(); };
+          s.onload = function () { clearTimeout(mapLoadTimer); try { buildMap(); } catch (e) { showStaticMap(); } };
+          document.head.appendChild(s);
+        }
+      }
+      function buildMap() {
+        if (typeof TMap === 'undefined') { showStaticMap(); return; }
+        map = new TMap.Map(document.getElementById('mapCanvas'), { center: new TMap.LatLng(CENTER.lat, CENTER.lng), zoom: 10 });
+        setTimeout(function () {
+          var canvas = document.querySelector('#mapCanvas canvas, #mapCanvas img');
+          if (!canvas || (canvas.width < 2 && canvas.height < 2)) {
+            console.warn('[地图] 瓦片加载失败，降级到静态图'); showStaticMap();
+          }
+        }, 4000);
+        new TMap.MultiPolyline({ map: map, geometries: [{ paths: PAYLOAD.map(function (p) { return new TMap.LatLng(p.lat, p.lng); }) }], styles: { color: '#0E7C86', width: 4, borderWidth: 1, borderColor: '#fff', lineCap: 'round' } });
+        PAYLOAD.forEach(function (p, i) {
+          new TMap.MultiMarker({ map: map, geometries: [{ id: 'r' + i, position: new TMap.LatLng(p.lat, p.lng) }], styles: { 'r' + i: new TMap.MarkerStyle({ width: 26, height: 26, src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="11" fill="' + (p.color || '#0E7C86') + '" stroke="#fff" stroke-width="2"/><text x="13" y="17" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">' + (i + 1) + '</text></svg>') }) } });
+        });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+    })();
+  </script>
+</body>
+</html>

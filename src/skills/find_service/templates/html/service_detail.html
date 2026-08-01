@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务详情</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：服务详情页。服务介绍 / 标签 / 特色 / 时间 / 咨询热线。一键咨询/一键预定由追问按钮体现。 -->
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <div class="eyebrow">{{category}}</div>
+      <h1>{{name}}</h1>
+      <p class="subtitle">{{price_text}}</p>
+    </header>
+
+    <div class="detail-section">
+      <h3>服务介绍</h3>
+      <p>{{intro}}</p>
+    </div>
+
+    {{#has_tags}}
+    <div class="detail-section">
+      <h3>服务标签</h3>
+      <div class="detail-tags">
+        {{#tags}}<span class="tag">{{.}}</span>{{/tags}}
+      </div>
+    </div>
+    {{/has_tags}}
+
+    {{#has_features}}
+    <div class="detail-section">
+      <h3>服务特色</h3>
+      <div class="detail-features">
+        {{#features}}
+        <div class="detail-feature">
+          <div class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <span>{{.}}</span>
+        </div>
+        {{/features}}
+      </div>
+    </div>
+    {{/has_features}}
+
+    <div class="detail-section">
+      <h3>服务时间</h3>
+      <p>{{timeRange}}</p>
+    </div>
+
+    <div class="detail-section">
+      <h3>咨询热线</h3>
+      <p style="font-size:20px;font-weight:600;color:var(--primary);">{{hotline}}</p>
+    </div>
+  </article>
+
+  <script type="application/json">
+  {
+    "category": "家政清洁",
+    "name": "居家深度清洁",
+    "price_text": "¥180 / 次",
+    "intro": "为您提供全方位的居家深度清洁服务，包含厨房清洁、卫生间消毒、卧室整理、客厅打扫等。服务人员均经过专业培训，持有健康证，服务过程全程可追溯。特别适合行动不便的老年人家庭。",
+    "tags": ["实名认证", "专业培训", "即时响应"],
+    "has_tags": true,
+    "features": ["持证上岗", "服务保险", "24小时响应", "不满意可返工"],
+    "has_features": true,
+    "timeRange": "08:00-18:00",
+    "hotline": "400-888-1234"
+  }
+  </script>
+</body>
+</html>

@@ -57,9 +57,12 @@ export function scoreRuleSet(input, ruleSet, thresholds = DEFAULT_THRESHOLDS) {
   const threshold = Number(ruleSet.threshold ?? 1) || 1;
   const confidence = clamp((positive - conflict) / threshold);
   const decision = decide(confidence, mergedThresholds);
-  const intent = typeof ruleSet.infer_intent === 'function'
-    ? ruleSet.infer_intent(input)
-    : ruleSet.default_intent;
+
+  // 优先使用请求中携带的 intent（如 followup 按钮），否则调用 infer_intent
+  const requestIntent = input?.intent || input?.intent_context?.intent;
+  const intent = requestIntent
+    ? requestIntent
+    : (typeof ruleSet.infer_intent === 'function' ? ruleSet.infer_intent(input) : ruleSet.default_intent);
 
   return {
     scene_key: ruleSet.scene_key,

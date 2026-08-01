@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 const DEFAULT_MEAL_PLAN_COLLECTIONS = '膳食知识库';
 const DEFAULT_COMMON_COLLECTIONS = '广西养老办事指引知识库,广西养老政策知识库';
+const DEFAULT_TRAVEL_ROUTE_COLLECTIONS = '旅居知识库,广西旅居行程规划知识库';
 
 export function createRemoteKnowledgeAdapter(options = {}) {
   const disabled = options.enabled === false || options.disableRemote === true;
@@ -17,17 +18,36 @@ export function createRemoteKnowledgeAdapter(options = {}) {
   const collections = normalizeCollections({
     collections: options.collections || process.env.FLATTALK_KB_COLLECTIONS || '',
     mealPlanCollections: options.mealPlanCollections || process.env.FLATTALK_KB_MEAL_PLAN_COLLECTIONS || DEFAULT_MEAL_PLAN_COLLECTIONS,
+    travelRouteCollections: options.travelRouteCollections || process.env.FLATTALK_KB_TRAVEL_ROUTE_COLLECTIONS || DEFAULT_TRAVEL_ROUTE_COLLECTIONS,
     defaultCollections: options.defaultCollections || process.env.FLATTALK_KB_DEFAULT_COLLECTIONS || DEFAULT_COMMON_COLLECTIONS,
   });
   const timeoutMs = Number(options.timeoutMs || process.env.FLATTALK_KB_TIMEOUT_MS || 5000);
   const maxQaRows = Number(options.maxQaRows || process.env.FLATTALK_KB_MAX_QA_ROWS || 1200);
   const fetchImpl = options.fetchImpl || globalThis.fetch;
+  const localKnowledgeService = options.localKnowledgeService || null;
   let configCache = null;
 
   return {
     enabled: Boolean(baseUrl),
 
     async search({ skill_key = 'meal_plan', query = '', limit = 3, filters = {} } = {}) {
+      // travel_route 技能优先使用本地知识库
+      if (skill_key === 'travel_route' && localKnowledgeService) {
+        const localResults = localKnowledgeService.searchLocalKnowledge({ query, limit });
+        if (localResults.length > 0) {
+          return {
+            ok: true,
+            source: 'local',
+            matches: localResults.map(r => ({
+              title: r.item.name || r.item.机构名称 || r.item.路线名称 || '未知',
+              content: JSON.stringify(r.item),
+              score: r.score,
+              category: r.category,
+            })),
+          };
+        }
+      }
+
       if (!baseUrl) {
         return { ok: false, skipped: true, status: 'remote_not_configured', matches: [] };
       }
@@ -401,11 +421,13 @@ function normalizeCollections(value) {
   }
   const explicit = parseCollectionList(value?.collections || '');
   const mealPlan = parseCollectionList(value?.mealPlanCollections || DEFAULT_MEAL_PLAN_COLLECTIONS);
+  const travelRoute = parseCollectionList(value?.travelRouteCollections || DEFAULT_TRAVEL_ROUTE_COLLECTIONS);
   const defaults = parseCollectionList(value?.defaultCollections || DEFAULT_COMMON_COLLECTIONS);
   return {
     ...(explicit.length ? { default: explicit } : {}),
     default: defaults.length ? defaults : explicit,
     meal_plan: mealPlan.length ? mealPlan : parseCollectionList(DEFAULT_MEAL_PLAN_COLLECTIONS),
+    travel_route: travelRoute.length ? travelRoute : parseCollectionList(DEFAULT_TRAVEL_ROUTE_COLLECTIONS),
     common: defaults.length ? defaults : explicit,
   };
 }

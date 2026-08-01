@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>意图识别</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：展示 AI 对用户输入的意图理解（意图徽标+置信度+抽取实体+紧急级别），保证可解释性。卡内无按钮，动作由追问体现。 -->
+  <article class="ai-result-card" data-layout="vertical">
+    <div class="ai-result-header">
+      <span class="ai-result-badge {{badge_type}}">{{badge_icon}} {{badge_label}}</span>
+      <span class="ai-result-confidence">置信度：<span class="score {{conf_class}}">{{confidence}}</span></span>
+    </div>
+
+    {{#show_entities}}
+    <div class="ai-result-section">
+      <div class="ai-result-section-title">识别到的信息</div>
+      <div class="ai-result-entities">
+        {{#entities}}
+        <div class="ai-result-entity"><span class="entity-type">{{type}}</span>：{{value}}</div>
+        {{/entities}}
+      </div>
+    </div>
+    {{/show_entities}}
+
+    {{#show_emergency}}
+    <div class="ai-result-section">
+      <div class="ai-result-section-title">紧急级别</div>
+      <div class="ai-result-entity" style="background:{{emergency_bg}};color:{{emergency_color}};">{{emergency_text}}</div>
+    </div>
+    {{/show_emergency}}
+  </article>
+
+  <script type="application/json">
+  {
+    "badge_type": "service",
+    "badge_icon": "🧹",
+    "badge_label": "服务查询",
+    "confidence": "88%",
+    "conf_class": "",
+    "entities": [
+      { "type": "时间", "value": "明天" },
+      { "type": "人群", "value": "老人" }
+    ],
+    "show_entities": true,
+    "show_emergency": true,
+    "emergency_bg": "#f0fdf4",
+    "emergency_color": "#22c55e",
+    "emergency_text": "绿色（提示）"
+  }
+  </script>
+</body>
+</html>

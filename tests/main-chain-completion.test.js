@@ -53,13 +53,13 @@ test('table schemas include planned PG-backed runtime tables', () => {
 });
 
 test('action dispatcher classifies action types', async () => {
-  const clientOnly = await dispatchAction({ action_key: 'client.copy' });
+  const clientOnly = await dispatchAction({ action_key: 'sos.call_120' });
   assert.equal(clientOnly.action_type, 'client_only');
   assert.equal(clientOnly.result_type, 'client_ack');
 
-  const external = await dispatchAction({ action_key: 'orders.create' });
-  assert.equal(external.action_type, 'external_api');
-  assert.equal(external.skipped, true);
+  const invalid = await dispatchAction({ action_key: 'orders.create' });
+  assert.equal(invalid.ok, false);
+  assert.equal(invalid.status, 400);
 
   const serverSkill = await dispatchAction({ action_key: 'meal_plan.generate_weekly_plan' }, {
     runSkill: async (request) => ({ ok: true, skill_key: request.skill_key, message: request.message }),

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>拓展推荐</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：按维度(空闲率/环境/响应)的最优拓展推荐，带维度徽标与理由。用于“其他优质选择”。 -->
+  <article class="expand-card" data-layout="vertical">
+    <div class="card-thumb">{{icon}}</div>
+    <div class="card-body">
+      <div class="expand-badge {{badge_class}}">{{badge_icon}} {{badge_text}}</div>
+      <div class="card-title">{{name}}</div>
+      <div class="card-meta">{{summary}}<br>{{timeRange}}</div>
+      <div class="supplier-info">🏢 {{provider_name}} ★{{provider_env}} 👥空闲{{provider_avail}}%</div>
+      <div class="card-price-row">
+        <div class="card-price">¥{{price}}<span class="unit">/{{unit}}</span></div>
+      </div>
+    </div>
+  </article>
+
+  <script type="application/json">
+  {
+    "icon": "🛡️",
+    "badge_class": "availability",
+    "badge_icon": "📈",
+    "badge_text": "空闲率最高",
+    "name": "康复护理服务",
+    "summary": "术后/慢病专业护理，护士上门",
+    "timeRange": "全天可约",
+    "provider_name": "桂林乐颐家政服务公司",
+    "provider_env": "4.2",
+    "provider_avail": "92",
+    "price": "220",
+    "unit": "次"
+  }
+  </script>
+</body>
+</html>

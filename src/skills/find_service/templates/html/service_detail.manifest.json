@@ -1,0 +1,8 @@
+{
+  "id": "service_detail",
+  "description": "服务详情页，含介绍/标签/特色/时间/咨询热线",
+  "layout": "vertical",
+  "match": "服务详情、这项服务介绍、有什么特色、咨询热线、服务时间",
+  "required": ["name", "intro", "hotline"],
+  "followup_actions": ["一键预定", "一键咨询", "返回"]
+}

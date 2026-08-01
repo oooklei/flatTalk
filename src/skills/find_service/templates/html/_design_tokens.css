@@ -1,0 +1,40 @@
+/* find_service 共享设计令牌 —— 遵循现有模板库：每个技能一套 :root 配色令牌 */
+:root{
+  --primary:#1FA97E;
+  --primary-dark:#16855f;
+  --grad:linear-gradient(135deg,#1FA97E 0%,#4FD1A6 100%);
+  --bg:#ECFBF5;
+  --card:#fff;
+  --ink:#2E3A36;        /* 主文字 */
+  --muted:#7C8A84;      /* 次文字 */
+  --line:#E1F0EA;       /* 描边 */
+  --danger:#E5484D;     /* 紧急/拒接 */
+  --warn:#F2994A;       /* 警示/提醒 */
+  --radius:16px;
+  --shadow:0 4px 18px rgba(31,45,61,.08);
+
+  /* 与原型同名令牌对齐，便于组件 CSS 直接复用 */
+  --text-primary:#2E3A36;
+  --text-secondary:#7C8A84;
+  --fs-body:15px;
+  --fs-section:15px;
+  --fs-form-label:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;padding:14px;font-size:16px;line-height:1.55;
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%;
+}
+.nb-card{
+  max-width:420px;margin:0 auto;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow);
+}
+.nb-hero{padding:16px;background:var(--grad);color:#fff;}
+.nb-hero .eyebrow{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.22);font-size:12px;margin-bottom:8px;}
+.nb-hero h1{margin:0;font-size:19px;}
+.nb-hero .subtitle{margin:8px 0 0;font-size:13px;opacity:.92;line-height:1.45;}
+.nb-section{padding:12px 14px;border-top:1px solid var(--line);}
+.nb-section h2{margin:0 0 8px;font-size:14px;color:var(--ink);}
+.nb-chip{display:inline-block;padding:3px 9px;border-radius:999px;background:#E6F7F0;color:#1FA97E;font-size:11px;margin:0 4px 4px 0;}

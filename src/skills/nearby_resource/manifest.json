@@ -1,0 +1,10 @@
+{
+  "key": "nearby_resource",
+  "name": "嘉路周边资源地图",
+  "description": "以对话框地图卡片展示嘉路康养中心周边15公里内的医疗、餐馆、游玩等资源，支持分类筛选与资源清单。",
+  "version": "1.0.0",
+  "entry": "index.js",
+  "templates": ["nearby_map"],
+  "category": "本地生活 / 康养",
+  "status": "active"
+}

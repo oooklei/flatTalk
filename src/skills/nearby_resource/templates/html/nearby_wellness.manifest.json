@@ -1,0 +1,7 @@
+{
+  "id": "nearby_wellness",
+  "layout": "card",
+  "match": "康养|医养|养老设施|生态|配套|生活圈",
+  "required": ["wellnessItems", "centerName", "radiusKm", "total"],
+  "description": "康养专题看板：聚合康养小院与医疗配套，呈现医养一体化生活圈。"
+}

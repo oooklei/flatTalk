@@ -19,6 +19,7 @@ const routePlanSignalTerms = [
   '防城港旅居养老线路', '防城港五条线路', '防城港线路', '旅居养老线路', '京族滨海文化线',
   '银发爱情边境线', '壮村民俗康养线', '森林轻氧休闲线', '芒街跨境体验线', '五条旅居线路',
   '旅居套餐', '组合套餐', '单日单人', '零售价', '立减',
+  '方案确认', '最终方案', '确认方案', '高铁票', '买票',
 ];
 
 const travelIntentTerms = [
@@ -32,6 +33,7 @@ const travelIntentTerms = [
 const elderTravelTerms = [
   '老人', '长者', '老年人', '爸妈', '父母', '家属', '慢病', '康复', '轮椅', '陪护',
   '血压', '糖尿病', '心脏', '医疗', '医院', '安全',
+  '适合老人', '长者玩法',
 ];
 
 const bookingTerms = ['预订', '预约', '下单', '报名', '可订', '余量', '入住', '付款'];
@@ -39,7 +41,7 @@ const bookingTerms = ['预订', '预约', '下单', '报名', '可订', '余量'
 export const travelRouteRuleSet = {
   scene_key: 'travel_route',
   default_intent: 'travel_route_plan',
-  threshold: 8,
+  threshold: 6,
   template_candidates: ['travel_itinerary_card', 'route_card', 'base_candidates', 'booking_handoff', 'fallback'],
   required_data: ['gxy_travel_route_plan'],
   required_knowledge: ['travel_route', 'trace_route'],
@@ -66,7 +68,7 @@ export const travelRouteRuleSet = {
     { group: 'booking', weight: 2, terms: bookingTerms },
   ],
   role_boost: {
-    roles: ['elder', 'elder_family', 'family', 'travel_base', 'system_admin'],
+    roles: ['elder', 'elder_family', 'family', 'village_doctor', 'community_doctor', 'care_worker', 'institution_admin', 'system_admin', 'admin'],
     weight: 1,
   },
   context_boost: {
@@ -78,14 +80,21 @@ export const travelRouteRuleSet = {
     { group: 'meal_plan', penalty: 4, terms: ['膳食', '饮食', '早餐', '午餐', '晚餐', '菜谱', '控糖餐', '低盐'] },
     { group: 'dispatch_manage', penalty: 4, terms: ['派单', '工单', '调度', '处理进度', '客服'] },
     { group: 'acute_health_risk', penalty: 3.5, terms: ['胸痛', '昏迷', '呼吸困难', '中风', '急救', '120'] },
+    { group: 'nearby_resource', penalty: 4, terms: ['地图', '周边', '附近', '打点', '分布', '配套', '资源', '大屏', '15公里', '展示地图', '地图展示', '周边资源', '周边配套', '餐馆', '餐厅', '医疗', '医院'] },
   ],
   infer_intent(input) {
     if (has(input, bookingTerms)) return 'travel_route_booking';
     if (has(input, ['对比', '比较', '哪个更适合'])) return 'travel_route_compare';
     if (has(input, ['天气', '下雨', '温度'])) return 'travel_route_weather_risk';
     if (has(input, ['预算', '多少钱', '费用', '价格', '套餐', '优惠', '零售价', '立减'])) return 'travel_route_budget';
-    if (has(input, ['交通', '接驳', '怎么去', '高铁', '机场'])) return 'travel_route_transport';
-    if (has(input, ['详情', '介绍', '适合谁', '适配人群', '时间安排', '一日行程', '资源嵌入', '线路', '路线'])) return 'travel_route_query';
+    if (has(input, ['交通', '接驳', '怎么去', '高铁', '机场', '高铁票'])) return 'travel_route_transport';
+    if (has(input, ['基地', '康养基地', '住哪个基地'])) return 'travel_route_base';
+    if (has(input, ['景点', '景区', '游玩', '适合老人'])) return 'travel_route_spot';
+    if (has(input, ['医疗', '医院', '买药', '就医'])) return 'travel_route_medical';
+    if (has(input, ['行程', '安排', '日程', '行程表', '时间安排'])) return 'travel_route_itinerary';
+    if (has(input, ['方案', '确认', '总结', '最终方案'])) return 'travel_route_plan';
+    if (has(input, ['详情', '介绍', '适合谁', '适配人群', '线路', '路线'])) return 'travel_route_query';
+    if (has(input, ['规划', '制定', '生成', '路线参考', '线路参考', '行程参考', '路线推荐', '线路推荐', '行程推荐', '帮我规划'])) return 'travel_route_plan';
     return 'travel_route_plan';
   },
 };

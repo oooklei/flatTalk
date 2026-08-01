@@ -1,0 +1,7 @@
+{
+  "id": "nearby_compare",
+  "layout": "compare",
+  "match": "对比|比较|哪家好|哪个好|怎么选|挑一个",
+  "required": ["picks", "centerName", "categoryLabel"],
+  "description": "同类资源并排对比卡：精选 Top3，按距离/状态/标签逐列比较，移动端可横滑。"
+}

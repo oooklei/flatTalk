@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 
+import { requireAuth } from './server/auth-middleware.js';
 import { handleAdminApi, serveAdminStatic } from './admin/index.js';
 import { handleExtGateway } from './admin/integrations.js';
 import { verifyOpenApiKey } from './admin/openapi.js';
@@ -41,28 +44,36 @@ export function createApp(env = { runtimeMode: 'local' }) {
   const logger = env.logger || createRuntimeLogger(env.loggerOptions || {});
   const chatState = {
     running: new Map(),
+    busyConversations: new Map(),
     stateStore,
-    sessionStore: createSessionStore({ stateStore }),
+    sessionStore: createSessionStore({ stateStore, repository: dataService?.tableData?.repository || null }),
     logger,
   };
 
   return async function handleRequest(req, res) {
     const url = new URL(req.url || '/', 'http://localhost');
 
-    // 轻量请求日志（供 admin「运行日志」读取）
+    // 轻量请求日志（供 admin「运行日志」读取）— 异步写入避免阻塞事件循环
     try {
       const line = JSON.stringify({
         ts: new Date().toISOString(),
         method: req.method,
         path: url.pathname,
         ip: req.socket?.remoteAddress || '-',
-      });
-      const { appendFileSync } = await import('node:fs');
+      }) + '\n';
       const logPath = path.join(process.cwd(), 'data', 'runtime.log');
-      appendFileSync(logPath, line + '\n');
+      fs.appendFile(logPath, line, () => {});
     } catch { /* 日志失败不影响主流程 */ }
 
     try {
+      // ===== 鉴权中间件：所有 /api/ 路由均需校验会话令牌 =====
+      // 白名单路径（/api/health、/api/sso/*、静态文件等）在中间件内自动放行。
+      // 本地/测试运行模式在缺少令牌时放行，生产模式严格返回 401/403。
+      if (url.pathname.startsWith('/api/')) {
+        const authorized = await requireAuth(req, res, url, { runtimeMode: env.runtimeMode, json });
+        if (!authorized) return;
+      }
+
       if (req.method === 'GET' && url.pathname === '/api/health') {
         return json(res, 200, buildHealth(env));
       }
@@ -155,6 +166,11 @@ export function createApp(env = { runtimeMode: 'local' }) {
         return handleMapGeocode(req, res, url);
       }
 
+      // ========== 天气查询接口（首页天气栏使用） ==========
+      if (req.method === 'GET' && url.pathname === '/api/weather') {
+        return handleWeather(req, res, url, { weatherService });
+      }
+
       // 第三方API 入站网关（目录见 admin「第三方API」页面）
       if (url.pathname.startsWith('/api/ext/')) {
         return void (await handleExtGateway(req, res, url));
@@ -162,7 +178,7 @@ export function createApp(env = { runtimeMode: 'local' }) {
 
       // 第三方嵌入：嵌入页 + 嵌入点配置
       if (req.method === 'GET' && url.pathname === '/embed.html') {
-        return serveFile(res, 'src/public/embed.html', 'text/html; charset=utf-8');
+        return serveFile(res, 'src/public/embed.html', 'text/html; charset=utf-8', req);
       }
 
       if (req.method === 'GET' && url.pathname === '/api/embed/config') {
@@ -206,27 +222,31 @@ export function createApp(env = { runtimeMode: 'local' }) {
       }
 
       if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/mobile.html')) {
-        return serveFile(res, 'src/public/mobile.html', 'text/html; charset=utf-8');
+        return serveFile(res, 'src/public/mobile.html', 'text/html; charset=utf-8', req);
       }
 
       if (req.method === 'GET' && (url.pathname === '/favicon.ico' || url.pathname === '/favicon.svg')) {
-        return serveFile(res, 'src/public/favicon.svg', 'image/svg+xml');
+        return serveFile(res, 'src/public/favicon.svg', 'image/svg+xml', req);
       }
 
       if (req.method === 'GET' && url.pathname === '/mobile.css') {
-        return serveFile(res, 'src/public/mobile.css', 'text/css; charset=utf-8');
+        return serveFile(res, 'src/public/mobile.css', 'text/css; charset=utf-8', req);
       }
 
       if (req.method === 'GET' && url.pathname === '/mobile.js') {
-        return serveFile(res, 'src/public/mobile.js', 'application/javascript; charset=utf-8');
+        return serveFile(res, 'src/public/mobile.js', 'application/javascript; charset=utf-8', req);
+      }
+
+      if (req.method === 'GET' && url.pathname === '/location-service.js') {
+        return serveFile(res, 'src/public/location-service.js', 'application/javascript; charset=utf-8', req);
       }
 
       if (req.method === 'GET' && url.pathname === '/device-redirect.js') {
-        return serveFile(res, 'src/public/device-redirect.js', 'application/javascript; charset=utf-8');
+        return serveFile(res, 'src/public/device-redirect.js', 'application/javascript; charset=utf-8', req);
       }
 
       if (req.method === 'GET' && url.pathname === '/device-switch.js') {
-        return serveFile(res, 'src/public/device-switch.js', 'application/javascript; charset=utf-8');
+        return serveFile(res, 'src/public/device-switch.js', 'application/javascript; charset=utf-8', req);
       }
 
       if (url.pathname.startsWith('/api/admin/table/')) {
@@ -391,6 +411,17 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
   const runningKey = `${conversationId}:${turnId}`;
   const reenterChat = body.reenter_chat === true || body.reenterChat === true || body.execute_action === false;
 
+  // 会话级互斥：同一会话正在处理时拒绝新请求
+  if (chatState?.busyConversations?.has(conversationId)) {
+    return json(res, 409, {
+      ok: false,
+      error: 'conversation_busy',
+      message: '当前会话正在处理中，请稍候',
+      conversation_id: conversationId,
+    });
+  }
+  chatState?.busyConversations?.set(conversationId, { turn_id: turnId, started_at: new Date().toISOString() });
+
   chatState?.running?.set(runningKey, {
     conversation_id: conversationId,
     turn_id: turnId,
@@ -405,13 +436,17 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
       conversation_id: conversationId,
       turn_id: turnId,
       skill_key: reenterChat ? '' : body.skill_key || body.skillKey,
-      template_id: body.template_id || body.templateId || body.params?.template_id,
+      template_id: body.template_id || body.templateId || body.params?.template_id || body.next_template_id || '',
+      intent: body.intent || '',
       message,
       role: body.role || body.roleKey || 'elder_family',
       elder_id: body.elder_id,
       context: {
         ...(body.context || {}),
+        action_key: body.action_key || body.actionKey || '',
+        action_params: body.params || {},
         reenter_chat: reenterChat,
+        location: body.location || null,
         unsupported_action_key: body.unsupported_action_key || body.unsupportedActionKey || '',
         ...(followup ? {
           previous_scene: previous?.envelope?.skill_key,
@@ -426,6 +461,7 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
     return json(res, 200, envelope);
   } finally {
     chatState?.running?.delete(runningKey);
+    chatState?.busyConversations?.delete(conversationId);
   }
 }
 
@@ -437,47 +473,63 @@ async function handleChatAction(req, res, { dataService, modelService, logger, c
   const startedAt = Date.now();
   const conversationId = body.conversation_id || body.conversationId || makeId('conv');
   const sessionStore = chatState?.sessionStore;
-  const previous = await sessionStore?.getPreviousTurn(conversationId);
-  const result = await dispatchAction({
-    ...body,
-    conversation_id: conversationId,
-    context: {
-      ...(body.context || {}),
-      previous_scene: previous?.envelope?.skill_key,
-      previous_turn_id: previous?.turn_id,
-      previous_template_id: previous?.envelope?.template_id,
-    },
-  }, {
-    runSkill: (request) => runLocalSkill({
-      request_id: request.request_id,
-      conversation_id: request.conversation_id || conversationId,
-      turn_id: request.turn_id || makeId('turn_action'),
-      skill_key: request.skill_key || request.skillKey || 'meal_plan',
-      template_id: request.template_id || request.templateId || request.params?.template_id,
-      message: request.message || '',
-      role: request.role || request.roleKey || 'elder_family',
-      elder_id: request.elder_id || request.params?.elder_id,
-      context: request.context || {},
-    }, { dataService, modelService, weatherService }),
-  });
-  if (result.envelope && sessionStore) {
-    await sessionStore.appendTurn(conversationId, {
-      turn_id: result.envelope.turn_id,
-      user_message: body.user_prompt || body.message || actionKey,
-      envelope: result.envelope,
-      action_key: actionKey,
+
+  // 会话级互斥
+  if (chatState?.busyConversations?.has(conversationId)) {
+    return json(res, 409, {
+      ok: false,
+      error: 'conversation_busy',
+      message: '当前会话正在处理中，请稍候',
+      conversation_id: conversationId,
     });
   }
-  logger?.write?.({
-    type: 'chat_action',
-    action_key: actionKey,
-    action_type: result.action_type,
-    result_type: result.result_type,
-    ...(result.envelope ? summarizeEnvelope(result.envelope, startedAt) : { latency_ms: Date.now() - startedAt }),
-  });
-  const status = result.status || 200;
-  const { status: _status, ...payload } = result;
-  return json(res, status, payload);
+  chatState?.busyConversations?.set(conversationId, { action_key: actionKey, started_at: new Date().toISOString() });
+
+  const previous = await sessionStore?.getPreviousTurn(conversationId);
+  try {
+    const result = await dispatchAction({
+      ...body,
+      conversation_id: conversationId,
+      context: {
+        ...(body.context || {}),
+        previous_scene: previous?.envelope?.skill_key,
+        previous_turn_id: previous?.turn_id,
+        previous_template_id: previous?.envelope?.template_id,
+      },
+    }, {
+      runSkill: (request) => runLocalSkill({
+        request_id: request.request_id,
+        conversation_id: request.conversation_id || conversationId,
+        turn_id: request.turn_id || makeId('turn_action'),
+        skill_key: request.skill_key || request.skillKey || 'meal_plan',
+        template_id: request.template_id || request.templateId || request.params?.template_id,
+        message: request.message || '',
+        role: request.role || request.roleKey || 'elder_family',
+        elder_id: request.elder_id || request.params?.elder_id,
+        context: request.context || {},
+      }, { dataService, modelService, weatherService }),
+    });
+    if (result.envelope && sessionStore) {
+      await sessionStore.appendTurn(conversationId, {
+        turn_id: result.envelope.turn_id,
+        user_message: body.user_prompt || body.message || actionKey,
+        envelope: result.envelope,
+        action_key: actionKey,
+      });
+    }
+    logger?.write?.({
+      type: 'chat_action',
+      action_key: actionKey,
+      action_type: result.action_type,
+      result_type: result.result_type,
+      ...(result.envelope ? summarizeEnvelope(result.envelope, startedAt) : { latency_ms: Date.now() - startedAt }),
+    });
+    const status = result.status || 200;
+    const { status: _status, ...payload } = result;
+    return json(res, status, payload);
+  } finally {
+    chatState?.busyConversations?.delete(conversationId);
+  }
 }
 
 async function handleQueueAction(req, res, { chatState }) {
@@ -701,7 +753,7 @@ function handleSkillTemplates(res, url) {
 /**
  * 处理外部系统 AES 加密 SSO 入口 /gxy-assistant
  * 支持 GET 和 POST 两种方式
- * 成功后直接 302 重定向到 mobile.html
+ * 成功后返回 JSON（包含 mobileUrl、token、userToken）
  */
 async function handleGxyAssistant(req, res, url, { json }) {
   let cipherText;
@@ -717,15 +769,26 @@ async function handleGxyAssistant(req, res, url, { json }) {
   }
   // 修复 URL 编码问题：将空格替换回 + 号（Base64 标准字符）
   cipherText = cipherText.replace(/ /g, '+');
+  
+  // 获取主机配置
+  const { loadEnv } = await import('./config/env.js');
+  const env = loadEnv();
+  const host = req.headers.host?.split(':')[0] || env.host;
+  
   const { processExternalSsoRequest } = await import('./server/external-aes-sso.js');
-  const result = processExternalSsoRequest(cipherText, { host: '' });
+  const result = processExternalSsoRequest(cipherText, {
+    host,
+    port: env.port,
+    sslPort: env.sslPort,
+  });
+  
   if (!result.ok) {
     const status = result.error === 'internal_error' ? 500 : 400;
     return json(res, status, result);
   }
-  // 成功后直接 302 重定向到 mobile.html
-  res.writeHead(302, { location: result.mobileUrl });
-  res.end();
+  
+  // 返回 JSON（不再 302 重定向）
+  return json(res, 200, result);
 }
 
 function hasAuthQuery(url) {
@@ -748,10 +811,19 @@ function redirectToDefaultMobile(res) {
   res.end();
 }
 
+const MAX_BODY_SIZE = 2 * 1024 * 1024; // 2MB
+
 function readJson(req) {
   return new Promise((resolve, reject) => {
     let raw = '';
+    let size = 0;
     req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > MAX_BODY_SIZE) {
+        reject(new Error('request_body_too_large'));
+        req.destroy();
+        return;
+      }
       raw += chunk;
     });
     req.on('end', () => {
@@ -778,20 +850,40 @@ function json(res, status, payload) {
   res.end(JSON.stringify(payload));
 }
 
-function serveFile(res, relativePath, contentType) {
+function serveFile(res, relativePath, contentType, req) {
   const filePath = path.join(process.cwd(), relativePath);
   if (!fs.existsSync(filePath)) {
     json(res, 404, { ok: false, error: 'static_file_not_found' });
     return;
   }
 
-  res.writeHead(200, {
+  const body = fs.readFileSync(filePath);
+  const etag = `"${crypto.createHash('sha1').update(body).digest('hex').slice(0, 16)}"`;
+
+  if (req?.headers?.['if-none-match'] === etag) {
+    res.writeHead(304);
+    res.end();
+    return;
+  }
+
+  const headers = {
     'content-type': contentType,
-    'cache-control': 'no-store, no-cache, must-revalidate, max-age=0',
-    pragma: 'no-cache',
-    expires: '0',
-  });
-  res.end(fs.readFileSync(filePath));
+    'etag': etag,
+    'cache-control': 'no-cache',
+  };
+
+  const acceptEncoding = req?.headers?.['accept-encoding'] || '';
+  if (acceptEncoding.includes('gzip') && body.length > 1024) {
+    const compressed = zlib.gzipSync(body);
+    headers['content-encoding'] = 'gzip';
+    headers['content-length'] = compressed.length;
+    res.writeHead(200, headers);
+    res.end(compressed);
+  } else {
+    headers['content-length'] = body.length;
+    res.writeHead(200, headers);
+    res.end(body);
+  }
 }
 
 function makeId(prefix) {
@@ -843,6 +935,43 @@ async function handleMapRegeocode(req, res, url) {
       result,
       source: 'tencent_map',
     });
+  } catch (e) {
+    return json(res, 500, { ok: false, error: e.message });
+  }
+}
+
+// 服务端天气缓存：city → { data, ts }
+// 缓存 30 分钟，减少腾讯天气 API 调用次数
+const weatherCache = new Map();
+const WEATHER_CACHE_TTL = 30 * 60 * 1000;
+
+/**
+ * 处理天气查询请求
+ * GET /api/weather?city=北海
+ * 优先从缓存返回，缓存过期才调用腾讯天气 API
+ */
+async function handleWeather(req, res, url, { weatherService }) {
+  const city = url.searchParams.get('city') || '';
+
+  if (!city || !city.trim()) {
+    return json(res, 400, { ok: false, error: '缺少 city 参数' });
+  }
+
+  const cityName = String(city).trim();
+
+  // 查缓存
+  const cached = weatherCache.get(cityName);
+  if (cached && (Date.now() - cached.ts) < WEATHER_CACHE_TTL) {
+    return json(res, 200, { ok: true, ...cached.data, cached: true });
+  }
+
+  try {
+    const result = await weatherService.getWeather(cityName, { days: 1 });
+    if (result.ok) {
+      // 写缓存
+      weatherCache.set(cityName, { data: result, ts: Date.now() });
+    }
+    return json(res, 200, { ok: result.ok, ...result, cached: false });
   } catch (e) {
     return json(res, 500, { ok: false, error: e.message });
   }

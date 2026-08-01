@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>养老服务目录</title>
+  <style>
+    :root { --primary:#1FA97E; --grad:linear-gradient(135deg,#1FA97E 0%,#4FD1A6 100%); --bg:#ECFBF5; --card:#fff; --ink:#2E3A36; --muted:#8A9A93; --border:#E1F0EA; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:14px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+    .card { max-width:420px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .hero { padding:16px; background:var(--grad); color:#fff; }
+    h1 { margin:0; font-size:19px; }
+    .subtitle { margin:6px 0 0; font-size:13px; opacity:.92; }
+    .section { padding:12px 14px; border-top:1px solid var(--border); }
+    .cat-title { font-size:14px; font-weight:700; margin:0 0 8px; color:var(--primary); }
+    .item { display:flex; justify-content:space-between; align-items:center; padding:9px 10px; border:1px solid var(--border); border-radius:10px; margin-bottom:7px; background:#FAFFFD; }
+    .item .nm { font-size:13px; font-weight:600; }
+    .item .meta { font-size:11px; color:var(--muted); }
+    .item .pr { color:var(--primary); font-weight:700; font-size:13px; white-space:nowrap; }
+  </style>
+</head>
+<body>
+  <article class="card" data-layout="vertical">
+    <header class="hero">
+      <h1>{{sceneTitle}}</h1>
+      <p class="subtitle">共 {{total}} 项可预约服务</p>
+    </header>
+    {{#categories}}
+    <section class="section">
+      <h2 class="cat-title">{{category}}</h2>
+      {{#items}}
+      <div class="item">
+        <div><div class="nm">{{name}}</div><div class="meta">{{tags}}</div></div>
+        <div class="pr">¥{{price}}/{{unit}}</div>
+      </div>
+      {{/items}}
+    </section>
+    {{/categories}}
+  </article>
+  <script type="application/json">
+  {
+    "sceneTitle": "养老服务目录",
+    "total": 8,
+    "categories": [
+      { "category": "生活照料", "items": [
+        { "name": "上门护理", "price": 80, "unit": "次", "tags": "居家养老/上门服务" },
+        { "name": "助浴服务", "price": 120, "unit": "次", "tags": "助浴/上门" }
+      ]},
+      { "category": "机构养老", "items": [
+        { "name": "机构养老床位", "price": 2800, "unit": "月", "tags": "养老院/床位" }
+      ]}
+    ]
+  }
+  </script>
+</body>
+</html>

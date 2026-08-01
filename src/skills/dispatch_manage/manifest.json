@@ -1,0 +1,9 @@
+{
+  "skill_key": "dispatch_manage",
+  "name": "派单与工单调度",
+  "version": "0.1.0",
+  "runtime": "local",
+  "default_template": "dispatch_list",
+  "description": "派单/工单调度，接单、拒单、状态变更与工单联动",
+  "source": "dispatch_manage"
+}

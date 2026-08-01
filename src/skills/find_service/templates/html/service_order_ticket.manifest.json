@@ -1,0 +1,8 @@
+{
+  "id": "service_order_ticket",
+  "description": "下单成功凭证，展示订单号/服务/预约信息/状态",
+  "layout": "vertical",
+  "match": "预定成功、下单成功、订单凭证、订单编号、待确认、工单",
+  "required": ["order_no", "service_name", "name", "status"],
+  "followup_actions": ["查看订单详情", "返回首页", "联系客服"]
+}

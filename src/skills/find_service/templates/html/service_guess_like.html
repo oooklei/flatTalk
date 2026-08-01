@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>猜你喜欢</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：个性化精选（旅居路线/优质服务）。横向卡片：封面图+标签+名称+简介+价格+服务商。选这个由追问按钮体现。 -->
+  <article class="guess-like-card" data-layout="vertical" style="width:100%">
+    <div class="gl-image" style="background:{{image_bg}}">
+      <span>{{icon}}</span>
+      <div class="gl-tag">{{tag}}</div>
+    </div>
+    <div class="gl-info">
+      <div class="gl-name">{{name}}</div>
+      <div class="gl-summary">{{summary}}</div>
+      <div class="gl-price">¥{{price}}<span class="unit">/{{unit}}</span></div>
+      <div class="gl-provider">🏢 {{provider_name}}</div>
+    </div>
+  </article>
+
+  <script type="application/json">
+  {
+    "image_bg": "linear-gradient(135deg,#2BAE8E,#3B82A0)",
+    "icon": "🏖️",
+    "tag": "旅居路线",
+    "name": "防城港海滨康养 5 日",
+    "summary": "海边民宿+每日康养课程+海鲜膳食，适老无忧",
+    "price": "1980",
+    "unit": "人",
+    "provider_name": "桂林康养旅居公社"
+  }
+  </script>
+</body>
+</html>

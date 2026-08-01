@@ -160,7 +160,11 @@ async function fallback(input, status, error, modelName = '', rawReply = '') {
 
 function sanitizeShape(result = {}, input = {}) {
   const requestedTemplateId = validRequestedTemplateId(input);
-  const templateId = requestedTemplateId || result.template_id || result.template_key || '';
+  // 模型返回的 template_id 优先（如果在模板库中存在），否则回退到路由推荐的
+  const modelTemplateId = (result.template_id || result.template_key || '').trim();
+  const library = Array.isArray(input.template_library) ? input.template_library : [];
+  const modelTemplateValid = modelTemplateId && library.some(item => item.id === modelTemplateId);
+  const templateId = (modelTemplateValid ? modelTemplateId : '') || requestedTemplateId || '';
   const data = normalizeTemplateData(
     result.data && typeof result.data === 'object' ? result.data : {},
     templateId,
@@ -173,6 +177,7 @@ function sanitizeShape(result = {}, input = {}) {
     data,
     actions: Array.isArray(result.actions) ? result.actions : [],
     followup_suggestions: Array.isArray(result.followup_suggestions) ? result.followup_suggestions : [],
+    compact_followups: Array.isArray(result.compact_followups) ? result.compact_followups : [],
     template_fit_notes: Array.isArray(result.template_fit_notes) ? result.template_fit_notes : [],
     model_status: result.model_status || 'ok',
     model_used: result.model_used || '',

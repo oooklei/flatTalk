@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_map_overview" data-layout="map">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>嘉路康养生活圈 · 资源总览地图</title>
+  <link rel="stylesheet" href="./_design_tokens.css" />
+  <link rel="stylesheet" href="./_base.css" />
+  <style>
+    .nb-card { max-width: 760px; margin: 0 auto; background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .nb-head { padding: 14px 16px; display: flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--primary) 0%, #0B5C63 100%); color: #fff; }
+    .nb-head .pin { width: 30px; height: 30px; flex: none; border-radius: 9px; background: rgba(255,255,255,.18);
+      display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .nb-head h1 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; }
+    .nb-head .src { margin-left: auto; font-size: 11px; opacity: .85; background: rgba(255,255,255,.16); padding: 3px 8px; border-radius: 999px; }
+    .nb-body { display: grid; grid-template-columns: 1.15fr 1fr; gap: 0; }
+    @media (max-width: 620px) { .nb-body { grid-template-columns: 1fr; } }
+    .nb-map { position: relative; min-height: 420px; background: #eef2f7; }
+    #mapCanvas { width: 100%; height: 100%; min-height: 420px; display: block; }
+    .nb-svg-fallback { display: none; width: 100%; height: 420px; }
+    .nb-svg-fallback.show { display: block; }
+    .nb-static-img { display: none; width: 100%; height: 420px; object-fit: cover; border-radius: 0; }
+    .nb-static-img.show { display: block; }
+    .nb-list { max-height: 480px; overflow-y: auto; padding: 10px 12px 14px; border-left: 1px solid var(--border); }
+    @media (max-width: 620px) { .nb-list { border-left: 0; border-top: 1px solid var(--border); max-height: 360px; } }
+    .nb-item { border: 1px solid var(--border); border-left-width: 4px; border-radius: 10px; padding: 9px 11px;
+      margin-bottom: 8px; cursor: pointer; transition: all .16s ease; background: #fff; }
+    .nb-item:hover { box-shadow: var(--shadow-sm); transform: translateX(2px); }
+    .nb-item .nm { font-size: 13.5px; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
+    .nb-item .km { color: var(--primary); font-weight: 700; font-size: 12.5px; white-space: nowrap; }
+    .nb-item .addr { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+    .nb-item .meta { font-size: 11.5px; color: var(--ink-2); margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .nb-item .tg { color: var(--primary); }
+    .nb-empty { padding: 30px 12px; text-align: center; color: var(--muted); font-size: 13px; }
+    .nav-link { color: var(--primary); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <article class="nb-card">
+    <header class="nb-head">
+      <div class="pin">📍</div>
+      <h1>{{centerName}} · 周边{{radiusKm}}公里康养生活圈</h1>
+      <div class="src">本地知识库</div>
+    </header>
+
+    <div class="nb-filters">
+      <div class="nb-chip active" data-cat="all"><span class="nb-emoji">📍</span>全部</div>
+      <div class="nb-chip" data-cat="stay"><span class="nb-emoji">🏠</span>住</div>
+      <div class="nb-chip" data-cat="food"><span class="nb-emoji">🍜</span>吃</div>
+      <div class="nb-chip" data-cat="spot"><span class="nb-emoji">🏖️</span>游</div>
+      <div class="nb-chip" data-cat="leisure"><span class="nb-emoji">🎣</span>娱</div>
+      <div class="nb-chip" data-cat="shop"><span class="nb-emoji">🛍️</span>购</div>
+      <div class="nb-chip" data-cat="transit"><span class="nb-emoji">🚐</span>行</div>
+      <div class="nb-chip" data-cat="wellness"><span class="nb-emoji">🏥</span>养</div>
+    </div>
+
+    <div class="nb-legend">
+      {{#statsLabels}}<span><i class="nb-dot" style="background:{{color}}"></i>{{emoji}} {{label}} {{count}}</span>{{/statsLabels}}
+    </div>
+
+    <div class="nb-body">
+      <div class="nb-map">
+        <div id="mapCanvas"></div>
+        <img class="nb-static-img" id="staticMapImg" alt="地图预览" />
+        <svg class="nb-svg-fallback" id="svgFallback" viewBox="0 0 400 420" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="nb-list" id="listBox"></div>
+    </div>
+  </article>
+
+  <script id="nearby-data" type="application/json">{{{markers_json}}}</script>
+  <script id="nearby-center" type="application/json">{{{center_json}}}</script>
+
+  <script>
+    (function () {
+      var SAMPLE = [
+        { poi_id:'s1', name:'海岸假日民宿', address:'港口区某路12号', lng:108.172, lat:21.531, distance:0.8, cat:'stay', color:'#3B82A0', emoji:'🏠', biz_status:'营业中', tel:'0770-1234567', open_time:'24小时', tags:['近海','适老'], tags_text:'近海·适老' },
+        { poi_id:'s2', name:'渔家海鲜大排档', address:'渔洲坪', lng:108.160, lat:21.524, distance:1.2, cat:'food', color:'#F2994A', emoji:'🍜', biz_status:'营业中', tel:'0770-2233445', open_time:'11:00-22:00', tags:['海鲜大排档','私房菜'], tags_text:'海鲜大排档·私房菜' },
+        { poi_id:'s3', name:'西湾滨海景区', address:'西湾大道', lng:108.150, lat:21.540, distance:2.5, cat:'spot', color:'#2BAE8E', emoji:'🏖️', biz_status:'开放中', tel:'', open_time:'全天', tags:['海景','日落'], tags_text:'海景·日落' },
+        { poi_id:'s4', name:'渔人码头垂钓场', address:'渔洲坪码头', lng:108.158, lat:21.520, distance:3.1, cat:'leisure', color:'#8E6FD8', emoji:'🎣', biz_status:'营业中', tel:'', open_time:'06:00-20:00', tags:['垂钓'], tags_text:'垂钓' },
+        { poi_id:'s5', name:'海特产购物店', address:'港口区某路', lng:108.164, lat:21.528, distance:1.6, cat:'shop', color:'#E08AC0', emoji:'🛍️', biz_status:'营业中', tel:'', open_time:'09:00-21:00', tags:['特产'], tags_text:'特产' }
+      ];
+      var PAYLOAD = [];
+      try { PAYLOAD = JSON.parse(document.getElementById('nearby-data').textContent); } catch (e) {}
+      if (!PAYLOAD || !PAYLOAD.length) PAYLOAD = SAMPLE;
+      var CENTER = { lng: 108.166816, lat: 21.527905, name: '{{centerName}}' };
+      try { var c = JSON.parse(document.getElementById('nearby-center').textContent); if (c && c.lat) CENTER = c; } catch (e) {}
+      var RADIUS = parseInt('{{radiusKm}}' || '15', 10) || 15;
+      var MAP_KEY = '{{map_key}}';
+      var STATIC_MAP_URL = '{{static_map_url}}';
+      var SVG_FALLBACK = (!MAP_KEY || MAP_KEY === 'YOUR_TENCENT_JS_KEY');
+      var mapLoadTimer = null;
+
+      var activeCat = 'all';
+      var map = null, markers = [];
+
+      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/marker?marker=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&referer=flattalk'; }
+
+      function renderList() {
+        var box = document.getElementById('listBox');
+        var items = PAYLOAD.filter(function (p) { return activeCat === 'all' || p.cat === activeCat; });
+        if (!items.length) { box.innerHTML = '<div class="nb-empty">该分类下暂无周边资源</div>'; return; }
+        box.innerHTML = items.map(function (p, idx) {
+          var tel = p.tel ? ('<span>☎ ' + p.tel + '</span>') : '';
+          var st = p.biz_status ? ('<span>' + p.biz_status + '</span>') : '';
+          var op = p.open_time ? ('<span>⏰ ' + p.open_time + '</span>') : '';
+          var tg = p.tags_text ? ('<span class="tg">🏷 ' + p.tags_text + '</span>') : '';
+          var nav = '<a class="nav-link" href="' + navUrl(p) + '" target="_blank">🧭 导航</a>';
+          return '<div class="nb-item" data-cat="' + p.cat + '" data-idx="' + idx + '" style="border-left-color:' + (p.color || '#9AA7B2') + '">' +
+            '<div class="nm"><span>' + (p.emoji || '📍') + ' ' + (p.name || '未命名') + '</span><span class="km">' + (parseFloat(p.distance) || 0).toFixed(1) + 'km</span></div>' +
+            '<div class="addr">' + (p.address || '地址未知') + '</div>' +
+            '<div class="meta">' + st + op + tg + tel + nav + '</div>' +
+            '</div>';
+        }).join('');
+        Array.prototype.forEach.call(box.querySelectorAll('.nb-item'), function (el) {
+          el.addEventListener('click', function () {
+            var i = parseInt(el.getAttribute('data-idx'), 10);
+            focusMarker(items[i]);
+          });
+        });
+      }
+
+      function focusMarker(p) {
+        if (map && p && typeof p.lng === 'number') {
+          map.setCenter(new TMap.LatLng(p.lat, p.lng));
+        }
+      }
+
+      function bindChips() {
+        Array.prototype.forEach.call(document.querySelectorAll('.nb-chip'), function (c) {
+          c.addEventListener('click', function () {
+            document.querySelectorAll('.nb-chip').forEach(function (x) { x.classList.remove('active'); });
+            c.classList.add('active');
+            activeCat = c.getAttribute('data-cat');
+            renderList();
+            if (map) applyMarkerVisibility();
+          });
+        });
+      }
+
+      function applyMarkerVisibility() {
+        if (!map) return;
+        PAYLOAD.forEach(function (p, i) {
+          var vis = (activeCat === 'all' || p.cat === activeCat);
+          if (markers[i]) markers[i].setMap(vis ? map : null);
+        });
+      }
+
+      function bearing(a, b) { var dx = b.lng - a.lng, dy = b.lat - a.lat; return (Math.atan2(dx, dy) * 180 / Math.PI + 360) % 360; }
+
+      function renderSVG() {
+        var svg = document.getElementById('svgFallback'); svg.classList.add('show');
+        document.getElementById('mapCanvas').style.display = 'none';
+        var cx = 200, cy = 210, R = 170, html = '';
+        html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="#cbd5e1" stroke-dasharray="4 4"/>';
+        html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (R / 2) + '" fill="none" stroke="#e2e8f0" stroke-dasharray="3 5"/>';
+        html += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="#0E7C86"/>';
+        html += '<text x="' + cx + '" y="' + (cy - 14) + '" text-anchor="middle" font-size="11" fill="#0E7C86" font-weight="600">' + (CENTER.name || '中心') + '</text>';
+        PAYLOAD.forEach(function (p) {
+          if (activeCat !== 'all' && p.cat !== activeCat) return;
+          var d = parseFloat(p.distance) || 0, rr = Math.min(R, (d / RADIUS) * R), ang = (parseFloat(p._bearing) || 0) * Math.PI / 180;
+          var x = cx + rr * Math.sin(ang), y = cy - rr * Math.cos(ang);
+          html += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="5" fill="' + (p.color || '#9AA7B2') + '"/>';
+        });
+        svg.innerHTML = html;
+      }
+
+      function showStaticMap() {
+        var img = document.getElementById('staticMapImg');
+        if (STATIC_MAP_URL && img) {
+          img.onerror = function () { img.classList.remove('show'); renderSVG(); };
+          img.onload = function () { document.getElementById('mapCanvas').style.display = 'none'; };
+          img.src = STATIC_MAP_URL;
+          img.classList.add('show');
+        } else { renderSVG(); }
+      }
+
+      function init() {
+        PAYLOAD.forEach(function (p, i) { p._mi = i; p._bearing = bearing(CENTER, p); p.cat = p.cat || 'other'; });
+        renderList(); bindChips();
+        if (SVG_FALLBACK) { renderSVG(); return; }
+        // 3秒超时：JS API 加载太慢时先降级到静态图
+        mapLoadTimer = setTimeout(function () {
+          if (typeof TMap === 'undefined') { console.warn('[地图] 加载超时，降级到静态图'); showStaticMap(); }
+        }, 3000);
+        if (typeof TMap === 'undefined' && !window.__nbLoading) {
+          window.__nbLoading = true;
+          var s = document.createElement('script');
+          s.src = 'https://map.qq.com/api/gljs?v=1.exp&key=' + encodeURIComponent(MAP_KEY) + '&libraries=visualization';
+          s.onerror = function () { clearTimeout(mapLoadTimer); showStaticMap(); };
+          s.onload = function () { clearTimeout(mapLoadTimer); try { buildMap(); } catch (e) { showStaticMap(); } };
+          document.head.appendChild(s);
+        }
+      }
+
+      function buildMap() {
+        if (typeof TMap === 'undefined') { showStaticMap(); return; }
+        map = new TMap.Map(document.getElementById('mapCanvas'), { center: new TMap.LatLng(CENTER.lat, CENTER.lng), zoom: 10, baseMap: { type: 'vector', features: ['base', 'building3d'] } });
+        // 瓦片层失败检测：4秒后检查是否实际有瓦片渲染
+        setTimeout(function () {
+          var canvas = document.querySelector('#mapCanvas canvas, #mapCanvas img');
+          if (!canvas || (canvas.width < 2 && canvas.height < 2)) {
+            console.warn('[地图] 瓦片加载失败，降级到静态图');
+            showStaticMap();
+          }
+        }, 4000);
+        new TMap.MultiPolygon({ map: map, geometries: [{ paths: (function () { var pts = [], n = 64; for (var i = 0; i < n; i++) { var t = i / n * Math.PI * 2; var lat = CENTER.lat + (RADIUS / 111) * Math.cos(t); var lng = CENTER.lng + (RADIUS / (111 * Math.cos(CENTER.lat * Math.PI / 180))) * Math.sin(t); pts.push(new TMap.LatLng(lat, lng)); } return pts; })() }], styles: { strokeColor: '#0E7C86', strokeWidth: 2, fillColor: '#0E7C8622' } });
+        PAYLOAD.forEach(function (p, i) {
+          var m = new TMap.MultiMarker({ map: map, geometries: [{ id: 'm' + i, position: new TMap.LatLng(p.lat, p.lng), properties: { idx: i } }], styles: { 'm' + i: new TMap.MarkerStyle({ width: 20, height: 20, src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="8" fill="' + (p.color || '#9AA7B2') + '" stroke="#fff" stroke-width="2"/></svg>') }) } });
+          m.on('click', function () { map.setCenter(new TMap.LatLng(p.lat, p.lng)); });
+          markers[i] = m;
+        });
+        applyMarkerVisibility();
+      }
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+    })();
+  </script>
+</body>
+</html>

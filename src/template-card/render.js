@@ -113,7 +113,11 @@ function renderNodes(nodes, ctxStack) {
           out += (mapped != null && mapped !== '') ? (n.raw ? mapped : escapeHtml(mapped)) : '';
         }
       } else {
-        out += n.raw ? String(v) : escapeHtml(v);
+        // 处理对象类型：优先提取文本字段，否则隐藏（不显示 JSON）
+        const stringValue = (v && typeof v === 'object')
+          ? (v.text || v.value || v.name || v.label || '')
+          : String(v);
+        out += n.raw ? stringValue : escapeHtml(stringValue);
       }
       continue;
     }

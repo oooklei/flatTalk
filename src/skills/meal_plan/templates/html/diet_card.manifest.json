@@ -1,5 +1,6 @@
 {
   "id": "diet_card",
+  "description": "一日三餐完整膳食推荐，含早/午/晚分餐/菜品/热量/营养配比",
   "layout": "vertical",
   "match": "展示一日三餐完整膳食推荐（早/午/晚分餐、每餐菜品与热量、营养配比、相关疾病推荐）的竖向单卡",
   "required": ["dateBadge", "meals"]

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI思考中</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：AI 处理中可视化（意图识别→实体抽取→知识库匹配）。属加载态，无按钮。 -->
+  <article class="thinking-card" data-layout="vertical">
+    <div class="thinking-title">{{title}}</div>
+    <div class="thinking-steps">
+      {{#steps}}
+      <div class="thinking-step {{#active}}active{{/active}}">
+        <div class="step-icon">{{num}}</div>
+        <div>
+          <div class="step-text">{{text}}</div>
+          <div class="step-detail">{{detail}}</div>
+        </div>
+      </div>
+      {{/steps}}
+    </div>
+  </article>
+
+  <script type="application/json">
+  {
+    "title": "AI正在分析您的需求...",
+    "steps": [
+      { "num": "1", "text": "意图识别", "detail": "识别需求类型", "active": true },
+      { "num": "2", "text": "实体抽取", "detail": "提取服务类型、时间", "active": false },
+      { "num": "3", "text": "知识库匹配", "detail": "匹配最佳服务方案", "active": false }
+    ]
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "id": "weekly_plan",
+  "description": "一周七天三餐计划，含每日热量/餐次图标/控糖低盐提醒/执行建议",
+  "layout": "vertical",
+  "match": "一周膳食计划卡片：展示周一到周日七天三餐安排，包含每日热量、早餐午餐晚餐图标、控糖低盐提醒和执行建议。适合生成一周计划、七天计划、周计划。",
+  "required": ["weekly_plan"],
+  "fields": [
+    {"name": "weekly_plan.badge", "type": "string", "default": "一周计划"},
+    {"name": "weekly_plan.title", "type": "string", "default": "长者专属一周膳食计划"},
+    {"name": "weekly_plan.summary", "type": "string", "default": "根据您的健康状况，为您定制营养均衡的一周膳食安排"},
+    {"name": "weekly_plan.suitable", "type": "string", "default": "适合：老年人、慢病管理"},
+    {"name": "weekly_plan.dailyCal", "type": "string", "default": "1500-1800千卡/天"},
+    {"name": "weekly_plan.salt", "type": "string", "default": "每日盐摄入<5g"},
+    {"name": "weekly_plan.goal", "type": "string", "default": "控糖、控盐、营养均衡"}
+  ]
+}

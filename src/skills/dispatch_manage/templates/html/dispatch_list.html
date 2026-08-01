@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>派单列表</title>
+  <style>
+    :root { --primary:#2C7BE5; --grad:linear-gradient(135deg,#2C7BE5 0%,#5AA0F2 100%); --bg:#EEF4FE; --card:#fff; --ink:#2E3A49; --muted:#8A98AA; --border:#DCE7F7; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:14px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+    .card { max-width:420px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .hero { padding:16px; background:var(--grad); color:#fff; }
+    h1 { margin:0; font-size:18px; }
+    .subtitle { margin:6px 0 0; font-size:13px; opacity:.92; }
+    .section { padding:12px 14px; border-top:1px solid var(--border); }
+    .d { border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:8px; background:#FAFCFF; }
+    .d .top { display:flex; justify-content:space-between; align-items:center; }
+    .d .id { font-size:12px; color:var(--muted); }
+    .d .st { font-size:12px; font-weight:700; color:var(--primary); }
+    .d .who { font-size:14px; font-weight:600; margin:4px 0 2px; }
+    .d .meta { font-size:12px; color:#5B6B7D; }
+    .st-pending { color:#E0913A; }
+  </style>
+</head>
+<body>
+  <article class="card" data-layout="vertical">
+    <header class="hero"><h1>派单列表</h1><p class="subtitle">共 {{total}} 条，其中 {{pending}} 条待接单</p></header>
+    <section class="section">
+      {{#orders}}
+      <div class="d">
+        <div class="top"><span class="id">{{dispatchId}} · {{orderId}}</span><span class="st {{#status}}st-pending{{/status}}">{{status}}</span></div>
+        <div class="who">{{workerName}}</div>
+        <div class="meta">{{skill}} · 派单于 {{createdAt}}</div>
+      </div>
+      {{/orders}}
+    </section>
+  </article>
+  <script type="application/json">
+  {
+    "total": 4,
+    "pending": 2,
+    "orders": [
+      { "dispatchId": "dp_2001", "orderId": "so_1001", "workerName": "韦芳", "skill": "上门护理", "status": "待接单", "createdAt": "2026-07-30 09:12" },
+      { "dispatchId": "dp_2002", "orderId": "so_1002", "workerName": "黄丽", "skill": "陪诊就医", "status": "已接单", "createdAt": "2026-07-30 08:42" }
+    ]
+  }
+  </script>
+</body>
+</html>

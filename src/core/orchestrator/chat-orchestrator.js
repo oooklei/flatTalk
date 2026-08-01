@@ -9,6 +9,7 @@ import { fillTemplateSlots, fillTravelWeatherRisk, fillTravelWeatherRiskCard } f
 import { extractCities } from '../city-extractor/index.js';
 import { renderTemplateCardResult } from '../render/template-card-renderer.js';
 import { identifyScene } from '../scene-router/index.js';
+import { resolveTemplateId } from '../scene-router/intent-template-map.js';
 import { createDataService } from '../../services/data-service.js';
 import { createRagService } from '../../services/rag-service.js';
 import { describeLibrary, discoverTemplates } from '../../template-card/index.js';
@@ -39,8 +40,8 @@ function resolveWeatherCity(request = {}, businessData = {}) {
   const jtd = bd.jtd || {};
   const product = jtd.selected_product || (Array.isArray(jtd.products) ? jtd.products[0] : null);
   const route = bd.route || (Array.isArray(bd.routes) ? bd.routes[0] : null);
-  const fallback = String(product?.destination || product?.city || route?.destination || bd.primary_city || bd.destination || '防城港').trim();
-  return [fallback];
+  const fallback = String(product?.destination || product?.city || route?.destination || bd.primary_city || bd.destination || '').trim();
+  return fallback ? [fallback] : [];
 }
 
 export function createChatOrchestrator(options = {}) {
@@ -64,7 +65,160 @@ export function createChatOrchestrator(options = {}) {
         const sceneInput = normalizeRequest(request);
         mark('intent', '意图识别', { text_len: sceneInput.text.length });
         const intentContext = await loadIntentContext(sceneInput, options);
-        const sceneDecision = identifyScene({ ...sceneInput, intent_context: intentContext }, options.sceneOptions ?? {});
+        mark('intent', '意图识别完成', { intent_type: intentContext?.intent_type, confidence: intentContext?.confidence });
+
+        // ★ SOS 紧急短路：检测到 SOS/P0 意图时跳过场景评分，直接路由到应急流程
+        if (intentContext?.intent_type === 'SOS' || intentContext?.urgency_level === 'P0') {
+          mark('sos_bypass', 'SOS紧急短路', { keywords: intentContext?.keyword_match });
+          const sosSkillKey = 'find_service';
+          const sosTemplateId = 'service_emergency';
+          const sosSkillTemplates = resolveSkillTemplates(sosSkillKey);
+          const sosModelResult = modelService.fillTemplateSlots({
+            message: sceneInput.text,
+            skill_key: sosSkillKey,
+            intent_context: intentContext,
+            template_id: sosTemplateId,
+            default_template_id: sosSkillTemplates.defaultTemplateId,
+            template_library: sosSkillTemplates.library,
+            evidence: [],
+            business_data: {},
+          });
+          const sosInteractions = composeInteractions({ sceneDecision: { scene_key: sosSkillKey, intent: 'SOS', decision: 'accept', confidence: 0.95 }, modelResult: sosModelResult, staticFollowups: loadStaticFollowups(sosSkillKey, sosTemplateId) });
+          const sosRenderResult = renderTemplateCardResult({
+            templateDir: sosSkillTemplates.templateDir,
+            modelResult: sosModelResult,
+            actions: sosInteractions.actions,
+            followupSuggestions: sosInteractions.followup_suggestions,
+            compactFollowups: sosInteractions.compact_followups,
+          });
+          mark('sos_render', 'SOS卡片渲染', { status: sosRenderResult.render_status });
+          const sosEnvelope = buildEnvelope({
+            request_id: request.request_id,
+            conversation_id: request.conversation_id,
+            turn_id: request.turn_id,
+            answer_text: sosModelResult.answer_text || '检测到紧急情况，请立即拨打120或点击下方按钮求助。',
+            intent: 'SOS',
+            skill_key: sosSkillKey,
+            scene_key: sosSkillKey,
+            template_id: sosTemplateId,
+            routed: true,
+            confidence: 0.95,
+            route_extras: {
+              source: 'flatTalk.sos_emergency_bypass',
+              sos_keywords: intentContext?.keyword_match || [],
+              urgency_level: 'P0',
+              template_reason: sosRenderResult.card.reason,
+              render_status: sosRenderResult.render_status,
+              intent_context: intentContext,
+            },
+          });
+          return {
+            ...sosEnvelope,
+            answer: sosEnvelope.answer_text,
+            llm: sosRenderResult.llm,
+            card: sosRenderResult.card,
+            rendered_html: sosRenderResult.rendered_html,
+            html_fallback: sosRenderResult.html_fallback,
+            debug: { sos_bypass: true, sos_keywords: intentContext?.keyword_match || [] },
+          };
+        }
+
+        // ★ 轻量追问短路：followup 按钮触发且 skill_key 已知时，跳过意图/场景/知识检索，
+        //    直接走 模板解析→业务数据→本地模板填充→渲染，避免完整 16 步流水线
+        if (request.context?.followup_source && request.skill_key && !request.context?.reenter_chat) {
+          mark('followup_bypass', '轻量追问', { skill_key: request.skill_key, action_key: request.context?.action_key });
+          const fSkillKey = request.skill_key;
+          const fSkillTemplates = resolveSkillTemplates(fSkillKey);
+          const fTemplateId = request.template_id || request.templateId || fSkillTemplates.defaultTemplateId;
+          // 仅加载业务数据（轻量，按场景查询本地表）
+          const fBusinessData = await loadBusinessData({
+            sceneDecision: { scene_key: fSkillKey, decision: 'accept', confidence: 1 },
+            request,
+            dataService,
+          });
+          mark('followup_data', '追问业务数据', { loaded: !!(fBusinessData && Object.keys(fBusinessData).length) });
+          // 本地确定性模板填充（不走 LLM）
+          const fModelResult = await fillTemplateSlots({
+            message: sceneInput.text,
+            template_id: fTemplateId,
+            default_template_id: fSkillTemplates.defaultTemplateId,
+            template_library: fSkillTemplates.library,
+            business_data: fBusinessData,
+            intent_context: { intent: `${fSkillKey}.followup` },
+          });
+          mark('followup_fill', '追问模板填充', { template_id: fModelResult.template_id });
+          const fStaticFollowups = loadStaticFollowups(fSkillKey, fModelResult.template_id || fTemplateId);
+          const fInteractions = composeInteractions({
+            sceneDecision: { scene_key: fSkillKey, intent: `${fSkillKey}.followup`, decision: 'accept', confidence: 1 },
+            modelResult: fModelResult,
+            staticFollowups: fStaticFollowups,
+          });
+          const fRenderResult = renderTemplateCardResult({
+            templateDir: fSkillTemplates.templateDir,
+            modelResult: fModelResult,
+            actions: fInteractions.actions,
+            followupSuggestions: fInteractions.followup_suggestions,
+            compactFollowups: fInteractions.compact_followups,
+          });
+          mark('followup_render', '追问卡片渲染', { status: fRenderResult.render_status });
+          const fTemplateIdFinal = fRenderResult.card.templateId || fModelResult.template_id || fTemplateId;
+          const fEnvelope = buildEnvelope({
+            request_id: request.request_id,
+            conversation_id: request.conversation_id,
+            turn_id: request.turn_id,
+            skill_key: fSkillKey,
+            intent: `${fSkillKey}.followup`,
+            template_id: fTemplateIdFinal,
+            template_key: fTemplateIdFinal,
+            answer_text: fModelResult.answer_text,
+            data: fModelResult.data,
+            actions: fInteractions.actions,
+            followup_suggestions: fInteractions.followup_suggestions,
+            evidence: [],
+            route: {
+              source: 'flatTalk.followup_bypass',
+              scene_key: fSkillKey,
+              decision: 'accept',
+              confidence: 1,
+              routed: true,
+              template_reason: fRenderResult.card.reason,
+              render_status: fRenderResult.render_status,
+            },
+          });
+          mark('done', '追问响应封装', { scene_key: fEnvelope.route.scene_key });
+          try {
+            getTraceLogger().write({
+              level: 'ok', kind: 'followup', question: traceQuestion,
+              conversation_id: request.conversation_id, turn_id: request.turn_id, request_id: request.request_id,
+              route: fEnvelope.route, stages,
+            });
+          } catch {}
+          return {
+            ...fEnvelope,
+            answer: fEnvelope.answer_text,
+            llm: fRenderResult.llm,
+            card: fRenderResult.card,
+            rendered_html: fRenderResult.rendered_html,
+            html_fallback: fRenderResult.html_fallback,
+            debug: { followup_bypass: true, skill_key: fSkillKey, template_id: fTemplateIdFinal },
+          };
+        }
+
+        // 加载 per-skill 场景阈值（来自 skill_configs 表），使各技能可独立调节 accept/review 门槛
+        let thresholdsByScene = options.thresholdsByScene ?? null;
+        if (!thresholdsByScene && typeof dataService.tableData?.getSkillConfigs === 'function') {
+          try {
+            const skillConfigs = await dataService.tableData.getSkillConfigs();
+            thresholdsByScene = {};
+            for (const [key, cfg] of Object.entries(skillConfigs)) {
+              if (cfg?.scene_thresholds) thresholdsByScene[key] = cfg.scene_thresholds;
+            }
+          } catch { thresholdsByScene = null; }
+        }
+        const sceneDecision = identifyScene(
+          { ...sceneInput, intent_context: intentContext },
+          { ...(options.sceneOptions ?? {}), ...(thresholdsByScene ? { thresholdsByScene } : {}) },
+        );
         mark('scene_route', '场景路由', { scene_key: sceneDecision?.scene_key, decision: sceneDecision?.decision, confidence: sceneDecision?.confidence });
         const acceptedScene = acceptScene(request, sceneDecision);
         const skillKey = acceptedScene?.scene_key || 'common';
@@ -100,7 +254,8 @@ export function createChatOrchestrator(options = {}) {
             mark('city_extract', '城市提取', { error: e.message });
           }
         }
-        const routedTemplateId = selectRoutedTemplateId(acceptedScene);
+        const availableTemplateIds = (skillTemplates.library || []).map(t => t.id);
+        const routedTemplateId = selectRoutedTemplateId(acceptedScene, availableTemplateIds);
         // 天气风险动作：结合上下文城市，调用腾讯天气接口，由模型合成天气风险卡片
         const weatherActionCities = (acceptedScene?.scene_key === 'travel_route' && request.context?.action_key === 'travel_route.check_weather_risk')
           ? resolveWeatherCity(request, businessData)
@@ -251,6 +406,7 @@ export function createChatOrchestrator(options = {}) {
           card: renderResult.card,
           rendered_html: renderResult.rendered_html,
           html_fallback: renderResult.html_fallback,
+          stages,
           debug: {
             scene_confidence: sceneDecision?.confidence || 0,
             knowledge_status: knowledge.status || (Array.isArray(knowledge.matches) && knowledge.matches.length ? 'hit' : 'empty'),
@@ -329,46 +485,16 @@ function acceptScene(request, sceneDecision) {
   return sceneDecision?.decision === 'accept' ? sceneDecision : null;
 }
 
-function selectRoutedTemplateId(sceneDecision) {
+function selectRoutedTemplateId(sceneDecision, availableIds = []) {
   if (!sceneDecision || sceneDecision.decision !== 'accept') return '';
 
-  // 政策类场景：根据具体意图选择不同模板
-  if (sceneDecision.scene_key === 'common' && String(sceneDecision.intent || '').startsWith('elder_policy')) {
-    // 申请流程类 -> policy_apply_guide_card
-    if (sceneDecision.intent === 'elder_policy_apply') return 'policy_apply_guide_card';
-    // 补贴查询类 -> policy_list_card
-    if (sceneDecision.intent === 'elder_policy_benefit') return 'policy_list_card';
-    // 详情查询类 -> policy_detail_card
-    if (sceneDecision.intent === 'elder_policy_detail') return 'policy_detail_card';
-    // 默认 -> policy_card
-    return 'policy_card';
-  }
+  const sceneKey = sceneDecision.scene_key;
+  const intent = sceneDecision.intent || '';
 
-  if (sceneDecision.intent === 'meal_plan_weekly_plan') return 'weekly_plan';
-  if (sceneDecision.scene_key === 'travel_route') {
-    return sceneDecision.intent === 'travel_route_plan' ? 'travel_itinerary_card' : 'route_card';
-  }
-  if (sceneDecision.scene_key === 'meal_plan') return 'diet_card';
-  if (sceneDecision.scene_key === 'health_risk_warning') return 'health_warning_card';
-  if (sceneDecision.scene_key === 'find_service') {
-    const intent = sceneDecision.intent;
-    if (intent === 'find_service_org') return 'org_profile';
-    if (intent === 'find_service_worker') return 'worker_profile';
-    if (intent === 'find_service_order') return 'order_preview';
-    if (intent === 'find_service_order_view') return 'order_status';
-    if (intent === 'find_service_catalog') return 'service_catalog';
-    return 'service_recommend';
-  }
-  if (sceneDecision.scene_key === 'dispatch_manage') {
-    const intent = sceneDecision.intent;
-    if (intent === 'dispatch_accept' || intent === 'dispatch_reject' || intent === 'dispatch_detail') return 'dispatch_detail';
-    if (intent === 'dispatch_work_order') return 'work_order';
-    if (intent === 'dispatch_status') return 'dispatch_status';
-    return 'dispatch_list';
-  }
-  if (sceneDecision.scene_key === 'nearby_resource') {
-    return 'nearby_map_overview';
-  }
+  // 通过 intent-template-map 查找
+  const templateId = resolveTemplateId(sceneKey, intent, availableIds);
+  if (templateId) return templateId;
+
   return '';
 }
 
@@ -480,7 +606,10 @@ async function loadBusinessData({ sceneDecision, request, dataService }) {
   if (sceneDecision?.scene_key === 'nearby_resource') {
     // 拉取全量周边配套，分类/半径过滤与模板选择交由 fillNearbyResourceCard 按意图与语义完成
     const facilities = getJialuFacilities({ type: '', maxDistance: 0, limit: 0 });
-    const center = getJialuCenter();
+    const requestLocation = request.context?.location || request.location;
+    const center = (requestLocation && typeof requestLocation.lat === 'number')
+      ? { lat: requestLocation.lat, lng: requestLocation.lng }
+      : getJialuCenter();
 
     // ★ 三层富化：静态数据 + 腾讯地图补充 + Tavily 富化
     const intent = request.context?.intent || request.context?.action_key || 'all';

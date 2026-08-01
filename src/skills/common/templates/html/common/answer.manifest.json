@@ -1,5 +1,6 @@
 {
   "id": "answer",
+  "description": "通用健康咨询答复兜底卡片，用于文本回复展示",
   "layout": "vertical",
   "match": "通用健康答复（正常返回兜底）。字段：emoji, title, skill_name, answer, related_questions, foot",
   "required": ["emoji", "title", "skill_name", "answer", "related_questions", "foot"]

@@ -214,7 +214,8 @@ function buildHtmlFallback(pageHtml) {
     '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:visible;}',
     '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:200px;max-height:1500px;border:0;border-radius:10px;background:#fff;overflow:auto;}',
     '</style>',
-    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin" srcdoc="${escapeAttribute(finalHtml)}"></iframe>`,
+    // 注意：allow-popups 让卡片内的 tel: 链接能唤起系统拨号器；切勿加 allow-top-navigation（会让卡片导航走整个 App）
+    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups" srcdoc="${escapeAttribute(finalHtml)}"></iframe>`,
     '</article>',
   ].join('');
 }

@@ -1,0 +1,9 @@
+{
+  "skill_key": "find_service",
+  "name": "养老服务发现与匹配",
+  "version": "0.1.0",
+  "runtime": "local",
+  "default_template": "service_recommend",
+  "description": "养老服务/机构/人员的发现、匹配、详情、建单与派单交接",
+  "source": "find_service"
+}

@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --primary: #FF7826;
+    --primary-gradient: linear-gradient(135deg, #FF7826 0%, #FF9A5C 100%);
+    --bg: #FFF8F0; --bg-white: #ffffff;
+    --ink: #2C2C2C; --ink-light: #666; --muted: #999999;
+    --border: #EDE4D8; --divider: #F0EBE3; --price: #FF7826;
+    --pin: #E74C3C;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+
+  .chat-section-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 10px;
+  }
+  .chat-section-title .ico {
+    width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+    background: linear-gradient(145deg, #FF9A5C, #FF7826);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+  }
+
+  .intro {
+    font-size: 13px; line-height: 1.7; color: var(--ink-light);
+    margin: 0 0 12px;
+  }
+  .intro .why-title {
+    color: var(--ink); font-weight: 600; margin-bottom: 4px;
+  }
+  .intro .why-list {
+    margin: 4px 0 10px; padding: 0; list-style: none;
+  }
+  .intro .why-list li {
+    position: relative; padding-left: 1.4em; margin: 2px 0;
+  }
+  .pick-line {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    margin: 0 0 10px;
+  }
+
+  .chat-hotel-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 12px 12px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .chat-hotel-card.primary {
+    border: 2px solid var(--primary);
+    box-shadow: 0 2px 10px rgba(255, 120, 38, 0.12);
+  }
+  .chat-hotel-badge {
+    position: absolute; top: 0; left: 0;
+    padding: 4px 10px 4px 8px;
+    background: var(--primary); color: #fff;
+    font-size: 11px; font-weight: 700;
+    border-radius: 14px 0 10px 0;
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+  .chat-hotel-card.primary { padding-top: 28px; }
+
+  .chat-hotel-name {
+    font-size: 16px; font-weight: 800; line-height: 1.35;
+    margin: 0 0 4px;
+  }
+  .chat-hotel-sub {
+    font-size: 12px; color: var(--muted); margin: 0 0 6px;
+  }
+  .chat-hotel-addr {
+    display: flex; align-items: flex-start; gap: 4px;
+    font-size: 12px; color: var(--ink-light); margin: 0 0 10px; line-height: 1.5;
+  }
+  .chat-hotel-addr .pin {
+    color: var(--pin); flex-shrink: 0; font-size: 12px; line-height: 1.5;
+  }
+
+  .chat-hotel-reason {
+    font-size: 12px; color: var(--ink-light); line-height: 1.65;
+    background: #F5F5F5; border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 10px;
+  }
+  .chat-hotel-reason b,
+  .chat-hotel-reason strong { color: var(--ink); font-weight: 700; }
+
+  .chat-hotel-facts { font-size: 12px; }
+  .fact-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 7px 0; border-bottom: 1px solid #F3F0EA;
+  }
+  .fact-row:last-child { border-bottom: none; }
+  .fact-label {
+    flex-shrink: 0; width: 56px; color: var(--muted); font-weight: 500;
+  }
+  .fact-value { flex: 1; color: var(--ink); line-height: 1.5; }
+
+  .chat-hotel-pricebox {
+    margin-top: 10px;
+    background: #FFF4E8;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .chat-hotel-price {
+    font-size: 13px; color: var(--price); font-weight: 700; line-height: 1.4;
+  }
+  .chat-hotel-price .num {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+  }
+  .chat-hotel-total {
+    margin-top: 2px; font-size: 12px; color: var(--price); font-weight: 600;
+  }
+  .chat-hotel-rating {
+    margin-top: 4px; font-size: 11px; color: var(--muted); font-weight: 400;
+  }
+
+  .chat-hotel-actions {
+    display: flex; gap: 8px; margin-top: 10px;
+  }
+  .chat-btn {
+    flex: 1; text-align: center; padding: 10px 0;
+    font-size: 14px; font-weight: 700;
+    border-radius: 10px; border: none;
+    color: var(--ink); background: #F3EFE9;
+  }
+  .chat-btn.solid {
+    background: var(--primary); color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 120, 38, 0.28);
+  }
+
+  .note {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.6;
+  }
+  .note::before {
+    content: "!";
+    flex-shrink: 0; width: 14px; height: 14px; margin-top: 2px;
+    border-radius: 50%; background: var(--primary); color: #fff;
+    font-size: 10px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
+</style>
+</head>
+<body>
+<div class="tc-deck" data-layout="vertical"><div class="tc-card">
+  <div class="wrap">
+    <div class="chat-section-title">
+      <span class="ico">🏨</span>
+      <span>旅居康养基地推荐</span>
+    </div>
+
+    <div class="intro"><div class="why-title">⏳ 为什么优先推荐康养基地而非普通酒店?</div><ul class="why-list"><li>① 三餐营养餐全包，软烂适口，免去外出找餐烦恼</li><li>② 周边医疗配套近，方便慢病长者购药体检</li><li>③ 电梯/无障碍通道，适老化设计更安心</li><li>④ 棋牌、花园步道等社交活动，不孤单</li></ul><div class="pick-line">为您精选2套适配方案:</div></div>
+
+    
+    <div class="chat-hotel-card primary">
+      <div class="chat-hotel-badge">恒荣大酒店旅居康养基地</div>
+      <div class="chat-hotel-name">恒荣大酒店旅居康养基地</div>
+      <div class="chat-hotel-sub">仙人山公园店 · 四星级康养定位</div>
+      
+      <div class="chat-hotel-addr"><span class="pin">📍</span><span>恒荣大酒店旅居康养基地</span></div>
+      
+      <div class="chat-hotel-reason"><b>推荐理由:</b> 位于市区核心，步行可达防城港市第一人民医院(800m)，楼下商超齐全。适合有用药需求的长者日常购药体检；酒店含电梯、无障碍通道，全包三餐营养餐。</div>
+      <div class="chat-hotel-facts">
+        
+        <div class="fact-row">
+          <span class="fact-label">三餐配套</span>
+          <span class="fact-value">自助早餐+午餐晚餐营养套餐，软烂适口</span>
+        </div>
+        
+        <div class="fact-row">
+          <span class="fact-label">院内设施</span>
+          <span class="fact-value">花园步道、健身角、棋牌室、理疗室</span>
+        </div>
+        
+        <div class="fact-row">
+          <span class="fact-label">周边医疗</span>
+          <span class="fact-value">市第一人民医院 800m、仁爱药店 200m</span>
+        </div>
+        
+        <div class="fact-row">
+          <span class="fact-label">周边配套</span>
+          <span class="fact-value">仙人山公园步行5分钟、万达商圈 1.5km</span>
+        </div>
+        
+      </div>
+      <div class="chat-hotel-pricebox">
+        <div class="chat-hotel-price"><span class="num">¥198</span>/人/天 (含三餐住宿)</div>
+        <div class="chat-hotel-total">恒荣大酒店旅居康养基地</div>
+        <div class="chat-hotel-rating">平台评分: 4.8/5.0 · 起售价 ¥198/人/天</div>
+      </div>
+      <div class="chat-hotel-actions">
+        <div class="chat-btn solid">立即订房</div>
+        <div class="chat-btn">查看详情</div>
+      </div>
+    </div>
+    
+    <div class="chat-hotel-card ">
+      
+      <div class="chat-hotel-name">海景红树林康养基地</div>
+      <div class="chat-hotel-sub">西湾海滨 · 自然生态康养定位</div>
+      
+      <div class="chat-hotel-addr"><span class="pin">📍</span><span>海景红树林康养基地</span></div>
+      
+      <div class="chat-hotel-reason"><b>推荐理由:</b> 紧邻红树林湿地公园，负氧离子高，适合呼吸道养护与慢生活节奏；含温泉泡池与海景步道，全包中式营养餐。</div>
+      <div class="chat-hotel-facts">
+        
+        <div class="fact-row">
+          <span class="fact-label">三餐配套</span>
+          <span class="fact-value">中式营养餐三餐全包，可定制软食</span>
+        </div>
+        
+        <div class="fact-row">
+          <span class="fact-label">院内设施</span>
+          <span class="fact-value">温泉泡池、海景步道、阅览角</span>
+        </div>
+        
+        <div class="fact-row">
+          <span class="fact-label">周边医疗</span>
+          <span class="fact-value">港口区医院 1.2km、社区卫生站 500m</span>
+        </div>
+        
+        <div class="fact-row">
+          <span class="fact-label">周边配套</span>
+          <span class="fact-value">西湾沙滩步行3分钟、红树林公园门口</span>
+        </div>
+        
+      </div>
+      <div class="chat-hotel-pricebox">
+        <div class="chat-hotel-price"><span class="num">¥268</span>/人/天 (含三餐住宿)</div>
+        <div class="chat-hotel-total">海景红树林康养基地</div>
+        <div class="chat-hotel-rating">平台评分: 4.7/5.0 · 起售价 ¥268/人/天</div>
+      </div>
+      <div class="chat-hotel-actions">
+        <div class="chat-btn solid">立即订房</div>
+        <div class="chat-btn">查看详情</div>
+      </div>
+    </div>
+    
+
+    <div class="note">以上价格仅供参考，以下门店实时为准。已自动过滤无电梯、远离医疗机构、无食堂的住宿。</div>
+  </div>
+
+  
+</div></div>
+
+</body>
+</html>

@@ -35,4 +35,28 @@ export const TABLE_SCHEMAS = Object.freeze({
     primary_key: 'turn_id',
     fields: ['turn_id', 'conversation_id', 'skill_key', 'template_id', 'created_at'],
   },
+
+  // find_service（服务发现/匹配/建单）业务表
+  fs_service_catalog: {
+    primary_key: 'service_id',
+    fields: ['service_id', 'name', 'category', 'scene_tags', 'target_people', 'price_from', 'unit', 'org_type_support', 'online_booking', 'description'],
+  },
+  fs_org: {
+    primary_key: 'org_id',
+    fields: ['org_id', 'org_name', 'org_type', 'address', 'service_scope', 'bed_count', 'price_from', 'rating', 'certified'],
+  },
+  fs_worker: {
+    primary_key: 'worker_id',
+    fields: ['worker_id', 'name', 'skill_tags', 'cert_level', 'service_area', 'rating', 'order_count', 'available'],
+  },
+  fs_service_order: {
+    primary_key: 'order_id',
+    fields: ['order_id', 'elder_name', 'service_id', 'service_name', 'org_id', 'status', 'created_at', 'expected_time'],
+  },
+
+  // dispatch_manage（派单/工单调度）业务表
+  dm_dispatch_order: {
+    primary_key: 'dispatch_id',
+    fields: ['dispatch_id', 'order_id', 'worker_id', 'worker_name', 'skill_tag', 'status', 'created_at', 'accepted_at', 'rejected_reason'],
+  },
 });

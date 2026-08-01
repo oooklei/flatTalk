@@ -1,46 +1,49 @@
 {
-  "dateBadge": "今日推荐 — 长者清淡饮食",
-  "suitable": "70岁以上长者，低盐低脂低糖",
-  "totalCal": "约520kcal",
-  "salt": "每日≤4g（控盐勺量）",
+  "dateBadge": "今日推荐 · 一日三膳",
+  "suitable": "60岁以上长者，低盐低油低糖",
+  "totalCal": "约590kcal",
+  "salt": "每日≤5g (控盐勺量)",
   "meals": [
     {
       "mealName": "早餐",
-      "mealEmoji": "🌅🍳",
-      "mealTotal": "150kcal",
+      "mealEmoji": "☀️🌅",
+      "mealTotal": "173kcal",
       "foods": [
-        { "foodIcon": "🌾", "foodName": "燕麦粥", "cal": "80kcal", "calNote": "(每200g)" },
-        { "foodIcon": "🥚", "foodName": "水煮蛋", "cal": "70kcal", "calNote": "( / 个)" }
+        { "foodIcon": "🌿", "foodName": "小米粥", "foodDesc": "膳食纤维、B族维生素", "cal": "85kcal", "calNote": "/碗(200g)" },
+        { "foodIcon": "🌿", "foodName": "水煮蛋", "foodDesc": "优质蛋白、卵磷脂", "cal": "72kcal", "calNote": "/1个" },
+        { "foodIcon": "🌿", "foodName": "凉拌黄瓜", "foodDesc": "维生素C、水分充足", "cal": "16kcal", "calNote": "/份(100g)" }
       ]
     },
     {
       "mealName": "午餐",
-      "mealEmoji": "☀️🍱",
-      "mealTotal": "220kcal",
+      "mealEmoji": "⛅☀️",
+      "mealTotal": "251kcal",
       "foods": [
-        { "foodIcon": "🐟", "foodName": "清蒸鲈鱼", "cal": "110kcal", "calNote": "(每150g)" },
-        { "foodIcon": "🥦", "foodName": "清炒西兰花", "cal": "40kcal", "calNote": "(每150g)" },
-        { "foodIcon": "🍚", "foodName": "杂粮饭", "cal": "70kcal", "calNote": "(每150g)" }
+        { "foodIcon": "🌿", "foodName": "清蒸石斑鱼", "foodDesc": "优质蛋白、Omega-3", "cal": "106kcal", "calNote": "/份(150g)" },
+        { "foodIcon": "🌿", "foodName": "蒜蓉西兰花", "foodDesc": "维生素K、膳食纤维", "cal": "34kcal", "calNote": "/份(150g)" },
+        { "foodIcon": "🌿", "foodName": "糙米饭", "foodDesc": "B族维生素、矿物质", "cal": "111kcal", "calNote": "/碗(150g)" }
       ]
     },
     {
       "mealName": "晚餐",
-      "mealEmoji": "🌙🍲",
-      "mealTotal": "150kcal",
+      "mealEmoji": "🌙🌙",
+      "mealTotal": "166kcal",
       "foods": [
-        { "foodIcon": "🍅", "foodName": "番茄豆腐汤", "cal": "60kcal", "calNote": "(每250ml)" },
-        { "foodIcon": "🌽", "foodName": "玉米段", "cal": "90kcal", "calNote": "(每1枚100g)" }
+        { "foodIcon": "🌿", "foodName": "番茄鸡蛋汤", "foodDesc": "番茄红素、优质蛋白", "cal": "58kcal", "calNote": "/碗(250ml)" },
+        { "foodIcon": "🌿", "foodName": "清蒸南瓜", "foodDesc": "β-胡萝卜素、钾", "cal": "26kcal", "calNote": "/份(120g)" },
+        { "foodIcon": "🌿", "foodName": "玉米段", "foodDesc": "膳食纤维、叶黄素", "cal": "82kcal", "calNote": "/1根(100g)" }
       ]
     }
   ],
-  "ratioText": "碳水化合物：<strong>约50~55%</strong> | 蛋白质15~20% | 脂肪25~30%。符合长者代谢特点，<em>如有忌口、过敏或慢性病（如糖尿病、高血压、痛风等），请在对应框中说明，将依标自动调整食谱。</em>",
+  "ratioText": "营养配比：碳水化合物50-55% · 蛋白质15-20% · 脂肪25-30%，符合长者代谢特点。如有忌口、过敏或慢性病（如糖尿病、高血压、痛风等），请在对话框中说明，系统将自动调整食谱。",
   "tags": [
     { "tagIcon": "💡", "tagLabel": "糖尿病" },
     { "tagIcon": "🩺", "tagLabel": "高血压" },
     { "tagIcon": "🦴", "tagLabel": "骨质疏松" }
   ],
   "related": [
-    { "relIcon": "📋", "relIconStyle": "", "relTitle": "查看完整一周的膳食方案", "relDesc": "清单·菜谱、每日三餐搭配指南" },
-    { "relIcon": "❤️", "relIconStyle": "background:linear-gradient(135deg,#FFD4E5,#FFB4C8)", "relTitle": "高血压老人饮食有什么禁忌？", "relDesc": "控盐控脂、常见误区与推荐清单" }
+    { "relIcon": "📅", "relIconStyle": "background:#E8F1FF", "relTitle": "查看完整一周的膳食方案", "relDesc": "周一至周日，每日三膳详细搭配" },
+    { "relIcon": "❤️", "relIconStyle": "background:#FFE8EE", "relTitle": "高血压老人饮食有什么禁忌？", "relDesc": "控盐控脂、宜吃宜忌详细清单" },
+    { "relIcon": "🩺", "relIconStyle": "background:#E8F8EF", "relTitle": "糖尿病老人怎么安排饮食？", "relDesc": "控糖食谱、升糖指数参考" }
   ]
 }

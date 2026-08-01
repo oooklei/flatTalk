@@ -1,0 +1,98 @@
+{
+  "version": "flatalk-action-resource-map.v1",
+  "description": "按钮动作通用兜底的资源清单：复用 action-registry 结构，补充 endpoint 与 param_sources。未被特例白名单覆盖的 action 走本表生成的提示词 + 调大模型兜底。",
+  "actions": [
+    {
+      "action_key": "travel_route.calculate_budget",
+      "label": "测算旅居预算",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "测算住宿、交通、餐食、护理、陪同的费用区间。",
+      "when": "用户点击「测算旅居预算」或询问旅居花费时触发。",
+      "endpoint": "（bff 内部能力，无外部 HTTP 地址）",
+      "params_schema": {
+        "destination": "string（旅居目的地城市）",
+        "days": "number（旅居天数）",
+        "headcount": "number（同行人数）"
+      },
+      "param_sources": {
+        "destination": "从上下文旅居产品 destination 抽取，缺省用已选产品目的地",
+        "days": "从上下文行程天数抽取，缺省按 7 天",
+        "headcount": "从上下文出行人数抽取，缺省按 2 人"
+      },
+      "next_template_id": "route_card"
+    },
+    {
+      "action_key": "travel_route.check_accessibility",
+      "label": "查看适老化设施",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "查看目的地周边无障碍通道、电梯、扶手、防滑等适老化设施情况。",
+      "when": "用户点击「查看适老化设施」或关心目的地无障碍条件时触发。",
+      "endpoint": "（bff 内部能力，无外部 HTTP 地址）",
+      "params_schema": {
+        "destination": "string（旅居目的地城市）",
+        "facility_type": "string（设施类型，如电梯/扶手/无障碍通道，可选）"
+      },
+      "param_sources": {
+        "destination": "从上下文旅居产品 destination 抽取",
+        "facility_type": "从按钮语境或服务目录抽取，缺省查全部"
+      },
+      "next_template_id": "route_card"
+    },
+    {
+      "action_key": "travel_route.check_policy_subsidy",
+      "label": "查询政策补贴",
+      "skill_key": "travel_route",
+      "target": "knowledge",
+      "description": "查询目的地针对旅居/养老的政策补贴、高龄津贴、护理补贴等办理口径。",
+      "when": "用户点击「查询政策补贴」或询问补贴办理时触发。",
+      "endpoint": "（知识库检索：广西养老办事指引知识库 / 广西养老政策知识库，经 ragService 注入 evidence）",
+      "params_schema": {
+        "region": "string（参保或户籍所在地/目的地，如广西防城港）",
+        "policy_type": "string（补贴类型，如高龄津贴/护理补贴，可选）"
+      },
+      "param_sources": {
+        "region": "从上下文 region/destination 抽取",
+        "policy_type": "从按钮语境抽取，缺省不限类型"
+      },
+      "next_template_id": "route_card"
+    },
+    {
+      "action_key": "travel_route.explain_safety",
+      "label": "讲解旅居安全",
+      "skill_key": "travel_route",
+      "target": "knowledge",
+      "description": "讲解旅居期间防跌倒、防走失、应急联络等安全要点。",
+      "when": "用户点击「讲解旅居安全」或询问旅居安全须知时触发。",
+      "endpoint": "（知识库检索：广西养老办事指引知识库 / 安全须知知识库，经 ragService 注入 evidence）",
+      "params_schema": {
+        "destination": "string（旅居目的地城市，可选）",
+        "elder_type": "string（老人类别，如独居/失能，可选）"
+      },
+      "param_sources": {
+        "destination": "从上下文 destination 抽取",
+        "elder_type": "从上下文 elder_type 抽取"
+      },
+      "next_template_id": "route_card"
+    },
+    {
+      "action_key": "meal_plan.check_risk",
+      "label": "查看饮食风险",
+      "skill_key": "meal_plan",
+      "target": "knowledge",
+      "description": "根据慢病类型（糖尿病/高血压）给出饮食禁忌与风险提醒。",
+      "when": "用户点击「查看饮食风险」或询问某食材/餐食是否适宜时触发。",
+      "endpoint": "（知识库检索：膳食知识库，经 ragService 注入 evidence）",
+      "params_schema": {
+        "condition": "string（慢病类型：diabetes / hypertension / 无）",
+        "foods": "array（待评估食材或今日餐食，可选）"
+      },
+      "param_sources": {
+        "condition": "从上下文 condition 抽取，缺省按无特殊慢病",
+        "foods": "从上下文餐食/食材抽取"
+      },
+      "next_template_id": "diet_card"
+    }
+  ]
+}

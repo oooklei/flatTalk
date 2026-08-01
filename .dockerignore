@@ -1,0 +1,58 @@
+# Node modules
+node_modules/
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+data/*.log
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test and coverage
+coverage/
+.nyc_output/
+tests/
+
+# Build artifacts
+dist/
+build/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Development files
+.codebuddy/
+.claude/
+.github/
+
+# Asset copies (large files)
+assets/source-copies/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Playwright (if not needed in production)
+playwright-report/
+playwright/.cache/

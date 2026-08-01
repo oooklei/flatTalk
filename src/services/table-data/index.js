@@ -28,5 +28,31 @@ export function createTableDataService(options = {}) {
         source: 'flatTalk_table_data',
       };
     },
+
+    async getFindServiceTables() {
+      return {
+        service_catalog: await repository.list('fs_service_catalog'),
+        orgs: await repository.list('fs_org'),
+        workers: await repository.list('fs_worker'),
+        orders: await repository.list('fs_service_order'),
+        source: 'flatTalk_table_data',
+      };
+    },
+
+    async getDispatchManageTables() {
+      return {
+        dispatch_orders: await repository.list('dm_dispatch_order'),
+        orders: await repository.list('fs_service_order'),
+        workers: await repository.list('fs_worker'),
+        source: 'flatTalk_table_data',
+      };
+    },
+
+    async getSkillConfigs() {
+      const rows = await repository.list('skill_configs');
+      const map = {};
+      for (const row of rows) map[row.skill_key] = row;
+      return map;
+    },
   };
 }

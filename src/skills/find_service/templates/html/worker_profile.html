@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务人员详情</title>
+  <style>
+    :root { --primary:#1FA97E; --grad:linear-gradient(135deg,#1FA97E 0%,#4FD1A6 100%); --bg:#ECFBF5; --card:#fff; --ink:#2E3A36; --muted:#8A9A93; --border:#E1F0EA; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:14px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+    .card { max-width:420px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .hero { padding:16px; background:var(--grad); color:#fff; display:flex; align-items:center; gap:12px; }
+    .avatar { width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; }
+    h1 { margin:0; font-size:18px; }
+    .hero .sub { font-size:12px; opacity:.92; margin-top:2px; }
+    .section { padding:12px 14px; border-top:1px solid var(--border); }
+    .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+    .row:last-child { border-bottom:none; }
+    .row .k { color:var(--muted); }
+    .row .v { font-weight:600; }
+    .badge { display:inline-block; margin-top:8px; padding:4px 10px; border-radius:999px; background:#E6F7F0; color:var(--primary); font-size:12px; }
+  </style>
+</head>
+<body>
+  <article class="card" data-layout="vertical">
+    <header class="hero">
+      <div class="avatar">{{name}}</div>
+      <div><h1>{{name}}</h1><div class="sub">{{certLevel}} · {{area}}</div></div>
+    </header>
+    <section class="section">
+      <div class="row"><span class="k">技能标签</span><span class="v">{{skillTags}}</span></div>
+      <div class="row"><span class="k">评分</span><span class="v">{{rating}}</span></div>
+      <div class="row"><span class="k">累计订单</span><span class="v">{{orderCount}} 单</span></div>
+      <div class="row"><span class="k">接单状态</span><span class="v">{{available}}</span></div>
+      <span class="badge">桂颐智养认证护理人员</span>
+    </section>
+  </article>
+  <script type="application/json">
+  {
+    "name": "韦芳",
+    "certLevel": "高级护理员",
+    "area": "青秀社区",
+    "skillTags": "上门护理、助浴",
+    "rating": 4.9,
+    "orderCount": 132,
+    "available": "可接单"
+  }
+  </script>
+</body>
+</html>

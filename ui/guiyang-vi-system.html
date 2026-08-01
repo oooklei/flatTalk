@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>桂颐智养 — VI视觉识别系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--o50:#FDF6F0;--o100:#FAE6D5;--o200:#F5CDAE;--o300:#F0B487;--o400:#EB9B60;--o500:#E8843C;--o600:#D06E2A;--o700:#A85420;--o800:#7F3F18;--o900:#562A10;--b100:#E8F0F5;--b300:#7FA8C2;--b500:#3A6B8C;--b700:#1E4A66;--g100:#E8F2EC;--g300:#A0C4AB;--g500:#6B9B7A;--g700:#3D6B4D;--j100:#FBF3DD;--j300:#E6C572;--j500:#D4A537;--j700:#9C7715;--n0:#FAF8F5;--n50:#F0EDE7;--n100:#E4E0D8;--n200:#D9D4CC;--n300:#C4BEB4;--n400:#A8A09A;--n500:#8A8278;--n600:#6B6660;--n700:#4A463F;--n800:#3D3A36;--n900:#262421;--serif:'Noto Serif SC',serif;--sans:'Noto Sans SC',system-ui,sans-serif;--r-sm:6px;--r-md:10px;--r-lg:16px;--r-xl:24px;--r-full:999px;--sh-sm:0 1px 3px rgba(62,56,50,.08);--sh-md:0 4px 12px rgba(62,56,50,.1);--sh-lg:0 8px 24px rgba(62,56,50,.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--n0);color:var(--n800);line-height:1.7;font-size:15px}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600}
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+/* nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--n100);box-shadow:var(--sh-sm)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+nav .logo{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--o600);display:flex;align-items:center;gap:8px}
+nav .logo span{color:var(--n500);font-weight:400;font-size:12px;font-family:var(--sans)}
+nav ul{display:flex;gap:20px;list-style:none;flex-wrap:wrap}
+nav a{text-decoration:none;color:var(--n600);font-size:12px;transition:color .15s}
+nav a:hover{color:var(--o500)}
+/* hero */
+.hero{position:relative;background:linear-gradient(135deg,var(--o50) 0%,var(--n50) 50%,var(--b100) 100%);padding:100px 0 80px;overflow:hidden;text-align:center}
+.hero svg.bg{position:absolute;bottom:0;left:0;width:100%;height:140px;opacity:.12}
+.hero .logo-big{margin-bottom:32px}
+.hero h1{font-size:40px;color:var(--o700);letter-spacing:6px;margin-bottom:12px}
+.hero .sub{font-size:16px;color:var(--n500);margin-bottom:6px;letter-spacing:2px}
+.hero .desc{font-size:13px;color:var(--n400)}
+/* section */
+.sec{padding:64px 0;border-bottom:1px solid var(--n100)}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:36px}
+.sec-num{font-family:var(--serif);font-size:44px;color:var(--o200);font-weight:700;line-height:1}
+.sec-title{font-size:26px;color:var(--n800)}
+.sec-desc{font-size:13px;color:var(--n500);margin-top:4px}
+/* card */
+.grid{display:grid;gap:20px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.card{background:#fff;border-radius:var(--r-lg);padding:24px;box-shadow:var(--sh-sm);border:1px solid var(--n100)}
+.card h3{font-size:16px;margin-bottom:12px;color:var(--n800)}
+.card p{font-size:13px;color:var(--n500)}
+/* showcase */
+.showcase{background:#fff;border-radius:var(--r-lg);padding:48px;box-shadow:var(--sh-sm);border:1px solid var(--n100);text-align:center}
+.showcase.dark{background:var(--n800)}
+.showcase.gradient{background:linear-gradient(135deg,var(--o600),var(--o700))}
+.showcase.warm{background:linear-gradient(135deg,var(--o50),var(--j100))}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px}
+th{background:var(--n50);text-align:left;padding:12px 16px;color:var(--n700);font-weight:500;border-bottom:2px solid var(--n200);font-size:12px}
+td{padding:12px 16px;border-bottom:1px solid var(--n100);color:var(--n600)}
+/* swatch */
+.sw{display:inline-block;width:60px;height:60px;border-radius:var(--r-md);vertical-align:middle;margin-right:12px;box-shadow:var(--sh-sm)}
+/* badge */
+.note{background:var(--o50);border-left:3px solid var(--o400);padding:12px 16px;border-radius:0 var(--r-sm) var(--r-sm) 0;font-size:13px;color:var(--n600);margin:16px 0}
+/* don't */
+.dont{position:relative}
+.dont::after{content:'✕';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;color:var(--er);opacity:.6;font-weight:bold}
+.do-mark{position:relative}
+.do-mark::after{content:'✓';position:absolute;top:12px;right:12px;font-size:24px;color:var(--su);font-weight:bold}
+/* footer */
+footer{background:var(--n800);color:var(--n400);padding:48px 0;text-align:center}
+footer .pat{height:6px;background:linear-gradient(90deg,var(--o500) 0%,var(--j500) 25%,var(--g500) 50%,var(--b500) 75%,var(--o500) 100%);margin-bottom:32px;border-radius:3px}
+footer h3{color:var(--o300);font-size:18px;margin-bottom:8px}
+/* grid overlay */
+.grid-overlay{position:relative;display:inline-block}
+.grid-overlay .overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:.3}
+/* app mock */
+.app-mock{background:var(--n800);border-radius:16px;padding:16px;display:inline-block}
+.app-mock .screen{background:#fff;border-radius:8px;overflow:hidden}
+@media(max-width:768px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.hero h1{font-size:28px}nav ul{display:none}}
+</style>
+</head>
+<body>
+
+<!-- 导航 -->
+<nav>
+<div class="wrap">
+<div class="logo">桂颐智养 <span>VI 视觉识别系统</span></div>
+<ul>
+<li><a href="#s0">架构</a></li>
+<li><a href="#s1">标志</a></li>
+<li><a href="#s2">变体</a></li>
+<li><a href="#s3">制图</a></li>
+<li><a href="#s4">空间</a></li>
+<li><a href="#s5">色彩</a></li>
+<li><a href="#s6">组合</a></li>
+<li><a href="#s7">误用</a></li>
+<li><a href="#s8">纹样</a></li>
+<li><a href="#s9">各端</a></li>
+<li><a href="#s10">IP</a></li>
+</ul>
+</div>
+</nav>
+
+<!-- 封面 -->
+<div class="hero">
+<div class="wrap">
+<div class="logo-big">
+<!-- 品牌标志 SVG -->
+<svg width="120" height="120" viewBox="0 0 120 120">
+<!-- 外圆：绣球轮廓 -->
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<!-- 桂花瓣：4瓣花 -->
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<!-- 中心圆点 -->
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+<!-- 水波纹 -->
+<path d="M20,95 Q35,88 50,92 T80,90 T100,93" fill="none" stroke="#3A6B8C" stroke-width="1.5" opacity=".4"/>
+<path d="M25,102 Q40,96 55,99 T85,97 T100,100" fill="none" stroke="#3A6B8C" stroke-width="1" opacity=".25"/>
+</svg>
+</div>
+<h1>桂颐智养</h1>
+<p class="sub">VI 视觉识别系统 · V1.0</p>
+<p class="desc">广西AI+养老平台品牌视觉规范 · 桂地颐养 · 智慧养老 · 温润适老</p>
+</div>
+<svg class="bg" viewBox="0 0 1200 140" preserveAspectRatio="none">
+<path d="M0,140 L0,80 Q100,60 200,70 T400,65 Q500,55 600,68 T800,60 Q900,50 1000,62 T1200,55 L1200,140Z" fill="#E8843C"/>
+<path d="M0,140 L0,100 Q120,88 240,92 T480,87 Q600,80 720,90 T960,84 Q1080,78 1200,86 L1200,140Z" fill="#3A6B8C" opacity=".4"/>
+</svg>
+</div>
+
+<!-- §00 品牌架构 -->
+<section class="sec" id="s0" style="background:linear-gradient(180deg,var(--n50),var(--n0));border-bottom:2px solid var(--o200)">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">00</div>
+<div><div class="sec-title">品牌架构</div><div class="sec-desc">统一品牌「桂颐智养」· 多端协同 · 一体多面</div></div>
+</div>
+
+<!-- 品牌释义 -->
+<div class="showcase" style="margin-bottom:24px;padding:40px;background:linear-gradient(135deg,var(--o50),var(--b100))">
+<div style="display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap">
+<div style="text-align:center">
+<svg width="100" height="100" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+<p style="font-family:var(--serif);font-size:32px;font-weight:700;color:var(--o700);letter-spacing:6px;margin-top:12px">桂颐智养</p>
+<p style="font-size:13px;color:var(--n500);letter-spacing:3px;margin-top:4px">GUI YI ZHI YANG</p>
+</div>
+<div style="max-width:480px">
+<table>
+<tbody>
+<tr><td style="width:60px;font-weight:700;color:var(--o600);font-size:18px">桂</td><td>广西之桂 — 八桂大地，地域根基</td></tr>
+<tr><td style="font-weight:700;color:var(--o600);font-size:18px">颐</td><td>颐养天年 — 尊老敬长，安享晚年</td></tr>
+<tr><td style="font-weight:700;color:var(--o600);font-size:18px">智</td><td>智慧AI — 人工智能，数据驱动</td></tr>
+<tr><td style="font-weight:700;color:var(--o600);font-size:18px">养</td><td>养老服务 — 全域照护，民生关怀</td></tr>
+</tbody>
+</table>
+<p style="margin-top:12px;font-size:13px;color:var(--n600)">品牌全称「桂颐智养」，寓意"<b style="color:var(--o600)">桂地颐养 · 智慧养老</b>"——以AI智慧赋能八桂养老事业，温润守护每一位长者。</p>
+</div>
+</div>
+</div>
+
+<!-- 多端定位 -->
+<h3 style="margin-bottom:20px;font-size:18px">多端品牌定位</h3>
+<div class="grid grid-3">
+<!-- 政务端 -->
+<div class="card" style="border-top:4px solid var(--b500)">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<div style="width:48px;height:48px;border-radius:var(--r-md);background:var(--b100);display:flex;align-items:center;justify-content:center">
+<svg width="30" height="30" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#3A6B8C" stroke-width="3"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#3A6B8C"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#7FA8C2"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#1E4A66"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#5A8BAA"/>
+<circle cx="0" cy="0" r="5" fill="#3A6B8C"/>
+</g>
+</svg>
+</div>
+<div>
+<h3 style="font-size:18px;color:var(--b700);letter-spacing:2px">政务端 · 桂颐</h3>
+<p style="font-size:11px;color:var(--n400)">G端 / B端 · 指挥中枢</p>
+</div>
+</div>
+<table>
+<tbody>
+<tr><td style="width:70px;font-weight:600;color:var(--b500)">载体</td><td>三连屏大屏 · 数据看板 · 政务报告</td></tr>
+<tr><td style="font-weight:600;color:var(--b500)">用户</td><td>政府监管、卫健民政、机构管理</td></tr>
+<tr><td style="font-weight:600;color:var(--b500)">主色</td><td>霁蓝 #3A6B8C + 暖橙点缀</td></tr>
+<tr><td style="font-weight:600;color:var(--b500)">气质</td><td>权威、专业、可信、数据驱动</td></tr>
+</tbody>
+</table>
+<p style="margin-top:10px;font-size:12px;color:var(--n600)">大屏指挥中枢以霁蓝为主色调，体现政务端的权威与专业，暖橙作为数据高亮与警示色。</p>
+</div>
+
+<!-- C端 -->
+<div class="card" style="border-top:4px solid var(--o500)">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<div style="width:48px;height:48px;border-radius:var(--r-md);background:var(--o50);display:flex;align-items:center;justify-content:center">
+<svg width="30" height="30" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="3"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+</div>
+<div>
+<h3 style="font-size:18px;color:var(--o700);letter-spacing:2px">民生端 · 桂小养</h3>
+<p style="font-size:11px;color:var(--n400)">C端 · 长者及家属</p>
+</div>
+</div>
+<table>
+<tbody>
+<tr><td style="width:70px;font-weight:600;color:var(--o600)">载体</td><td>APP · 小程序 · 智能音箱 · 社区屏</td></tr>
+<tr><td style="font-weight:600;color:var(--o600)">用户</td><td>长者、家属、社区服务人员</td></tr>
+<tr><td style="font-weight:600;color:var(--o600)">主色</td><td>暖橙 #E8843C（主品牌色）</td></tr>
+<tr><td style="font-weight:600;color:var(--o600)">气质</td><td>温暖、亲切、陪伴、适老友好</td></tr>
+</tbody>
+</table>
+<p style="margin-top:10px;font-size:12px;color:var(--n600)">C端产品以暖橙为主色调，传递温暖亲切的品牌感受，界面遵循适老化设计规范。</p>
+</div>
+
+<!-- 智能体 -->
+<div class="card" style="border-top:4px solid var(--g500)">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<div style="width:48px;height:48px;border-radius:var(--r-md);background:var(--g100);display:flex;align-items:center;justify-content:center">
+<svg width="30" height="30" viewBox="0 0 100 130">
+<circle cx="50" cy="45" r="32" fill="#F5CDAE"/>
+<path d="M22,38 Q24,20 50,18 Q76,20 78,38 Q74,28 50,26 Q26,28 22,38Z" fill="#E4E0D8"/>
+<circle cx="38" cy="44" r="3" fill="#3D3A36"/>
+<circle cx="62" cy="44" r="3" fill="#3D3A36"/>
+<path d="M40,54 Q50,60 60,54" fill="none" stroke="#A85420" stroke-width="2" stroke-linecap="round"/>
+<path d="M28,82 Q28,72 50,72 Q72,72 72,82 L72,115 Q72,120 67,120 L33,120 Q28,120 28,115Z" fill="#E8843C"/>
+</svg>
+</div>
+<div>
+<h3 style="font-size:18px;color:var(--g700);letter-spacing:2px">智能体</h3>
+<p style="font-size:11px;color:var(--n400)">桂小养 · AI拟人形象</p>
+</div>
+</div>
+<table>
+<tbody>
+<tr><td style="width:70px;font-weight:600;color:var(--g500)">载体</td><td>AI语音助手 · 智能客服 · 虚拟陪伴</td></tr>
+<tr><td style="font-weight:600;color:var(--g500)">用户</td><td>全端用户（长者交互入口）</td></tr>
+<tr><td style="font-weight:600;color:var(--g500)">角色</td><td>品牌拟人化IP · 情感连接</td></tr>
+<tr><td style="font-weight:600;color:var(--g500)">气质</td><td>亲和、灵动、可信赖</td></tr>
+</tbody>
+</table>
+<p style="margin-top:10px;font-size:12px;color:var(--n600)">「桂小养」为桂颐智养品牌的AI智能体拟人形象，是长者与AI系统之间的情感交互纽带。</p>
+</div>
+</div>
+
+<!-- 品牌关系图 -->
+<div class="showcase" style="margin-top:24px;padding:40px">
+<h3 style="text-align:center;margin-bottom:24px;font-size:18px">品牌架构关系</h3>
+<div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap">
+<div style="text-align:center">
+<div style="display:inline-block;padding:20px 36px;background:linear-gradient(135deg,var(--o500),var(--b500));border-radius:var(--r-lg);color:#fff;box-shadow:var(--sh-md)">
+<p style="font-family:var(--serif);font-size:22px;font-weight:700;letter-spacing:3px">桂颐智养</p>
+<p style="font-size:11px;opacity:.85;margin-top:4px">统一品牌 · 广西AI+养老平台</p>
+</div>
+</div>
+<div style="font-size:24px;color:var(--n300)">↓</div>
+<div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center">
+<div style="text-align:center;padding:16px 24px;background:var(--b100);border-radius:var(--r-md);border:2px solid var(--b300);min-width:140px">
+<svg width="32" height="32" viewBox="0 0 120 120" style="margin-bottom:8px">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#3A6B8C" stroke-width="3"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#3A6B8C"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#7FA8C2"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#1E4A66"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#5A8BAA"/><circle cx="0" cy="0" r="5" fill="#3A6B8C"/></g>
+</svg>
+<p style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--b700)">桂颐</p>
+<p style="font-size:10px;color:var(--n400);margin-top:1px">政务端子品牌</p>
+<p style="font-size:10px;color:var(--b500);margin-top:2px">大屏 · 看板 · 报告</p>
+</div>
+<div style="text-align:center;padding:16px 24px;background:var(--o50);border-radius:var(--r-md);border:2px solid var(--o300);min-width:140px">
+<svg width="32" height="32" viewBox="0 0 120 120" style="margin-bottom:8px">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="3"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60"/><circle cx="0" cy="0" r="5" fill="#E8843C"/></g>
+</svg>
+<p style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--o700)">桂小养</p>
+<p style="font-size:10px;color:var(--n400);margin-top:1px">民生端子品牌</p>
+<p style="font-size:10px;color:var(--o600);margin-top:2px">APP · 小程序 · 音箱</p>
+</div>
+<div style="text-align:center;padding:16px 24px;background:var(--g100);border-radius:var(--r-md);border:2px solid var(--g300);min-width:140px">
+<svg width="28" height="36" viewBox="0 0 100 130" style="margin-bottom:4px">
+<circle cx="50" cy="45" r="32" fill="#F5CDAE"/>
+<path d="M22,38 Q24,20 50,18 Q76,20 78,38 Q74,28 50,26 Q26,28 22,38Z" fill="#E4E0D8"/>
+<circle cx="38" cy="44" r="3" fill="#3D3A36"/>
+<circle cx="62" cy="44" r="3" fill="#3D3A36"/>
+<path d="M40,54 Q50,60 60,54" fill="none" stroke="#A85420" stroke-width="2" stroke-linecap="round"/>
+<path d="M28,82 Q28,72 50,72 Q72,72 72,82 L72,115 Q72,120 67,120 L33,120 Q28,120 28,115Z" fill="#6B9B7A"/>
+</svg>
+<p style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--g700)">桂小养</p>
+<p style="font-size:10px;color:var(--n400);margin-top:1px">智能体IP</p>
+<p style="font-size:10px;color:var(--g500);margin-top:2px">AI陪伴 · 语音助手</p>
+</div>
+</div>
+</div>
+<div class="note" style="margin-top:24px"><b>品牌架构策略：</b>「桂颐智养」为统一品牌名，下设两个子品牌——政务端子品牌「<b style="color:var(--b500)">桂颐</b>」（霁蓝，面向政府与机构）、民生端与智能体子品牌「<b style="color:var(--o600)">桂小养</b>」（暖橙，面向长者与家属）。同一套视觉基因（桂花标志+广西文化色彩体系），以子品牌名与主色切换实现端际区分。三端数据互通、服务协同，构成"<b>桂颐政务大脑 + 桂小养民生触手 + 智能陪伴</b>"的完整闭环。</div>
+</div>
+</div>
+</section>
+
+<!-- §01 标志设计 -->
+<section class="sec" id="s1">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">01</div>
+<div><div class="sec-title">标志设计</div><div class="sec-desc">桂花四瓣 + 绣球圆廓 + 智慧水纹，三意合一</div></div>
+</div>
+<div class="grid grid-2">
+<div class="showcase" style="padding:60px">
+<svg width="200" height="200" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+<path d="M20,95 Q35,88 50,92 T80,90 T100,93" fill="none" stroke="#3A6B8C" stroke-width="1.5" opacity=".4"/>
+<path d="M25,102 Q40,96 55,99 T85,97 T100,100" fill="none" stroke="#3A6B8C" stroke-width="1" opacity=".25"/>
+</svg>
+<p style="margin-top:20px;font-size:14px;color:var(--n500)">标准彩色标志</p>
+</div>
+<div class="card">
+<h3>设计释义</h3>
+<table>
+<tbody>
+<tr><td style="width:80px;font-weight:600;color:var(--o600)">桂花</td><td>四瓣桂花造型，广西"桂"字之源，象征长寿与高洁。四瓣分别寓意<b>佑·利·圆·满</b>。</td></tr>
+<tr><td style="font-weight:600;color:var(--o600)">绣球</td><td>外圆廓取自广西绣球，寓意圆满团圆，亦为数据汇聚、AI 智联之象。</td></tr>
+<tr><td style="font-weight:600;color:var(--b500)">水纹</td><td>底部水波纹呼应广西漓江山水，亦象征智慧如水、润物无声的服务理念。</td></tr>
+<tr><td style="font-weight:600;color:var(--o600)">暖橙</td><td>主色温润暖橙，传递关怀温度，低饱和适老，视觉柔和舒适。</td></tr>
+</tbody>
+</table>
+<div class="note">标志以"桂花心·绣球廓·漓江纹"三意合一，兼具地域文化辨识度与适老视觉友好性。整体造型圆润，无锐角，符合长者审美偏好。</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- §02 标志变体 -->
+<section class="sec" id="s2" style="background:var(--n50)">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">02</div>
+<div><div class="sec-title">标志变体</div><div class="sec-desc">彩色 / 单色 / 反白 / 线条 四种标准形态</div></div>
+</div>
+<div class="grid grid-4">
+<div class="showcase" style="padding:32px 16px">
+<svg width="100" height="100" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+<path d="M20,95 Q35,88 50,92 T80,90 T100,93" fill="none" stroke="#3A6B8C" stroke-width="1.5" opacity=".4"/>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--n500)">标准彩色</p>
+</div>
+<div class="showcase" style="padding:32px 16px">
+<svg width="100" height="100" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#A85420" stroke-width="2.5"/>
+<g transform="translate(60,52)" fill="#A85420">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z"/>
+<circle cx="0" cy="0" r="5"/>
+</g>
+<path d="M20,95 Q35,88 50,92 T80,90 T100,93" fill="none" stroke="#A85420" stroke-width="1.5" opacity=".5"/>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--n500)">单色标志</p>
+</div>
+<div class="showcase dark" style="padding:32px 16px">
+<svg width="100" height="100" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#FAF8F5" stroke-width="2.5"/>
+<g transform="translate(60,52)" fill="#FAF8F5">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z"/>
+<circle cx="0" cy="0" r="5"/>
+</g>
+<path d="M20,95 Q35,88 50,92 T80,90 T100,93" fill="none" stroke="#FAF8F5" stroke-width="1.5" opacity=".5"/>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--n400)">反白标志</p>
+</div>
+<div class="showcase" style="padding:32px 16px">
+<svg width="100" height="100" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#3D3A36" stroke-width="1.5"/>
+<g transform="translate(60,52)" fill="none" stroke="#3D3A36" stroke-width="1.5">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z"/>
+<circle cx="0" cy="0" r="5"/>
+</g>
+<path d="M20,95 Q35,88 50,92 T80,90 T100,93" fill="none" stroke="#3D3A36" stroke-width="1" opacity=".4"/>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--n500)">线条标志</p>
+</div>
+</div>
+<table>
+<thead><tr><th>变体</th><th>适用场景</th><th>使用规范</th></tr></thead>
+<tbody>
+<tr><td>标准彩色</td><td>白色/浅色背景、品牌主视觉、官网首页</td><td>首选形态，分辨率≥300dpi</td></tr>
+<tr><td>单色标志</td><td>单色印刷、文档水印、传真</td><td>使用暖橙700 #A85420</td></tr>
+<tr><td>反白标志</td><td>深色背景、暖橙底色、深色大屏</td><td>背景对比度≥4.5:1</td></tr>
+<tr><td>线条标志</td><td>烫金/雕刻/小尺寸辅助应用</td><td>线宽≥0.75pt，尺寸≥24px</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- §03 制图规范 -->
+<section class="sec" id="s3">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">03</div>
+<div><div class="sec-title">制图规范</div><div class="sec-desc">网格制图与比例关系，确保标志精确还原</div></div>
+</div>
+<div class="grid grid-2">
+<div class="showcase" style="padding:40px">
+<!-- 网格制图 SVG -->
+<svg width="320" height="320" viewBox="0 0 320 320">
+<!-- 网格 -->
+<g stroke="#E4E0D8" stroke-width="0.5" opacity=".6">
+<line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
+<line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
+<line x1="0" y1="200" x2="320" y2="200"/><line x1="0" y1="240" x2="320" y2="240"/>
+<line x1="0" y1="280" x2="320" y2="280"/>
+<line x1="40" y1="0" x2="40" y2="320"/><line x1="80" y1="0" x2="80" y2="320"/>
+<line x1="120" y1="0" x2="120" y2="320"/><line x1="160" y1="0" x2="160" y2="320"/>
+<line x1="200" y1="0" x2="200" y2="320"/><line x1="240" y1="0" x2="240" y2="320"/>
+<line x1="280" y1="0" x2="280" y2="320"/>
+</g>
+<!-- 辅助线 -->
+<g stroke="#3A6B8C" stroke-width="0.8" opacity=".5" stroke-dasharray="4,3">
+<line x1="160" y1="0" x2="160" y2="320"/>
+<line x1="0" y1="160" x2="320" y2="160"/>
+<circle cx="160" cy="160" r="140" fill="none"/>
+<circle cx="160" cy="160" r="72" fill="none"/>
+</g>
+<!-- 标志 -->
+<g transform="translate(160,160) scale(2.6)">
+<circle cx="0" cy="0" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(0,-8)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+<path d="M-40,35 Q-25,28 -10,32 T20,30 T40,33" fill="none" stroke="#3A6B8C" stroke-width="1.5" opacity=".4"/>
+</g>
+<!-- 标注 -->
+<text x="160" y="14" text-anchor="middle" font-size="9" fill="#8A8278" font-family="sans-serif">a</text>
+<line x1="156" y1="18" x2="164" y2="18" stroke="#8A8278" stroke-width="0.5"/>
+<text x="300" y="164" text-anchor="middle" font-size="9" fill="#8A8278" font-family="sans-serif">a</text>
+<line x1="296" y1="158" x2="296" y2="166" stroke="#8A8278" stroke-width="0.5"/>
+</svg>
+<p style="margin-top:16px;font-size:12px;color:var(--n500)">网格制图 · 基准单位 a = 标志半径</p>
+</div>
+<div class="card">
+<h3>比例关系</h3>
+<table>
+<tbody>
+<tr><td>外圆半径</td><td><b>1a</b>（基准单位）</td></tr>
+<tr><td>花瓣半径</td><td>0.52a</td></tr>
+<tr><td>中心圆点</td><td>0.09a</td></tr>
+<tr><td>外圆线宽</td><td>0.046a</td></tr>
+<tr><td>水纹距底</td><td>0.3a</td></tr>
+<tr><td>网格模数</td><td>0.125a（8×8格）</td></tr>
+</tbody>
+</table>
+<h3 style="margin-top:24px;font-size:14px">最小使用尺寸</h3>
+<table>
+<thead><tr><th>应用场景</th><th>最小尺寸</th></tr></thead>
+<tbody>
+<tr><td>数字屏幕</td><td>32 × 32 px</td></tr>
+<tr><td>印刷品</td><td>15 × 15 mm</td></tr>
+<tr><td>大屏展示</td><td>80 × 80 px</td></tr>
+<tr><td>favicon</td><td>16 × 16 px（仅花瓣简化）</td></tr>
+</tbody>
+</table>
+<div class="note">小于最小尺寸时，可使用"花瓣简化版"——仅保留四瓣桂花造型，去掉水纹与外圆。</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- §04 安全空间 -->
+<section class="sec" id="s4" style="background:var(--n50)">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">04</div>
+<div><div class="sec-title">安全空间</div><div class="sec-desc">标志四周预留净空，确保品牌识别度</div></div>
+</div>
+<div class="grid grid-2">
+<div class="showcase" style="padding:40px">
+<!-- 安全空间示意 -->
+<svg width="280" height="280" viewBox="0 0 280 280">
+<!-- 安全空间虚线框 -->
+<rect x="20" y="20" width="240" height="240" fill="none" stroke="#E8843C" stroke-width="1" stroke-dasharray="6,4" opacity=".5"/>
+<!-- 标志 -->
+<g transform="translate(140,140) scale(1.8)">
+<circle cx="0" cy="0" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(0,-8)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+<path d="M-40,35 Q-25,28 -10,32 T20,30 T40,33" fill="none" stroke="#3A6B8C" stroke-width="1.5" opacity=".4"/>
+</g>
+<!-- 标注 X -->
+<text x="140" y="14" text-anchor="middle" font-size="11" fill="#E8843C" font-weight="600">X</text>
+<line x1="20" y1="20" x2="20" y2="260" stroke="#E8843C" stroke-width="0.5"/>
+<line x1="260" y1="20" x2="260" y2="260" stroke="#E8843C" stroke-width="0.5"/>
+<text x="10" y="146" font-size="10" fill="#8A8278">X</text>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--n500)">安全空间 = 标志高度的 1/4（X）</p>
+</div>
+<div class="card">
+<h3>安全空间规范</h3>
+<p style="margin-bottom:16px">标志四周必须保持不小于 <b style="color:var(--o600)">X</b> 的净空区域，X = 标志外圆半径的 1/4。在此区域内不得出现任何文字、图形、图片或其他视觉元素。</p>
+<table>
+<thead><tr><th>标志尺寸</th><th>安全空间 X</th><th>应用场景</th></tr></thead>
+<tbody>
+<tr><td>40px</td><td>10px</td><td>导航栏、页脚</td></tr>
+<tr><td>80px</td><td>20px</td><td>卡片、弹窗</td></tr>
+<tr><td>120px</td><td>30px</td><td>品牌主视觉</td></tr>
+<tr><td>200px+</td><td>50px+</td><td>海报、大屏</td></tr>
+</tbody>
+</table>
+<div class="note">在按钮、标签等紧凑场景中，安全空间不得低于 8px。若空间不足，应缩小标志而非压缩安全空间。</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- §05 色彩应用 -->
+<section class="sec" id="s5">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">05</div>
+<div><div class="sec-title">色彩应用</div><div class="sec-desc">品牌标准色在不同场景中的使用比例与搭配</div></div>
+</div>
+<h3 style="margin-bottom:16px;font-size:18px">标准色</h3>
+<div class="grid grid-4">
+<div style="text-align:center">
+<div style="width:100%;height:80px;border-radius:var(--r-md);background:#E8843C;box-shadow:var(--sh-sm)"></div>
+<p style="margin-top:8px;font-size:13px;font-weight:600;color:var(--o600)">温润暖橙</p>
+<p style="font-size:11px;color:var(--n400)">#E8843C · 主色 60%</p>
+</div>
+<div style="text-align:center">
+<div style="width:100%;height:80px;border-radius:var(--r-md);background:#3A6B8C;box-shadow:var(--sh-sm)"></div>
+<p style="margin-top:8px;font-size:13px;font-weight:600;color:var(--b500)">绣球霁蓝</p>
+<p style="font-size:11px;color:var(--n400)">#3A6B8C · 辅色 20%</p>
+</div>
+<div style="text-align:center">
+<div style="width:100%;height:80px;border-radius:var(--r-md);background:#6B9B7A;box-shadow:var(--sh-sm)"></div>
+<p style="margin-top:8px;font-size:13px;font-weight:600;color:var(--g500)">青竹浅绿</p>
+<p style="font-size:11px;color:var(--n400)">#6B9B7A · 辅色 10%</p>
+</div>
+<div style="text-align:center">
+<div style="width:100%;height:80px;border-radius:var(--r-md);background:#D4A537;box-shadow:var(--sh-sm)"></div>
+<p style="margin-top:8px;font-size:13px;font-weight:600;color:var(--j700)">稻穗暖金</p>
+<p style="font-size:11px;color:var(--n400)">#D4A537 · 点缀 10%</p>
+</div>
+</div>
+<h3 style="margin:32px 0 16px;font-size:18px">应用比例</h3>
+<div class="showcase" style="padding:32px">
+<div style="display:flex;height:40px;border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--sh-sm)">
+<div style="flex:60;background:#E8843C;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600">60% 暖橙</div>
+<div style="flex:20;background:#3A6B8C;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600">20% 霁蓝</div>
+<div style="flex:10;background:#6B9B7A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600">10%</div>
+<div style="flex:10;background:#D4A537;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600">10%</div>
+</div>
+<p style="margin-top:16px;font-size:13px;color:var(--n500)">主色暖橙统领界面基调，霁蓝用于功能区分与信息层，浅绿与暖金作为点缀色用于图标、徽章、强调元素。整体保持低饱和暖调，避免高对比刺激。</p>
+</div>
+<h3 style="margin:32px 0 16px;font-size:18px">渐变色</h3>
+<div class="grid grid-3">
+<div class="showcase" style="padding:32px 16px;background:linear-gradient(135deg,#E8843C,#D06E2A)">
+<p style="color:#fff;font-size:13px;font-weight:600">暖橙渐变</p>
+<p style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px">#E8843C → #D06E2A</p>
+</div>
+<div class="showcase" style="padding:32px 16px;background:linear-gradient(135deg,#3A6B8C,#1E4A66)">
+<p style="color:#fff;font-size:13px;font-weight:600">霁蓝渐变</p>
+<p style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px">#3A6B8C → #1E4A66</p>
+</div>
+<div class="showcase" style="padding:32px 16px;background:linear-gradient(135deg,#E8843C,#D4A537)">
+<p style="color:#fff;font-size:13px;font-weight:600">暖阳渐变</p>
+<p style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px">#E8843C → #D4A537</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- §06 品牌组合 -->
+<section class="sec" id="s6" style="background:var(--n50)">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">06</div>
+<div><div class="sec-title">品牌组合</div><div class="sec-desc">标志 + 标准字 + 标语的系统化组合方式</div></div>
+</div>
+<h3 style="margin-bottom:20px;font-size:18px">标准字设计</h3>
+<div class="showcase" style="margin-bottom:20px;padding:36px;text-align:center;background:linear-gradient(135deg,var(--o50),var(--b100))">
+<p style="font-family:var(--serif);font-size:56px;font-weight:700;color:var(--o700);letter-spacing:10px">桂颐智养</p>
+<p style="margin-top:8px;font-family:var(--sans);font-size:14px;color:var(--n500);letter-spacing:5px">GUI YI ZHI YANG</p>
+<p style="margin-top:4px;font-size:11px;color:var(--n400)">主品牌标准字 · Noto Serif SC 700 · 统一品牌名</p>
+</div>
+
+<h4 style="margin-bottom:16px;font-size:15px;color:var(--n600)">子品牌标准字</h4>
+<div class="grid grid-2">
+<div class="showcase" style="padding:40px;border-top:4px solid var(--b500);text-align:center">
+<p style="font-family:var(--serif);font-size:44px;font-weight:700;color:var(--b700);letter-spacing:8px">桂颐</p>
+<p style="margin-top:8px;font-family:var(--sans);font-size:13px;color:var(--b500);letter-spacing:4px">GUI YI</p>
+<p style="margin-top:4px;font-size:11px;color:var(--n400)">政务端子品牌 · 霁蓝版 · Noto Serif SC 700</p>
+</div>
+<div class="showcase" style="padding:40px;border-top:4px solid var(--o500);text-align:center">
+<p style="font-family:var(--serif);font-size:44px;font-weight:700;color:var(--o700);letter-spacing:8px">桂小养</p>
+<p style="margin-top:8px;font-family:var(--sans);font-size:13px;color:var(--o600);letter-spacing:4px">GUI XIAO YANG</p>
+<p style="margin-top:4px;font-size:11px;color:var(--n400)">民生端/智能体子品牌 · 暖橙版 · Noto Serif SC 700</p>
+</div>
+</div>
+
+<h3 style="margin:32px 0 20px;font-size:18px">组合方式</h3>
+<div class="grid grid-3">
+<!-- 竖向组合 -->
+<div class="showcase" style="padding:32px 16px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+<div style="text-align:center">
+<p style="font-family:var(--serif);font-size:20px;font-weight:700;color:var(--o700);letter-spacing:4px">桂颐智养</p>
+<p style="font-size:11px;color:var(--n400);margin-top:4px">广西AI+养老平台</p>
+</div>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n500);text-align:center">竖向组合（首选）</p>
+</div>
+<!-- 横向组合 -->
+<div class="showcase" style="padding:32px 16px">
+<div style="display:flex;align-items:center;gap:14px;justify-content:center">
+<svg width="44" height="44" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="3"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+<p style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--o700);letter-spacing:3px">桂颐智养</p>
+</div>
+<p style="margin-top:20px;font-size:12px;color:var(--n500);text-align:center">横向组合</p>
+</div>
+<!-- 含标语组合 -->
+<div class="showcase" style="padding:32px 16px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+<svg width="52" height="52" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+<p style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--o700);letter-spacing:3px">桂颐智养</p>
+<p style="font-family:var(--serif);font-size:13px;color:var(--o500);letter-spacing:6px">温润适老 · 智慧相伴</p>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n500);text-align:center">含标语组合</p>
+</div>
+</div>
+
+<!-- 政务端蓝版组合 -->
+<h3 style="margin:32px 0 16px;font-size:16px;color:var(--b700)">政务端 · 桂颐（霁蓝版组合）</h3>
+<div class="grid grid-2">
+<div class="showcase" style="padding:24px 16px;background:var(--b100)">
+<div style="display:flex;align-items:center;gap:14px;justify-content:center">
+<svg width="44" height="44" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#3A6B8C" stroke-width="3"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#3A6B8C"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#7FA8C2"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#1E4A66"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#5A8BAA"/>
+<circle cx="0" cy="0" r="5" fill="#3A6B8C"/>
+</g>
+</svg>
+<p style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--b700);letter-spacing:3px">桂颐智养</p>
+</div>
+<p style="margin-top:16px;font-size:11px;color:var(--b500);text-align:center">大屏 / 政务报告 / 数据看板</p>
+</div>
+<div class="showcase dark" style="padding:24px 16px">
+<div style="display:flex;align-items:center;gap:14px;justify-content:center">
+<svg width="44" height="44" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#7FA8C2" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#7FA8C2" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#A0BFD0" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#5A8BAA" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#8AABBF" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#7FA8C2"/>
+</g>
+</svg>
+<p style="font-family:var(--serif);font-size:18px;font-weight:700;color:#7FA8C2;letter-spacing:3px">桂颐智养</p>
+</div>
+<p style="margin-top:16px;font-size:11px;color:rgba(127,168,194,.7);text-align:center">深色底反白版（大屏专用）</p>
+</div>
+</div>
+
+<div class="note" style="margin-top:24px"><b>品牌标语：</b>主品牌「桂颐智养 · 温润适老 · 智慧相伴」贯穿全端。政务端子品牌「桂颐」使用标语「<b style="color:var(--b500)">颐养广西 · 智治全域</b>」；民生端子品牌「桂小养」使用标语「<b style="color:var(--o600)">温润适老 · 智慧相伴</b>」。主品牌以暖橙为主色调，政务端以霁蓝专用色调，同一标志基因，以子品牌名与色彩切换实现端际区分。</div>
+</div>
+</section>
+
+<!-- §07 错误用法 -->
+<section class="sec" id="s7">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">07</div>
+<div><div class="sec-title">错误用法</div><div class="sec-desc">禁止以下不规范使用，维护品牌一致性</div></div>
+</div>
+<div class="grid grid-3">
+<div class="showcase dont" style="padding:32px 16px;border:2px solid #FAEAE8">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--er);font-weight:600">禁止拉伸变形</p>
+</div>
+<div class="showcase dont" style="padding:32px 16px;border:2px solid #FAEAE8">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<g transform="rotate(30 60 60)">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--er);font-weight:600">禁止旋转倾斜</p>
+</div>
+<div class="showcase dont" style="padding:32px 16px;border:2px solid #FAEAE8">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#D4604E" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#D4604E"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#D4604E"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D4604E"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#D4604E"/>
+<circle cx="0" cy="0" r="5" fill="#D4604E"/>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--er);font-weight:600">禁止改用非标准色</p>
+</div>
+<div class="showcase dont" style="padding:32px 16px;border:2px solid #FAEAE8">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<rect x="54" y="46" width="12" height="12" fill="#E8843C"/>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--er);font-weight:600">禁止拆分元素</p>
+</div>
+<div class="showcase dont" style="padding:32px 16px;border:2px solid #FAEAE8;background:#F5CDAE">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--er);font-weight:600">禁止低对比背景</p>
+</div>
+<div class="showcase dont" style="padding:32px 16px;border:2px solid #FAEAE8">
+<svg width="64" height="64" viewBox="0 0 120 120" style="filter:drop-shadow(4px 4px 0 #3A6B8C)">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--er);font-weight:600">禁止添加投影特效</p>
+</div>
+</div>
+<div class="grid grid-3" style="margin-top:20px">
+<div class="showcase do-mark" style="padding:32px 16px;border:2px solid #E8F5EC">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/>
+<circle cx="0" cy="0" r="5" fill="#E8843C"/>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--su);font-weight:600">正确使用</p>
+</div>
+<div class="showcase do-mark" style="padding:32px 16px;border:2px solid #E8F5EC">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#FAF8F5" stroke-width="2.5"/>
+<g transform="translate(60,52)" fill="#FAF8F5">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z"/>
+<circle cx="0" cy="0" r="5"/>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--su);font-weight:600">深色底反白正确</p>
+</div>
+<div class="showcase do-mark" style="padding:32px 16px;border:2px solid #E8F5EC">
+<svg width="64" height="64" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#A85420" stroke-width="2.5"/>
+<g transform="translate(60,52)" fill="#A85420">
+<path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z"/>
+<path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z"/>
+<path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z"/>
+<path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z"/>
+<circle cx="0" cy="0" r="5"/>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:12px;color:var(--su);font-weight:600">单色印刷正确</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- §08 纹样系统 -->
+<section class="sec" id="s8" style="background:var(--n50)">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">08</div>
+<div><div class="sec-title">品牌纹样</div><div class="sec-desc">壮锦回纹、桂花暗纹、水波底纹三大辅助图形</div></div>
+</div>
+<div class="grid grid-3">
+<div class="card">
+<h3>壮锦回纹</h3>
+<div style="height:100px;border-radius:var(--r-md);background:#FAF8F5;border:1px solid var(--n100);overflow:hidden;display:flex;align-items:center;justify-content:center">
+<svg width="240" height="80" viewBox="0 0 240 80">
+<defs><pattern id="zj" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+<path d="M5,5 L15,5 L15,15 L25,15 L25,5 L35,5 L35,25 L25,25 L25,35 L15,35 L15,25 L5,25 Z" fill="none" stroke="#E8843C" stroke-width="1" opacity=".3"/>
+</pattern></defs>
+<rect width="240" height="80" fill="url(#zj)"/>
+</svg>
+</div>
+<p style="margin-top:12px;font-size:13px">提取广西壮锦几何回纹，以低透明度（15%-30%）作为卡片边框、分割线、页眉底纹。适用于正式文档、大屏边框。</p>
+</div>
+<div class="card">
+<h3>桂花暗纹</h3>
+<div style="height:100px;border-radius:var(--r-md);background:#FAF8F5;border:1px solid var(--n100);overflow:hidden;display:flex;align-items:center;justify-content:center">
+<svg width="240" height="80" viewBox="0 0 240 80">
+<defs><pattern id="gh" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+<g opacity=".12" fill="#E8843C" transform="translate(25,25)">
+<path d="M0,-12 C3,-8 3,-3 0,0 C-3,-3 -3,-8 0,-12Z"/>
+<path d="M12,0 C8,-3 3,-3 0,0 C3,3 8,3 12,0Z"/>
+<path d="M0,12 C-3,8 -3,3 0,0 C3,3 3,8 0,12Z"/>
+<path d="M-12,0 C-8,3 -3,3 0,0 C-3,-3 -8,-3 -12,0Z"/>
+</g>
+</pattern></defs>
+<rect width="240" height="80" fill="url(#gh)"/>
+</svg>
+</div>
+<p style="margin-top:12px;font-size:13px">四瓣桂花散点排列，透明度≤12%，作为大面积背景暗纹。适用于封面、登录页、品牌主视觉底图。</p>
+</div>
+<div class="card">
+<h3>水波底纹</h3>
+<div style="height:100px;border-radius:var(--r-md);background:#FAF8F5;border:1px solid var(--n100);overflow:hidden;display:flex;align-items:center;justify-content:center">
+<svg width="240" height="80" viewBox="0 0 240 80">
+<defs><pattern id="sb" x="0" y="0" width="60" height="30" patternUnits="userSpaceOnUse">
+<path d="M0,15 Q15,5 30,15 T60,15" fill="none" stroke="#3A6B8C" stroke-width="1" opacity=".15"/>
+<path d="M0,25 Q15,15 30,25 T60,25" fill="none" stroke="#3A6B8C" stroke-width="0.8" opacity=".1"/>
+</pattern></defs>
+<rect width="240" height="80" fill="url(#sb)"/>
+</svg>
+</div>
+<p style="margin-top:12px;font-size:13px">取自广西漓江水波，线条流畅写意，透明度10%-15%。适用于页脚、数据卡片底纹、大屏背景。</p>
+</div>
+</div>
+<h3 style="margin:32px 0 16px;font-size:18px">纹样应用原则</h3>
+<div class="note"><b>5%原则：</b>所有文化纹样在界面中的视觉占比不得超过5%。纹样是"底色"而非"装饰画"，应低透明度、大面积、弱存在感地融入背景，绝不干扰内容阅读与功能操作。</div>
+</div>
+</section>
+
+<!-- §09 各端应用展示 -->
+<section class="sec" id="s9">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">09</div>
+<div><div class="sec-title">各端应用展示</div><div class="sec-desc">桂颐智养品牌在政务端、民生端、智能体全线载体的实际应用</div></div>
+</div>
+
+<h3 style="margin-bottom:16px;font-size:16px;color:var(--b700)">▎政务端 · G端/B端</h3>
+<div class="grid grid-2" style="margin-bottom:32px">
+<!-- 名片 -->
+<div class="showcase" style="padding:32px;background:var(--n50)">
+<div style="background:#fff;width:320px;height:190px;border-radius:8px;box-shadow:var(--sh-md);padding:24px;position:relative;overflow:hidden;margin:0 auto">
+<div style="position:absolute;top:0;right:0;width:80px;height:80px;background:linear-gradient(135deg,var(--b100),transparent);border-radius:0 8px 0 80px"></div>
+<svg width="36" height="36" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#3A6B8C" stroke-width="3"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#3A6B8C"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#7FA8C2"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#1E4A66"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#5A8BAA"/><circle cx="0" cy="0" r="5" fill="#3A6B8C"/></g>
+</svg>
+<p style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--b700);margin-top:16px;letter-spacing:4px">桂颐</p>
+<p style="font-size:11px;color:var(--n400);margin-top:4px">防城港市AI养老指挥中枢</p>
+<div style="position:absolute;bottom:20px;left:24px;right:24px;border-top:1px solid var(--n100);padding-top:12px">
+<p style="font-size:11px;color:var(--n500)">桂颐智养 · 政务端</p>
+<p style="font-size:10px;color:var(--n400);margin-top:2px">Tel: 0770-XXX-XXXX</p>
+</div>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n500);text-align:center">政务名片（霁蓝版）</p>
+</div>
+<!-- 文档封面 -->
+<div class="showcase" style="padding:32px;background:var(--n50)">
+<div style="background:#fff;width:240px;height:320px;border-radius:8px;box-shadow:var(--sh-md);padding:32px 24px;position:relative;overflow:hidden;margin:0 auto">
+<div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(180deg,transparent,var(--b100))"></div>
+<div style="text-align:center;margin-top:20px">
+<svg width="48" height="48" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#3A6B8C" stroke-width="2.5"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#3A6B8C" opacity=".9"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#7FA8C2" opacity=".85"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#1E4A66" opacity=".9"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#5A8BAA" opacity=".85"/><circle cx="0" cy="0" r="5" fill="#3A6B8C"/></g>
+</svg>
+</div>
+<p style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--b700);text-align:center;margin-top:20px;letter-spacing:3px">桂颐</p>
+<div style="width:40px;height:2px;background:var(--b300);margin:16px auto"></div>
+<p style="font-size:11px;color:var(--n600);text-align:center;line-height:1.8">广西AI+养老平台<br>可行性研究报告</p>
+<p style="position:absolute;bottom:20px;left:0;right:0;font-size:9px;color:var(--n400);text-align:center">2026年6月 · 防城港</p>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n500);text-align:center">政务文档封面</p>
+</div>
+</div>
+
+<!-- 大屏指挥中枢 -->
+<h3 style="margin-bottom:16px;font-size:16px;color:var(--b700)">▎大屏端 · 三连屏指挥中枢</h3>
+<div class="showcase dark" style="margin-bottom:32px;padding:24px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:0 8px">
+<div style="display:flex;align-items:center;gap:12px">
+<svg width="40" height="40" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#7FA8C2" stroke-width="2.5"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#7FA8C2" opacity=".9"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#A0BFD0" opacity=".85"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#5A8BAA" opacity=".9"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#8AABBF" opacity=".85"/><circle cx="0" cy="0" r="5" fill="#7FA8C2"/></g>
+</svg>
+<div>
+<p style="font-family:var(--serif);font-size:18px;font-weight:700;color:#7FA8C2;letter-spacing:3px">桂颐</p>
+<p style="font-size:10px;color:rgba(127,168,194,.6)">防城港市AI养老指挥中枢</p>
+</div>
+</div>
+<p style="font-size:10px;color:rgba(127,168,194,.4)">2026-06-23 22:00 · 实时</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+<!-- 左屏：全域概览 -->
+<div style="background:rgba(127,168,194,.08);border:1px solid rgba(127,168,194,.15);border-radius:8px;padding:16px;min-height:200px">
+<p style="font-size:11px;color:#7FA8C2;font-weight:600;margin-bottom:12px">全域养老概览</p>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div><p style="font-size:24px;color:#F0B487;font-weight:700">12,847</p><p style="font-size:9px;color:rgba(127,168,194,.5)">在册长者</p></div>
+<div><p style="font-size:18px;color:#E6C572;font-weight:600">326</p><p style="font-size:9px;color:rgba(127,168,194,.5)">今日服务</p></div>
+<div><p style="font-size:18px;color:#A0C4AB;font-weight:600">98.2%</p><p style="font-size:9px;color:rgba(127,168,194,.5)">满意度</p></div>
+</div>
+</div>
+<!-- 中屏：地图+预警 -->
+<div style="background:rgba(127,168,194,.08);border:1px solid rgba(127,168,194,.15);border-radius:8px;padding:16px;min-height:200px">
+<p style="font-size:11px;color:#7FA8C2;font-weight:600;margin-bottom:12px">区域热力图</p>
+<svg width="100%" height="130" viewBox="0 0 160 130">
+<path d="M20,30 Q40,15 80,20 Q120,15 140,35 Q150,60 135,90 Q100,115 60,110 Q25,100 15,70 Z" fill="rgba(127,168,194,.1)" stroke="rgba(127,168,194,.3)" stroke-width="1"/>
+<circle cx="50" cy="50" r="12" fill="#E8843C" opacity=".25"/>
+<circle cx="50" cy="50" r="6" fill="#E8843C" opacity=".5"/>
+<circle cx="95" cy="65" r="10" fill="#E6C572" opacity=".25"/>
+<circle cx="95" cy="65" r="5" fill="#E6C572" opacity=".5"/>
+<circle cx="70" cy="85" r="8" fill="#6B9B7A" opacity=".25"/>
+<circle cx="70" cy="85" r="4" fill="#6B9B7A" opacity=".5"/>
+<text x="46" y="54" font-size="7" fill="#F0B487">港口区</text>
+<text x="91" y="69" font-size="7" fill="#E6C572">防城区</text>
+<text x="66" y="89" font-size="7" fill="#A0C4AB">东兴市</text>
+</svg>
+<p style="font-size:9px;color:rgba(127,168,194,.4);margin-top:8px">● 预警 ● 关注 ● 正常</p>
+</div>
+<!-- 右屏：AI分析 -->
+<div style="background:rgba(127,168,194,.08);border:1px solid rgba(127,168,194,.15);border-radius:8px;padding:16px;min-height:200px">
+<p style="font-size:11px;color:#7FA8C2;font-weight:600;margin-bottom:12px">AI智能分析</p>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="background:rgba(232,132,60,.1);border-radius:6px;padding:8px 10px;border-left:2px solid #E8843C">
+<p style="font-size:9px;color:#F0B487;font-weight:600">健康预警</p>
+<p style="font-size:8px;color:rgba(240,180,135,.6);margin-top:2px">港口区3名长者血压异常</p>
+</div>
+<div style="background:rgba(212,165,55,.1);border-radius:6px;padding:8px 10px;border-left:2px solid #E6C572">
+<p style="font-size:9px;color:#E6C572;font-weight:600">服务提醒</p>
+<p style="font-size:8px;color:rgba(230,197,114,.6);margin-top:2px">防城区今日上门服务12项</p>
+</div>
+<div style="background:rgba(107,155,122,.1);border-radius:6px;padding:8px 10px;border-left:2px solid #6B9B7A">
+<p style="font-size:9px;color:#A0C4AB;font-weight:600">趋势预测</p>
+<p style="font-size:8px;color:rgba(160,196,171,.6);margin-top:2px">本周地贫筛查覆盖率↑3.2%</p>
+</div>
+</div>
+</div>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n400);text-align:center">三连屏大屏指挥中枢（霁蓝反白版）</p>
+</div>
+
+<h3 style="margin-bottom:16px;font-size:16px;color:var(--o700)">▎民生端 · C端产品</h3>
+<div class="grid grid-2" style="margin-bottom:32px">
+<!-- APP 启动页 -->
+<div class="showcase" style="padding:32px;background:var(--n50)">
+<div style="background:linear-gradient(135deg,var(--o50),var(--j100));width:180px;height:320px;border-radius:24px;box-shadow:var(--sh-md);padding:40px 20px;position:relative;overflow:hidden;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<svg width="72" height="72" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#E8843C" stroke-width="2.5"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#E8843C" opacity=".9"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="#F0B487" opacity=".85"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="#D06E2A" opacity=".9"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="#EB9B60" opacity=".85"/><circle cx="0" cy="0" r="5" fill="#E8843C"/></g>
+</svg>
+<p style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--o700);margin-top:20px;letter-spacing:4px">桂小养</p>
+<p style="font-size:10px;color:var(--n500);margin-top:8px">温润适老 · 智慧相伴</p>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n500);text-align:center">APP 启动页</p>
+</div>
+<!-- 小程序首页 -->
+<div class="showcase" style="padding:32px;background:var(--n50)">
+<div style="background:#fff;width:180px;height:320px;border-radius:24px;box-shadow:var(--sh-md);overflow:hidden;margin:0 auto;display:flex;flex-direction:column">
+<div style="background:linear-gradient(135deg,var(--o500),var(--o600));padding:20px 16px 16px;color:#fff">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+<svg width="24" height="24" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#fff" stroke-width="3"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#fff"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="rgba(255,255,255,.8)"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="rgba(255,255,255,.9)"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="rgba(255,255,255,.85)"/><circle cx="0" cy="0" r="5" fill="#fff"/></g>
+</svg>
+<p style="font-size:13px;font-weight:700;letter-spacing:2px">桂小养</p>
+</div>
+<p style="font-size:16px;font-weight:700">早上好，王爷爷</p>
+<p style="font-size:10px;opacity:.8;margin-top:2px">今日天气晴 26°C 适合散步</p>
+</div>
+<div style="padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1">
+<div style="background:var(--o50);border-radius:8px;padding:10px;text-align:center">
+<p style="font-size:18px">💊</p><p style="font-size:9px;color:var(--n600);margin-top:4px">用药提醒</p>
+</div>
+<div style="background:var(--g100);border-radius:8px;padding:10px;text-align:center">
+<p style="font-size:18px">❤️</p><p style="font-size:9px;color:var(--n600);margin-top:4px">健康监测</p>
+</div>
+<div style="background:var(--b100);border-radius:8px;padding:10px;text-align:center">
+<p style="font-size:18px">🚑</p><p style="font-size:9px;color:var(--n600);margin-top:4px">一键呼叫</p>
+</div>
+<div style="background:var(--j100);border-radius:8px;padding:10px;text-align:center">
+<p style="font-size:18px">🍚</p><p style="font-size:9px;color:var(--n600);margin-top:4px">助餐服务</p>
+</div>
+</div>
+<div style="padding:8px 12px;border-top:1px solid var(--n100);display:flex;justify-content:around">
+<p style="font-size:9px;color:var(--o500);font-weight:600;flex:1;text-align:center">首页</p>
+<p style="font-size:9px;color:var(--n400);flex:1;text-align:center">服务</p>
+<p style="font-size:9px;color:var(--n400);flex:1;text-align:center">我的</p>
+</div>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n500);text-align:center">小程序首页（适老版）</p>
+</div>
+</div>
+
+<h3 style="margin-bottom:16px;font-size:16px;color:var(--g700)">▎智能体 · 桂小养 AI交互</h3>
+<div class="grid grid-2" style="margin-bottom:32px">
+<!-- 智能音箱 -->
+<div class="showcase" style="padding:32px;background:var(--n50)">
+<div style="background:var(--n800);width:200px;height:280px;border-radius:20px;box-shadow:var(--sh-md);padding:24px 16px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden">
+<!-- 音箱顶部 -->
+<div style="width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,var(--o500),var(--o700));display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative">
+<div style="position:absolute;width:100%;height:100%;border-radius:50%;border:2px solid rgba(232,132,60,.3);animation:none"></div>
+<div style="position:absolute;width:130%;height:130%;border-radius:50%;border:1px solid rgba(232,132,60,.15)"></div>
+<svg width="50" height="50" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#fff" stroke-width="2.5"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#fff"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="rgba(255,255,255,.8)"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="rgba(255,255,255,.9)"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="rgba(255,255,255,.85)"/><circle cx="0" cy="0" r="5" fill="#fff"/></g>
+</svg>
+</div>
+<p style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--o300);letter-spacing:3px">桂小养</p>
+<p style="font-size:10px;color:rgba(240,180,135,.5);margin-top:4px">"您好，我在听..."</p>
+<!-- 声波动画 -->
+<div style="display:flex;gap:3px;margin-top:12px;align-items:center">
+<div style="width:2px;height:8px;background:#F0B487;border-radius:1px;opacity:.4"></div>
+<div style="width:2px;height:16px;background:#F0B487;border-radius:1px;opacity:.6"></div>
+<div style="width:2px;height:24px;background:#F0B487;border-radius:1px;opacity:.8"></div>
+<div style="width:2px;height:16px;background:#F0B487;border-radius:1px;opacity:.6"></div>
+<div style="width:2px;height:8px;background:#F0B487;border-radius:1px;opacity:.4"></div>
+</div>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n500);text-align:center">智能音箱 · 桂小养语音助手</p>
+</div>
+<!-- 社区服务屏 -->
+<div class="showcase" style="padding:32px;background:var(--n50)">
+<div style="background:#fff;width:200px;height:280px;border-radius:12px;box-shadow:var(--sh-md);overflow:hidden;margin:0 auto;display:flex;flex-direction:column">
+<div style="background:linear-gradient(135deg,var(--g500),var(--g700));padding:16px;color:#fff;display:flex;align-items:center;gap:8px">
+<svg width="24" height="24" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="54" fill="none" stroke="#fff" stroke-width="3"/>
+<g transform="translate(60,52)"><path d="M0,-28 C8,-20 8,-8 0,0 C-8,-8 -8,-20 0,-28Z" fill="#fff"/><path d="M28,0 C20,-8 8,-8 0,0 C8,8 20,8 28,0Z" fill="rgba(255,255,255,.8)"/><path d="M0,28 C-8,20 -8,8 0,0 C8,8 8,20 0,28Z" fill="rgba(255,255,255,.9)"/><path d="M-28,0 C-20,8 -8,8 0,0 C-8,-8 -20,-8 -28,0Z" fill="rgba(255,255,255,.85)"/><circle cx="0" cy="0" r="5" fill="#fff"/></g>
+</svg>
+<p style="font-size:12px;font-weight:700;letter-spacing:2px">桂小养 · 社区站</p>
+</div>
+<div style="padding:12px;flex:1;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--g100);border-radius:6px">
+<div style="width:32px;height:32px;border-radius:50%;background:var(--g300);display:flex;align-items:center;justify-content:center">
+<svg width="18" height="18" viewBox="0 0 100 130"><circle cx="50" cy="45" r="32" fill="#F5CDAE"/><path d="M22,38 Q24,20 50,18 Q76,20 78,38 Q74,28 50,26 Q26,28 22,38Z" fill="#E4E0D8"/><circle cx="38" cy="44" r="3" fill="#3D3A36"/><circle cx="62" cy="44" r="3" fill="#3D3A36"/><path d="M40,54 Q50,60 60,54" fill="none" stroke="#A85420" stroke-width="2" stroke-linecap="round"/></svg>
+</div>
+<div><p style="font-size:10px;font-weight:600;color:var(--n700)">桂小养为您服务</p><p style="font-size:8px;color:var(--n400)">点击触屏或语音呼叫</p></div>
+</div>
+<div style="background:var(--o50);border-radius:6px;padding:10px">
+<p style="font-size:9px;color:var(--o600);font-weight:600">📅 今日活动</p>
+<p style="font-size:8px;color:var(--n500);margin-top:4px">09:00 太极拳 · 14:00 健康讲座</p>
+</div>
+<div style="background:var(--b100);border-radius:6px;padding:10px">
+<p style="font-size:9px;color:var(--b500);font-weight:600">🏥 本周义诊</p>
+<p style="font-size:8px;color:var(--n500);margin-top:4px">周四 上午 港口区社区卫生中心</p>
+</div>
+<div style="background:var(--j100);border-radius:6px;padding:10px;flex:1">
+<p style="font-size:9px;color:var(--j700);font-weight:600">🍚 助餐菜单</p>
+<p style="font-size:8px;color:var(--n500);margin-top:4px">午餐：清蒸鱼·时蔬·杂粮饭</p>
+</div>
+</div>
+</div>
+<p style="margin-top:16px;font-size:12px;color:var(--n500);text-align:center">社区服务触屏（竖屏版）</p>
+</div>
+</div>
+
+<div class="note" style="margin-top:8px"><b>各端品牌应用原则：</b>主品牌「桂颐智养」为统一品牌名，各端使用子品牌名对外呈现——政务端/大屏使用「<b style="color:var(--b500)">桂颐</b>」（霁蓝主色），民生端使用「<b style="color:var(--o600)">桂小养</b>」（暖橙主色），智能体IP为「桂小养」。各端共用桂花标志基因，通过<b>子品牌名+主色切换</b>实现端际区分。各端界面均遵循适老化设计规范，最小字号16px、最小点击热区48×48px。</div>
+</div>
+</section>
+
+<!-- §10 IP形象系统 -->
+<section class="sec" id="s10" style="background:var(--n50)">
+<div class="wrap">
+<div class="sec-head">
+<div class="sec-num">10</div>
+<div><div class="sec-title">IP 形象系统</div><div class="sec-desc">桂颐智养品牌AI智能体「桂小养」拟人形象及四彩蛋意象</div></div>
+</div>
+<h3 style="margin-bottom:12px;font-size:18px">主形象 · 桂小养</h3>
+<p style="margin-bottom:20px;font-size:13px;color:var(--n500)">「桂小养」为桂颐智养品牌的AI智能体拟人形象，是长者与AI系统之间的情感交互纽带。作为统一品牌的智能体化身，桂小养贯穿政务端语音播报、民生端APP交互、社区端触屏服务等全场景。</p>
+<div class="grid grid-3">
+<div class="showcase" style="padding:32px 16px">
+<!-- 桂小养·阿公 -->
+<svg width="100" height="130" viewBox="0 0 100 130">
+<!-- 头 -->
+<circle cx="50" cy="45" r="32" fill="#F5CDAE"/>
+<!-- 头发（白） -->
+<path d="M22,38 Q24,20 50,18 Q76,20 78,38 Q74,28 50,26 Q26,28 22,38Z" fill="#E4E0D8"/>
+<!-- 眼睛 -->
+<circle cx="38" cy="44" r="3" fill="#3D3A36"/>
+<circle cx="62" cy="44" r="3" fill="#3D3A36"/>
+<!-- 笑容 -->
+<path d="M40,54 Q50,60 60,54" fill="none" stroke="#A85420" stroke-width="2" stroke-linecap="round"/>
+<!-- 胡须 -->
+<path d="M44,56 Q50,58 56,56" fill="none" stroke="#E4E0D8" stroke-width="1.5"/>
+<!-- 身体（暖橙衫） -->
+<path d="M28,82 Q28,72 50,72 Q72,72 72,82 L72,115 Q72,120 67,120 L33,120 Q28,120 28,115Z" fill="#E8843C"/>
+<!-- 桂花徽章 -->
+<g transform="translate(50,95) scale(0.3)">
+<path d="M0,-12 C3,-8 3,-3 0,0 C-3,-3 -3,-8 0,-12Z" fill="#FDF6F0"/>
+<path d="M12,0 C8,-3 3,-3 0,0 C3,3 8,3 12,0Z" fill="#FDF6F0"/>
+<path d="M0,12 C-3,8 -3,3 0,0 C3,3 3,8 0,12Z" fill="#FDF6F0"/>
+<path d="M-12,0 C-8,3 -3,3 0,0 C-3,-3 -8,-3 -12,0Z" fill="#FDF6F0"/>
+</g>
+</svg>
+<p style="margin-top:12px;font-size:13px;font-weight:600;color:var(--o600)">桂小养 · 阿公</p>
+<p style="font-size:11px;color:var(--n400)">和蔼长者形象</p>
+</div>
+<div class="showcase" style="padding:32px 16px">
+<!-- 桂小养·阿婆 -->
+<svg width="100" height="130" viewBox="0 0 100 130">
+<circle cx="50" cy="45" r="32" fill="#F5CDAE"/>
+<!-- 头发（银白圆髻） -->
+<circle cx="50" cy="22" r="10" fill="#E4E0D8"/>
+<path d="M20,42 Q18,24 50,20 Q82,24 80,42 Q76,30 50,28 Q24,30 20,42Z" fill="#E4E0D8"/>
+<!-- 眼睛 -->
+<circle cx="38" cy="44" r="3" fill="#3D3A36"/>
+<circle cx="62" cy="44" r="3" fill="#3D3A36"/>
+<!-- 笑容 -->
+<path d="M40,54 Q50,62 60,54" fill="none" stroke="#A85420" stroke-width="2" stroke-linecap="round"/>
+<!-- 腮红 -->
+<circle cx="32" cy="50" r="4" fill="#F0B487" opacity=".4"/>
+<circle cx="68" cy="50" r="4" fill="#F0B487" opacity=".4"/>
+<!-- 身体（霁蓝衣） -->
+<path d="M28,82 Q28,72 50,72 Q72,72 72,82 L72,115 Q72,120 67,120 L33,120 Q28,120 28,115Z" fill="#3A6B8C"/>
+<!-- 绣球图案 -->
+<circle cx="50" cy="96" r="6" fill="none" stroke="#E6C572" stroke-width="1.5"/>
+<path d="M50,90 L50,102 M44,96 L56,96" stroke="#E6C572" stroke-width="1" opacity=".6"/>
+</svg>
+<p style="margin-top:12px;font-size:13px;font-weight:600;color:var(--b500)">桂小养 · 阿婆</p>
+<p style="font-size:11px;color:var(--n400)">慈祥长者形象</p>
+</div>
+<div class="showcase" style="padding:32px 16px">
+<!-- 桂小养·服务专员 -->
+<svg width="100" height="130" viewBox="0 0 100 130">
+<circle cx="50" cy="45" r="32" fill="#F5CDAE"/>
+<!-- 头发（深色短发） -->
+<path d="M20,40 Q20,22 50,18 Q80,22 80,40 Q76,30 50,28 Q24,30 20,40Z" fill="#4A463F"/>
+<!-- 眼睛 -->
+<circle cx="38" cy="44" r="3" fill="#3D3A36"/>
+<circle cx="62" cy="44" r="3" fill="#3D3A36"/>
+<!-- 笑容 -->
+<path d="M40,54 Q50,60 60,54" fill="none" stroke="#A85420" stroke-width="2" stroke-linecap="round"/>
+<!-- 身体（青竹绿制服） -->
+<path d="M28,82 Q28,72 50,72 Q72,72 72,82 L72,115 Q72,120 67,120 L33,120 Q28,120 28,115Z" fill="#6B9B7A"/>
+<!-- 工牌 -->
+<rect x="42" y="88" width="16" height="12" rx="2" fill="#FDF6F0" stroke="#3D6B4D" stroke-width="0.5"/>
+<line x1="45" y1="92" x2="55" y2="92" stroke="#6B9B7A" stroke-width="0.8"/>
+<line x1="45" y1="95" x2="53" y2="95" stroke="#A0C4AB" stroke-width="0.6"/>
+</svg>
+<p style="margin-top:12px;font-size:13px;font-weight:600;color:var(--g500)">桂小养 · 服务专员</p>
+<p style="font-size:11px;color:var(--n400)">专业服务形象</p>
+</div>
+</div>
+
+<h3 style="margin:32px 0 20px;font-size:18px">吉祥彩蛋 · 佑利圆满</h3>
+<p style="margin-bottom:20px;font-size:14px;color:var(--n500)">四枚彩蛋取广西风物谐音——<b style="color:var(--o600)">柚</b>（佑护）、<b style="color:var(--o600)">荔</b>（吉利）、<b style="color:var(--b500)">绣球</b>（圆满）、<b style="color:var(--j700)">稻穗</b>（安康），合为"佑利圆满"，作为APP彩蛋与节日限定皮肤出现。</p>
+<div class="grid grid-4">
+<div class="showcase" style="padding:24px 12px">
+<svg width="60" height="70" viewBox="0 0 60 70">
+<!-- 柚子 -->
+<circle cx="30" cy="38" r="24" fill="#E8A93C"/>
+<circle cx="30" cy="38" r="24" fill="none" stroke="#9C7715" stroke-width="1" opacity=".3"/>
+<path d="M26,14 Q30,10 34,14" fill="none" stroke="#3D6B4D" stroke-width="2"/>
+<ellipse cx="30" cy="16" rx="4" ry="2" fill="#6B9B7A"/>
+</svg>
+<p style="margin-top:8px;font-size:13px;font-weight:600;color:var(--j700)">柚</p>
+<p style="font-size:11px;color:var(--n400)">佑护</p>
+</div>
+<div class="showcase" style="padding:24px 12px">
+<svg width="60" height="70" viewBox="0 0 60 70">
+<!-- 荔枝 -->
+<circle cx="24" cy="38" r="16" fill="#D4604E"/>
+<circle cx="38" cy="42" r="14" fill="#D4604E"/>
+<circle cx="24" cy="38" r="16" fill="none" stroke="#A85420" stroke-width="0.5" opacity=".3"/>
+<!-- 小点纹理 -->
+<circle cx="20" cy="36" r="1" fill="#A85420" opacity=".3"/>
+<circle cx="28" cy="40" r="1" fill="#A85420" opacity=".3"/>
+<circle cx="22" cy="42" r="1" fill="#A85420" opacity=".3"/>
+<circle cx="35" cy="44" r="1" fill="#A85420" opacity=".3"/>
+<!-- 叶子 -->
+<path d="M26,24 Q30,18 36,22" fill="none" stroke="#3D6B4D" stroke-width="2"/>
+<ellipse cx="32" cy="20" rx="4" ry="2" fill="#6B9B7A" transform="rotate(-30 32 20)"/>
+</svg>
+<p style="margin-top:8px;font-size:13px;font-weight:600;color:var(--er)">荔</p>
+<p style="font-size:11px;color:var(--n400)">吉利</p>
+</div>
+<div class="showcase" style="padding:24px 12px">
+<svg width="60" height="70" viewBox="0 0 60 70">
+<!-- 绣球 -->
+<circle cx="30" cy="35" r="22" fill="#3A6B8C"/>
+<circle cx="30" cy="35" r="22" fill="none" stroke="#1E4A66" stroke-width="1"/>
+<path d="M30,13 Q42,24 30,35 Q18,24 30,13Z" fill="#D4A537" opacity=".6"/>
+<path d="M8,35 Q20,24 30,35 Q20,46 8,35Z" fill="#D4A537" opacity=".4"/>
+<path d="M52,35 Q40,24 30,35 Q40,46 52,35Z" fill="#D4A537" opacity=".4"/>
+<path d="M30,57 Q18,46 30,35 Q42,46 30,57Z" fill="#D4A537" opacity=".6"/>
+<circle cx="30" cy="35" r="4" fill="#E8843C"/>
+<!-- 流苏 -->
+<line x1="30" y1="57" x2="30" y2="66" stroke="#D4A537" stroke-width="1.5"/>
+<line x1="27" y1="59" x2="26" y2="66" stroke="#D4A537" stroke-width="1"/>
+<line x1="33" y1="59" x2="34" y2="66" stroke="#D4A537" stroke-width="1"/>
+</svg>
+<p style="margin-top:8px;font-size:13px;font-weight:600;color:var(--b500)">绣球</p>
+<p style="font-size:11px;color:var(--n400)">圆满</p>
+</div>
+<div class="showcase" style="padding:24px 12px">
+<svg width="60" height="70" viewBox="0 0 60 70">
+<!-- 稻穗 -->
+<line x1="30" y1="60" x2="30" y2="20" stroke="#3D6B4D" stroke-width="2"/>
+<ellipse cx="24" cy="24" rx="3" ry="5" fill="#D4A537" transform="rotate(-25 24 24)"/>
+<ellipse cx="36" cy="24" rx="3" ry="5" fill="#D4A537" transform="rotate(25 36 24)"/>
+<ellipse cx="22" cy="32" rx="3" ry="5" fill="#D4A537" transform="rotate(-25 22 32)"/>
+<ellipse cx="38" cy="32" rx="3" ry="5" fill="#D4A537" transform="rotate(25 38 32)"/>
+<ellipse cx="24" cy="40" rx="3" ry="5" fill="#D4A537" transform="rotate(-25 24 40)"/>
+<ellipse cx="36" cy="40" rx="3" ry="5" fill="#D4A537" transform="rotate(25 36 40)"/>
+<ellipse cx="30" cy="18" rx="3" ry="5" fill="#D4A537"/>
+</svg>
+<p style="margin-top:8px;font-size:13px;font-weight:600;color:var(--j700)">稻穗</p>
+<p style="font-size:11px;color:var(--n400)">安康</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 页脚 -->
+<footer>
+<div class="wrap">
+<div class="pat"></div>
+<h3>桂颐智养</h3>
+<p>广西AI+养老平台 VI 视觉识别系统 V1.0</p>
+<p style="margin-top:8px">桂地颐养 · 智慧养老 · 温润适老 · 智慧相伴</p>
+<p style="margin-top:4px;font-size:11px;opacity:.6">© 2026 广西医疗大健康可信数据空间 · 桂颐智养 · 防城港市AI养老指挥中枢</p>
+</div>
+</footer>
+
+</body>
+</html>

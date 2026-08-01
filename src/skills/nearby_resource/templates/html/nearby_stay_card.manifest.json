@@ -1,0 +1,7 @@
+{
+  "id": "nearby_stay_card",
+  "layout": "card",
+  "match": "住|民宿|住宿|康养小院|入住",
+  "required": ["markers", "centerName", "radiusKm", "total"],
+  "description": "住宿专题卡：突出民宿/康养小院的适老标签（无障碍/医养结合）、距中心距离、电话与导航触点。"
+}

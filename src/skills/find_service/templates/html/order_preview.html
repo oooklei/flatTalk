@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务订单预览</title>
+  <style>
+    :root { --primary:#1FA97E; --grad:linear-gradient(135deg,#1FA97E 0%,#4FD1A6 100%); --bg:#ECFBF5; --card:#fff; --ink:#2E3A36; --muted:#8A9A93; --border:#E1F0EA; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:14px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+    .card { max-width:420px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .hero { padding:16px; background:var(--grad); color:#fff; }
+    h1 { margin:0; font-size:18px; }
+    .section { padding:12px 14px; border-top:1px solid var(--border); }
+    .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+    .row:last-child { border-bottom:none; }
+    .row .k { color:var(--muted); }
+    .row .v { font-weight:600; text-align:right; max-width:64%; }
+    .hint { margin-top:10px; padding:10px; border-radius:10px; background:#E6F7F0; color:#1FA97E; font-size:12px; line-height:1.5; }
+  </style>
+</head>
+<body>
+  <article class="card" data-layout="vertical">
+    <header class="hero"><h1>服务订单预览</h1></header>
+    <section class="section">
+      <div class="row"><span class="k">订单号</span><span class="v">{{orderId}}</span></div>
+      <div class="row"><span class="k">服务对象</span><span class="v">{{elderName}}</span></div>
+      <div class="row"><span class="k">服务项目</span><span class="v">{{serviceName}}</span></div>
+      <div class="row"><span class="k">服务机构</span><span class="v">{{orgName}}</span></div>
+      <div class="row"><span class="k">费用</span><span class="v">¥{{price}}/{{unit}}</span></div>
+      <div class="row"><span class="k">期望时间</span><span class="v">{{expectedTime}}</span></div>
+      <div class="hint">{{confirmHint}}</div>
+    </section>
+  </article>
+  <script type="application/json">
+  {
+    "orderId": "so_new",
+    "elderName": "黄秀英",
+    "serviceName": "上门护理",
+    "orgName": "青秀社区居家养老服务中心",
+    "price": 80,
+    "unit": "次",
+    "expectedTime": "请选择上门时间",
+    "confirmHint": "确认后将自动进入派单调度"
+  }
+  </script>
+</body>
+</html>

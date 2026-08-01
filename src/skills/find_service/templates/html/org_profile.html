@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务机构详情</title>
+  <style>
+    :root { --primary:#1FA97E; --grad:linear-gradient(135deg,#1FA97E 0%,#4FD1A6 100%); --bg:#ECFBF5; --card:#fff; --ink:#2E3A36; --muted:#8A9A93; --border:#E1F0EA; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:14px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+    .card { max-width:420px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .hero { padding:16px; background:var(--grad); color:#fff; }
+    h1 { margin:0; font-size:19px; }
+    .tag { display:inline-block; margin-top:8px; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,0.22); font-size:12px; }
+    .section { padding:12px 14px; border-top:1px solid var(--border); }
+    .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+    .row:last-child { border-bottom:none; }
+    .row .k { color:var(--muted); }
+    .row .v { font-weight:600; text-align:right; max-width:62%; }
+    .cert { color:#1FA97E; }
+  </style>
+</head>
+<body>
+  <article class="card" data-layout="vertical">
+    <header class="hero">
+      <h1>{{orgName}}</h1>
+      <span class="tag">{{orgType}} · 评分 {{rating}}</span>
+    </header>
+    <section class="section">
+      <div class="row"><span class="k">地址</span><span class="v">{{address}}</span></div>
+      <div class="row"><span class="k">服务范围</span><span class="v">{{scope}}</span></div>
+      <div class="row"><span class="k">床位</span><span class="v">{{bedCount}} 张</span></div>
+      <div class="row"><span class="k">起步价</span><span class="v">¥{{price}} 起</span></div>
+      <div class="row"><span class="k">资质</span><span class="v cert">{{certified}}</span></div>
+    </section>
+  </article>
+  <script type="application/json">
+  {
+    "orgName": "青秀社区居家养老服务中心",
+    "orgType": "居家养老服务中心",
+    "address": "南宁市青秀区津头街道",
+    "scope": "上门护理/助浴/助餐/清洁",
+    "bedCount": 0,
+    "price": 60,
+    "rating": 4.7,
+    "certified": "已认证"
+  }
+  </script>
+</body>
+</html>

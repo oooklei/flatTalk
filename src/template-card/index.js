@@ -10,7 +10,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { discoverTemplates, describeLibrary } from './discover.js';
 import { selectTemplate } from './select.js';
-import { renderTemplate } from './render.js';
+import { renderTemplate, escapeHtml } from './render.js';
+
+const FOLLOWUP_CSS = `
+.tc-followups{box-sizing:border-box;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.tc-followups-label{font:13px/1.4 system-ui,sans-serif;color:#8a8a8a;margin-right:2px;}
+.tc-followup-btn{appearance:none;cursor:pointer;font:13px/1.3 system-ui,sans-serif;padding:8px 14px;border-radius:999px;border:1px solid var(--primary,#2c7be5);background:#fff;color:var(--primary,#2c7be5);transition:.15s;}
+.tc-followup-btn:hover{background:var(--primary,#2c7be5);color:#fff;}
+`;
 
 const DECK_CSS = (layout) => `
 .tc-deck{box-sizing:border-box;}
@@ -18,7 +25,19 @@ const DECK_CSS = (layout) => `
 .tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
 .tc-card{flex:0 0 auto;}
 .tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
-`;
+${FOLLOWUP_CSS}`;
+
+// 把配套追问（manifest.followup_actions）渲染成一组追问按钮。
+// 用 data-action 暴露语义值，由宿主页面绑定点击（非卡片内硬编码动作），契合「按钮清除」意图。
+function renderFollowups(actions) {
+  if (!Array.isArray(actions) || !actions.length) return '';
+  const items = actions.map((a) => {
+    const label = typeof a === 'string' ? a : (a.label || a.text || '');
+    const value = typeof a === 'string' ? a : (a.value || a.action || label);
+    return `<button type="button" class="tc-followup-btn" data-action="${escapeHtml(String(value))}">${escapeHtml(String(label))}</button>`;
+  }).join('');
+  return `<div class="tc-followups"><span class="tc-followups-label">您可以：</span>${items}</div>`;
+}
 
 // 归一化输入：兼容 {template_id,data} / {data:{items}} / 纯对象 / 数组
 function normalizeInput(json) {
@@ -29,7 +48,7 @@ function normalizeInput(json) {
   return { templateId, data, items };
 }
 
-function assembleDocument(css, layout, cardsHtml, pageInfo) {
+function assembleDocument(css, layout, cardsHtml, pageInfo, followups = '') {
   const deck = `<div class="tc-deck" data-layout="${layout}">${cardsHtml}</div>`;
   const pager = pageInfo
     ? `<div class="tc-pager">第 ${pageInfo.index} / ${pageInfo.total} 页</div>` : '';
@@ -42,6 +61,7 @@ function assembleDocument(css, layout, cardsHtml, pageInfo) {
 </head>
 <body>
 ${deck}
+${followups}
 ${pager}
 </body>
 </html>`;
@@ -83,10 +103,10 @@ export function renderCard(dir, json, options = {}) {
       const slice = chunks[idx]
         .map((rec) => `<div class="tc-card">${renderTemplate(template.body, { ...template.defaultData, ...rec })}</div>`)
         .join('\n');
-      return assembleDocument(template.css, template.layout, slice, { index: idx + 1, total: chunks.length });
+      return assembleDocument(template.css, template.layout, slice, { index: idx + 1, total: chunks.length }, renderFollowups(template.followupActions));
     });
   } else {
-    pages = [assembleDocument(template.css, template.layout, cardsHtml, null)];
+    pages = [assembleDocument(template.css, template.layout, cardsHtml, null, renderFollowups(template.followupActions))];
   }
 
   return {
@@ -113,10 +133,12 @@ export function renderPreview(dir, templateId) {
   const stripJson = (s) => s.replace(
     /<script\b[^>]*type=["']application\/json["'][^>]*>[\s\S]*?<\/script>/gi, '');
   // 先删默认数据脚本块，再整体用默认数据渲染，保留原 <body>/<style> 不变
-  return renderTemplate(stripJson(template.html), template.defaultData);
+  const fp = renderTemplate(stripJson(template.html), template.defaultData);
+  const fu = renderFollowups(template.followupActions);
+  if (!fu) return fp;
+  return `${fp}\n<style>${FOLLOWUP_CSS}</style>${fu}`;
 }
 
 export { discoverTemplates, describeLibrary } from './discover.js';
 export { selectTemplate } from './select.js';
 export { renderTemplate, collectNames, collectTopLevelNames } from './render.js';
-export { buildSelectPrompt, jsonSchemaFor, buildFillPrompt } from './prompt.js';

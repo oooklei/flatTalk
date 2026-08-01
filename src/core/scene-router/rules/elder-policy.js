@@ -21,11 +21,29 @@ const elderTerms = [
   '半失能', '独居', '高龄',
 ];
 
+// 申请流程相关词汇
+const applyIntentTerms = [
+  '怎么申请', '如何申请', '怎么办理', '办理流程', '申请流程', '去哪办', '哪里办理',
+  '需要什么材料', '要哪些材料', '申请条件', '办理条件',
+];
+
+// 政策详情查询词汇
+const detailIntentTerms = [
+  '详细内容', '具体内容', '政策解读', '全文', '原文', '详细解读',
+  '是什么意思', '怎么理解', '主要内容', '要点',
+];
+
 export const elderPolicyRuleSet = {
   scene_key: 'common',
   default_intent: 'elder_policy_consult',
-  threshold: 5,
-  template_candidates: ['policy_card', 'answer'],
+  threshold: 6,
+  template_candidates: [
+    'policy_apply_guide_card',
+    'policy_detail_card',
+    'policy_list_card',
+    'policy_card',
+    'answer',
+  ],
   required_data: [],
   required_knowledge: ['common'],
   actions_allowed: [],
@@ -37,7 +55,7 @@ export const elderPolicyRuleSet = {
     { group: 'elder_context', weight: 1.5, terms: elderTerms },
   ],
   role_boost: {
-    roles: ['elder', 'elder_family', 'family', 'service', 'partner', 'system_admin'],
+    roles: ['elder', 'elder_family', 'family', 'village_doctor', 'community_doctor', 'care_worker', 'institution_admin', 'provider_staff', 'system_admin', 'admin', 'senior_official', 'civil_affairs_staff', 'grid_worker'],
     weight: 1,
   },
   context_boost: {
@@ -52,8 +70,10 @@ export const elderPolicyRuleSet = {
   ],
   infer_intent(input) {
     if (has(input, assistantUsageTerms)) return 'elder_assistant_usage';
+    if (has(input, applyIntentTerms)) return 'elder_policy_apply';
+    if (has(input, ['有哪些', '有什么', '汇总', '一览', '列表', '政策汇总', '政策一览'])) return 'elder_policy_list';
+    if (has(input, detailIntentTerms)) return 'elder_policy_detail';
     if (has(input, ['补贴', '津贴', '长护险', '养老金', '养老保险'])) return 'elder_policy_benefit';
-    if (has(input, ['怎么申请', '如何申请', '办理', '材料', '流程', '条件'])) return 'elder_policy_apply';
     return 'elder_policy_consult';
   },
 };

@@ -1,0 +1,7 @@
+{
+  "id": "nearby_map_route",
+  "layout": "map",
+  "match": "路线|规划|一天|行程|攻略|怎么玩|怎么安排",
+  "required": ["routeStops_json", "center_json", "centerName", "map_key"],
+  "description": "将周边配套串成「一日康养游」路线，地图按序号绘制折线并打点，右侧给出分步行程清单与导航。"
+}

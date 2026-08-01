@@ -1,8 +1,9 @@
 export class SessionStore {
-  constructor({ stateStore, ttlSeconds = 7 * 24 * 60 * 60 } = {}) {
+  constructor({ stateStore, ttlSeconds = 7 * 24 * 60 * 60, repository = null } = {}) {
     if (!stateStore) throw new Error('stateStore is required');
     this.stateStore = stateStore;
     this.ttlSeconds = ttlSeconds;
+    this.repository = repository;
   }
 
   async getOrCreate(conversationId) {
@@ -22,10 +23,28 @@ export class SessionStore {
     const nextTurn = {
       ...turn,
       turn_id: turn.turn_id || makeId(`turn_${session.turns.length + 1}`),
+      created_at: turn.created_at || new Date().toISOString(),
     };
     session.turns.push(nextTurn);
     session.updated_at = new Date().toISOString();
     await this.save(session);
+
+    // 持久化到数据库（conversation_turns 表）
+    if (this.repository) {
+      try {
+        await this.repository.create('conversation_turns', {
+          turn_id: nextTurn.turn_id,
+          conversation_id: session.conversation_id,
+          skill_key: nextTurn.envelope?.skill_key || nextTurn.skill_key || '',
+          template_id: nextTurn.envelope?.template_id || nextTurn.template_id || '',
+          created_at: nextTurn.created_at,
+        });
+      } catch (err) {
+        // 落库失败不影响缓存流程
+        console.warn('[SessionStore] conversation_turns persist failed:', err.message);
+      }
+    }
+
     return nextTurn;
   }
 
@@ -75,6 +94,7 @@ export class SessionStore {
     const ids = await this.stateStore.listJson('conversations:index');
     const conversations = [];
     const seen = new Set();
+    const staleIds = [];
 
     for (const conversationId of ids) {
       if (seen.has(conversationId)) continue;
@@ -93,7 +113,15 @@ export class SessionStore {
           updated_at: session.updated_at,
           messages: JSON.stringify(session.client_conversation || toClientConversation(session)),
         });
+      } else {
+        staleIds.push(conversationId);
       }
+    }
+
+    // 清理失效索引
+    if (staleIds.length > 0) {
+      const validIds = ids.filter((id) => !staleIds.includes(id));
+      await this.stateStore.setJson('conversations:index', validIds);
     }
 
     return conversations;
@@ -113,6 +141,12 @@ export class SessionStore {
   async deleteConversation(conversationId) {
     if (!conversationId) return false;
     await this.stateStore.clear(conversationKey(conversationId));
+    // 清理索引中的已删除 ID
+    const ids = await this.stateStore.listJson('conversations:index');
+    const filtered = ids.filter((id) => id !== conversationId);
+    if (filtered.length !== ids.length) {
+      await this.stateStore.setJson('conversations:index', filtered);
+    }
     return true;
   }
 
@@ -125,6 +159,27 @@ export class SessionStore {
       ...metadata,
     };
     await this.save(session);
+
+    // 导出 conversation_turns 到持久化存储
+    if (this.repository) {
+      try {
+        for (const turn of session.turns || []) {
+          const exists = await this.repository.findById('conversation_turns', turn.turn_id);
+          if (!exists) {
+            await this.repository.create('conversation_turns', {
+              turn_id: turn.turn_id,
+              conversation_id: session.conversation_id,
+              skill_key: turn.envelope?.skill_key || turn.skill_key || '',
+              template_id: turn.envelope?.template_id || turn.template_id || '',
+              created_at: turn.created_at || new Date().toISOString(),
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('[SessionStore] harvest export failed:', err.message);
+      }
+    }
+
     return session.harvest;
   }
 }
@@ -152,7 +207,7 @@ function toClientConversation(session = {}) {
     id: session.conversation_id,
     title: session.title || session.latestQuestion || '新对话',
     createdAt: session.createdAt || Date.now(),
-    updatedAt: session.updatedAt || Date.now(),
+    updatedAt: session.updated_at || Date.now(),
     status: session.status || '已答复',
     favorite: Boolean(session.favorite),
     latestQuestion: session.latestQuestion || '',

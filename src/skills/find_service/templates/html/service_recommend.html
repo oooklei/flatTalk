@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务推荐</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：综合服务推荐块。含推荐维度标签栏 + 服务卡列表 + 其他维度拓展卡 + 猜你喜欢。按钮(一键预定)由追问体现。 -->
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <div class="eyebrow">{{sceneTitle}}</div>
+      <h1>为您匹配到 {{total}} 项服务</h1>
+      <p class="subtitle">{{summary}}</p>
+    </header>
+
+    <section class="nb-section">
+      <div class="recommend-tabs">
+        <span class="recommend-tab active">🎯 最匹配</span>
+        <span class="recommend-tab">📈 空闲率高</span>
+        <span class="recommend-tab">🏠 环境得分高</span>
+        <span class="recommend-tab">⚡ 响应快</span>
+      </div>
+
+      <div class="service-list">
+        {{#services}}
+        <div class="service-card">
+          <div class="card-thumb">{{icon}}</div>
+          <div class="card-body">
+            <div class="card-title">{{name}}</div>
+            <div class="card-meta">{{summary}}<br>{{timeRange}}</div>
+            <div class="supplier-info">🏢 {{provider_name}} ★{{provider_score}} 👥空闲{{provider_avail}}%</div>
+            <div class="card-price-row">
+              <div class="card-price">¥{{price}}<span class="unit">/{{unit}}</span></div>
+            </div>
+          </div>
+        </div>
+        {{/services}}
+      </div>
+
+      {{#has_expanded}}
+      <div style="margin-top:16px">
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:10px">💡 其他优质选择</div>
+        <div class="service-list">
+          {{#expanded_list}}
+          <div class="expand-card">
+            <div class="card-thumb">{{icon}}</div>
+            <div class="card-body">
+              <div class="expand-badge {{badge_class}}">{{badge_icon}} {{badge_text}}</div>
+              <div class="card-title">{{name}}</div>
+              <div class="card-meta">{{summary}}<br>{{timeRange}}</div>
+              <div class="supplier-info">🏢 {{provider_name}} ★{{provider_env}} 👥空闲{{provider_avail}}%</div>
+              <div class="card-price-row">
+                <div class="card-price">¥{{price}}<span class="unit">/{{unit}}</span></div>
+              </div>
+            </div>
+          </div>
+          {{/expanded_list}}
+        </div>
+      </div>
+      {{/has_expanded}}
+
+      {{#has_guess}}
+      <div class="guess-like-section">
+        <div class="guess-like-header">
+          <div class="guess-like-title">👍 猜你喜欢</div>
+          <div class="guess-like-subtitle">为您精选优质服务与旅居路线</div>
+        </div>
+        <div class="guess-like-scroll">
+          {{#guess_list}}
+          <div class="guess-like-card">
+            <div class="gl-image" style="background:{{image_bg}}">
+              <span>{{icon}}</span>
+              <div class="gl-tag">{{tag}}</div>
+            </div>
+            <div class="gl-info">
+              <div class="gl-name">{{name}}</div>
+              <div class="gl-summary">{{summary}}</div>
+              <div class="gl-price">¥{{price}}<span class="unit">/{{unit}}</span></div>
+              <div class="gl-provider">🏢 {{provider_name}}</div>
+            </div>
+          </div>
+          {{/guess_list}}
+        </div>
+      </div>
+      {{/has_guess}}
+    </section>
+  </article>
+
+  <script type="application/json">
+  {
+    "sceneTitle": "AI服务助手",
+    "total": 2,
+    "summary": "根据您的健康档案与历史偏好，为您推荐以下居家养老服务。",
+    "services": [
+      { "icon": "🧹", "name": "居家深度清洁", "summary": "厨房/卫生间/卧室全屋清洁，持证上门", "timeRange": "08:00-18:00", "provider_name": "桂林夕阳红养老服务中心", "provider_score": "4.8", "provider_avail": "85", "price": "180", "unit": "次" },
+      { "icon": "🛡️", "name": "老年陪护服务", "summary": "陪诊、陪伴、生活照料，全天可约", "timeRange": "全天", "provider_name": "秀峰区爱心护理站", "provider_score": "4.6", "provider_avail": "70", "price": "280", "unit": "天" }
+    ],
+    "has_expanded": true,
+    "expanded_list": [
+      { "icon": "🩺", "badge_class": "availability", "badge_icon": "📈", "badge_text": "空闲率最高", "name": "康复护理服务", "summary": "术后/慢病专业护理，护士上门", "timeRange": "全天可约", "provider_name": "桂林乐颐家政服务公司", "provider_env": "4.2", "provider_avail": "92", "price": "220", "unit": "次" }
+    ],
+    "has_guess": true,
+    "guess_list": [
+      { "image_bg": "linear-gradient(135deg,#2BAE8E,#3B82A0)", "icon": "🏖️", "tag": "旅居路线", "name": "防城港海滨康养 5 日", "summary": "海边民宿+每日康养课程+海鲜膳食，适老无忧", "price": "1980", "unit": "人", "provider_name": "桂林康养旅居公社" }
+    ]
+  }
+  </script>
+</body>
+</html>

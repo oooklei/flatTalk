@@ -3,14 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>旅居行程安排卡片 - 预览</title>
 <style>
   :root {
     --primary: #FF7826;
-    --primary-gradient: linear-gradient(135deg, #FF7826 0%, #FF9A5C 100%);
-    --bg: #F8EAD9; --bg-white: #ffffff;
-    --ink: #3A3A3A; --ink-light: #666; --muted: #999999;
-    --border: #E5E5E5; --divider: #F0EBE3;
+    --primary-soft: #FFF3E8;
+    --bg: #FFF8F0; --bg-white: #ffffff;
+    --ink: #2C2C2C; --ink-light: #666; --muted: #999999;
+    --border: #F0E6DA; --divider: #F0EBE3;
   }
   * { box-sizing: border-box; }
   body {
@@ -18,37 +17,61 @@
     font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
     background: var(--bg); color: var(--ink);
   }
-  .wrap { max-width: 640px; margin: 0 auto; }
+  .wrap {
+    max-width: 640px; margin: 0 auto;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
   .chat-section-title {
+    display: flex; align-items: center; gap: 8px;
     font-size: 16px; font-weight: 700; color: var(--ink);
-    margin: 0 0 8px; padding: 8px 12px;
-    background: linear-gradient(135deg, #FFF7E6, #FFF3E0);
-    border-radius: 8px; border-left: 3px solid var(--primary);
+    margin: 0 0 8px; padding: 10px 12px;
+    background: #FFF7ED;
+    border-radius: 10px; border-left: 3px solid var(--primary);
   }
-  .intro { font-size: 13px; color: var(--ink-light); line-height: 1.6; margin-bottom: 10px; }
+  .chat-section-title .ico {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    background: linear-gradient(135deg, #5B9FED, #3B7DD8);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+  }
+  .intro {
+    font-size: 13px; color: var(--ink); line-height: 1.7;
+    margin: 0 0 12px; padding: 0 2px;
+  }
+
   .day-tabs {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    margin-bottom: 10px; padding: 2px 0;
+    display: flex; flex-wrap: nowrap; gap: 8px;
+    margin-bottom: 12px; padding: 2px 0 6px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .day-tabs::-webkit-scrollbar { display: none; }
   .day-tab {
-    appearance: none; border: 1px solid var(--border);
-    background: var(--bg-white); color: var(--ink-light);
-    border-radius: 12px; padding: 5px 12px;
-    font-size: 12px; font-weight: 700; line-height: 1.2;
+    appearance: none; border: none; flex: 0 0 auto;
+    background: #F3EEE7; color: #555;
+    border-radius: 20px; padding: 7px 16px;
+    font-size: 13px; font-weight: 600; line-height: 1.2;
     cursor: pointer; font-family: inherit;
-    transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+    transition: background .2s, color .2s, box-shadow .2s;
   }
   .day-tab:active { transform: scale(0.97); }
   .day-tab.is-active {
-    background: var(--primary-gradient); color: #fff;
-    border-color: transparent;
-    box-shadow: 0 2px 8px rgba(255, 120, 38, 0.28);
+    background: var(--primary); color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 120, 38, 0.3);
   }
+
   .day-panels { position: relative; }
   .day-card {
     display: none;
-    background: var(--bg-white); border: 1px solid var(--border);
-    border-radius: 12px; padding: 12px;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
     animation: dayFade .22s ease;
   }
   .day-card.is-active { display: block; }
@@ -56,231 +79,340 @@
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .day-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .day-num {
-    padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
-    background: var(--primary-gradient); color: #fff; flex-shrink: 0;
+
+  .day-head {
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+    padding: 12px 14px;
+    background: #FFF7ED;
   }
-  .day-theme { font-size: 14px; font-weight: 700; }
-  .slot { display: flex; gap: 8px; padding: 5px 0; font-size: 13px; line-height: 1.6; }
+  .day-num {
+    font-size: 16px; font-weight: 800; color: var(--primary);
+    flex-shrink: 0; line-height: 1.2;
+  }
+  .day-theme {
+    font-size: 14px; font-weight: 500; color: var(--ink-light);
+    line-height: 1.3;
+  }
+
+  .slot {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 14px; font-size: 13px; line-height: 1.65;
+    border-top: 1px dashed var(--divider);
+  }
   .slot-label {
-    flex-shrink: 0; width: 44px; font-size: 12px; font-weight: 600;
+    flex-shrink: 0; width: 36px; font-size: 13px; font-weight: 700;
     color: var(--primary); padding-top: 1px;
   }
-  .slot-text { flex: 1; color: var(--ink-light); }
-  .slot-text b { color: var(--ink); }
-  .day-tip {
-    margin-top: 6px; padding: 6px 8px; border-radius: 8px;
-    background: #E8F5E9; color: #2E7D32; font-size: 12px; line-height: 1.5;
+  .slot-label.has-icon {
+    display: flex; align-items: center; gap: 3px; width: auto; min-width: 36px;
   }
-  .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .slot-label .meal-ico {
+    width: 14px; height: 14px; display: inline-block;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239B8EC4'%3E%3Cpath d='M8.1 13.34l2.83-2.83L3.91 3.5a4.008 4.008 0 000 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z'/%3E%3C/svg%3E") center/contain no-repeat;
+  }
+  .slot-text { flex: 1; color: var(--ink); min-width: 0; }
+  .slot-text b, .slot-text strong { color: var(--primary); font-weight: 700; }
+  .slot-text .spot {
+    display: inline; color: var(--primary); font-weight: 700;
+  }
+  .slot-text .desc { color: var(--ink); }
+
+  .day-tip {
+    margin: 0; padding: 10px 14px;
+    border-top: 1px dashed var(--divider);
+    background: #F7FBF7; color: #2E7D32; font-size: 12px; line-height: 1.5;
+  }
+
+  .note {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6;
+  }
+  .note::before {
+    content: "!";
+    flex-shrink: 0; width: 14px; height: 14px; margin-top: 2px;
+    border-radius: 50%; background: var(--primary); color: #fff;
+    font-size: 10px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
 </style>
 </head>
 <body>
+<div class="tc-deck" data-layout="vertical"><div class="tc-card">
   <div class="wrap">
-    <div class="chat-section-title">🗓️ 10天行程安排（慢节奏 · 每日一景）</div>
+    <div class="chat-section-title">
+      <span class="ico">📅</span>
+      <span>🗓️ 10天行程安排（慢节奏 · 每日一景）</span>
+    </div>
     <div class="intro">按「上午一景 + 下午休整」慢节奏编排，<b>单日车程不超过40分钟</b>，避免长者疲劳。</div>
 
     <div class="day-tabs" role="tablist">
+    
       <button type="button" class="day-tab" role="tab" data-day="D1" aria-selected="false">D1</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D2" aria-selected="false">D2</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D3" aria-selected="false">D3</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D4" aria-selected="false">D4</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D5" aria-selected="false">D5</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D6" aria-selected="false">D6</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D7" aria-selected="false">D7</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D8" aria-selected="false">D8</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D9" aria-selected="false">D9</button>
+    
       <button type="button" class="day-tab" role="tab" data-day="D10" aria-selected="false">D10</button>
+    
     </div>
 
     <div class="day-panels">
+    
     <div class="day-card" role="tabpanel" data-day="D1">
       <div class="day-head">
         <span class="day-num">D1</span>
         <span class="day-theme">🏨 抵达安顿</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">高铁抵达防城港北站，基地<b>免费接站</b>直达入住</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">医务室建档（血压/血糖基线），熟悉餐厅与活动区</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">基地周边散步，海边看日落</span>
       </div>
-      <div class="day-tip">💚 第一天不安排外出，帮长者适应气候与作息</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D2">
       <div class="day-head">
         <span class="day-num">D2</span>
         <span class="day-theme">🚶 基地熟悉</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">基地内慢步走，认识管家与同住长者</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">参加手工 / 太极体验课，了解每日活动安排</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">长者餐厅用餐，餐后集体观影</span>
       </div>
-      <div class="day-tip">💚 今日仍以休整为主，步行控制在 3000 步内</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D3">
       <div class="day-head">
         <span class="day-num">D3</span>
         <span class="day-theme">🏖️ 白浪滩</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">包车前往白浪滩踏浪（轮椅可推行，车程 40 分钟）</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">海边午餐后午休，沙滩椅休息观海</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">返回基地，海边散步看日落</span>
       </div>
-      <div class="day-tip">💚 防晒防风，累了随时回基地</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D4">
       <div class="day-head">
         <span class="day-num">D4</span>
         <span class="day-theme">🐠 海洋公园</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">海洋文化公园慢走，观珊瑚与海洋生物</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">参加基地活动：太极 / 手工 / 儿童拾贝课</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">长者餐厅晚餐，餐后集体活动</span>
       </div>
-      <div class="day-tip">💚 每日步行控制在 4000 步内</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D5">
       <div class="day-head">
         <span class="day-num">D5</span>
         <span class="day-theme">🌿 基地休整</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">基地自由活动，图书角或棋牌室</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">午休后参加兴趣课，或与家人视频</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">基地周边散步</span>
       </div>
-      <div class="day-tip">💚 休整日，保存体力迎接后半程</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D6">
       <div class="day-head">
         <span class="day-num">D6</span>
         <span class="day-theme">🐚 簕山古渔村</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">包车前往簕山古渔村（车程 40 分钟，中途休息 1 次）</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">村中慢游，渔家风情拍照</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">渔家海鲜粥晚餐（软食可选）</span>
       </div>
-      <div class="day-tip">💚 村医巡诊点就在村口</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D7">
       <div class="day-head">
         <span class="day-num">D7</span>
         <span class="day-theme">🌊 赶海体验</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">退潮时<b>祖孙赶海拾贝</b></span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">清洗贝壳，手工制作贝壳画</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">基地休息</span>
       </div>
-      <div class="day-tip">💚 赶海请穿防滑鞋</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D8">
       <div class="day-head">
         <span class="day-num">D8</span>
         <span class="day-theme">🌅 观潮休整</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">视体力海边观潮或基地休整</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">午休后参加基地兴趣活动</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">集体观影或茶歇</span>
       </div>
-      <div class="day-tip">💚 灵活安排，以长者舒适为准</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D9">
       <div class="day-head">
         <span class="day-num">D9</span>
         <span class="day-theme">🩺 体检采买</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">基地体检小结（对比抵达基线数据），海产市场采买手信</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">自由活动，整理行李</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">傍晚</span>
         <span class="slot-text">总结分享会</span>
       </div>
-      <div class="day-tip">💚 返程前医务室提供 10 天健康小结报告</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     <div class="day-card" role="tabpanel" data-day="D10">
       <div class="day-head">
         <span class="day-num">D10</span>
         <span class="day-theme">🚄 返程</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">上午</span>
         <span class="slot-text">办理退房，基地送站至防城港北站</span>
       </div>
+      
       <div class="slot">
         <span class="slot-label">下午</span>
         <span class="slot-text">高铁返程</span>
       </div>
-      <div class="day-tip">💚 祝一路平安，常回基地看看</div>
+      
+      <div class="day-tip"></div>
     </div>
+    
     </div>
 
     <div class="note">行程可随身体状况灵活调整，基地管家每晚确认次日安排。</div>
@@ -292,7 +424,7 @@
     var panels = Array.prototype.slice.call(document.querySelectorAll('.day-card'));
     if (!tabs.length || !panels.length) return;
 
-    function activate(day) {
+    function activate(day, tabEl) {
       tabs.forEach(function (tab) {
         var on = tab.getAttribute('data-day') === day;
         tab.classList.toggle('is-active', on);
@@ -301,16 +433,33 @@
       panels.forEach(function (panel) {
         panel.classList.toggle('is-active', panel.getAttribute('data-day') === day);
       });
+      if (tabEl && tabEl.scrollIntoView) {
+        tabEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
     }
 
     tabs.forEach(function (tab) {
       tab.addEventListener('click', function () {
-        activate(tab.getAttribute('data-day'));
+        activate(tab.getAttribute('data-day'), tab);
       });
     });
 
-    activate(tabs[0].getAttribute('data-day'));
+    activate(tabs[0].getAttribute('data-day'), tabs[0]);
+
+    Array.prototype.forEach.call(document.querySelectorAll('.slot-label'), function (el) {
+      if ((el.textContent || '').indexOf('餐饮') === -1) return;
+      el.classList.add('has-icon');
+      if (!el.querySelector('.meal-ico')) {
+        var ico = document.createElement('i');
+        ico.className = 'meal-ico';
+        el.insertBefore(ico, el.firstChild);
+      }
+    });
   })();
   </script>
+
+  
+</div></div>
+
 </body>
 </html>

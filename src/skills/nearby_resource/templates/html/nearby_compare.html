@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_compare" data-layout="compare">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>嘉路康养生活圈 · 同类对比</title>
+  <link rel="stylesheet" href="./_design_tokens.css" />
+  <link rel="stylesheet" href="./_base.css" />
+</head>
+<body>
+  <div class="nb-wrap">
+    <section class="nb-card">
+      <div class="nb-head">
+        <div>
+          <h2 class="nb-title">⚖️ 同类资源对比</h2>
+          <p class="nb-sub">{{centerName}} 周边 {{categoryLabel}} · 精选 Top3 并排比较</p>
+        </div>
+        <span class="nb-badge">本地库</span>
+      </div>
+      <div class="nb-cmp">
+        {{#picks}}
+        <div class="nb-cmp-col">
+          <div class="nb-cmp-name">{{emoji}} {{name}}</div>
+          <div class="nb-cmp-row"><span>距离</span><b>{{distance_text}}km</b></div>
+          <div class="nb-cmp-row"><span>状态</span><b>{{biz_status}}</b></div>
+          {{#tags}}<div class="nb-tags" style="margin-top:8px">{{#tags}}<span class="nb-tag">{{.}}</span>{{/tags}}</div>{{/tags}}
+          <div class="nb-row-actions" style="margin-top:10px">
+            <a class="nb-btn nb-btn-primary" href="https://apis.map.qq.com/uri/v1/marker?marker=coord:{{lat}},{{lng}};title:{{name}}&referer=flattalk" target="_blank">🧭 导航</a>
+            {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎</a>{{/tel}}
+          </div>
+        </div>
+        {{/picks}}
+        {{^picks}}<div class="nb-empty">暂无可供对比的同类资源</div>{{/picks}}
+      </div>
+    </section>
+  </div>
+  <script type="application/json">
+  {
+    "centerName": "嘉路康养中心", "categoryLabel": "民宿",
+    "picks": [
+      { "poi_id": "s1", "name": "海岸假日民宿", "emoji": "🏠", "distance_text": "0.8", "biz_status": "营业中", "tel": "0770-1234567", "tags": ["近海", "适老电梯"], "tags_text": "近海·适老电梯", "lat": 21.531, "lng": 108.172 },
+      { "poi_id": "s2", "name": "嘉路康养小院", "emoji": "🏠", "distance_text": "0.2", "biz_status": "营业中", "tel": "0770-0000000", "tags": ["医养结合"], "tags_text": "医养结合", "lat": 21.528, "lng": 108.167 },
+      { "poi_id": "s3", "name": "渔家小院", "emoji": "🏠", "distance_text": "1.4", "biz_status": "营业中", "tags": ["安静"], "tags_text": "安静", "lat": 21.524, "lng": 108.160 }
+    ]
+  }
+  </script>
+</body>
+</html>

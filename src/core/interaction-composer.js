@@ -1,10 +1,38 @@
 import { dedupeFollowups } from './compact-followups/renderer.js';
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, '..', '..');
+
+const CATEGORY_RANK = { tight: 0, other: 1 };
+const FOLLOWUP_CAP = 6;
+
+/**
+ * 加载模板静态追问（src/skills/<skill>/templates/followups/<id>.json）。
+ * 这是「追问挂载」的运行时接入点：admin 编辑的追问在此被读取并参与组装。
+ */
+export function loadStaticFollowups(skillKey, templateId) {
+  if (!skillKey || !templateId) return [];
+  const file = path.join(ROOT, 'src', 'skills', skillKey, 'templates', 'followups', `${templateId}.json`);
+  if (!fs.existsSync(file)) return [];
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const list = Array.isArray(parsed?.followup_suggestions) ? parsed.followup_suggestions : [];
+    return list
+      .filter((f) => f && f.label && f.user_prompt)
+      .map((f) => ({ ...f, category: f.category === 'other' ? 'other' : 'tight' }));
+  } catch {
+    return [];
+  }
+}
+
 const DEFAULT_ACTIONS_BY_SCENE = {
   meal_plan: [
     { action_key: 'meal_plan.generate_weekly_plan', label: '生成一周计划', params: { template_id: 'weekly_plan' } },
     { action_key: 'meal_plan.adjust_for_condition', label: '按慢病调整', params: {} },
-    { action_key: 'meal_plan.save_preference', label: '保存偏好', params: {} },
   ],
   health_risk_warning: [
     { action_key: 'health_risk_warning.refresh_signals', label: '重新读取设备信号', params: { template_id: 'health_risk_signal_card' } },
@@ -152,24 +180,10 @@ const DEFAULT_FOLLOWUPS_BY_SERVICE = [
     intent: 'find_service_org',
     action_key: 'find_service.list_orgs',
   },
-  {
-    label: '直接预约',
-    user_prompt: '帮我预约上门护理服务',
-    template_id: 'order_preview',
-    intent: 'find_service_order',
-    action_key: 'find_service.book',
-  },
 ];
 
 // 派单调度 followup
 const DEFAULT_FOLLOWUPS_BY_DISPATCH = [
-  {
-    label: '接第一条派单',
-    user_prompt: '接下第一条待接派的单子',
-    template_id: 'dispatch_detail',
-    intent: 'dispatch_accept',
-    action_key: 'dispatch_manage.accept_first',
-  },
   {
     label: '查看工单',
     user_prompt: '查看对应的服务工单',
@@ -178,11 +192,11 @@ const DEFAULT_FOLLOWUPS_BY_DISPATCH = [
     action_key: 'dispatch_manage.work_order',
   },
   {
-    label: '催一下进度',
-    user_prompt: '帮我催一下这条派单的进度',
+    label: '查看进度',
+    user_prompt: '帮我查看这条派单的进度',
     template_id: 'dispatch_status',
     intent: 'dispatch_status',
-    action_key: 'dispatch_manage.urge',
+    action_key: 'dispatch_manage.status',
   },
 ];
 
@@ -223,7 +237,7 @@ const FOLLOWUP_POLICIES = {
   'nearby_resource.default': DEFAULT_FOLLOWUPS_BY_NEARBY,
 };
 
-export function composeInteractions({ sceneDecision = {}, modelResult = {} } = {}) {
+export function composeInteractions({ sceneDecision = {}, modelResult = {}, staticFollowups = [] } = {}) {
   if (sceneDecision.decision !== 'accept') {
     return {
       actions: [],
@@ -249,14 +263,16 @@ export function composeInteractions({ sceneDecision = {}, modelResult = {} } = {
     ? modelResult.compact_followups
     : [];
 
-  const rawFollowups = [...modelFollowups, ...defaultFollowups]
+  const rawFollowups = [...staticFollowups, ...modelFollowups, ...defaultFollowups]
     .filter((followup) => isFollowupAllowed(followup, allowed))
-    .filter(uniqueFollowup);
+    .filter(uniqueFollowup)
+    .map((followup) => ({ ...followup, category: followup.category === 'other' ? 'other' : 'tight' }))
+    .sort((a, b) => (CATEGORY_RANK[a.category] ?? 0) - (CATEGORY_RANK[b.category] ?? 0));
 
   return {
     actions,
     compact_followups: compactFollowups,
-    followup_suggestions: dedupeFollowups(compactFollowups, rawFollowups).slice(0, 4),
+    followup_suggestions: dedupeFollowups(compactFollowups, rawFollowups).slice(0, FOLLOWUP_CAP),
   };
 }
 

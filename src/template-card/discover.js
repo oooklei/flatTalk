@@ -67,6 +67,7 @@ export function discoverTemplates(dir) {
       defaultData: extractDefaultData(html), // 原型自带示例数据，作为字段缺省值
       layout: (manifest.layout || detectLayout(html)).toLowerCase(),
       required: manifest.required || [],     // 必填字段（用于兜底打分）
+      followupActions: Array.isArray(manifest.followup_actions) ? manifest.followup_actions : [], // 配套追问按钮
       match: manifest.match || '',           // 适用场景描述（可回传模型）
       description: manifest.description || manifest.match || '',
     };

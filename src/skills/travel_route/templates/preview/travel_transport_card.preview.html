@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --primary: #FF7826;
+    --bg: #FFF8F0; --bg-white: #ffffff;
+    --ink: #2C2C2C; --ink-light: #666; --muted: #999999;
+    --border: #EDE4D8; --divider: #F0EBE3;
+    --ok: #2E7D32; --ok-bg: #E8F5E9;
+    --warn: #E67E22; --warn-bg: #FFF3E0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+
+  .sec-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 8px; padding: 10px 12px;
+    background: #FFF7ED;
+    border-radius: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .sec-title .ico {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    background: linear-gradient(145deg, #FF9A5C, #FF7826);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+  }
+  .intro {
+    font-size: 12px; color: var(--muted); line-height: 1.6;
+    margin: 0 0 10px; padding: 0 2px;
+  }
+
+  .ticket {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 12px 12px;
+    margin-bottom: 10px;
+  }
+  .ticket-route {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; margin-bottom: 12px;
+  }
+  .stop { min-width: 72px; }
+  .stop.right { text-align: right; }
+  .stop .time { font-size: 22px; font-weight: 800; line-height: 1.1; }
+  .stop .name { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .arrow {
+    flex: 1; text-align: center; position: relative; padding: 0 6px;
+  }
+  .arrow .meta {
+    font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 4px;
+  }
+  .arrow .line {
+    position: relative; height: 1px; background: #E5E5E5; margin: 0 4px;
+  }
+  .arrow .line::after {
+    content: "";
+    position: absolute; right: -2px; top: -3px;
+    border: 4px solid transparent; border-left-color: #CCC;
+  }
+
+  .seats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-bottom: 10px;
+  }
+  .seats:empty { display: none; margin: 0; }
+  .seat {
+    border-radius: 8px; padding: 8px 10px;
+    background: var(--ok-bg); font-size: 12px; line-height: 1.45;
+  }
+  .seat.tight { background: var(--warn-bg); }
+  .seat .seat-name { font-weight: 700; color: var(--ink); }
+  .seat .seat-price { font-weight: 800; color: var(--ink); margin: 0 2px; }
+  .seat .seat-status { color: var(--ok); font-weight: 600; }
+  .seat.tight .seat-status { color: var(--warn); }
+
+  .ticket-foot-legacy {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 12px; color: var(--ink-light);
+  }
+  .ticket-foot-legacy .price { color: var(--primary); font-weight: 800; font-size: 15px; }
+
+  .buy-btn {
+    display: block; width: 100%; text-align: center;
+    padding: 10px 0; border-radius: 10px; border: none;
+    background: var(--primary); color: #fff;
+    font-size: 14px; font-weight: 700; font-family: inherit;
+    box-shadow: 0 2px 8px rgba(255, 120, 38, 0.28);
+  }
+
+  .charter {
+    margin-top: 14px;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px 12px 8px;
+  }
+  .charter-head {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700;
+    margin: 10px 0 4px; padding: 8px 10px;
+    background: #FFF7ED; border-radius: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .charter-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 2px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .charter-row:last-child { border-bottom: none; }
+  .charter-ico {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    background: #F5F5F5;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .charter-body { flex: 1; min-width: 0; }
+  .charter-name {
+    font-size: 14px; font-weight: 700; margin-bottom: 2px;
+  }
+  .charter-text {
+    font-size: 12px; color: var(--ink-light); line-height: 1.65;
+  }
+  .charter-text b { color: var(--ink); }
+
+  .tip {
+    margin-top: 10px;
+    font-size: 12px; color: #E65100; background: #FFF3E0;
+    padding: 8px 10px; border-radius: 8px; line-height: 1.6;
+  }
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
+</style>
+</head>
+<body>
+<div class="tc-deck" data-layout="vertical"><div class="tc-card">
+  <div class="wrap">
+    <div class="sec-title">
+      <span class="ico">🚄</span>
+      <span>高铁购票</span>
+    </div>
+    
+    <div class="intro"></div>
+    
+
+    
+    <div class="ticket">
+      <div class="ticket-route">
+        <div class="stop">
+          <div class="time">07:09</div>
+          <div class="name">南宁东站</div>
+        </div>
+        <div class="arrow">
+          <div class="meta">2时30分 D3970</div>
+          <div class="line"></div>
+        </div>
+        <div class="stop right">
+          <div class="time">09:39</div>
+          <div class="name">防城港北站</div>
+        </div>
+      </div>
+
+      <div class="seats">
+      
+        <div class="seat ok">
+          <span class="seat-name">二等座</span>
+          <span class="seat-price">¥43</span>
+          <span class="seat-status">余票充足</span>
+        </div>
+      
+        <div class="seat tight">
+          <span class="seat-name">一等座</span>
+          <span class="seat-price">¥69</span>
+          <span class="seat-status">余票紧张</span>
+        </div>
+      
+      </div>
+
+      
+
+      <button type="button" class="buy-btn">去12306购票</button>
+    </div>
+    
+    <div class="ticket">
+      <div class="ticket-route">
+        <div class="stop">
+          <div class="time">09:12</div>
+          <div class="name">南宁东站</div>
+        </div>
+        <div class="arrow">
+          <div class="meta">1时28分 D3612</div>
+          <div class="line"></div>
+        </div>
+        <div class="stop right">
+          <div class="time">10:40</div>
+          <div class="name">防城港北站</div>
+        </div>
+      </div>
+
+      <div class="seats">
+      
+        <div class="seat ok">
+          <span class="seat-name">二等座</span>
+          <span class="seat-price">¥58</span>
+          <span class="seat-status">余票充足</span>
+        </div>
+      
+        <div class="seat ok">
+          <span class="seat-name">一等座</span>
+          <span class="seat-price">¥93</span>
+          <span class="seat-status">余票充足</span>
+        </div>
+      
+      </div>
+
+      
+
+      <button type="button" class="buy-btn">去12306购票</button>
+    </div>
+    
+
+    
+    <div class="charter">
+      <div class="charter-head">
+        <span>🚐</span>
+        <span>当地包车</span>
+      </div>
+      
+      <div class="charter-row">
+        <div class="charter-ico">🚐</div>
+        <div class="charter-body">
+          <div class="charter-name">建议家庭2人以上包7/9座商务车，当地价约 &lt;b&gt;¥400-600/天&lt;/b&gt;（含司机）。景点往返无需换乘，长者与儿童更省力。</div>
+          <div class="charter-text">建议家庭2人以上包7/9座商务车，当地价约 <b>¥400-600/天</b>（含司机）。景点往返无需换乘，长者与儿童更省力。</div>
+        </div>
+      </div>
+      
+      <div class="charter-row">
+        <div class="charter-ico">🚕</div>
+        <div class="charter-body">
+          <div class="charter-name">市区出租车起步价约 &lt;b&gt;¥7&lt;/b&gt;，基地管家可协助叫车；西湾、仙人山等近点步行可达。</div>
+          <div class="charter-text">市区出租车起步价约 <b>¥7</b>，基地管家可协助叫车；西湾、仙人山等近点步行可达。</div>
+        </div>
+      </div>
+      
+      <div class="charter-row">
+        <div class="charter-ico">💡</div>
+        <div class="charter-body">
+          <div class="charter-name">抵达/返程日建议包车接送站；出游日统一包车，避免打车等待。管家可提前预约车辆。</div>
+          <div class="charter-text">抵达/返程日建议包车接送站；出游日统一包车，避免打车等待。管家可提前预约车辆。</div>
+        </div>
+      </div>
+      
+    </div>
+    
+
+    
+  </div>
+
+  
+</div></div>
+
+</body>
+</html>

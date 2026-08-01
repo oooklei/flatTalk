@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --primary: #FF7826;
+    --bg: #FFF8F0; --bg-white: #ffffff;
+    --ink: #2C2C2C; --ink-light: #666; --muted: #999999;
+    --border: #F0E6DA; --divider: #E5EDE5; --price: #FF7826;
+    --card-green: #EEF7EE;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .card { max-width: 640px; margin: 0 auto; }
+
+  .chat-section-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 10px; padding: 10px 12px;
+    background: #FFF7ED; border-radius: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .chat-section-title .ico {
+    width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+    border: 1.5px solid #4CAF50; color: #4CAF50;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; background: #F1FBF1;
+  }
+
+  .sum-box {
+    background: var(--card-green);
+    border: 1px solid #D9ECDD;
+    border-radius: 14px;
+    padding: 4px 14px 14px;
+  }
+  .sum-rows { font-size: 13px; }
+  .sum-row {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--divider);
+  }
+  .sum-label { color: var(--muted); flex-shrink: 0; }
+  .sum-value { text-align: right; color: var(--ink); font-weight: 700; line-height: 1.45; }
+
+  .total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0 4px; border-top: 1px solid var(--divider);
+  }
+  .total-label { font-size: 13px; color: var(--muted); }
+  .total-price { font-size: 18px; font-weight: 800; color: var(--price); }
+  .total-price small { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+  .actions { margin-top: 12px; }
+  .chat-btn {
+    display: block; width: 100%; text-align: center;
+    padding: 12px 0; font-size: 15px; font-weight: 700;
+    border-radius: 12px; border: none; color: #fff;
+    background: var(--primary); cursor: pointer; font-family: inherit;
+    box-shadow: 0 3px 10px rgba(255, 120, 38, 0.28);
+  }
+  .chat-btn:active { transform: scale(0.99); }
+  .chat-btn.secondary {
+    margin-top: 8px; background: #fff; color: var(--primary);
+    border: 1px solid var(--primary); box-shadow: none;
+  }
+
+  .more-box {
+    margin-top: 12px;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 12px 4px;
+  }
+  .more-title {
+    font-size: 13px; color: var(--ink-light); font-weight: 600;
+    margin: 0 0 4px; padding: 0 2px;
+  }
+  .more-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 2px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .more-item:last-child { border-bottom: none; }
+  .more-ico {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; background: #F5F5F5;
+  }
+  .more-ico.food { background: #FFE8EF; }
+  .more-ico.pack { background: #E8F2FF; }
+  .more-ico.act { background: #E8F8EE; }
+  .more-body { flex: 1; min-width: 0; }
+  .more-label {
+    font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.4;
+  }
+  .more-desc {
+    font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.45;
+  }
+  .more-arrow {
+    flex-shrink: 0; color: #CCC; font-size: 16px; font-weight: 400;
+  }
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
+</style>
+</head>
+<body>
+<div class="tc-deck" data-layout="vertical"><div class="tc-card">
+  <div class="card">
+    <div class="chat-section-title">
+      <span class="ico">✓</span>
+      <span>旅居方案总结</span>
+    </div>
+
+    <div class="sum-box">
+      <div class="sum-rows">
+        
+        <div class="sum-row">
+          <span class="sum-label">目的地</span>
+          <span class="sum-value">防城港 · 滨海康养</span>
+        </div>
+        
+        <div class="sum-row">
+          <span class="sum-label">旅居天数</span>
+          <span class="sum-value">10天9晚</span>
+        </div>
+        
+        <div class="sum-row">
+          <span class="sum-label">出行人数</span>
+          <span class="sum-value">2人（2位长者）</span>
+        </div>
+        
+        <div class="sum-row">
+          <span class="sum-label">首选住宿</span>
+          <span class="sum-value">恒荣大酒店旅居康养基地</span>
+        </div>
+        
+      </div>
+      <div class="total">
+        <span class="total-label">预估总费用</span>
+        <span class="total-price">¥3,960起<small></small></span>
+      </div>
+      <div class="actions">
+        <button type="button" class="chat-btn" id="btnBook">立即预定路线</button>
+        
+      </div>
+    </div>
+
+    
+    <div class="more-box">
+      <div class="more-title">💡 您可能还想了解</div>
+      
+      <div class="more-item">
+        <div class="more-ico food">🍜</div>
+        <div class="more-body">
+          <div class="more-label">防城港当地有什么特色美食推荐？</div>
+          <div class="more-desc">防城港当地有什么特色美食推荐？</div>
+        </div>
+        <div class="more-arrow">›</div>
+      </div>
+      
+      <div class="more-item">
+        <div class="more-ico pack">🧳</div>
+        <div class="more-body">
+          <div class="more-label">10天旅居需要准备哪些物品？</div>
+          <div class="more-desc">10天旅居需要准备哪些物品？</div>
+        </div>
+        <div class="more-arrow">›</div>
+      </div>
+      
+      <div class="more-item">
+        <div class="more-ico act">🎯</div>
+        <div class="more-body">
+          <div class="more-label">旅居期间有哪些适合长者的活动？</div>
+          <div class="more-desc">旅居期间有哪些适合长者的活动？</div>
+        </div>
+        <div class="more-arrow">›</div>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+</div></div>
+
+</body>
+</html>

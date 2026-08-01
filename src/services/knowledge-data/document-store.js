@@ -29,7 +29,7 @@ export const DEFAULT_DOCUMENTS = Object.freeze([
   },
 ]);
 
-const COMMON_POLICY_DOCUMENTS = Object.freeze([
+export const COMMON_POLICY_DOCUMENTS = Object.freeze([
   {
     document_id: 'elder_policy_common_doc_1',
     skill_key: 'common',

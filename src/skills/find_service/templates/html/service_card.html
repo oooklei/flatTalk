@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务推荐单元</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：单个服务推荐项。含图标、标题、简介/时段、服务商可信指标(评分/空闲率)、价格。一键预定由追问按钮体现。 -->
+  <article class="service-card" data-layout="vertical">
+    <div class="card-thumb">{{icon}}</div>
+    <div class="card-body">
+      <div class="card-title">{{name}}</div>
+      <div class="card-meta">{{summary}}<br>{{timeRange}}</div>
+      <div class="supplier-info">🏢 {{provider_name}} ★{{provider_score}} 👥空闲{{provider_avail}}%</div>
+      <div class="card-price-row">
+        <div class="card-price">¥{{price}}<span class="unit">/{{unit}}</span></div>
+      </div>
+    </div>
+  </article>
+
+  <script type="application/json">
+  {
+    "icon": "🧹",
+    "name": "居家深度清洁",
+    "summary": "厨房/卫生间/卧室全屋清洁，持证上门",
+    "timeRange": "08:00-18:00",
+    "provider_name": "桂林夕阳红养老服务中心",
+    "provider_score": "4.8",
+    "provider_avail": "85",
+    "price": "180",
+    "unit": "次"
+  }
+  </script>
+</body>
+</html>

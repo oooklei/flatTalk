@@ -5,11 +5,6 @@
       "label": "按慢病调整",
       "user_prompt": "请按老人慢病情况调整这份一周膳食计划",
       "action_key": "meal_plan.adjust_for_condition"
-    },
-    {
-      "label": "采购清单",
-      "user_prompt": "请整理这一周膳食计划的采购清单",
-      "action_key": "client.copy"
     }
   ]
 }

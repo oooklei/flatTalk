@@ -1,0 +1,126 @@
+# flatTalk 服务编排配置
+# 包含应用服务、PostgreSQL、Redis
+
+version: '3.8'
+
+services:
+  # ==================== 应用服务 ====================
+  flattalk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: flattalk:latest
+    container_name: flattalk-app
+    restart: unless-stopped
+    ports:
+      # HTTP 端口（内部通信）
+      - "${FLATTALK_PORT:-5298}:5298"
+      # HTTPS 端口（前端访问，用于话筒等安全上下文功能）
+      - "${FLATTALK_SSL_PORT:-5444}:5444"
+    environment:
+      # 基础配置
+      - NODE_ENV=production
+      - FLATTALK_HOST=0.0.0.0
+      - FLATTALK_PORT=5298
+      - FLATTALK_SSL_PORT=5444
+      # SSL 证书配置
+      - FLATTALK_SSL_KEY=/app/ssl/server.key
+      - FLATTALK_SSL_CERT=/app/ssl/server.crt
+      # 数据库配置（使用服务名）
+      - FLATTALK_PG_URL=postgresql://${PG_USER:-tag_system}:${PG_PASSWORD:-tag_system}@postgres:5432/${PG_DB:-tag_system}
+      - FLATTALK_REDIS_URL=redis://redis:6379/${REDIS_DB:-7}
+      # 其他配置通过 .env 文件或环境变量注入
+    env_file:
+      - .env
+    volumes:
+      # 日志持久化
+      - flattalk-logs:/app/data
+      # SSL 证书（需要手动准备）
+      - ./ssl:/app/ssl:ro
+      # 静态资源（如需要）
+      - ./assets:/app/assets:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - flattalk-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5298/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==================== PostgreSQL ====================
+  postgres:
+    image: postgres:15-alpine
+    container_name: flattalk-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PG_DB:-tag_system}
+      POSTGRES_USER: ${PG_USER:-tag_system}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-tag_system}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C.UTF-8"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - flattalk-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-tag_system} -d ${PG_DB:-tag_system}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==================== Redis ====================
+  redis:
+    image: redis:7-alpine
+    container_name: flattalk-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --databases 16
+    volumes:
+      - redis-data:/data
+    networks:
+      - flattalk-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+# ==================== 网络配置 ====================
+networks:
+  flattalk-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+
+# ==================== 卷配置 ====================
+volumes:
+  flattalk-logs:
+    driver: local
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local

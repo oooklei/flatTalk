@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>转交订单</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：将订单转交其他供应商。列出可转交对象(名称+空闲率/环境/人数)，确认转交由追问按钮体现。 -->
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <div class="eyebrow">派单处理</div>
+      <h1>转交订单</h1>
+      <p class="subtitle">订单 {{order_no}} · {{service_name}}</p>
+    </header>
+
+    <section class="nb-section">
+      <div style="font-size:14px;color:var(--muted);margin-bottom:10px">请选择转交对象：</div>
+      <div class="transfer-list">
+        {{#targets}}
+        <div class="transfer-item">
+          <div class="transfer-item-info">
+            <div class="transfer-item-name">{{name}}</div>
+            <div class="transfer-item-meta">{{meta}}</div>
+          </div>
+        </div>
+        {{/targets}}
+      </div>
+    </section>
+  </article>
+
+  <script type="application/json">
+  {
+    "order_no": "GD1234567890",
+    "service_name": "上门护理",
+    "targets": [
+      { "name": "桂林乐颐家政服务公司", "meta": "空闲率92% | 环境4.2分 | 45人" },
+      { "name": "秀峰区爱心护理站", "meta": "空闲率78% | 环境4.8分 | 15人" },
+      { "name": "桂林康乐养老服务有限公司", "meta": "空闲率88% | 环境4.5分 | 32人" }
+    ]
+  }
+  </script>
+</body>
+</html>

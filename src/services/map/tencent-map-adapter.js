@@ -23,22 +23,29 @@ export class TencentMapAdapter {
   }
 
   /**
-   * 腾讯地图 API 签名计算
+   * 腾讯地图 API 签名计算（SK 类型 Key 必须）
+   *
+   * 正确算法（已验证通过）：
+   *   1. 取 path = /ws{endpoint}（如 /ws/geocoder/v1/）
+   *   2. 将所有参数（含 key）按参数名字母升序排列
+   *   3. 用原始值（不 URL 编码）拼接：key1=val1&key2=val2
+   *   4. 拼接签名原文：path?sortedParams + SK（SK 直接追加，不加 &）
+   *   5. MD5 → 小写 hex → 作为 sig 参数
    */
   _sign(endpoint, params) {
     if (!this.sk) return '';
-    const cleanParams = { ...params };
-    delete cleanParams.key;
-    delete cleanParams.sig;
 
-    const sortedQuery = Object.keys(cleanParams)
+    // 将 key 加入参数列表，一起参与排序
+    const signParams = { ...params, key: this.key };
+    delete signParams.sig;
+
+    const sortedQuery = Object.keys(signParams)
       .sort()
-      .map((k) => `${k}=${cleanParams[k]}`)
+      .map((k) => `${k}=${signParams[k]}`)
       .join('&');
 
-    const raw = sortedQuery
-      ? `/ws${endpoint}?${sortedQuery}&key=${this.key}${this.sk}`
-      : `/ws${endpoint}?key=${this.key}${this.sk}`;
+    // 签名原文：path?sortedParams+SK
+    const raw = `/ws${endpoint}?${sortedQuery}${this.sk}`;
     return crypto.createHash('md5').update(raw, 'utf8').digest('hex');
   }
 
@@ -211,6 +218,43 @@ export class TencentMapAdapter {
       },
       distance: item._distance || 0,
     }));
+  }
+
+  /**
+   * 构建静态图 URL（降级用）
+   *
+   * 腾讯静态图 API: /ws/staticmap/v2
+   * 用于 JS API 加载失败时的中间降级层（比 SVG 示意图更真实）。
+   * markers 最多取前 30 个，避免 URL 过长。
+   */
+  buildStaticMapUrl(center, markers = [], options = {}) {
+    const zoom = options.zoom || 11;
+    const size = options.size || '600*420';
+
+    // 签名参数（不含 sig 自身）
+    const params = {
+      center: `${center.lat},${center.lng}`,
+      zoom,
+      size,
+    };
+
+    // 构造 markers 参数：coord:lat,lng;title:xxx
+    if (markers.length) {
+      const parts = markers.slice(0, 30).map((m) => {
+        const title = (m.name || '').slice(0, 10);
+        return `coord:${m.lat},${m.lng};title:${title}`;
+      });
+      params.markers = parts.join('|');
+    }
+
+    const sig = this._sign('/staticmap/v2', params);
+    const paramStr = Object.keys(params)
+      .map((k) => `${k}=${encodeURIComponent(params[k])}`)
+      .join('&');
+
+    let url = `${this.baseUrl}/staticmap/v2?${paramStr}&key=${this.key}`;
+    if (sig) url += '&sig=' + sig;
+    return url;
   }
 
   /**

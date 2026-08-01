@@ -3,11 +3,14 @@ import { includesTerm } from '../scoring-engine.js';
 const healthRiskAlertTerms = [
   '健康风险', '风险预警', '健康预警', '预警', '风险研判', '报警', '异常信号',
   '风险等级', '信号', '研判',
+  '健康报告', '完整报告', '预警提示', '风险提示',
 ];
 
 const healthRiskVitalTerms = [
   '血压高', '血压偏高', '高血压', '血糖高', '血糖异常', '低血糖', '心率异常',
   '跌倒', '跌倒风险', '居家安全', '夜间离床', '呼吸异常', '血氧异常',
+  '血压', '血糖', '心率', '风险', '偏高', '异常', '报告', '评估',
+  '怎么办', '有什么风险', '需要注意',
 ];
 
 const healthRiskIntentTerms = [
@@ -21,7 +24,7 @@ const elderConstraintTerms = [
 export const healthRiskWarningRuleSet = {
   scene_key: 'health_risk_warning',
   default_intent: 'health_risk_warning.assess',
-  threshold: 5,
+  threshold: 4,
   template_candidates: ['health_warning_card', 'health_risk_signal_card', 'health_risk_rule_card', 'fallback'],
   required_data: ['health_risk_warning_business'],
   required_knowledge: ['health_risk_warning'],
@@ -42,7 +45,7 @@ export const healthRiskWarningRuleSet = {
     { group: 'elder_constraint', weight: 1.5, terms: elderConstraintTerms },
   ],
   role_boost: {
-    roles: ['elder', 'elder_family', 'family', 'village_doctor', 'care_worker', 'care_doctor', 'supervisor', 'system_admin'],
+    roles: ['elder', 'elder_family', 'family', 'village_doctor', 'community_doctor', 'care_worker', 'institution_admin', 'system_admin', 'admin', 'grid_worker'],
     weight: 1,
   },
   context_boost: {
@@ -59,6 +62,10 @@ export const healthRiskWarningRuleSet = {
     if (has(input, ['转人工', '复核', '人工复核'])) return 'health_risk_warning.manual_review';
     if (has(input, ['规则', '命中', '研判', '判定'])) return 'health_risk_warning.rule_detail';
     if (has(input, ['设备信号明细', '信号明细', '查看信号'])) return 'health_risk_warning.signal_detail';
+    if (has(input, ['完整', '报告', '健康报告'])) return 'health_risk_warning.report';
+    if (has(input, ['评估', '风险等级'])) return 'health_risk_warning.assess';
+    if (has(input, ['预警', '风险提示', '预警提示', '有什么风险'])) return 'health_risk_warning.warning';
+    if (has(input, ['膳食调养', '调养', '宜食', '忌食', '食疗'])) return 'health_risk_warning.dietary';
     return 'health_risk_warning.assess';
   },
 };

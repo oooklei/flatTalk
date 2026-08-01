@@ -184,12 +184,27 @@ function normalizeProduct(record = {}, index = 0) {
   const rawPrice = record.price_amount ?? record.priceAmount ?? record.price?.amount ?? record.salePrice ?? record.minPrice ?? null;
   const stock = record.stock ?? record.inventory ?? record.inventoryStock ?? null;
   const price = sanitizePrice(rawPrice);
+  
+  // 从产品名称中提取天数（如 "三日"、"5天"、"四日"）
+  const daysMatch = name.match(/(\d+)[天日]|([三四五六七八九十]+)[天日]/);
+  let days = null;
+  if (daysMatch) {
+    if (daysMatch[1]) {
+      days = parseInt(daysMatch[1]);
+    } else if (daysMatch[2]) {
+      const chineseToNumber = { '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
+      days = chineseToNumber[daysMatch[2]] || null;
+    }
+  }
+  
   return {
     product_id: String(productId || ''),
     sku_id: String(skuId || ''),
     product_name: String(name || `旅居产品${index + 1}`),
     destination: String(destination || ''),
     city: String(record.city || destination || ''),
+    days: days,
+    nights: days ? days - 1 : null,
     price_amount: price,
     price_label: record.price_label || (price ? `约${price}元/人` : '价格待确认'),
     price_warning: price !== null && price < 1,
@@ -247,16 +262,14 @@ function shouldCheckAvailability(request) {
 }
 
 function inferCity(text) {
+  if (/防城港|东兴|芒街|嘉路|白浪滩|簕山/.test(text)) return '防城港';
   if (/北海|海边|海滨/.test(text)) return '北海';
   if (/桂林|阳朔/.test(text)) return '桂林';
   if (/南宁/.test(text)) return '南宁';
   if (/百色/.test(text)) return '百色';
   if (/巴马|长寿/.test(text)) return '巴马';
-  if (/北海|海边|海滨/.test(text)) return '北海';
-  if (/桂林|阳朔/.test(text)) return '桂林';
-  if (/南宁/.test(text)) return '南宁';
-  if (/百色/.test(text)) return '百色';
-  if (/巴马|长寿/.test(text)) return '巴马';
+  if (/钦州/.test(text)) return '钦州';
+  if (/崇左/.test(text)) return '崇左';
   return '';
 }
 

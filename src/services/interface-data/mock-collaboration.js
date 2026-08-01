@@ -10,6 +10,8 @@ export const mockOrganizations = [
   { org_id: "org_homecare_center", org_name: "青秀社区居家养老服务中心", org_type: "homecare", parent_id: "org_qingxiu_community" },
   { org_id: "org_qingxiu_nursing", org_name: "青秀护理站", org_type: "nursing_station", parent_id: "org_homecare_center" },
   { org_id: "org_qingxiu_clinic", org_name: "青秀村医服务点", org_type: "village_clinic", parent_id: "org_qingxiu_community" },
+  { org_id: "org_provider_1", org_name: "广西康养服务商", org_type: "provider", parent_id: "" },
+  { org_id: "org_guangxi_mca", org_name: "广西民政厅", org_type: "civil_affairs", parent_id: "" },
   { org_id: "org_platform", org_name: "桂小养平台运营中心", org_type: "platform", parent_id: "" }
 ];
 
@@ -173,8 +175,8 @@ export const mockUsers = [
     account: "platform_admin",
     real_name: "平台管理员",
     role_key: "system_admin",
-    role_id: "XI_TONG_GUAN_LI_YUAN",
-    role_name: "系统管理员",
+    role_id: "CHAO_JI_GUAN_LI_YUAN",
+    role_name: "超级管理员",
     terminal: "Admin",
     auth_level: "admin",
     org_id: "org_platform",
@@ -182,6 +184,108 @@ export const mockUsers = [
     elder_scope: "all",
     token: "dev-sso-system-admin-test",
     phone_masked: "188****8888"
+  },
+  {
+    key: "b_director",
+    label: "B端用户（院长）",
+    user_id: "user_li_director",
+    account: "li_director",
+    real_name: "李明远",
+    role_key: "institution_admin",
+    role_id: "director",
+    role_name: "机构端-院长",
+    terminal: "B",
+    auth_level: "institution_admin",
+    org_id: "org_guixiaoyang_center",
+    org_name: "桂小养康养中心",
+    elder_scope: "institution_guixiaoyang_center",
+    token: "dev-sso-director-test",
+    phone_masked: "136****4101"
+  },
+  {
+    key: "c_community_doctor",
+    label: "C端用户（社区居家-医生）",
+    user_id: "user_zhao_doctor",
+    account: "zhao_doctor",
+    real_name: "赵伟华",
+    role_key: "community_doctor",
+    role_id: "SQJJ-YS",
+    role_name: "社区居家-医生",
+    terminal: "C",
+    auth_level: "care_medical",
+    org_id: "org_qingxiu_clinic",
+    org_name: "青秀社区卫生站",
+    elder_scope: "care_team_qingxiu",
+    token: "dev-sso-community-doctor-test",
+    phone_masked: "135****5107"
+  },
+  {
+    key: "c_community_helper",
+    label: "C端用户（社区居家-助老员）",
+    user_id: "user_wu_helper",
+    account: "wu_helper",
+    real_name: "吴秀芳",
+    role_key: "community_helper",
+    role_id: "SQJJ-ZLY",
+    role_name: "社区居家-助老员",
+    terminal: "C",
+    auth_level: "care_medical",
+    org_id: "org_qingxiu_community",
+    org_name: "青秀社区",
+    elder_scope: "community_qingxiu",
+    token: "dev-sso-community-helper-test",
+    phone_masked: "135****5108"
+  },
+  {
+    key: "c_provider_staff",
+    label: "C端用户（服务商）",
+    user_id: "user_zhang_provider",
+    account: "zhang_provider",
+    real_name: "张文强",
+    role_key: "provider_staff",
+    role_id: "FU_WU_SHANG",
+    role_name: "服务商",
+    terminal: "C",
+    auth_level: "provider",
+    org_id: "org_provider_1",
+    org_name: "广西康养服务商",
+    elder_scope: "provider_scope_1",
+    token: "dev-sso-provider-staff-test",
+    phone_masked: "135****5109"
+  },
+  {
+    key: "g_senior_official",
+    label: "G端用户（厅级干部）",
+    user_id: "user_wang_official",
+    account: "wang_official",
+    real_name: "王志远",
+    role_key: "senior_official",
+    role_id: "TING_JI_GAN_BU",
+    role_name: "厅级干部",
+    terminal: "G",
+    auth_level: "government",
+    org_id: "org_guangxi_mca",
+    org_name: "广西民政厅",
+    elder_scope: "province_guangxi",
+    token: "dev-sso-senior-official-test",
+    phone_masked: "139****0001"
+  },
+  {
+    key: "admin_config",
+    label: "配置管理员",
+    user_id: "user_liu_config",
+    account: "liu_config",
+    real_name: "刘建国",
+    role_key: "admin",
+    role_id: "PEI_ZHI_GUAN_LI_YUAN",
+    role_name: "配置管理员",
+    terminal: "Admin",
+    auth_level: "admin",
+    org_id: "org_platform",
+    org_name: "桂小养平台运营中心",
+    elder_scope: "all",
+    token: "dev-sso-config-admin-test",
+    phone_masked: "188****8889"
   }
 ];
 
@@ -500,12 +604,14 @@ export function getProfile(query = {}) {
 
 export function getMobileBootstrap(query = {}) {
   // 支持 external_aes_sso 外部 SSO 用户信息
-  if (query.presetKey === 'external_aes_sso' && query.userName) {
+  // 仅凭 presetKey 即可判定为外部 SSO，不要求 userName 非空（避免回退到 mock 数据）
+  if (query.presetKey === 'external_aes_sso') {
     // 构建外部 SSO 用户的 profile
+    const displayName = query.userName || query.userId || '用户';
     const profile = {
       user: {
         user_id: query.userId || 'external_user',
-        real_name: query.userName,
+        real_name: displayName,
         role_key: query.roleKey || 'guest',
         role_name: query.roleKey || 'guest',
         org_id: query.orgId || '',

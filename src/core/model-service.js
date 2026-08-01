@@ -62,7 +62,7 @@ export async function fillTemplateSlots({
     return fillServiceEmergencyCard({ message, intent_context });
   }
 
-  if (['service_recommend', 'service_catalog', 'org_profile', 'worker_profile', 'order_preview', 'order_status'].includes(selectedTemplateId)) {
+  if (['service_recommend', 'service_detail', 'service_catalog', 'org_profile', 'worker_profile', 'order_preview', 'order_status'].includes(selectedTemplateId)) {
     return fillFindServiceCard({ message, business_data, selectedTemplateId });
   }
   if (['dispatch_list', 'dispatch_detail', 'work_order', 'dispatch_status'].includes(selectedTemplateId)) {
@@ -92,7 +92,8 @@ export async function fillTemplateSlots({
 
 function selectTemplateId({ message, template_id, default_template_id, template_library, intent_context = {} }) {
   if (template_id && template_id !== 'answer') return template_id;
-  if (template_id === 'answer') return 'health_card';
+  // template_id='answer' 时不再强制改写为 health_card，保留 answer 作为通用兜底
+  if (template_id === 'answer' && template_library?.some(t => t.id === 'answer')) return 'answer';
   const templates = Array.isArray(template_library) ? template_library : [];
   const ids = templates.map((item) => item.id).filter(Boolean);
 
@@ -150,11 +151,14 @@ function selectPolicyTemplate(message, availableIds, intent_context) {
     return 'policy_list_card';
   }
 
-  // 默认使用 policy_card 或 policy_list_card
-  if (availableIds.includes('policy_card')) return 'policy_card';
-  if (availableIds.includes('policy_list_card')) return 'policy_list_card';
+  // 默认兜底：如果有 policy_card 才返回，否则返回 null 让上层用 answer
+  if (availableIds.includes('policy_card') && isPolicyConsultText(text)) return 'policy_card';
 
   return null;
+}
+
+function isPolicyConsultText(text) {
+  return /养老政策|政策|补贴|高龄津贴|长护险|长期护理保险|护理补贴|养老保险|养老金|社区居家养老|居家养老|养老服务|助餐补贴|适老化改造|失能评估|能力评估|民政|人社/.test(String(text || ''));
 }
 
 function isMealPlanText(text) {
@@ -597,7 +601,22 @@ function fillWeeklyPlan({ message, business_data }) {
     : buildWeeklyPlanItems(condition);
 
   const compactFollowups = [
-    { label: '按健康状况调整', action_key: 'meal_plan.adjust_for_condition' },
+    {
+      label: '按健康状况调整',
+      action_key: 'meal_plan.adjust_for_condition',
+      input: {
+        type: 'select',
+        placeholder: '选择健康状况',
+        param_key: 'condition',
+        options: [
+          { value: 'diabetes', label: '糖尿病/控糖' },
+          { value: 'hypertension', label: '高血压' },
+          { value: 'low_salt', label: '低盐饮食' },
+          { value: 'gout', label: '痛风/高尿酸' },
+          { value: 'dyslipidemia', label: '高血脂' },
+        ],
+      },
+    },
   ];
 
   return sanitizeModelResult({
@@ -730,7 +749,22 @@ function fillDietCard({ message, business_data }) {
   const answerText = buildAnswer(condition, mealType);
 
   const compactFollowups = [
-    { label: '生成一周计划', action_key: 'meal_plan.generate_weekly_plan' },
+    {
+      label: '生成一周计划',
+      action_key: 'meal_plan.generate_weekly_plan',
+      input: {
+        type: 'select',
+        placeholder: '选择健康状况',
+        param_key: 'condition',
+        options: [
+          { value: 'diabetes', label: '糖尿病/控糖' },
+          { value: 'hypertension', label: '高血压' },
+          { value: 'low_salt', label: '低盐饮食' },
+          { value: 'gout', label: '痛风/高尿酸' },
+          { value: 'general', label: '通用营养' },
+        ],
+      },
+    },
   ];
 
   return sanitizeModelResult({
@@ -1009,7 +1043,22 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
   }
 
   const compactFollowups = [
-    { label: '周边导航', action_key: 'nearby_resource.route' },
+    {
+      label: '周边导航',
+      action_key: 'nearby_resource.route',
+      input: {
+        type: 'select',
+        placeholder: '选择目的地类型',
+        param_key: 'category',
+        options: [
+          { value: 'food', label: '🍽️ 餐饮' },
+          { value: 'stay', label: '🏠 住宿' },
+          { value: 'spot', label: '🏖️ 景点' },
+          { value: 'medical', label: '🏥 医疗' },
+          { value: 'leisure', label: '🎣 休闲' },
+        ],
+      },
+    },
   ];
 
   return sanitizeModelResult({
@@ -1286,7 +1335,6 @@ function fillServiceEmergencyCard({ message = '', intent_context = {} } = {}) {
     actions: [
       { key: 'sos.call_120', label: '📞 立即拨打120' },
       { key: 'sos.notify_family', label: '👪 通知家属' },
-      { key: 'sos.im_safe', label: '✓ 我已安全' },
     ],
     followup_suggestions: [
       { key: 'sos.call_120', label: '拨打120' },
@@ -1322,7 +1370,7 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
       data: { sceneTitle: '养老服务目录', total: catalog.length, categories },
       actions: [
         { action_key: 'find_service.recommend', label: '智能推荐', params: {} },
-        { action_key: 'find_service.book', label: '去预约', params: {} },
+        { action_key: 'find_service.catalog', label: '全部服务', params: {} },
       ],
       followup_suggestions: [],
       template_fit_notes: [],
@@ -1346,7 +1394,7 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
         certified: org.certified ? '已认证' : '未认证',
       },
       actions: [
-        { action_key: 'find_service.book_org', label: '预约该机构', params: { org_id: org.org_id } },
+        { action_key: 'find_service.list_orgs', label: '查看机构', params: {} },
         { action_key: 'find_service.list_workers', label: '查看服务人员', params: { org_id: org.org_id } },
       ],
       followup_suggestions: [],
@@ -1370,8 +1418,8 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
         available: w.available ? '可接单' : '暂不接单',
       },
       actions: [
-        { action_key: 'find_service.book_worker', label: '预约该人员', params: { worker_id: w.worker_id } },
         { action_key: 'find_service.list_orgs', label: '看机构', params: {} },
+        { action_key: 'find_service.recommend', label: '智能推荐', params: {} },
       ],
       followup_suggestions: [],
       template_fit_notes: [],
@@ -1396,11 +1444,11 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
         confirmHint: '确认后将自动进入派单调度',
       },
       actions: [
-        { action_key: 'find_service.confirm_order', label: '确认下单', params: { service_id: svc.service_id } },
-        { action_key: 'find_service.edit_order', label: '修改', params: {} },
+        { action_key: 'find_service.detail_order', label: '查看订单', params: {} },
+        { action_key: 'find_service.catalog', label: '全部服务', params: {} },
       ],
       followup_suggestions: [
-        { label: '指定护理人员', user_prompt: '请指定护理人员上门', action_key: 'find_service.book_worker' },
+        { label: '找护工上门', user_prompt: '我想找护工上门护理', action_key: 'find_service.list_workers' },
       ],
       template_fit_notes: [],
     });
@@ -1427,6 +1475,35 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
     });
   }
 
+  if (tpl === 'service_detail') {
+    const svc = catalog[0] || {};
+    const tags = svc.scene_tags || [];
+    const features = svc.features || ['专业护理团队', '持证上岗', '上门服务'];
+    const answerText = `为您展示「${svc.name || '养老服务'}」详情。`;
+    return sanitizeModelResult({
+      template_id: 'service_detail',
+      answer_text: answerText, answer: answerText,
+      data: {
+        category: svc.category || '养老服务',
+        name: svc.name || '上门护理',
+        price_text: svc.price_from ? `${svc.price_from} 元/${svc.unit || '次'}` : '面议',
+        intro: svc.description || '由持证护理人员提供专业上门照护服务，涵盖生活照料、健康监测、康复辅助等。',
+        has_tags: tags.length > 0,
+        tags,
+        has_features: features.length > 0,
+        features,
+        timeRange: svc.time_range || '每日 08:00 - 18:00',
+        hotline: svc.hotline || '400-888-0000',
+      },
+      actions: [
+        { action_key: 'find_service.catalog', label: '全部服务', params: {} },
+        { action_key: 'find_service.list_orgs', label: '服务机构', params: {} },
+      ],
+      followup_suggestions: [],
+      template_fit_notes: [],
+    });
+  }
+
   const top = catalog.slice(0, 4).map((s) => ({
     id: s.service_id, name: s.name, category: s.category,
     price: s.price_from, unit: s.unit, tags: (s.scene_tags || []).join('/'), desc: s.description,
@@ -1447,8 +1524,8 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
     },
     actions: [
       { action_key: 'find_service.detail_service', label: '查看详情', params: { service_id: top[0]?.id } },
-      { action_key: 'find_service.book', label: '立即预约', params: { service_id: top[0]?.id } },
       { action_key: 'find_service.catalog', label: '全部服务', params: {} },
+      { action_key: 'find_service.list_orgs', label: '看机构', params: {} },
     ],
     followup_suggestions: [
       { label: '找护工上门', user_prompt: '我想找护工上门护理', action_key: 'find_service.list_workers' },
@@ -1477,9 +1554,8 @@ function fillDispatchManageCard({ message, business_data, selectedTemplateId }) 
         acceptedAt: d.accepted_at || '', rejectedReason: d.rejected_reason || '',
       },
       actions: [
-        { action_key: 'dispatch_manage.accept', label: '接单', params: { dispatch_id: d.dispatch_id } },
-        { action_key: 'dispatch_manage.reject', label: '拒单', params: { dispatch_id: d.dispatch_id } },
-        { action_key: 'dispatch_manage.reassign', label: '改派', params: { dispatch_id: d.dispatch_id } },
+        { action_key: 'dispatch_manage.list', label: '返回列表', params: {} },
+        { action_key: 'dispatch_manage.status', label: '查看进度', params: { dispatch_id: d.dispatch_id } },
       ],
       followup_suggestions: [],
       template_fit_notes: [],
@@ -1500,7 +1576,7 @@ function fillDispatchManageCard({ message, business_data, selectedTemplateId }) 
       },
       actions: [
         { action_key: 'dispatch_manage.status', label: '查派单进度', params: { order_id: o.order_id } },
-        { action_key: 'dispatch_manage.urge', label: '催单', params: { order_id: o.order_id } },
+        { action_key: 'dispatch_manage.list', label: '返回列表', params: {} },
       ],
       followup_suggestions: [],
       template_fit_notes: [],
@@ -1538,8 +1614,8 @@ function fillDispatchManageCard({ message, business_data, selectedTemplateId }) 
       })),
     },
     actions: [
-      { action_key: 'dispatch_manage.accept_first', label: '接第一条', params: { dispatch_id: dispatches[0]?.dispatch_id } },
       { action_key: 'dispatch_manage.detail', label: '派单详情', params: { dispatch_id: dispatches[0]?.dispatch_id } },
+      { action_key: 'dispatch_manage.status', label: '查看进度', params: {} },
     ],
     followup_suggestions: [
       { label: '查看工单', user_prompt: '查看对应的服务工单', action_key: 'dispatch_manage.work_order' },
@@ -1731,7 +1807,21 @@ function fillRouteCard({ message, business_data }) {
   } : { destination };
 
   const compactFollowups = [
-    { label: '查天气风险', action_key: 'travel_route.check_weather_risk', params: { city: destination } },
+    {
+      label: '查天气风险',
+      action_key: 'travel_route.check_weather_risk',
+      params: { city: destination },
+      input: {
+        type: 'select',
+        placeholder: '选择查询天数',
+        param_key: 'days',
+        options: [
+          { value: '3', label: '未来3天' },
+          { value: '7', label: '未来一周' },
+          { value: '15', label: '未来15天' },
+        ],
+      },
+    },
   ];
 
   return sanitizeModelResult({

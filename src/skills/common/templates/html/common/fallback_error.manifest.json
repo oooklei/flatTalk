@@ -1,5 +1,6 @@
 {
   "id": "fallback_error",
+  "description": "异常错误友好提示卡片，用于系统出错时的兜底展示",
   "layout": "vertical",
   "match": "异常 / 错误返回兜底。字段：emoji, title, code, message, detail, suggestion, foot",
   "required": ["emoji", "title", "code", "message", "detail", "suggestion", "foot"]

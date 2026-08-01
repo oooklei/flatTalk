@@ -349,20 +349,15 @@ function decodeBasicHtmlEntities(value = "") {
 
 function isSupportedMobileAction(action = {}) {
   const key = String(action.action_key || "");
-  return key === "meal_plan.generate_weekly_plan"
-    || key === "meal_plan.adjust_for_condition"
-    || key === "meal_plan.save_preference"
-    || key === "travel_route.replan"
-    || key === "travel_route.fill_preferences"
-    || key === "travel_route.compare_destinations"
-    || key === "travel_route.check_availability"
-    || key === "travel_route.check_weather_risk"
-    || key === "travel_route.booking_handoff"
-    || key === "travel_route.view_product_detail"
-    || key === "travel_route.calculate_budget"
-    || key === "travel_route.check_weather_risk"
-    || key === "travel_route.plan_transport"
-    || key === "travel_route.request_manual_review";
+  if (!key) return false;
+  return key.startsWith("meal_plan.")
+    || key.startsWith("travel_route.")
+    || key.startsWith("health_risk_warning.")
+    || key.startsWith("find_service.")
+    || key.startsWith("dispatch_manage.")
+    || key.startsWith("nearby_resource.")
+    || key === "sos.call_120"
+    || key === "sos.notify_family";
 }
 
 function debugStatusLabel(status = "") {
@@ -430,7 +425,12 @@ async function fetchJson(url, options) {
       throw new Error(`接口返回非 JSON（HTTP ${res.status}）：${preview || "空响应"}`);
     }
   }
-  if (!res.ok && !body?.ok) throw new Error(body?.message || body?.error || `HTTP ${res.status}`);
+  if (!res.ok && !body?.ok) {
+    const err = new Error(body?.message || body?.error || `HTTP ${res.status}`);
+    err.status = res.status;
+    err.code = body?.error || '';
+    throw err;
+  }
   return body || {};
 }
 
@@ -554,6 +554,7 @@ class MobileApp {
       latestAnswer: "",
       recognizing: false,
       sending: false,
+      pendingQueue: [],
       inputHistory: [],
       inputHistoryIndex: -1,
       templateTabs: [],
@@ -595,6 +596,8 @@ class MobileApp {
       this.renderLogin();
       return;
     }
+    // 启动时获取用户位置（异步，不阻塞 UI）
+    this._initLocation();
     try {
       await this.loadBootstrap();
     } catch (e) {
@@ -611,6 +614,16 @@ class MobileApp {
     // 退出或关闭时同步
     window.addEventListener("beforeunload", () => this._syncToBackend(true));
     window.addEventListener("pagehide", () => this._syncToBackend(true));
+  }
+
+  async _initLocation() {
+    if (!window.locationService) return;
+    try {
+      this.state.location = await window.locationService.detect();
+      console.log("[Mobile] location:", this.state.location);
+    } catch (e) {
+      console.warn("[Mobile] location detect failed:", e);
+    }
   }
 
   async _loadConversationsFromBackend() {
@@ -774,6 +787,9 @@ class MobileApp {
       } else if (e.ctrlKey && (e.key === "x" || e.key === "X")) {
         e.preventDefault();
         this.toggleDebugSidePanel();
+      } else if (e.ctrlKey && (e.key === "s" || e.key === "S")) {
+        e.preventDefault();
+        this.toggleHistorySearchPanel();
       }
     });
   }
@@ -1010,10 +1026,12 @@ class MobileApp {
       ["入口智能体", resultPlatform.agentId ? `space=${resultPlatform.spaceId || "-"} / agent=${resultPlatform.agentId}` : "未返回"]
     ];
 
-    const trace = result.audit_trace || [];
-    const kbHits = result.kb_pre_retrieve?.hits || [];
-    const components = result.remote_components || [];
-    const warnings = result.warnings || [];
+    const trace = result.stages || [];
+    const kbHits = Array.isArray(result.evidence) ? result.evidence : [];
+    const warnings = result.debug?.model_error ? [`模型错误: ${result.debug.model_error}`] : [];
+    if (result.debug?.knowledge_error) warnings.push(`知识库错误: ${result.debug.knowledge_error}`);
+    if (result.debug?.render_status === 'error') warnings.push('渲染降级');
+    const routeReason = result.route?.template_reason || result.route?.knowledge_source ? `场景=${result.route?.scene_key || '-'} / 决策=${result.route?.decision || '-'} / 知识=${result.route?.knowledge_status || '-'}` : '后端根据当前输入和模型响应完成调度。';
     const requestId = result.request_id || "无请求号";
 
     panel.innerHTML = `
@@ -1053,7 +1071,7 @@ class MobileApp {
         </div>
         <div class="debug-side-section">
           <div class="debug-side-section-title">路由原因</div>
-          <p class="debug-side-reason">${escapeHtml(result.route_reason || "后端根据当前输入和模型响应完成调度。")}</p>
+          <p class="debug-side-reason">${escapeHtml(routeReason)}</p>
         </div>
         ${trace.length ? `
           <div class="debug-side-section">
@@ -1068,22 +1086,8 @@ class MobileApp {
               ${kbHits.slice(0, 6).map((hit, index) => `
                 <article>
                   <b>${index + 1}</b>
-                  <div><span>${escapeHtml(hit.kb_type || "知识库")}</span><p>${escapeHtml(hit.title || "未返回标题")}</p></div>
+                  <div><span>${escapeHtml(hit.source || hit.kb_type || "知识库")}</span><p>${escapeHtml(hit.title || hit.text?.slice(0, 60) || "未返回标题")}</p></div>
                   <em>${escapeHtml(debugScoreLabel(hit.score))}</em>
-                </article>
-              `).join("")}
-            </div>
-          </div>
-        ` : ""}
-        ${components.length ? `
-          <div class="debug-side-section">
-            <div class="debug-side-section-title">远端组件执行（${Math.min(8, components.length)}/${components.length}）</div>
-            <div class="debug-side-list">
-              ${components.slice(0, 8).map((item) => `
-                <article>
-                  <span>${escapeHtml(item.type || "Component")}</span>
-                  <p>${escapeHtml(item.name || `target=${item.targetId || "-"}`)}</p>
-                  <em>${escapeHtml(debugStatusLabel(item.status))}${item.hits == null ? "" : ` / 命中${item.hits}`}</em>
                 </article>
               `).join("")}
             </div>
@@ -1437,12 +1441,40 @@ class MobileApp {
 
   persistHistory() {
     this.state.conversations = this.state.conversations.slice(0, MAX_HISTORY);
-    localStorage.setItem(STORAGE_HISTORY, JSON.stringify(this.state.conversations));
-    // 瑙﹀彂鍚庣鍚屾锛堣妭娴侊級
+    try { localStorage.removeItem(STORAGE_HISTORY_LEGACY); } catch {}
+    const MAX_BYTES = 4 * 1024 * 1024;
+    let attempts = 0;
+    const maxAttempts = this.state.conversations.length;
+    while (attempts < maxAttempts) {
+      try {
+        const data = JSON.stringify(this.state.conversations);
+        if (data.length > MAX_BYTES) {
+          const oldest = this.state.conversations[this.state.conversations.length - 1];
+          if (oldest?.messages?.length > 3) {
+            oldest.messages = oldest.messages.slice(-3);
+            oldest._trimmed = true;
+            attempts++;
+            continue;
+          }
+          this.state.conversations = this.state.conversations.slice(0, -1);
+          attempts++;
+          continue;
+        }
+        localStorage.setItem(STORAGE_HISTORY, data);
+        break;
+      } catch (e) {
+        if (e.name === 'QuotaExceededError' && this.state.conversations.length > 1) {
+          this.state.conversations = this.state.conversations.slice(0, -1);
+          attempts++;
+          continue;
+        }
+        console.warn('[Mobile] persistHistory failed:', e.message);
+        break;
+      }
+    }
     this._scheduleBackendSync();
   }
 
-  // 鍚庣鍚屾璋冨害锛堣妭娴?5 绉掞級
   _scheduleBackendSync() {
     if (this._syncTimeout) clearTimeout(this._syncTimeout);
     this._syncTimeout = setTimeout(() => {
@@ -1665,7 +1697,13 @@ class MobileApp {
 
   async sendMessage(text) {
     const message = String(text || "").trim();
-    if (!message || this.state.sending) return;
+    if (!message) return;
+    if (this.state.sending) {
+      // 排队等待当前请求完成后自动发送
+      this.state.pendingQueue.push(message);
+      this.showToast("消息已排队，当前处理完成后自动发送");
+      return;
+    }
     this.state.sending = true;
     this.stopVisibleVoiceInput();
     screen.querySelector(".mobile-send-button")?.setAttribute("disabled", "disabled");
@@ -1695,17 +1733,38 @@ class MobileApp {
           authLevel: this.auth.authLevel,
           userName: this.auth.userName,
           orgName: this.auth.orgName,
-          presetKey: this.auth.presetKey
+          presetKey: this.auth.presetKey,
+          location: this.state.location || null,
         })
       });
       this.handleRemoteResult(body);
     } catch (err) {
-      this.updateLastAiBubble(`\u8bf7\u6c42\u672a\u5b8c\u6210\uff1a${err.message}`, { error: true });
+      if (err.status === 409) {
+        // 会话繁忙，重新排队等待
+        this.state.pendingQueue.unshift(message);
+        this.showToast("系统处理中，消息已排队");
+      } else {
+        this.updateLastAiBubble(`\u8bf7\u6c42\u672a\u5b8c\u6210\uff1a${err.message}`, { error: true });
+      }
     } finally {
       this.state.sending = false;
       screen.querySelector(".mobile-send-button")?.removeAttribute("disabled");
       this.resetVisibleVoiceInput();
+      this.flushPendingQueue();
     }
+  }
+
+  flushPendingQueue() {
+    const next = this.state.pendingQueue.shift();
+    if (next) this.sendMessage(next);
+  }
+
+  showToast(text) {
+    const toast = document.createElement("div");
+    toast.className = "mobile-toast";
+    toast.textContent = text;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
   }
 
   normalizeDebugResult(body = {}) {
@@ -1813,7 +1872,7 @@ class MobileApp {
     const buttons = actions.map((item) => `
       <button type="button" class="mobile-action-btn" data-mobile-action="${encodeFollowup({
         ...item,
-        skill_key: item.skill_key || result.skill_key || "guixiaoyang_dispatch",
+        skill_key: item.skill_key || result.skill_key || "common",
         source_template_id: item.source_template_id || result.template_id || "",
         next_template_id: item.next_template_id || result.template_id || "",
       })}">${escapeHtml(item.label || item.action_key || "\u6267\u884c")}</button>
@@ -1826,8 +1885,11 @@ class MobileApp {
 
   async handleAssistantAction(action = {}, button = null) {
     if (!action?.action_key || this.state.sending) return;
+    this.state.sending = true;
     const conversation = this.currentConversation();
     const originalText = button?.textContent || action.label || action.action_key;
+    const sendButton = screen.querySelector(".mobile-send-button");
+    sendButton?.setAttribute("disabled", "disabled");
     try {
       if (button) {
         button.disabled = true;
@@ -1853,6 +1915,7 @@ class MobileApp {
           userName: this.auth.userName,
           orgName: this.auth.orgName,
           presetKey: this.auth.presetKey,
+          location: this.state.location || null,
         }),
       });
       this.handleRemoteResult(payload);
@@ -1863,6 +1926,9 @@ class MobileApp {
         button.disabled = false;
         button.textContent = originalText;
       }
+      this.state.sending = false;
+      sendButton?.removeAttribute("disabled");
+      this.flushPendingQueue();
     }
   }
 
@@ -1889,7 +1955,7 @@ class MobileApp {
     const buttons = suggestions.map((item) => `
       <button type="button" class="mobile-followup-btn" data-mobile-followup="${encodeFollowup({
         ...item,
-        skill_key: item.skill_key || result.skill_key || "guixiaoyang_dispatch",
+        skill_key: item.skill_key || result.skill_key || "common",
         source_template_id: item.source_template_id || result.template_id || "",
         next_template_id: item.next_template_id || result.template_id || "",
       })}">${escapeHtml(item.label || item.user_prompt || "\u7ee7\u7eed")}</button>
@@ -2401,6 +2467,169 @@ class MobileApp {
     });
   }
 
+  toggleHistorySearchPanel() {
+    const existing = screen.querySelector("#historySearchPanel");
+    if (existing) { existing.remove(); return; }
+
+    const conversations = this.state.conversations || [];
+    const filterMatcher = (conv, query, filter) => {
+      if (filter === "favorite" && !conv.favorite) return false;
+      if (filter === "meal_plan" && !/膳食|饮食|meal|营养/i.test(conv.title + conv.latestQuestion)) return false;
+      if (filter === "travel" && !/旅居|路线|旅游|travel|康养/i.test(conv.title + conv.latestQuestion)) return false;
+      if (filter === "nearby" && !/周边|附近|nearby|配套/i.test(conv.title + conv.latestQuestion)) return false;
+      if (!query) return true;
+      const haystack = [conv.title, conv.latestQuestion, conv.latestAnswer, ...(conv.messages || []).map((m) => m.content || m.markdown || "")].join(" ").toLowerCase();
+      return haystack.includes(query.toLowerCase());
+    };
+
+    const highlightText = (text, query) => {
+      if (!query || !text) return escapeHtml(text || "");
+      const escaped = escapeHtml(text);
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+      return escaped.replace(regex, '<mark class="search-highlight">$1</mark>');
+    };
+
+    const renderResults = (query, filter) => {
+      const filtered = conversations.filter((c) => filterMatcher(c, query, filter));
+      if (!filtered.length) {
+        return `<p class="history-search-empty">未找到匹配的对话</p>`;
+      }
+      return filtered.map((conv) => {
+        const msgs = conv.messages || [];
+        const matchedMsgs = query ? msgs.filter((m) => {
+          const text = (m.content || m.markdown || "").toLowerCase();
+          return text.includes(query.toLowerCase());
+        }) : [];
+        const msgPreview = matchedMsgs.length
+          ? matchedMsgs.slice(0, 3).map((m) => `<small class="search-msg-preview">${highlightText(compactText(m.content || m.markdown || "", 80), query)}</small>`).join("")
+          : `<small class="search-msg-preview">${escapeHtml(compactText(conv.latestAnswer || "暂无回复", 80))}</small>`;
+        return `
+          <div class="history-search-row" data-search-conversation="${escapeHtml(conv.id)}">
+            <div class="history-search-header">
+              <strong>${conv.favorite ? "★ " : ""}${highlightText(conv.title || "未命名对话", query)}</strong>
+              <span class="history-search-date">${new Date(conv.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
+            </div>
+            <small class="search-q">问：${highlightText(compactText(conv.latestQuestion || "暂无提问", 60), query)}</small>
+            ${msgPreview}
+            ${matchedMsgs.length ? `<span class="search-match-count">${matchedMsgs.length} 条匹配消息</span>` : ""}
+          </div>
+        `;
+      }).join("");
+    };
+
+    const panel = document.createElement("div");
+    panel.id = "historySearchPanel";
+    panel.className = "history-search-overlay";
+    panel.innerHTML = `
+      <div class="history-search-panel" role="dialog" aria-label="历史对话搜索">
+        <header class="history-search-top">
+          <div class="history-search-input-wrap">
+            <span class="history-search-icon">${mobileIconSvg("search")}</span>
+            <input type="text" id="historySearchInput" placeholder="搜索对话内容、关键词..." autocomplete="off" />
+          </div>
+          <div class="history-search-filters">
+            <button type="button" class="history-filter-btn active" data-filter="all">全部</button>
+            <button type="button" class="history-filter-btn" data-filter="favorite">★ 收藏</button>
+            <button type="button" class="history-filter-btn" data-filter="meal_plan">膳食</button>
+            <button type="button" class="history-filter-btn" data-filter="travel">旅居</button>
+            <button type="button" class="history-filter-btn" data-filter="nearby">周边</button>
+          </div>
+          <button type="button" id="closeHistorySearch" class="history-search-close" title="关闭 Ctrl+S">${mobileIconSvg("close")}</button>
+        </header>
+        <div class="history-search-meta">
+          <span id="historySearchCount">${conversations.length} 条对话</span>
+          <span class="history-search-tip">点击对话跳转 · Ctrl+S 切换 · Esc 关闭</span>
+        </div>
+        <div class="history-search-results" id="historySearchResults">${renderResults("", "all")}</div>
+      </div>
+    `;
+    screen.appendChild(panel);
+
+    const input = panel.querySelector("#historySearchInput");
+    let currentFilter = "all";
+
+    panel.querySelectorAll(".history-filter-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        panel.querySelectorAll(".history-filter-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.filter;
+        const query = input.value.trim();
+        const html = renderResults(query, currentFilter);
+        panel.querySelector("#historySearchResults").innerHTML = html;
+        const filtered = conversations.filter((c) => filterMatcher(c, query, currentFilter));
+        panel.querySelector("#historySearchCount").textContent = `${filtered.length} 条对话`;
+        bindRowClicks();
+      });
+    });
+
+    input.addEventListener("input", () => {
+      const query = input.value.trim();
+      const html = renderResults(query, currentFilter);
+      panel.querySelector("#historySearchResults").innerHTML = html;
+      const filtered = conversations.filter((c) => filterMatcher(c, query, currentFilter));
+      panel.querySelector("#historySearchCount").textContent = `${filtered.length} 条对话`;
+      bindRowClicks();
+    });
+
+    const closePanel = () => panel.remove();
+    panel.querySelector("#closeHistorySearch").addEventListener("click", closePanel);
+    panel.addEventListener("click", (e) => { if (e.target === panel) closePanel(); });
+    panel.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { e.preventDefault(); closePanel(); }
+    });
+
+    const bindRowClicks = () => {
+      panel.querySelectorAll("[data-search-conversation]").forEach((row) => {
+        row.addEventListener("click", () => {
+          const id = row.dataset.searchConversation;
+          const query = input.value.trim();
+          this.state.currentConversationId = id;
+          closePanel();
+          this.switchTab("chat");
+          this.replayConversation();
+          this.updateFavoriteButton();
+          if (query) {
+            setTimeout(() => this._highlightSearchKeyword(query), 100);
+          }
+        });
+      });
+    };
+
+    bindRowClicks();
+    setTimeout(() => input.focus(), 50);
+  }
+
+  _highlightSearchKeyword(query) {
+    if (!query) return;
+    const bubbles = screen.querySelectorAll(".mobile-message-bubble .mobile-bubble-content");
+    if (!bubbles.length) return;
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+    let firstMatch = null;
+    bubbles.forEach((bubble) => {
+      const walker = document.createTreeWalker(bubble, NodeFilter.SHOW_TEXT, null);
+      const textNodes = [];
+      let node;
+      while ((node = walker.nextNode())) textNodes.push(node);
+      textNodes.forEach((textNode) => {
+        if (regex.test(textNode.textContent)) {
+          const span = document.createElement("span");
+          span.innerHTML = textNode.textContent.replace(regex, '<mark class="search-highlight-inline">$1</mark>');
+          textNode.replaceWith(span);
+          if (!firstMatch) firstMatch = span;
+        }
+      });
+    });
+    if (firstMatch) {
+      firstMatch.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => {
+        screen.querySelectorAll(".search-highlight-inline").forEach((m) => {
+          m.classList.add("fading");
+          setTimeout(() => m.outerHTML = m.innerHTML, 3000);
+        });
+      }, 100);
+    }
+  }
+
   async deleteConversation(id) {
     const conversation = this.state.conversations.find((c) => c.id === id);
     if (!conversation) return;
@@ -2689,16 +2918,16 @@ class MobileApp {
   }
 }
 
-window.GuiXiaoYangMobileApp = new MobileApp();
+window.FlatTalkMobileApp = new MobileApp();
 
 // 卡片内按钮（如行程卡「查看天气风险」）通过 postMessage 触发技能动作。
 // 卡片运行在同源 iframe（srcdoc）中，可直接向父窗口发消息；此处仅响应已知动作键。
 window.addEventListener('message', (event) => {
   try {
     const data = event.data;
-    if (!data || data.type !== 'gxy_card_action') return;
+    if (!data || data.type !== 'flattalk_card_action') return;
     if (data.action_key !== 'travel_route.check_weather_risk') return;
-    const app = window.GuiXiaoYangMobileApp;
+    const app = window.FlatTalkMobileApp;
     if (app && typeof app.handleAssistantAction === 'function') {
       app.handleAssistantAction({
         action_key: data.action_key,
@@ -2719,4 +2948,4 @@ mojibakeObserver.observe(screen, {
   attributes: true,
   attributeFilter: ["placeholder", "aria-label", "title", "value"],
 });
-window.GuiXiaoYangMobileApp.start();
+window.FlatTalkMobileApp.start();

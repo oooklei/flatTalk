@@ -1,0 +1,8 @@
+{
+  "id": "service_thinking",
+  "description": "AI处理中加载态，展示意图识别→实体抽取→知识库匹配动画",
+  "layout": "vertical",
+  "match": "AI思考中、正在分析、处理中、加载、意图识别步骤",
+  "required": ["title", "steps"],
+  "followup_actions": ["取消", "换种方式提问"]
+}

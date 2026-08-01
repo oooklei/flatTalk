@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --primary: #FF7826;
+    --bg: #FFF8F0; --bg-white: #ffffff;
+    --ink: #2C2C2C; --ink-light: #666; --muted: #999999;
+    --border: #EDE4D8; --divider: #F0EBE3;
+    --tag-free: #22A06B; --tag-fee: #3B82C4; --tag-trip: #5B9FED;
+    --val: #2E7D32; --play: #E67E22;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+
+  .chat-section-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 8px; padding: 10px 12px;
+    background: #FFF7ED;
+    border-radius: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .chat-section-title .ico {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    background: linear-gradient(145deg, #7DD3FC, #38BDF8);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .intro {
+    font-size: 13px; color: var(--ink-light); line-height: 1.65;
+    margin: 0 0 12px; padding: 0 2px;
+  }
+
+  .chat-spot-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .spot-head {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;
+    margin-bottom: 8px;
+  }
+  .chat-spot-name {
+    font-size: 15px; font-weight: 800; line-height: 1.35;
+    margin-right: 2px;
+  }
+  .chat-spot-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chat-spot-tag {
+    font-size: 11px; font-weight: 700; padding: 2px 8px;
+    border-radius: 999px; color: #fff; background: var(--tag-trip);
+  }
+  .chat-spot-tag.free,
+  .chat-spot-tag.good { background: var(--tag-free); }
+  .chat-spot-tag.fee { background: var(--tag-fee); }
+  .chat-spot-tag.trip { background: var(--tag-trip); }
+
+  .spot-row {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 12px; line-height: 1.6; margin-top: 5px;
+  }
+  .spot-row .ri { flex-shrink: 0; width: 14px; text-align: center; line-height: 1.6; }
+  .spot-row .lab { flex-shrink: 0; font-weight: 700; }
+  .spot-row.value .lab { color: var(--val); }
+  .spot-row.play .lab { color: var(--play); }
+  .spot-row .txt { color: var(--ink-light); flex: 1; min-width: 0; }
+  .spot-row.meta {
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px dashed var(--divider);
+    color: var(--muted);
+  }
+  .spot-row.meta .txt { color: var(--muted); }
+
+  .note {
+    font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.6;
+  }
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
+</style>
+</head>
+<body>
+<div class="tc-deck" data-layout="vertical"><div class="tc-card">
+  <div class="wrap">
+    <div class="chat-section-title">
+      <span class="ico">🏞️</span>
+      <span>适老化景点推荐</span>
+    </div>
+    
+    <div class="intro"></div>
+    
+
+    
+    <div class="chat-spot-card">
+      <div class="spot-head">
+        <div class="chat-spot-name">西湾城市沙滩 &amp; 仙人山公园</div>
+        <div class="chat-spot-tags">
+          <span class="chat-spot-tag free">免费</span><span class="chat-spot-tag trip">半日短途</span>
+        </div>
+      </div>
+      
+      <div class="spot-row value">
+        <span class="ri">🌿</span>
+        <span class="lab">康养价值：</span>
+        <span class="txt">西湾城市沙滩 & 仙人山公园</span>
+      </div>
+      
+      
+      <div class="spot-row play">
+        <span class="ri">🧓</span>
+        <span class="lab">长者玩法：</span>
+        <span class="txt">西湾城市沙滩 & 仙人山公园</span>
+      </div>
+      
+      
+      <div class="spot-row meta">
+        <span class="ri">🚗</span>
+        <span class="txt">西湾城市沙滩 &amp; 仙人山公园</span>
+      </div>
+      
+    </div>
+    
+    <div class="chat-spot-card">
+      <div class="spot-head">
+        <div class="chat-spot-name">白浪滩</div>
+        <div class="chat-spot-tags">
+          <span class="chat-spot-tag free">免费</span><span class="chat-spot-tag trip">全天长途</span>
+        </div>
+      </div>
+      
+      <div class="spot-row value">
+        <span class="ri">🌿</span>
+        <span class="lab">康养价值：</span>
+        <span class="txt">白浪滩</span>
+      </div>
+      
+      
+      <div class="spot-row play">
+        <span class="ri">🧓</span>
+        <span class="lab">长者玩法：</span>
+        <span class="txt">白浪滩</span>
+      </div>
+      
+      
+      <div class="spot-row meta">
+        <span class="ri">🚗</span>
+        <span class="txt">白浪滩</span>
+      </div>
+      
+    </div>
+    
+    <div class="chat-spot-card">
+      <div class="spot-head">
+        <div class="chat-spot-name">十万大山布透温泉</div>
+        <div class="chat-spot-tags">
+          <span class="chat-spot-tag fee">收费</span><span class="chat-spot-tag trip">全天长途</span>
+        </div>
+      </div>
+      
+      <div class="spot-row value">
+        <span class="ri">🌿</span>
+        <span class="lab">康养价值：</span>
+        <span class="txt">十万大山布透温泉</span>
+      </div>
+      
+      
+      <div class="spot-row play">
+        <span class="ri">🧓</span>
+        <span class="lab">长者玩法：</span>
+        <span class="txt">十万大山布透温泉</span>
+      </div>
+      
+      
+      <div class="spot-row meta">
+        <span class="ri">🚗</span>
+        <span class="txt">十万大山布透温泉</span>
+      </div>
+      
+    </div>
+    
+    <div class="chat-spot-card">
+      <div class="spot-head">
+        <div class="chat-spot-name">簕山古渔村</div>
+        <div class="chat-spot-tags">
+          <span class="chat-spot-tag free">免费</span><span class="chat-spot-tag trip">全天长途</span>
+        </div>
+      </div>
+      
+      <div class="spot-row value">
+        <span class="ri">🌿</span>
+        <span class="lab">康养价值：</span>
+        <span class="txt">簕山古渔村</span>
+      </div>
+      
+      
+      <div class="spot-row play">
+        <span class="ri">🧓</span>
+        <span class="lab">长者玩法：</span>
+        <span class="txt">簕山古渔村</span>
+      </div>
+      
+      
+      <div class="spot-row meta">
+        <span class="ri">🚗</span>
+        <span class="txt">簕山古渔村</span>
+      </div>
+      
+    </div>
+    
+    <div class="chat-spot-card">
+      <div class="spot-head">
+        <div class="chat-spot-name">北港故里夜市</div>
+        <div class="chat-spot-tags">
+          <span class="chat-spot-tag free">免费</span><span class="chat-spot-tag trip">半日短途</span>
+        </div>
+      </div>
+      
+      <div class="spot-row value">
+        <span class="ri">🌿</span>
+        <span class="lab">康养价值：</span>
+        <span class="txt">北港故里夜市</span>
+      </div>
+      
+      
+      <div class="spot-row play">
+        <span class="ri">🧓</span>
+        <span class="lab">长者玩法：</span>
+        <span class="txt">北港故里夜市</span>
+      </div>
+      
+      
+      <div class="spot-row meta">
+        <span class="ri">🚗</span>
+        <span class="txt">北港故里夜市</span>
+      </div>
+      
+    </div>
+    
+    <div class="chat-spot-card">
+      <div class="spot-head">
+        <div class="chat-spot-name">万尾金滩</div>
+        <div class="chat-spot-tags">
+          <span class="chat-spot-tag free">免费</span><span class="chat-spot-tag trip">全天长途</span>
+        </div>
+      </div>
+      
+      <div class="spot-row value">
+        <span class="ri">🌿</span>
+        <span class="lab">康养价值：</span>
+        <span class="txt">万尾金滩</span>
+      </div>
+      
+      
+      <div class="spot-row play">
+        <span class="ri">🧓</span>
+        <span class="lab">长者玩法：</span>
+        <span class="txt">万尾金滩</span>
+      </div>
+      
+      
+      <div class="spot-row meta">
+        <span class="ri">🚗</span>
+        <span class="txt">万尾金滩</span>
+      </div>
+      
+    </div>
+    
+
+    
+  </div>
+
+  
+</div></div>
+
+</body>
+</html>

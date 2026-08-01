@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+data/*.log
+
+# Build artifacts
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test and coverage
+coverage/
+.nyc_output/
+
+# Development
+.codebuddy/
+.claude/
+
+# SSL certificates (private keys)
+ssl/server.key
+ssl/server.crt
+*.key
+*.pem
+
+# Asset copies
+assets/source-copies/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# 原型文件 - 严禁删除
+proto/

@@ -1,5 +1,6 @@
 {
   "id": "risk_warning_card",
+  "description": "健康风险预警提示，含警告图标与预警文字列表",
   "layout": "vertical",
   "match": "展示健康风险预警提示（警告图标 + 预警文字列表）的单卡片",
   "required": ["warningTitle", "warnings"]

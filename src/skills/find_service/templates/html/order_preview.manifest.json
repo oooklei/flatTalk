@@ -1,0 +1,7 @@
+{
+  "id": "order_preview",
+  "description": "订单预览确认页，提交前的信息汇总",
+  "layout": "vertical",
+  "match": "预约服务、下单、建单、提交订单、订单预览、安排上门",
+  "required": ["orderId", "elderName", "serviceName", "orgName", "price"]
+}

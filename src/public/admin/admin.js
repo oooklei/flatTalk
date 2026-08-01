@@ -180,32 +180,193 @@ function skillBadge(skill) {
   return `<span class="badge ${cls}">${label}</span>`;
 }
 async function renderTemplates() {
-  const { items, skills } = await api('/templates');
+  const { items, skills = [] } = await api('/templates');
+  const bySkill = {};
+  for (const it of (items || [])) (bySkill[it.skill] ||= []).push(it);
+
   topbarActions.append(btn('＋ 制作模板', () => openMakeTemplateModal(skills || [])));
   topbarActions.append(btn('校验全部', async () => {
     const r = await api('/templates/validate', { method: 'POST' });
     openModal(el('div', { class: 'modal-card' },
-      el('h3', {}, '模板校验结果'),
+      el('h3', {}, '模板校验结果（全部）'),
       el('div', { class: 'report' }, ...(r.reports || []).map((x) => el('div', { class: 'report-row ' + x.level }, `[${x.level}] ${x.module}: ${x.message}`))),
       el('div', { class: 'modal-actions' }, btn('关闭', closeModal, 'btn')),
     ));
   }));
-  const rows = (items || []).map((t) => el('tr', {},
-    el('td', { class: 'mono' }, t.id),
-    el('td', { html: skillBadge(t.skill) }),
-    el('td', {}, t.layout),
-    el('td', { class: 'desc', title: t.description || '' }, t.description || '-'),
-    el('td', {}, String(t.fields)),
-    el('td', { html: t.hasDefault ? badge('ok', '有默认') : badge('warn', '无默认') }),
-    el('td', { class: 'ops' },
-      (() => { const b = el('button', { class: 'btn sm' }, '预览'); b.onclick = () => previewTemplate(t.id); return b; })(),
-    ),
-  ));
-  view.append(el('p', { class: 'hint' }, `模板来自「技能目录(src/skills/&lt;技能&gt;/templates/html)」。共 ${items?.length || 0} 个。`));
-  view.append(el('table', { class: 'grid' },
-    el('thead', {}, el('tr', {}, ...['ID', '技能', '布局', '描述', '字段数', '默认数据', '操作'].map((h) => el('th', {}, h)))),
-    el('tbody', {}, ...rows),
-  ));
+  topbarActions.append(btn('刷新', renderTemplates));
+
+  const tree = el('div', { class: 'tpl-tree' });
+  const editor = el('div', { class: 'tpl-editor' });
+  view.append(el('p', { class: 'hint' }, `模板来自「技能目录(src/skills/<技能>/templates/html)」。共 ${items?.length || 0} 个；每个模板下可挂载「紧密追问 / 其他追问」。`));
+  view.append(el('div', { class: 'tpl-split' }, tree, editor));
+  editor.append(el('div', { class: 'placeholder' }, '从左侧选择技能 / 模板 / 追问进行编辑。点击目录（技能或追问分组）可在右侧查看列表并支持「编辑 / 稽核」。'));
+
+  const markActive = (node) => {
+    tree.querySelectorAll('.tree-row.active').forEach((n) => n.classList.remove('active'));
+    if (node) node.classList.add('active');
+  };
+
+  async function showSkillList(skill) {
+    editor.innerHTML = '';
+    editor.append(el('h3', {}, `技能：${skill}（模板列表）`));
+    const wrap = el('div', { class: 'list' });
+    for (const it of (bySkill[skill] || [])) {
+      wrap.append(el('div', { class: 'list-item' },
+        el('div', { class: 'li-main' },
+          el('span', { class: 'li-title mono' }, it.id),
+          el('span', { class: 'li-sub' }, it.description || ''),
+        ),
+        el('div', { class: 'li-ops' },
+          el('button', { class: 'btn sm', onclick: () => showTemplate(it) }, '编辑'),
+          el('button', { class: 'btn sm', onclick: () => auditTemplate(it.id) }, '稽核'),
+        ),
+      ));
+    }
+    editor.append(wrap);
+  }
+
+  async function showTemplate(it) {
+    editor.innerHTML = '';
+    const src = await api(`/templates/${it.id}/source`);
+    if (!src.ok) return alert(src.error || '读取模板源码失败');
+    editor.append(el('h3', {}, `编辑模板：${it.id}`));
+    editor.append(el('div', { class: 'meta-row' },
+      el('span', { class: 'badge info' }, it.skill),
+      el('span', {}, `布局：${it.layout}`),
+      el('span', {}, `${it.fields} 个字段`),
+      el('span', { html: it.hasDefault ? badge('ok', '有默认') : badge('warn', '无默认') }),
+      el('button', { class: 'btn sm', onclick: () => previewTemplate(it.id) }, '预览'),
+      el('button', { class: 'btn sm', onclick: () => auditTemplate(it.id) }, '稽核此模板'),
+    ));
+    const htmlTa = el('textarea', { class: 'code', rows: '14', spellcheck: 'false' }, src.html);
+    const defaultTa = el('textarea', { class: 'code', rows: '8', spellcheck: 'false' }, JSON.stringify(src.defaultData || {}, null, 2));
+    const manifestTa = el('textarea', { class: 'code', rows: '8', spellcheck: 'false' }, src.manifest);
+    const save = el('button', { class: 'btn primary' }, '保存模板');
+    save.onclick = async () => {
+      save.disabled = true; save.textContent = '保存中…';
+      const r = await api(`/templates/${it.id}/source`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ html: htmlTa.value, manifest: manifestTa.value, defaultData: defaultTa.value }) });
+      save.disabled = false; save.textContent = '保存模板';
+      if (!r.ok) return alert('保存失败：' + (r.error || ''));
+      alert('已保存');
+    };
+    editor.append(el('div', { class: 'field' }, el('label', {}, 'HTML 源码'), htmlTa));
+    editor.append(el('div', { class: 'field' }, el('label', {}, '默认数据（JSON，内嵌于 HTML 的 <script type="application/json">）'), defaultTa));
+    editor.append(el('div', { class: 'field' }, el('label', {}, 'Manifest（JSON）'), manifestTa));
+    editor.append(el('div', { class: 'modal-actions' }, save));
+  }
+
+  function showGroup(skill, it, category) {
+    editor.innerHTML = '';
+    const title = category === 'tight' ? '紧密追问' : '其他追问';
+    editor.append(el('h3', {}, `${it.id} · ${title}（列表）`));
+    const arr = it.followups || [];
+    const list = arr.filter((f) => (f.category || 'tight') === category);
+    if (!list.length) editor.append(el('div', { class: 'placeholder' }, '暂无追问，可在下方新增。'));
+    const wrap = el('div', { class: 'list' });
+    list.forEach((f) => {
+      const idx = arr.indexOf(f);
+      wrap.append(el('div', { class: 'list-item' },
+        el('div', { class: 'li-main' },
+          el('span', { class: 'li-title' }, f.label),
+          el('span', { class: 'li-sub mono' }, f.action_key || '（纯文本建议）'),
+        ),
+        el('div', { class: 'li-ops' },
+          el('button', { class: 'btn sm', onclick: () => showFollowup(skill, it, idx) }, '编辑'),
+          el('button', { class: 'btn sm danger', onclick: () => removeFollowup(skill, it, idx, category) }, '删除'),
+        ),
+      ));
+    });
+    editor.append(wrap);
+    editor.append(el('div', { class: 'modal-actions' }, el('button', { class: 'btn', onclick: () => showFollowup(skill, it, -1, category) }, '＋ 新增追问')));
+  }
+
+  function showFollowup(skill, it, idx, presetCategory) {
+    editor.innerHTML = '';
+    const isNew = idx < 0;
+    const f = isNew ? { label: '', user_prompt: '', action_key: '', category: presetCategory || 'tight', intent: '' } : (it.followups[idx] || {});
+    const curCat = f.category === 'other' ? 'other' : 'tight';
+    editor.append(el('h3', {}, `${isNew ? '新增' : '编辑'}追问：${it.id}`));
+    const form = el('form', { class: 'formcard' });
+    form.innerHTML = `
+      <label>展示文案 (label) * <input name="label" value="${escAttr(f.label)}"></label>
+      <label>发送给模型的提问 (user_prompt) * <input name="user_prompt" value="${escAttr(f.user_prompt)}"></label>
+      <label>动作键 (action_key，可空) <input name="action_key" value="${escAttr(f.action_key)}" placeholder="如 travel_route.compare_destinations"></label>
+      <label>意图 (intent，可空) <input name="intent" value="${escAttr(f.intent)}"></label>
+      <label>分类
+        <select name="category">
+          <option value="tight" ${curCat !== 'other' ? 'selected' : ''}>紧密追问</option>
+          <option value="other" ${curCat === 'other' ? 'selected' : ''}>其他追问</option>
+        </select>
+      </label>`;
+    const save = el('button', { class: 'btn primary', type: 'submit' }, '保存追问');
+    form.append(el('div', { class: 'modal-actions' }, save, !isNew ? el('button', { class: 'btn danger', type: 'button', onclick: () => removeFollowup(skill, it, idx, curCat) }, '删除') : el('span', {})));
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const fd = Object.fromEntries(new FormData(form).entries());
+      if (!fd.label || !fd.user_prompt) return alert('label 与 user_prompt 必填');
+      const arr = it.followups ? it.followups.slice() : [];
+      const entry = { label: fd.label, user_prompt: fd.user_prompt, category: fd.category === 'other' ? 'other' : 'tight' };
+      if (fd.action_key) entry.action_key = fd.action_key;
+      if (fd.intent) entry.intent = fd.intent;
+      if (isNew) arr.push(entry); else arr[idx] = entry;
+      it.followups = arr;
+      const r = await api(`/templates/${it.id}/followups`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ followup_suggestions: arr }) });
+      if (!r.ok) return alert('保存失败：' + (r.error || ''));
+      buildTree();
+      if (entry.category === curCat) showFollowup(skill, it, isNew ? arr.length - 1 : idx);
+      else showGroup(skill, it, entry.category);
+    };
+    editor.append(form);
+  }
+
+  function removeFollowup(skill, it, idx, category) {
+    if (!confirm('确认删除该追问？')) return;
+    const arr = (it.followups || []).slice();
+    arr.splice(idx, 1);
+    it.followups = arr;
+    api(`/templates/${it.id}/followups`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ followup_suggestions: arr }) })
+      .then((r) => { if (!r.ok) alert('删除失败：' + (r.error || '')); else { buildTree(); showGroup(skill, it, category); } });
+  }
+
+  async function auditTemplate(id) {
+    const r = await api('/templates/validate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+    openModal(el('div', { class: 'modal-card' },
+      el('h3', {}, `稽核：${id}`),
+      el('div', { class: 'report' }, ...(r.reports || []).map((x) => el('div', { class: 'report-row ' + x.level }, `[${x.level}] ${x.module}: ${x.message}`))),
+      el('div', { class: 'modal-actions' }, btn('关闭', closeModal, 'btn')),
+    ));
+  }
+
+  function buildTree() {
+    tree.innerHTML = '';
+    for (const skill of skills) {
+      const skillKids = el('div', { class: 'tree-kids' });
+      const caret = el('span', { class: 'caret' }, '▾');
+      const skillRow = el('div', { class: 'tree-row skill' }, caret, ` 📁 ${skill}`);
+      caret.onclick = (e) => { e.stopPropagation(); skillKids.classList.toggle('collapsed'); caret.textContent = skillKids.classList.contains('collapsed') ? '▸' : '▾'; };
+      skillRow.onclick = () => { markActive(skillRow); showSkillList(skill); };
+      for (const it of (bySkill[skill] || [])) {
+        const tKids = el('div', { class: 'tree-kids' });
+        const tRow = el('div', { class: 'tree-row tpl' }, `📄 ${it.id}`);
+        tRow.onclick = (e) => { e.stopPropagation(); markActive(tRow); showTemplate(it); };
+        for (const category of ['tight', 'other']) {
+          const label = category === 'tight' ? '🔒 紧密追问' : '💬 其他追问';
+          const gKids = el('div', { class: 'tree-kids' });
+          const gRow = el('div', { class: 'tree-row group' }, label);
+          gRow.onclick = (e) => { e.stopPropagation(); markActive(gRow); showGroup(skill, it, category); };
+          for (const f of (it.followups || []).filter((x) => (x.category || 'tight') === category)) {
+            const fRow = el('div', { class: 'tree-row followup' }, `• ${f.label}`);
+            fRow.onclick = (e) => { e.stopPropagation(); markActive(fRow); showFollowup(skill, it, it.followups.indexOf(f)); };
+            gKids.append(fRow);
+          }
+          tKids.append(gRow, gKids);
+        }
+        skillKids.append(tRow, tKids);
+      }
+      tree.append(skillRow, skillKids);
+    }
+  }
+  buildTree();
 }
 async function previewTemplate(id) {
   const r = await api(`/templates/preview/${id}`);
@@ -392,7 +553,7 @@ async function renderDialogue() {
 }
 
 /* ============ 权限矩阵 ============ */
-/* ============ 权限矩阵（角色 × 技能，对齐 guixiaoyang 权限矩阵页面）============ */
+/* ============ 权限矩阵（角色 × 技能，权限矩阵）============ */
 async function renderPermissions() {
   let state = await api('/permissions'); // { roles, skills }
   state.roles = state.roles || [];
@@ -527,13 +688,13 @@ async function renderCrud(cfg) {
   ));
 }
 
-/* ============ 第三方API（迁自 guixiaoyang-chat-system，适配为入站 API）============ */
+/* ============ 第三方API（第三方 API，适配为入站 API）============ */
 const AUTH_TYPE_LABEL = { none: '无', bearer: 'Bearer', header: '请求头', query: 'Query参数' };
 async function renderIntegrations() {
   const { items } = await api('/integrations');
   topbarActions.append(btn('＋ 新建集成', () => openIntegrationForm(null)));
   view.append(el('p', { class: 'hint' },
-    '第三方 API 目录（迁移自 guixiaoyang-chat-system，原「外部服务」登记已并入本目录，分类为「外部服务(迁入)」），已适配为 flatTalk 入站 API：调用方访问「入站路径/原第三方接口路径」，网关自动注入密钥并转发。例：GET /api/ext/tencent_map/ws/geocoder/v1/?address=南宁。密钥可在此配置，留空则回退环境变量。'));
+    '第三方 API 目录（原「外部服务」登记已并入本目录，分类为「外部服务(迁入)」），已适配为 flatTalk 入站 API：调用方访问「入站路径/原第三方接口路径」，网关自动注入密钥并转发。例：GET /api/ext/tencent_map/ws/geocoder/v1/?address=南宁。密钥可在此配置，留空则回退环境变量。'));
   const rows = (items || []).map((it) => el('tr', {},
     el('td', {}, it.name),
     el('td', {}, it.category || '-'),

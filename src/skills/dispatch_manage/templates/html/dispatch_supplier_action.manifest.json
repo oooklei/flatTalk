@@ -1,0 +1,8 @@
+{
+  "id": "dispatch_supplier_action",
+  "description": "供应商侧派单处理页，行使一票否决权决定接单/拒单/转交",
+  "layout": "vertical",
+  "match": "派单处理、接单、供应商、一票否决权、待确认订单、拒接、转交、接受",
+  "required": ["order_no", "service_name", "name"],
+  "followup_actions": ["接受订单", "拒接订单", "转交他人"]
+}

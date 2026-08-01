@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>供应商接单处理</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：供应商侧派单处理页。先看订单信息，再行使“一票否决权”决定拒接/转交/接受。三个动作按钮由追问按钮体现（不在卡内放置）。 -->
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <div class="eyebrow">派单处理</div>
+      <h1>新订单待您确认</h1>
+    </header>
+
+    <section class="nb-section">
+      <div class="supplier-order-card">
+        <h3>📋 订单信息</h3>
+        <div class="supplier-order-row"><span class="supplier-order-label">订单编号</span><span class="supplier-order-value">{{order_no}}</span></div>
+        <div class="supplier-order-row"><span class="supplier-order-label">服务名称</span><span class="supplier-order-value">{{service_name}}</span></div>
+        <div class="supplier-order-row"><span class="supplier-order-label">预约人</span><span class="supplier-order-value">{{name}}</span></div>
+        <div class="supplier-order-row"><span class="supplier-order-label">服务地址</span><span class="supplier-order-value">{{address}}</span></div>
+        <div class="supplier-order-row"><span class="supplier-order-label">预约日期</span><span class="supplier-order-value">{{date}}</span></div>
+      </div>
+
+      <div class="veto-tip">🔎 供应商一票否决权</div>
+      <div class="veto-desc">作为供应商，您有权拒接此订单或将订单转交给其他供应商执行。请选择您的操作：</div>
+
+    </section>
+  </article>
+
+  <script type="application/json">
+  {
+    "order_no": "GD1234567890",
+    "service_name": "上门护理",
+    "name": "张大爷",
+    "address": "桂林市秀峰区丽君路123号",
+    "date": "2026-08-01"
+  }
+  </script>
+</body>
+</html>

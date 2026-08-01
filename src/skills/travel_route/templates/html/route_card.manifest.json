@@ -1,5 +1,6 @@
 {
   "id": "route_card",
+  "description": "旅居路线竖向卡片，含目的地/季节/预算/健康安全/交通接驳信息",
   "layout": "vertical",
   "match": "展示老人旅居路线规划、目的地、季节、预算、健康安全、交通接驳和预订动作的竖向卡片",
   "required": ["routeTitle", "destination", "days", "highlights"]

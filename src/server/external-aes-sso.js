@@ -11,7 +11,7 @@
  * 依赖: lib/h5-crypto.js（与 H5AESUtils.java 算法一致）
  */
 
-import { decrypt } from '../lib/h5-crypto.js';
+import { decrypt, encrypt } from '../lib/h5-crypto.js';
 
 // ========== 配置 ==========
 
@@ -35,20 +35,100 @@ setInterval(() => {
 
 // ========== 角色编码映射（业务系统 → 桂小养） ==========
 
+/**
+ * 业务系统 roleId → 桂小养 roleKey 映射表
+ * 来源：docs/specs/2026-07-28-role-encoding-crosswalk-design.md
+ */
 const ROLE_ID_TO_DISPLAY = {
   elder: '老人',
-  family: '家属',
   elder_family: '家属',
+  village_doctor: '村医',
+  community_doctor: '社区居家-医生',
+  care_worker: '护理员',
+  community_helper: '社区居家-助老员',
+  institution_admin: '机构端-管理员',
+  provider_staff: '服务商',
+  community_support: '社区居家-后勤',
+  community_canteen: '社区居家-食堂',
+  community_kitchen: '社区居家-厨房',
+  community_guard: '社区居家-门卫',
+  community_maintenance: '社区居家-维修',
+  senior_official: '厅级干部',
+  system_admin: '超级管理员',
+  admin: '配置管理员',
   civil_affairs_staff: '民政局科员',
   grid_worker: '社区网格员',
-  institution_admin: '机构管理员',
-  org_staff: '机构人员',
-  care_worker: '护理员/驾驶员',
-  village_doctor: '村医/社区医生',
-  provider_staff: '服务商',
-  system_admin: '系统管理员',
-  admin: '配置管理员',
   guest: '访客',
+};
+
+/**
+ * 业务系统 roleId → 桂小养 roleKey 映射
+ * 业务系统使用大写拼音编码，如 LAO_REN、JIA_SHU 等
+ */
+const ROLE_ID_MAPPING = {
+  // ===== 长者 =====
+  LAO_REN: 'elder',                    // 老人
+  JIA_SHU: 'elder_family',             // 家属
+  // ===== 医护 =====
+  CUN_YI: 'village_doctor',            // 村医
+  'SQJJ-YS': 'community_doctor',       // 社区居家-医生（连字符）
+  SQJJ_YS: 'community_doctor',         // 社区居家-医生（下划线兼容）
+  // ===== 护理 =====
+  nurse: 'care_worker',                // 机构端-护理员
+  HU_LI_YUAN: 'care_worker',           // 护理员（旧编码）
+  'SQJJ-HLRY': 'care_worker',          // 社区居家-护理人员（连字符）
+  SQJJ_HLRY: 'care_worker',            // 社区居家-护理人员（下划线兼容）
+  'SQJJ-JSY': 'care_worker',           // 社区居家-驾驶员（连字符）
+  SQJJ_JSY: 'care_worker',             // 社区居家-驾驶员（下划线兼容）
+  'SQJJ-ZLY': 'community_helper',      // 社区居家-助老员（连字符）
+  SQJJ_ZLY: 'community_helper',        // 社区居家-助老员（下划线兼容）
+  // ===== 机构管理 =====
+  director: 'institution_admin',       // 机构端-院长
+  manager: 'institution_admin',        // 机构端-管理员
+  'SQJJ-YZ': 'institution_admin',      // 社区居家-院长（连字符）
+  SQJJ_YZ: 'institution_admin',        // 社区居家-院长（下划线兼容）
+  'SQJJ-GLY': 'institution_admin',     // 社区居家-管理员（连字符）
+  SQJJ_GLY: 'institution_admin',       // 社区居家-管理员（下划线兼容）
+  // ===== 服务方 =====
+  FU_WU_SHANG: 'provider_staff',       // 服务商
+  'SQJJ-HQ': 'community_support',      // 社区居家-后勤（连字符）
+  SQJJ_HQ: 'community_support',        // 社区居家-后勤（下划线兼容）
+  'SQJJ-ST': 'community_canteen',      // 社区居家-食堂（连字符）
+  SQJJ_ST: 'community_canteen',        // 社区居家-食堂（下划线兼容）
+  'SQJJ-CF': 'community_kitchen',      // 社区居家-厨房（连字符）
+  SQJJ_CF: 'community_kitchen',        // 社区居家-厨房（下划线兼容）
+  'SQJJ-MW': 'community_guard',        // 社区居家-门卫（连字符）
+  SQJJ_MW: 'community_guard',          // 社区居家-门卫（下划线兼容）
+  'SQJJ-WX': 'community_maintenance',  // 社区居家-维修（连字符）
+  SQJJ_WX: 'community_maintenance',    // 社区居家-维修（下划线兼容）
+  // ===== 政府/管理 =====
+  TING_JI_GAN_BU: 'senior_official',   // 厅级干部
+  CHAO_JI_GUAN_LI_YUAN: 'system_admin', // 超级管理员
+  PEI_ZHI_GUAN_LI_YUAN: 'admin',       // 配置管理员
+  // ===== 旧编码兼容 =====
+  MIN_ZHENG_KE_YUAN: 'civil_affairs_staff',  // 民政局科员
+  SHE_QU_WANG_GE_YUAN: 'grid_worker',        // 社区网格员
+  XI_TONG_GUAN_LI_YUAN: 'system_admin',      // 系统管理员（旧编码）
+  // 兼容直接使用桂小养 roleKey
+  elder: 'elder',
+  family: 'elder_family',
+  elder_family: 'elder_family',
+  civil_affairs_staff: 'civil_affairs_staff',
+  grid_worker: 'grid_worker',
+  institution_admin: 'institution_admin',
+  care_worker: 'care_worker',
+  village_doctor: 'village_doctor',
+  system_admin: 'system_admin',
+  community_doctor: 'community_doctor',
+  community_helper: 'community_helper',
+  provider_staff: 'provider_staff',
+  community_support: 'community_support',
+  community_canteen: 'community_canteen',
+  community_kitchen: 'community_kitchen',
+  community_guard: 'community_guard',
+  community_maintenance: 'community_maintenance',
+  senior_official: 'senior_official',
+  admin: 'admin',
 };
 
 /**
@@ -58,24 +138,19 @@ const ROLE_ID_TO_DISPLAY = {
  */
 export function normalizeRole(roleId) {
   if (!roleId) return 'guest';
-  const normalized = String(roleId).toLowerCase().trim();
-  // 直接匹配
-  const directMap = {
-    elder: 'elder',
-    family: 'family',
-    elder_family: 'elder_family',
-    civil_affairs_staff: 'civil_affairs_staff',
-    grid_worker: 'grid_worker',
-    institution_admin: 'institution_admin',
-    org_staff: 'org_staff',
-    care_worker: 'care_worker',
-    village_doctor: 'village_doctor',
-    provider_staff: 'provider_staff',
-    system_admin: 'system_admin',
-    admin: 'admin',
-    guest: 'guest',
-  };
-  return directMap[normalized] || 'guest';
+  const raw = String(roleId).trim();
+  // 优先精确匹配（业务系统编码）
+  if (ROLE_ID_MAPPING[raw]) {
+    return ROLE_ID_MAPPING[raw];
+  }
+  // 忽略大小写匹配
+  const normalized = raw.toLowerCase();
+  for (const [key, value] of Object.entries(ROLE_ID_MAPPING)) {
+    if (key.toLowerCase() === normalized) {
+      return value;
+    }
+  }
+  return 'guest';
 }
 
 // ========== 核心函数 ==========
@@ -149,56 +224,126 @@ function mapRoleId(roleId) {
 }
 
 /**
- * 生成 session token
+ * 从 userInfo 中提取用户姓名（兼容常见异名字段）
+ * 业务系统可能使用 userName / name / realName / nickName / accountName 等
+ * @param {object} userInfo - 解密后的用户信息
+ * @returns {string} 用户姓名，找不到时返回空字符串
+ */
+function extractUserName(userInfo) {
+  if (!userInfo) return '';
+  return userInfo.userName
+    || userInfo.name
+    || userInfo.realName
+    || userInfo.nickName
+    || userInfo.nickname
+    || userInfo.accountName
+    || '';
+}
+
+/**
+ * 从 userInfo 中提取用户所在城市（用于天气查询）
+ * 兼容 city / address / location / region 等常见字段
+ * @param {object} userInfo - 解密后的用户信息
+ * @returns {string} 城市名称，找不到时返回空字符串
+ */
+function extractUserCity(userInfo) {
+  if (!userInfo) return '';
+  return userInfo.city
+    || userInfo.address
+    || userInfo.location
+    || userInfo.region
+    || userInfo.area
+    || '';
+}
+
+/**
+ * 生成 session token（AES-GCM 加密）
  * @param {object} userInfo - 用户信息
- * @returns {string} session token
+ * @returns {string} 加密后的 session token
  */
 export function generateSessionToken(userInfo) {
   const payload = {
     userId: userInfo.userId,
     roleKey: mapRoleId(userInfo.roleId),
-    userName: userInfo.userName,
+    userName: extractUserName(userInfo),
+    city: extractUserCity(userInfo),
     orgId: userInfo.orgId || '',
     tenantId: userInfo.tenantId || '',
     iat: Date.now(),
     exp: Date.now() + SESSION_TOKEN_TTL * 1000,
     mode: 'external_aes_sso',
   };
-  // 使用 Base64URL 编码（无签名，仅用于标识；生产环境应使用 JWT 或 Redis session）
-  return Buffer.from(JSON.stringify(payload)).toString('base64url');
+  // 使用 AES-GCM 加密（与 h5-crypto.js 一致）
+  const plainText = JSON.stringify(payload);
+  return encrypt(plainText, SHARED_AES_KEY);
+}
+
+/**
+ * 解密 session token
+ * @param {string} token - 加密后的 session token
+ * @returns {object|null} 解析后的用户信息，解密失败返回 null
+ */
+export function decryptSessionToken(token) {
+  if (!token || typeof token !== 'string') {
+    return null;
+  }
+  try {
+    const plainText = decrypt(token, SHARED_AES_KEY);
+    return JSON.parse(plainText);
+  } catch (e) {
+    console.error('[decryptSessionToken] 解密失败:', e.message);
+    return null;
+  }
 }
 
 /**
  * 构造 mobile URL
- * @param {string} token - session token
+ * @param {string} token - session token（已加密）
  * @param {object} userInfo - 用户信息
- * @param {string} host - 可选，自定义 host
+ * @param {object} options - 可选配置 { host, port, sslPort, useHttps }
  * @returns {string} 完整的 mobile URL
  */
-export function buildMobileUrl(token, userInfo, host = null) {
+export function buildMobileUrl(token, userInfo, options = {}) {
   const roleKey = mapRoleId(userInfo.roleId);
+  const { host, port, sslPort, useHttps } = options;
+
+  // 构建完整 URL
+  // - useHttps=true 时使用 HTTPS + sslPort
+  // - 否则使用 HTTP + 运行时端口（port）
+  let baseUrl = '';
+  if (host) {
+    if (useHttps === true) {
+      // 明确要求 HTTPS
+      baseUrl = `https://${host}:${sslPort || port || '5444'}`;
+    } else {
+      // 默认使用 HTTP + 运行时端口
+      baseUrl = `http://${host}:${port || '5298'}`;
+    }
+  }
+
   const params = new URLSearchParams({
     token,
     userToken: token,
     roleKey,
-    userName: userInfo.userName || '',
+    userName: extractUserName(userInfo),
     userId: userInfo.userId || '',
     orgId: userInfo.orgId || '',
     orgName: userInfo.orgName || '',
+    city: extractUserCity(userInfo),
     elderScope: userInfo.elderScope || '',
     terminal: userInfo.terminal || '',
     authLevel: userInfo.authLevel || 'external',
     presetKey: 'external_aes_sso',
   });
-  const baseHost = host || ''; // 空则使用相对路径
-  return `${baseHost}/mobile.html?${params.toString()}`;
+
+  return `${baseUrl}/mobile.html?${params.toString()}`;
 }
 
 /**
  * 主处理函数：解析请求并返回结果
  * @param {string} cipherText - userInfo 加密串
- * @param {object} options - 可选配置 { host }
- * @returns {{ ok: boolean, mobileUrl?: string, expiresIn?: number, error?: string, message?: string, userInfo?: object }}
+ * @param {object} options - 可选配置 { host, port, sslPort }
+ * @returns {{ ok: boolean, mobileUrl?: string, token?: string, userToken?: string, expiresIn?: number, error?: string, message?: string }}
  */
 export function processExternalSsoRequest(cipherText, options = {}) {
   try {
@@ -217,25 +362,20 @@ export function processExternalSsoRequest(cipherText, options = {}) {
       throw new Error(`role_not_mapped: 角色编码 "${userInfo.roleId}" 无法映射到桂小养角色`);
     }
 
-    // 5. 生成 token
+    // 5. 生成 token（已加密）
     const token = generateSessionToken(userInfo);
 
-    // 6. 构造 mobile URL
-    const mobileUrl = buildMobileUrl(token, userInfo, options.host);
+    // 6. 构造 mobile URL（完整路径）
+    const mobileUrl = buildMobileUrl(token, userInfo, options);
 
+    // 7. 返回精简格式
     return {
       ok: true,
       mode: 'external_aes_sso',
       mobileUrl,
+      token,
+      userToken: token,
       expiresIn: SESSION_TOKEN_TTL,
-      userInfo: {
-        userId: userInfo.userId,
-        userName: userInfo.userName,
-        roleId: userInfo.roleId,
-        roleKey,
-        roleName: ROLE_ID_TO_DISPLAY[roleKey] || roleKey,
-        orgName: userInfo.orgName || '',
-      },
     };
   } catch (err) {
     const msg = err.message || '';

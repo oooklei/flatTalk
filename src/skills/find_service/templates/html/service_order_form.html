@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务预定</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：代下单/预定工单。忠实复刻原型表单字段（服务/预约人/电话/地址/日期/AI推荐时段/备注），值由AI从健康档案预填；输入框/选择框亦可经追问按钮组合呈现。提交预定由追问按钮体现，不在卡内放置提交按钮。 -->
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <div class="eyebrow">服务预定</div>
+      <h1>确认预约信息</h1>
+      <p class="subtitle">请核对以下信息，确认后由工作人员与您联系。</p>
+    </header>
+
+    <section class="nb-section">
+      <div class="form-group">
+        <label>服务名称 <span class="required">*</span></label>
+        <select disabled>
+          <option selected>{{service_name}}（¥{{service_price}}/{{service_unit}}）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>预约人姓名 <span class="required">*</span></label>
+        <input type="text" value="{{name}}" readonly />
+        <div class="field-source">{{name_source}}</div>
+      </div>
+      <div class="form-group">
+        <label>联系电话 <span class="required">*</span></label>
+        <input type="tel" value="{{phone}}" readonly />
+        <div class="field-source">{{phone_source}}</div>
+      </div>
+      <div class="form-group">
+        <label>服务地址 <span class="required">*</span></label>
+        <input type="text" value="{{address}}" readonly />
+        <div class="field-source">{{address_source}}</div>
+      </div>
+      <div class="form-group">
+        <label>预约日期</label>
+        <input type="date" value="{{date}}" readonly />
+        <div class="field-source">{{date_source}}</div>
+      </div>
+      <div class="form-group">
+        <label>AI推荐时段</label>
+        <div class="time-recommendations">
+          <div class="time-recommendation selected">
+            <div>
+              <div class="time-slot">{{time_slot}}</div>
+              <div class="time-reason">{{time_reason}}</div>
+            </div>
+            <div class="time-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <textarea readonly>{{notes}}</textarea>
+      </div>
+    </section>
+  </article>
+
+  <script type="application/json">
+  {
+    "service_name": "居家深度清洁",
+    "service_price": "180",
+    "service_unit": "次",
+    "name": "张大爷",
+    "name_source": "来自健康档案",
+    "phone": "13800005678",
+    "phone_source": "来自注册手机号",
+    "address": "桂林市秀峰区丽君路123号",
+    "address_source": "来自历史订单地址",
+    "date": "2026-08-01",
+    "date_source": "AI智能推荐：明天上午",
+    "time_slot": "明天 09:00-11:00",
+    "time_reason": "您过去5次都选择上午",
+    "notes": "厨房油烟机需重点清洁"
+  }
+  </script>
+</body>
+</html>
