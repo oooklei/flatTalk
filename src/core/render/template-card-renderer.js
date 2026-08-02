@@ -268,7 +268,7 @@ function formatFollowupLabels(followups) {
 function buildHtmlFallback(pageHtml) {
   // 注入自适配高度脚本：iframe 加载后按内容高度撑开，避免高卡片（如 7 天膳食）被固定高度裁切
   const autoHeightScript = `<script>(function(){try{var h=document.documentElement.scrollHeight||document.body.scrollHeight;var f=window.frameElement;if(f&&h){f.style.height=Math.min(h,1500)+'px';}}catch(e){}})();<\/script>`;
-  const mapKey = process.env.TENCENT_MAP_JS_KEY || '';
+  const mapKey = process.env.TENCENT_MAP_JS_KEY || 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
   const bridgedHtml = injectBridge(pageHtml, { map_key: mapKey });
   const injected = bridgedHtml.replace(/<\/body>/i, `${autoHeightScript}</body>`);
   const finalHtml = injected.includes(autoHeightScript) ? injected : bridgedHtml + autoHeightScript;

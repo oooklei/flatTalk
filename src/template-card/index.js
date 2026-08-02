@@ -132,7 +132,7 @@ export function renderCard(dir, json, options = {}) {
     score,             // 匹配度
     cardCount: records.length,
     pageCount: pages.length,
-    pages: pages.map(h => injectBridge(h, { map_key: process.env.TENCENT_MAP_JS_KEY || '' })), // 注入卡片交互桥接脚本 + 地图Key
+    pages: pages.map(h => injectBridge(h, { map_key: process.env.TENCENT_MAP_JS_KEY || 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH' })), // 注入卡片交互桥接脚本 + 地图Key
     library: describeLibrary(templates), // 可选：把这份清单回传给模型做精确选择
   };
 }
