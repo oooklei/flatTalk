@@ -71,11 +71,11 @@
       try { var c = JSON.parse(document.getElementById('nearby-center').textContent); if (c && c.lat) CENTER = c; } catch (e) {}
       var MAP_KEY = '{{map_key}}';
       var SVG_FALLBACK = (!MAP_KEY || MAP_KEY === 'YOUR_TENCENT_JS_KEY');
-      var STATIC_MAP_URL = '{{static_map_url}}';
+      var STATIC_MAP_URL = '{{{static_map_url}}}';
       var mapLoadTimer = null;
       var map = null;
 
-      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/marker?marker=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&referer=flattalk'; }
+      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/routeplan?type=walk&to=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH'; }
       function renderSteps() {
         var box = document.getElementById('stepsBox');
         box.innerHTML = PAYLOAD.map(function (p, i) {
@@ -84,12 +84,13 @@
             '<div class="nb-no">' + (i + 1) + '</div>' +
             '<div><div class="nm">' + (p.emoji || '📍') + ' ' + (p.name || '未命名') + '<span class="role">' + (p.role || '') + '</span></div>' +
             '<div class="meta">' + (parseFloat(p.distance) || 0).toFixed(1) + 'km · ' + (p.biz_status || '营业中') + ' ' + tg + '</div>' +
-            '<div class="meta"><a class="nav-link" href="' + navUrl(p) + '" target="_blank">🧭 导航前往</a></div></div>' +
+            '<div class="meta"><a class="nav-link action-btn" data-action-type="external_map" data-href="' + navUrl(p) + '">🧭 导航前往</a></div></div>' +
             '</div>';
         }).join('');
       }
       function renderSVG() {
         var svg = document.getElementById('svgFallback'); svg.classList.add('show');
+        var img = document.getElementById('staticMapImg'); if (img) img.classList.remove('show');
         document.getElementById('mapCanvas').style.display = 'none';
         var cx = 200, cy = 215, R = 160, html = '<circle cx="' + cx + '" cy="' + cy + '" r="6" fill="#0E7C86"/>';
         var pts = [];
@@ -102,13 +103,14 @@
         var img = document.getElementById('staticMapImg');
         if (STATIC_MAP_URL && img) {
           img.onerror = function () { img.classList.remove('show'); renderSVG(); };
-          img.onload = function () { document.getElementById('mapCanvas').style.display = 'none'; };
+          img.onload = function () { document.getElementById('mapCanvas').style.display = 'none'; document.getElementById('svgFallback').classList.remove('show'); };
           img.src = STATIC_MAP_URL;
           img.classList.add('show');
         } else { renderSVG(); }
       }
       function init() {
         renderSteps();
+        renderSVG();
         if (SVG_FALLBACK) { renderSVG(); return; }
         mapLoadTimer = setTimeout(function () {
           if (typeof TMap === 'undefined') { console.warn('[地图] 加载超时，降级到静态图'); showStaticMap(); }
@@ -124,6 +126,9 @@
       }
       function buildMap() {
         if (typeof TMap === 'undefined') { showStaticMap(); return; }
+        document.getElementById('staticMapImg').classList.remove('show');
+        document.getElementById('svgFallback').classList.remove('show');
+        document.getElementById('mapCanvas').style.display = 'block';
         map = new TMap.Map(document.getElementById('mapCanvas'), { center: new TMap.LatLng(CENTER.lat, CENTER.lng), zoom: 10 });
         setTimeout(function () {
           var canvas = document.querySelector('#mapCanvas canvas, #mapCanvas img');
@@ -131,9 +136,12 @@
             console.warn('[地图] 瓦片加载失败，降级到静态图'); showStaticMap();
           }
         }, 4000);
-        new TMap.MultiPolyline({ map: map, geometries: [{ paths: PAYLOAD.map(function (p) { return new TMap.LatLng(p.lat, p.lng); }) }], styles: { color: '#0E7C86', width: 4, borderWidth: 1, borderColor: '#fff', lineCap: 'round' } });
+        new TMap.MultiPolyline({ map: map, geometries: [{ id: 'route', styleId: 'route', paths: PAYLOAD.map(function (p) { return new TMap.LatLng(p.lat, p.lng); }) }], styles: { route: new TMap.PolylineStyle({ color: '#0E7C86', width: 4, borderWidth: 1, borderColor: '#fff', lineCap: 'round' }) } });
         PAYLOAD.forEach(function (p, i) {
-          new TMap.MultiMarker({ map: map, geometries: [{ id: 'r' + i, position: new TMap.LatLng(p.lat, p.lng) }], styles: { 'r' + i: new TMap.MarkerStyle({ width: 26, height: 26, src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="11" fill="' + (p.color || '#0E7C86') + '" stroke="#fff" stroke-width="2"/><text x="13" y="17" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">' + (i + 1) + '</text></svg>') }) } });
+          var markerId = 'r' + i;
+          var markerStyles = {};
+          markerStyles[markerId] = new TMap.MarkerStyle({ width: 26, height: 26, src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="11" fill="' + (p.color || '#0E7C86') + '" stroke="#fff" stroke-width="2"/><text x="13" y="17" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">' + (i + 1) + '</text></svg>') });
+          new TMap.MultiMarker({ map: map, geometries: [{ id: markerId, position: new TMap.LatLng(p.lat, p.lng) }], styles: markerStyles });
         });
       }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

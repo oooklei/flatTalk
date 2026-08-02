@@ -31,7 +31,7 @@
               <span>距中心 {{distance_text}}km</span>
             </div>
             <div class="nb-row-actions">
-              <a class="nb-btn nb-btn-primary" href="https://apis.map.qq.com/uri/v1/marker?marker=coord:{{lat}},{{lng}};title:{{name}}&referer=flattalk" target="_blank">🧭 导航</a>
+              <button class="nb-btn nb-btn-primary action-btn" data-action-type="external_map" data-href="https://apis.map.qq.com/uri/v1/routeplan?type=walk&to=coord:{{lat}},{{lng}};title:{{name}}&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH">🧭 导航</button>
               {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
             </div>
           </div>

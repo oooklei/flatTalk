@@ -73,11 +73,11 @@
       var RADIUS = parseInt('{{radiusKm}}' || '15', 10) || 15;
       var MAP_KEY = '{{map_key}}';
       var SVG_FALLBACK = (!MAP_KEY || MAP_KEY === 'YOUR_TENCENT_JS_KEY');
-      var STATIC_MAP_URL = '{{static_map_url}}';
+      var STATIC_MAP_URL = '{{{static_map_url}}}';
       var mapLoadTimer = null;
       var map = null;
 
-      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/marker?marker=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&referer=flattalk'; }
+      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/routeplan?type=walk&to=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH'; }
       function renderList() {
         var box = document.getElementById('listBox');
         if (!PAYLOAD.length) { box.innerHTML = '<div class="nb-empty">1.5km 内暂无步行可达配套，建议查看车行资源</div>'; return; }
@@ -87,7 +87,7 @@
           return '<div class="nb-item">' +
             '<div class="nm"><span>' + (p.emoji || '📍') + ' ' + (p.name || '未命名') + '</span><span class="km">' + (parseFloat(p.distance) || 0).toFixed(1) + 'km</span></div>' +
             '<div class="addr">' + (p.address || '地址未知') + '</div>' +
-            '<div class="meta">' + st + tg + '<a class="nav-link" href="' + navUrl(p) + '" target="_blank">🧭 导航</a></div>' +
+            '<div class="meta">' + st + tg + '<a class="nav-link action-btn" data-action-type="external_map" data-href="' + navUrl(p) + '">🧭 导航</a></div>' +
             '</div>';
         }).join('');
       }
@@ -96,6 +96,7 @@
       }
       function renderSVG() {
         var svg = document.getElementById('svgFallback'); svg.classList.add('show');
+        var img = document.getElementById('staticMapImg'); if (img) img.classList.remove('show');
         document.getElementById('mapCanvas').style.display = 'none';
         var cx = 200, cy = 215, R = 165, html = '';
         html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (R * 1.5 / RADIUS) + '" fill="none" stroke="#cbd5e1" stroke-dasharray="5 4"/>';
@@ -108,7 +109,7 @@
         var img = document.getElementById('staticMapImg');
         if (STATIC_MAP_URL && img) {
           img.onerror = function () { img.classList.remove('show'); renderSVG(); };
-          img.onload = function () { document.getElementById('mapCanvas').style.display = 'none'; };
+          img.onload = function () { document.getElementById('mapCanvas').style.display = 'none'; document.getElementById('svgFallback').classList.remove('show'); };
           img.src = STATIC_MAP_URL;
           img.classList.add('show');
         } else { renderSVG(); }
@@ -116,6 +117,7 @@
       function init() {
         renderList();
         PAYLOAD.forEach(function (p, i) { p._b = i * 47; });
+        renderSVG();
         if (SVG_FALLBACK) { renderSVG(); return; }
         mapLoadTimer = setTimeout(function () {
           if (typeof TMap === 'undefined') { console.warn('[地图] 加载超时，降级到静态图'); showStaticMap(); }
@@ -131,6 +133,9 @@
       }
       function buildMap() {
         if (typeof TMap === 'undefined') { showStaticMap(); return; }
+        document.getElementById('staticMapImg').classList.remove('show');
+        document.getElementById('svgFallback').classList.remove('show');
+        document.getElementById('mapCanvas').style.display = 'block';
         map = new TMap.Map(document.getElementById('mapCanvas'), { center: new TMap.LatLng(CENTER.lat, CENTER.lng), zoom: 12 });
         setTimeout(function () {
           var canvas = document.querySelector('#mapCanvas canvas, #mapCanvas img');
@@ -138,10 +143,13 @@
             console.warn('[地图] 瓦片加载失败，降级到静态图'); showStaticMap();
           }
         }, 4000);
-        new TMap.MultiPolygon({ map: map, geometries: [{ paths: circlePaths(0, 0, 0, 64, CENTER.lat, CENTER.lng, RADIUS) }], styles: { strokeColor: '#cbd5e1', strokeWidth: 2, fillColor: '#0E7C8608' } });
-        new TMap.MultiPolygon({ map: map, geometries: [{ paths: circlePaths(0, 0, 0, 48, CENTER.lat, CENTER.lng, 1.5) }], styles: { strokeColor: '#2BAE8E', strokeWidth: 2, fillColor: '#2BAE8E18' } });
+        new TMap.MultiPolygon({ map: map, geometries: [{ id: 'radius', styleId: 'radius', paths: circlePaths(0, 0, 0, 64, CENTER.lat, CENTER.lng, RADIUS) }], styles: { radius: new TMap.PolygonStyle({ strokeColor: '#cbd5e1', strokeWidth: 2, fillColor: '#0E7C8608' }) } });
+        new TMap.MultiPolygon({ map: map, geometries: [{ id: 'walk', styleId: 'walk', paths: circlePaths(0, 0, 0, 48, CENTER.lat, CENTER.lng, 1.5) }], styles: { walk: new TMap.PolygonStyle({ strokeColor: '#2BAE8E', strokeWidth: 2, fillColor: '#2BAE8E18' }) } });
         PAYLOAD.forEach(function (p, i) {
-          new TMap.MultiMarker({ map: map, geometries: [{ id: 'w' + i, position: new TMap.LatLng(p.lat, p.lng) }], styles: { 'w' + i: new TMap.MarkerStyle({ width: 18, height: 18, src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"><circle cx="9" cy="9" r="7" fill="#2BAE8E" stroke="#fff" stroke-width="2"/></svg>') }) } });
+          var markerId = 'w' + i;
+          var markerStyles = {};
+          markerStyles[markerId] = new TMap.MarkerStyle({ width: 18, height: 18, src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"><circle cx="9" cy="9" r="7" fill="#2BAE8E" stroke="#fff" stroke-width="2"/></svg>') });
+          new TMap.MultiMarker({ map: map, geometries: [{ id: markerId, position: new TMap.LatLng(p.lat, p.lng) }], styles: markerStyles });
         });
       }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
