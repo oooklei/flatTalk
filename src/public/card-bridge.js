@@ -62,6 +62,7 @@
     var mapLink = e.target.closest('[data-action-type="external_map"]');
     if (!mapLink) return;
     e.preventDefault();
+    e.stopPropagation();
     var url = mapLink.getAttribute('data-href') || mapLink.getAttribute('href') || '';
 
     // 已有 TMap 实例的卡片：直接复用
@@ -131,15 +132,26 @@
       return;
     }
 
-    // 动态加载 TMap SDK
+    // 动态加载 TMap SDK（竞态保护：避免与模板自身的加载器冲突）
     if (typeof TMap === 'undefined') {
-      var script = document.createElement('script');
-      script.src = 'https://map.qq.com/api/gljs?v=1.exp&key=' + key;
-      script.onload = function () { initMiniMap(canvas, poi); };
-      script.onerror = function () {
-        canvas.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:13px;">地图加载失败</div>';
-      };
-      document.head.appendChild(script);
+      // 如果已有加载请求在进行中，挂载回调而非二次加载
+      if (window.__tmapLoadingQueue) {
+        window.__tmapLoadingQueue.push(function () { initMiniMap(canvas, poi); });
+      } else {
+        window.__tmapLoadingQueue = [function () { initMiniMap(canvas, poi); }];
+        var script = document.createElement('script');
+        script.src = 'https://map.qq.com/api/gljs?v=1.exp&libraries=visualization,geometry&key=' + key;
+        script.onload = function () {
+          var queue = window.__tmapLoadingQueue || [];
+          window.__tmapLoadingQueue = null;
+          queue.forEach(function (cb) { try { cb(); } catch {} });
+        };
+        script.onerror = function () {
+          window.__tmapLoadingQueue = null;
+          canvas.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:13px;">地图加载失败</div>';
+        };
+        document.head.appendChild(script);
+      }
     } else {
       initMiniMap(canvas, poi);
     }

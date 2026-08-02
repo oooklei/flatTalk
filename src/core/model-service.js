@@ -1095,16 +1095,12 @@ const NEARBY_TENCENT_JS_KEY = 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
 /**
  * 构建腾讯静态图 URL（降级中间层）
  * 用于 JS API 加载失败时，提供比 SVG 更真实的地图截图。
+ * 使用 WebService Key + SK 签名（静态图属于 WS API 家族）
  */
 function buildStaticMapUrl(center, markers = [], options = {}) {
-  const staticKey = process.env.TENCENT_STATIC_MAP_KEY
-    || process.env.TENCENT_MAP_STATIC_KEY
-    || process.env.TENCENT_MAP_JS_KEY
-    || process.env.TENCENT_MAP_KEY
-    || NEARBY_TENCENT_JS_KEY;
   const wsKey = process.env.TENCENT_MAP_KEY || '';
   const sk = process.env.TENCENT_MAP_SK || '';
-  if (!staticKey) return '';
+  if (!wsKey) return '';
 
   const params = {
     center: `${center.lat},${center.lng}`,
@@ -1115,15 +1111,14 @@ function buildStaticMapUrl(center, markers = [], options = {}) {
   const markerParam = buildStaticMapMarkers(markers);
   if (markerParam) params.markers = markerParam;
 
-  const signKey = staticKey;
-  const shouldSign = sk && signKey === wsKey;
-  const signParams = { ...params, key: signKey };
+  // SK 签名：参数必须含 key，按字母排序后拼接
+  const signParams = { ...params, key: wsKey };
   const sortedQuery = Object.keys(signParams).sort()
     .map((k) => `${k}=${signParams[k]}`).join('&');
   const encodedQuery = Object.keys(params).sort()
     .map((k) => `${k}=${encodeURIComponent(params[k])}`).join('&');
-  let url = `https://apis.map.qq.com/ws/staticmap/v2?${encodedQuery}&key=${encodeURIComponent(signKey)}`;
-  if (shouldSign) {
+  let url = `https://apis.map.qq.com/ws/staticmap/v2?${encodedQuery}&key=${encodeURIComponent(wsKey)}`;
+  if (sk) {
     const sig = crypto.createHash('md5').update(`/ws/staticmap/v2?${sortedQuery}${sk}`, 'utf8').digest('hex');
     url += '&sig=' + sig;
   }
@@ -1156,17 +1151,10 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
   const catMarkers = cat ? within.filter((m) => m.cat === cat) : within;
 
   const center_json = JSON.stringify(center);
-  // 路线规划起点：优先用用户实时位置，否则用中心点
-  const fromCoord = { lat: center.lat, lng: center.lng, name: center.name || '当前位置' };
-  const from_json = JSON.stringify(fromCoord);
   const base = {
     centerName: center.name || '嘉路康养中心',
     centerLat: center.lat,
     centerLng: center.lng,
-    fromLat: fromCoord.lat,
-    fromLng: fromCoord.lng,
-    fromName: fromCoord.name,
-    from_json,
     radiusKm,
     map_key: process.env.TENCENT_MAP_JS_KEY || NEARBY_TENCENT_JS_KEY,
     center_json,
@@ -1284,6 +1272,8 @@ function nbToMarker(f) {
     tags,
     tags_text: tags.join('·'),
     rating: '',
+    // ★ 预编码的导航参数 JSON（避免 Mustache 转义破坏 JSON）
+    nav_params: JSON.stringify({ lat: parseFloat(f.lat ?? f.纬度) || 0, lng: parseFloat(f.lng ?? f.经度) || 0, name: f.name || f.名称 || '未命名' }),
     // ★ 富化字段透传
     source: f._source || 'local',
     enriched_description: f.enriched_description || '',

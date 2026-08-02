@@ -130,6 +130,7 @@
         document.getElementById('svgFallback').classList.remove('show');
         document.getElementById('mapCanvas').style.display = 'block';
         map = new TMap.Map(document.getElementById('mapCanvas'), { center: new TMap.LatLng(CENTER.lat, CENTER.lng), zoom: 10 });
+        window.__nbMapInstance = map;
         setTimeout(function () {
           var canvas = document.querySelector('#mapCanvas canvas, #mapCanvas img');
           if (!canvas || (canvas.width < 2 && canvas.height < 2)) {

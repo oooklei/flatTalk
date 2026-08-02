@@ -36,7 +36,7 @@
             {{#enriched_images}}<div class="nb-row-imgs">{{#.}}<img src="{{.}}" alt="" loading="lazy" />{{/.}}</div>{{/enriched_images}}
             {{#enriched_rating_hint}}<div class="nb-row-hint">⭐ {{enriched_rating_hint}}</div>{{/enriched_rating_hint}}
             <div class="nb-row-actions">
-              <button class="nb-btn nb-btn-primary action-btn" data-action-type="external_map" data-params='{"lat":{{lat}},"lng":{{lng}},"name":"{{name}}"}' data-href="https://apis.map.qq.com/uri/v1/routeplan?type=walk&from=coord:{{centerLat}},{{centerLng}};title:{{centerName}}&to=coord:{{lat}},{{lng}};title:{{name}}&policy=1&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH">🧭 导航</button>
+              <button class="nb-btn nb-btn-primary action-btn" data-action-type="external_map" data-params='{{{nav_params}}}' data-href="https://apis.map.qq.com/uri/v1/routeplan?type=walk&from=coord:{{centerLat}},{{centerLng}};title:{{centerName}}&to=coord:{{lat}},{{lng}};title:{{name}}&policy=1&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH">🧭 导航</button>
               {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
             </div>
           </div>

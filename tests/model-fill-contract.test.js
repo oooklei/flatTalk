@@ -55,7 +55,7 @@ test('mock model strips unsafe text from message and business data', async () =>
     template_id: 'diet_card',
     business_data: {
       items: [
-        '燕麦粥<script>alert(1)</script>',
+        '&lt;b&gt;燕麦粥&lt;/b&gt;<script>alert(1)</script>',
         '<a onclick=alert(1)>水煮蛋</a>',
         'javascript:黄瓜',
       ],
@@ -64,10 +64,77 @@ test('mock model strips unsafe text from message and business data', async () =>
   const serialized = JSON.stringify(result);
 
   assert.equal(/<[^>]*>/i.test(serialized), false);
+  assert.equal(/&lt;\/?b&gt;/i.test(serialized), false);
   assert.equal(/\bon[a-z]+\s*=/i.test(serialized), false);
   assert.equal(/javascript\s*:/i.test(serialized), false);
   assert.deepEqual(
     result.data.meals[0].foods.map((food) => food.foodName),
     ['燕麦粥alert(1)', '水煮蛋', '黄瓜'],
   );
+});
+
+test('travel itinerary keeps duration from product title when product days are missing', async () => {
+  const result = await fillTemplateSlots({
+    message: '安排这条10天旅居行程',
+    template_id: 'travel_itinerary_card',
+    default_template_id: 'travel_itinerary_card',
+    template_library: [{ id: 'travel_itinerary_card', match: '旅居行程安排' }],
+    business_data: {
+      jtd: {
+        source_status: 'real_data',
+        selected_product: {
+          product_id: 'jtd_test_10d',
+          sku_id: 'sku_test_10d',
+          product_name: '防城港10天康养旅居路线',
+          destination: '防城港',
+          price_label: '约1000元/人',
+        },
+      },
+    },
+  });
+
+  assert.equal(result.template_id, 'travel_itinerary_card');
+  assert.equal(result.data.days.length, 10);
+  assert.equal(result.data.days[0].day, 'D1');
+  assert.equal(result.data.days[9].day, 'D10');
+  assert.ok(result.data.title.includes('10天'));
+});
+
+test('nearby resource static map uses WS key with SK signing', async () => {
+  const oldWsKey = process.env.TENCENT_MAP_KEY;
+  const oldSk = process.env.TENCENT_MAP_SK;
+  try {
+    process.env.TENCENT_MAP_KEY = 'TEST-WS-KEY';
+    process.env.TENCENT_MAP_SK = 'TEST-SK-SECRET';
+
+    const result = await fillTemplateSlots({
+      message: '嘉路康养中心周边地图',
+      template_id: 'nearby_map_overview',
+      intent_context: { scene_key: 'nearby_resource', intent: 'nearby_resource.all' },
+      business_data: {
+        jialu_center: { name: '嘉路康养中心', lat: 21.527905, lng: 108.166816 },
+        jialu_facilities: [{
+          poi_id: 'poi_test_1',
+          name: '测试医院',
+          address: '测试地址',
+          lat: 21.531,
+          lng: 108.172,
+          distance: 0.8,
+          category: '医养',
+          amap_type: '医疗',
+        }],
+      },
+    });
+
+    const url = result.data.static_map_url;
+    const decoded = decodeURIComponent(url);
+    assert.ok(url.includes('key=TEST-WS-KEY'), 'should use WS key');
+    assert.ok(url.includes('&sig='), 'should include SK signature');
+    assert.ok(decoded.includes('markers=color:blue|size:mid|21.531,108.172'));
+  } finally {
+    if (oldWsKey === undefined) delete process.env.TENCENT_MAP_KEY;
+    else process.env.TENCENT_MAP_KEY = oldWsKey;
+    if (oldSk === undefined) delete process.env.TENCENT_MAP_SK;
+    else process.env.TENCENT_MAP_SK = oldSk;
+  }
 });

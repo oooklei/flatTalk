@@ -25,7 +25,7 @@
           <div class="nb-cmp-row"><span>状态</span><b>{{biz_status}}</b></div>
           {{#tags}}<div class="nb-tags" style="margin-top:8px">{{#tags}}<span class="nb-tag">{{.}}</span>{{/tags}}</div>{{/tags}}
           <div class="nb-row-actions" style="margin-top:10px">
-            <button class="nb-btn nb-btn-primary action-btn" data-action-type="external_map" data-params='{"lat":{{lat}},"lng":{{lng}},"name":"{{name}}"}' data-href="https://apis.map.qq.com/uri/v1/routeplan?type=walk&from=coord:{{centerLat}},{{centerLng}};title:{{centerName}}&to=coord:{{lat}},{{lng}};title:{{name}}&policy=1&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH">🧭 导航</button>
+            <button class="nb-btn nb-btn-primary action-btn" data-action-type="external_map" data-params='{{{nav_params}}}' data-href="https://apis.map.qq.com/uri/v1/routeplan?type=walk&from=coord:{{centerLat}},{{centerLng}};title:{{centerName}}&to=coord:{{lat}},{{lng}};title:{{name}}&policy=1&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH">🧭 导航</button>
             {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎</a>{{/tel}}
           </div>
         </div>
