@@ -72,26 +72,22 @@
         try {
           var poi = JSON.parse(params);
           if (poi.lat && poi.lng) {
-            showInCardRoute(window.__nbMapInstance, poi, url);
+            showInCardRoute(window.__nbMapInstance, poi);
             return;
           }
         } catch {}
       }
     }
 
-    // 无地图实例时：在卡片内嵌入路线预览 iframe（腾讯地图 H5 页面）
-    var container = mapLink.parentElement;
-    var existing = container.querySelector('.nb-route-preview');
-    if (existing) { existing.remove(); return; } // 再次点击则收起
-    var routeFrame = document.createElement('iframe');
-    routeFrame.className = 'nb-route-preview';
-    routeFrame.style.cssText = 'width:100%;height:280px;border:1px solid #e0e0e0;border-radius:8px;margin-top:8px;';
-    // 使用腾讯地图 H5 嵌入页（支持 iframe）
-    routeFrame.src = url;
-    container.appendChild(routeFrame);
+    // 无地图实例时：交给父窗口在新标签页打开（移动端调起地图 App）
+    // 不能在卡片 iframe 内嵌入 URI API — 它会尝试 top-navigation 导致 SecurityError
+    window.parent.postMessage({
+      type: 'flattalk_open_map',
+      url: url,
+    }, '*');
   }, true);
 
-  function showInCardRoute(map, poi, fallbackUrl) {
+  function showInCardRoute(map, poi) {
     try {
       map.setCenter(new TMap.LatLng(poi.lat, poi.lng));
       map.setZoom(15);
