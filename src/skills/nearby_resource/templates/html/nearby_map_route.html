@@ -75,7 +75,7 @@
       var mapLoadTimer = null;
       var map = null;
 
-      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/routeplan?type=walk&to=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH'; }
+      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/routeplan?type=walk&from=coord:' + CENTER.lat + ',' + CENTER.lng + ';title:' + encodeURIComponent(CENTER.name || '当前位置') + '&to=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&policy=1&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH'; }
       function renderSteps() {
         var box = document.getElementById('stepsBox');
         box.innerHTML = PAYLOAD.map(function (p, i) {

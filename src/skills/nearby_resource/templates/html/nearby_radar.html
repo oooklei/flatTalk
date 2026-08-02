@@ -77,7 +77,7 @@
       var mapLoadTimer = null;
       var map = null;
 
-      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/routeplan?type=walk&to=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH'; }
+      function navUrl(p){ return 'https://apis.map.qq.com/uri/v1/routeplan?type=walk&from=coord:' + CENTER.lat + ',' + CENTER.lng + ';title:' + encodeURIComponent(CENTER.name || '当前位置') + '&to=coord:' + p.lat + ',' + p.lng + ';title:' + encodeURIComponent(p.name) + '&policy=1&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH'; }
       function renderList() {
         var box = document.getElementById('listBox');
         if (!PAYLOAD.length) { box.innerHTML = '<div class="nb-empty">1.5km 内暂无步行可达配套，建议查看车行资源</div>'; return; }

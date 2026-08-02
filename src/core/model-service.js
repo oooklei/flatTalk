@@ -51,6 +51,9 @@ export async function fillTemplateSlots({
   if (selectedTemplateId === 'route_card') {
     return fillRouteCard({ message, business_data });
   }
+  if (selectedTemplateId === 'travel_availability_card') {
+    return fillTravelAvailabilityCard({ message, business_data });
+  }
   if (selectedTemplateId.startsWith('nearby_')) {
     return fillNearbyResourceCard({ message, business_data, intent_context });
   }
@@ -122,6 +125,7 @@ function selectTemplateId({ message, template_id, default_template_id, template_
   if (template_id && template_id !== 'answer') return template_id;
   // template_id='answer' 时不再强制改写为 health_card，保留 answer 作为通用兜底
   if (template_id === 'answer' && template_library?.some(t => t.id === 'answer')) return 'answer';
+  if (template_id === 'answer') return 'health_card';
   const templates = Array.isArray(template_library) ? template_library : [];
   const ids = templates.map((item) => item.id).filter(Boolean);
 
@@ -562,6 +566,7 @@ async function fillPolicyCard({ message, knowledgeService }) {
   // 尝试从知识库查询政策信息
   let policyContent = null;
 
+  if (!isAssistantUsage) {
   try {
     // 提取查询关键词
     const keywords = extractPolicyKeywords(text);
@@ -582,6 +587,8 @@ async function fillPolicyCard({ message, knowledgeService }) {
   }
 
   // 如果有知识库结果，使用知识库内容
+  }
+
   if (policyContent) {
     return sanitizeModelResult({
       template_id: 'policy_card',
@@ -1082,7 +1089,7 @@ function isNearbyResourceText(text, intent_context = {}) {
   return /嘉路|康养中心|周边|附近|15公里|地图|民宿|景区|海鲜|垂钓|康养|医疗|餐馆|餐厅|游玩|景点|配套|资源|生活圈|分布|大屏|在哪|map|nearby|around/.test(String(text || ''));
 }
 
-// 腾讯地图 JS API Key（已验证可用的项目 key）。留空或占位符时卡片自动降级为 SVG 方位图。
+// 腾讯地图 JS API Key。留空或占位符时卡片自动降级为 SVG 方位图。
 const NEARBY_TENCENT_JS_KEY = 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
 
 /**
@@ -1090,29 +1097,45 @@ const NEARBY_TENCENT_JS_KEY = 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
  * 用于 JS API 加载失败时，提供比 SVG 更真实的地图截图。
  */
 function buildStaticMapUrl(center, markers = [], options = {}) {
+  const staticKey = process.env.TENCENT_STATIC_MAP_KEY
+    || process.env.TENCENT_MAP_STATIC_KEY
+    || process.env.TENCENT_MAP_JS_KEY
+    || process.env.TENCENT_MAP_KEY
+    || NEARBY_TENCENT_JS_KEY;
   const wsKey = process.env.TENCENT_MAP_KEY || '';
   const sk = process.env.TENCENT_MAP_SK || '';
-  if (!wsKey) return '';
+  if (!staticKey) return '';
 
   const params = {
     center: `${center.lat},${center.lng}`,
     zoom: options.zoom || 11,
     size: options.size || '600*420',
+    maptype: options.maptype || 'roadmap',
   };
-  if (markers.length) {
-    params.markers = markers.slice(0, 30).map((m) =>
-      `coord:${m.lat},${m.lng};title:${(m.name || '').slice(0, 10)}`
-    ).join('|');
-  }
-  const signParams = { ...params, key: wsKey };
+  const markerParam = buildStaticMapMarkers(markers);
+  if (markerParam) params.markers = markerParam;
+
+  const signKey = staticKey;
+  const shouldSign = sk && signKey === wsKey;
+  const signParams = { ...params, key: signKey };
   const sortedQuery = Object.keys(signParams).sort()
     .map((k) => `${k}=${signParams[k]}`).join('&');
-  let url = `https://apis.map.qq.com/ws/staticmap/v2?${sortedQuery}`;
-  if (sk) {
+  const encodedQuery = Object.keys(params).sort()
+    .map((k) => `${k}=${encodeURIComponent(params[k])}`).join('&');
+  let url = `https://apis.map.qq.com/ws/staticmap/v2?${encodedQuery}&key=${encodeURIComponent(signKey)}`;
+  if (shouldSign) {
     const sig = crypto.createHash('md5').update(`/ws/staticmap/v2?${sortedQuery}${sk}`, 'utf8').digest('hex');
     url += '&sig=' + sig;
   }
   return url;
+}
+
+function buildStaticMapMarkers(markers = []) {
+  const points = markers.slice(0, 30)
+    .filter((m) => Number.isFinite(Number(m.lat)) && Number.isFinite(Number(m.lng)))
+    .map((m) => `${Number(m.lat)},${Number(m.lng)}`);
+  if (!points.length) return '';
+  return ['color:blue', 'size:mid', ...points].join('|');
 }
 
 function fillNearbyResourceCard({ message = '', business_data = {}, intent_context = {} } = {}) {
@@ -1135,8 +1158,10 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
   const center_json = JSON.stringify(center);
   const base = {
     centerName: center.name || '嘉路康养中心',
+    centerLat: center.lat,
+    centerLng: center.lng,
     radiusKm,
-    map_key: NEARBY_TENCENT_JS_KEY,
+    map_key: process.env.TENCENT_MAP_JS_KEY || NEARBY_TENCENT_JS_KEY,
     center_json,
     stats,
     statsLabels: nbStatsLabels(stats),
@@ -1488,12 +1513,12 @@ function fillServiceEmergencyCard({ message = '', intent_context = {} } = {}) {
       emergency_name: emergencyName,
     },
     actions: [
-      { key: 'sos.call_120', label: '📞 立即拨打120' },
-      { key: 'sos.notify_family', label: '👪 通知家属' },
+      { action_key: 'sos.call_120', key: 'sos.call_120', label: '📞 立即拨打120' },
+      { action_key: 'sos.notify_family', key: 'sos.notify_family', label: '👪 通知家属' },
     ],
     followup_suggestions: [
-      { key: 'sos.call_120', label: '拨打120' },
-      { key: 'sos.notify_family', label: '通知家属' },
+      { action_key: 'sos.call_120', key: 'sos.call_120', label: '拨打120', user_prompt: '紧急情况，需要拨打120' },
+      { action_key: 'sos.notify_family', key: 'sos.notify_family', label: '通知家属', user_prompt: '紧急情况，需要通知家属' },
     ],
     template_fit_notes: ['sos_emergency_card'],
   });
@@ -1800,7 +1825,7 @@ function fillMealOverviewCard({ message }) {
   return sanitizeModelResult({
     template_id: 'meal_overview_card',
     answer_text: '本周膳食概览',
-    data: { title: '本周膳食概览', totalCalories: '约8400kcal', avgDaily: '约1200kcal', days: 7, compliance: '90%' },
+    data: { title: '本周膳食概览', totalCalories: '约8400kcal', avgDaily: '约1200kcal', days: 7, compliance: '90%', related: [], hasRelated: false },
     actions: [], followup_suggestions: [],
   });
 }
@@ -1926,6 +1951,56 @@ function buildTravelHighlights(healthTags, destination) {
   return [...new Set([...tags, destination.includes('北海') ? '海滨慢行' : '康养基地', '家属可陪同'])].slice(0, 5);
 }
 
+function resolveTravelDuration({ product = {}, title = '', message = '', fallbackDays = 3 } = {}) {
+  const productDays = positiveInt(product?.days);
+  const productNights = positiveInt(product?.nights);
+  const daysFromProduct = productDays || (productNights ? productNights + 1 : 0);
+  const daysFromTitle = extractDurationDays(title);
+  const daysFromMessage = extractDurationDays(message);
+  const totalDays = clampTripDays(daysFromProduct || daysFromTitle || daysFromMessage || fallbackDays);
+  return {
+    daysFromProduct,
+    daysFromTitle,
+    daysFromMessage,
+    totalDays,
+  };
+}
+
+function extractDurationDays(text) {
+  const value = String(text || '');
+  const digitMatch = value.match(/(\d+)\s*(?:天|日)/);
+  if (digitMatch) return clampTripDays(Number(digitMatch[1]));
+  const chineseMatch = value.match(/([一二两三四五六七八九十]{1,4})\s*(?:天|日)/);
+  if (chineseMatch) return clampTripDays(chineseNumberToInt(chineseMatch[1]));
+  if (/一周|七天|7\s*天/.test(value)) return 7;
+  return 0;
+}
+
+function positiveInt(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? Math.floor(number) : 0;
+}
+
+function clampTripDays(value) {
+  const number = positiveInt(value);
+  if (!number) return 0;
+  return Math.max(1, Math.min(30, number));
+}
+
+function chineseNumberToInt(text) {
+  const value = String(text || '').replace(/两/g, '二');
+  const digits = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+  if (value === '十') return 10;
+  const tenIndex = value.indexOf('十');
+  if (tenIndex >= 0) {
+    const high = tenIndex === 0 ? 1 : digits[value.slice(0, tenIndex)] || 0;
+    const lowText = value.slice(tenIndex + 1);
+    const low = lowText ? digits[lowText] || 0 : 0;
+    return high * 10 + low;
+  }
+  return digits[value] || 0;
+}
+
 function buildItinerary(destination, days = 3) {
   // 根据实际天数构建行程
   const itinerary = [];
@@ -1974,21 +2049,9 @@ function fillRouteCard({ message, business_data }) {
   const healthTags = sanitizeText((Array.isArray(product?.tags) && product.tags.length ? product.tags.join(',') : '') || route?.health_tags || '慢病友好,低强度,医疗可达');
   const productName = sanitizeText(product?.product_name || '');
   
-  // 从产品数据中提取天数
-  const daysFromProduct = parseInt(product?.days || product?.nights || 0) + 1;
-  const daysFromTitle = parseInt(productName?.match(/(\d+)天/)?.[1] || 0);
-  const totalDays = daysFromProduct || daysFromTitle || 3;
-  
-  // 调试日志：检查产品数据
-  console.log('[fillRouteCard] product data:', {
-    productName,
-    days: product?.days,
-    nights: product?.nights,
-    daysFromProduct,
-    daysFromTitle,
-    totalDays,
-    raw: product?.raw,
-  });
+  // 从可信结构化字段、产品标题和用户输入依次提取总天数。
+  // 注意：JTD routeProduct.dayNumber 表示“第几日”，不是产品总天数，不能当 duration。
+  const { totalDays } = resolveTravelDuration({ product, title: productName, message, fallbackDays: 3 });
   
   const answerText = product
     ? (jtd.source_status === 'real_data'
@@ -2064,17 +2127,146 @@ function fillRouteCard({ message, business_data }) {
   });
 }
 
+function fillTravelAvailabilityCard({ message, business_data }) {
+  const routes = Array.isArray(business_data?.routes) ? business_data.routes : [];
+  const jtd = business_data?.jtd || {};
+  const product = jtd.selected_product || (Array.isArray(jtd.products) ? jtd.products[0] : null);
+  const route = selectTravelRoute(message, routes);
+  const normalized = jtd.availability?.normalized || null;
+  const destination = sanitizeText(
+    business_data?.primary_city
+    || product?.destination
+    || product?.city
+    || route?.destination
+    || inferDestination(message)
+    || '旅居目的地',
+  );
+  const productName = sanitizeText(product?.product_name || product?.name || `${destination}旅居产品`);
+  const productId = sanitizeText(product?.product_id || '');
+  const skuId = sanitizeText(product?.sku_id || '');
+  const stockValue = normalized?.stock ?? product?.stock ?? null;
+  const priceValue = normalized?.final_price ?? product?.price_amount ?? null;
+  const sourceStatus = normalized?.source_status || jtd.source_status || 'unavailable';
+  const isMock = sourceStatus === 'mock_vendor_data';
+  const hasAvailability = Boolean(jtd.availability);
+  const isAvailable = Boolean(normalized?.available);
+  const availabilityLevel = !hasAvailability || sourceStatus === 'unavailable'
+    ? 'unknown'
+    : isMock
+    ? 'mock'
+    : isAvailable
+    ? 'available'
+    : 'unavailable';
+  const availabilityStatus = availabilityStatusText({ hasAvailability, isAvailable, isMock, sourceStatus });
+  const availabilityMessage = availabilityMessageText({ hasAvailability, isAvailable, isMock, sourceStatus, jtd });
+  const checkWindow = buildAvailabilityWindow(jtd.availability?.request || {}, message);
+  const answerText = `${productName}：${availabilityStatus}`;
+  const productParams = {
+    product_id: productId,
+    sku_id: skuId,
+    destination,
+    source_status: sourceStatus,
+  };
+
+  return sanitizeModelResult({
+    template_id: 'travel_availability_card',
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      availabilityTitle: `${destination}旅居产品可订状态`,
+      availabilityStatus,
+      availabilityLevel,
+      availabilityMessage,
+      stockLabel: stockValue === null || stockValue === undefined || stockValue === '' ? '待接口确认' : String(stockValue),
+      priceLabel: priceValue ? `约${priceValue}元/人` : sanitizeText(product?.price_label || '待接口确认'),
+      checkWindow,
+      sourceLabel: sourceStatus === 'real_data'
+        ? '金跳动真实接口'
+        : sourceStatus === 'mock_vendor_data'
+        ? '金跳动联调 mock'
+        : '金跳动接口不可用',
+      productName,
+      destination,
+      productId: productId || '待接口返回',
+      skuId: skuId || '待接口返回',
+      nextStep: nextAvailabilityStep({ hasAvailability, isAvailable, isMock, sourceStatus, jtd }),
+      jtdStatus: jtd.source_status || '',
+      availabilitySourceStatus: sourceStatus,
+      availabilityAvailable: isAvailable,
+      availabilityRaw: normalized?.raw || {},
+    },
+    actions: [
+      ...(product ? [{ action_key: 'travel_route.view_product_detail', label: '查看产品详情', params: productParams }] : []),
+      ...(isAvailable && jtd.handoff_enabled ? [{ action_key: 'travel_route.booking_handoff', label: '继续预订', params: productParams }] : []),
+      { action_key: 'travel_route.request_manual_review', label: '人工复核', params: { ...productParams, reason: isMock ? 'jtd_mock_availability' : 'jtd_availability_review' } },
+    ],
+    followup_suggestions: [
+      {
+        label: '换个日期再查',
+        user_prompt: '请换一个入住日期重新查询这条旅居产品是否可订',
+        action_key: 'travel_route.check_availability',
+        params: productParams,
+      },
+      {
+        label: '查看路线详情',
+        user_prompt: '请展示这条旅居路线的详细安排',
+        action_key: 'travel_route.view_detail',
+        params: productParams,
+      },
+    ],
+    template_fit_notes: ['jtd_availability_result'],
+  });
+}
+
+function availabilityStatusText({ hasAvailability, isAvailable, isMock, sourceStatus }) {
+  if (!hasAvailability) return '未完成金跳动可订校验';
+  if (isMock) return isAvailable ? '联调 mock 显示可订' : '联调 mock 显示不可订';
+  if (sourceStatus === 'unavailable') return '金跳动可订接口不可用';
+  return isAvailable ? '金跳动已校验可订' : '金跳动已校验当前不可订';
+}
+
+function availabilityMessageText({ hasAvailability, isAvailable, isMock, sourceStatus, jtd }) {
+  if (!hasAvailability) return '本次响应没有取得 checkAvailability 结果，请补充入住日期、人数后重新查询。';
+  if (isMock) return '当前结果来自厂家接口联调 mock 数据，只能验证流程，不能作为正式下单或库存承诺。';
+  if (sourceStatus === 'unavailable') return `可订接口暂不可用：${jtd.availability?.error || '未返回有效结果'}。`;
+  return isAvailable
+    ? '已从金跳动可订接口取得可订结果，请在继续预订前再次核对入住日期、人数和最终价格。'
+    : '已从金跳动可订接口取得结果，当前日期或库存暂不支持预订。';
+}
+
+function nextAvailabilityStep({ hasAvailability, isAvailable, isMock, sourceStatus, jtd }) {
+  if (!hasAvailability) return '请补充入住日期、离店日期和人数后重新查询，避免只展示路线信息。';
+  if (isMock) return '请切换到金跳动真实环境或请求人工复核，mock 结果不可作为真实可订依据。';
+  if (sourceStatus === 'unavailable') return '请检查金跳动接口配置、签名和网络连通性，必要时转人工复核。';
+  if (isAvailable && jtd.handoff_enabled) return '可继续进入预订跳转，并在下单页确认最终价格与库存。';
+  if (isAvailable) return '接口显示可订，但未返回可用预订跳转地址，请先人工确认后再下单。';
+  return '建议更换入住日期、减少人数或选择其他旅居产品。';
+}
+
+function buildAvailabilityWindow(requestPayload = {}, message = '') {
+  const checkIn = requestPayload.checkIn || requestPayload.check_in || '';
+  const checkOut = requestPayload.checkOut || requestPayload.check_out || '';
+  if (checkIn && checkOut) return `${checkIn} 至 ${checkOut}`;
+  const text = String(message || '');
+  const dateMatch = text.match(/20\d{2}[-/.]\d{1,2}[-/.]\d{1,2}/g);
+  if (Array.isArray(dateMatch) && dateMatch.length >= 2) return `${dateMatch[0]} 至 ${dateMatch[1]}`;
+  if (Array.isArray(dateMatch) && dateMatch.length === 1) return dateMatch[0];
+  return '待确认入住日期';
+}
+
 function fillTravelItineraryCard({ message, business_data }) {
   const routeResult = fillRouteCard({ message, business_data });
   const routeData = routeResult.data || {};
   const destination = sanitizeText(routeData.destination || inferDestination(message));
   const productName = sanitizeText(String(routeData.routeTitle || '').replace(/康养旅居路线$/, '')) || destination;
   
-  // 从产品数据中提取天数
   const product = business_data?.jtd?.selected_product || business_data?.jtd?.products?.[0];
-  const daysFromProduct = parseInt(product?.days || product?.nights || 0) + 1;
-  const daysFromTitle = parseInt(routeData.routeTitle?.match(/(\d+)天/)?.[1] || 0);
-  const totalDays = daysFromProduct || daysFromTitle || 3;
+  const { totalDays } = resolveTravelDuration({
+    product,
+    title: `${routeData.routeTitle || ''} ${productName}`,
+    message,
+    fallbackDays: 3,
+  });
   
   // 从 routeData.itinerary 或构建默认行程
   const rawItinerary = Array.isArray(routeData.itinerary) ? routeData.itinerary : buildItinerary(destination, totalDays);
@@ -2425,11 +2617,20 @@ function sanitizeModelResult(result) {
 }
 
 function sanitizeText(value) {
-  return String(value ?? '')
+  return decodeTextEntities(value)
     .replace(HTML_TAG_PATTERN, '')
     .replace(EVENT_HANDLER_PATTERN, '')
     .replace(SCRIPT_PROTOCOL_PATTERN, '')
     .trim();
+}
+
+function decodeTextEntities(value) {
+  return String(value ?? '')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&amp;/gi, '&');
 }
 
 // 兼容导出：旧函数名 fillTravelWeatherRisk 保留
