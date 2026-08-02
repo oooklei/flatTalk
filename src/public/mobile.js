@@ -84,6 +84,14 @@ function escapeHtml(value = "") {
   }[char]));
 }
 
+function visibleActionText(value = "") {
+  return decodeBasicHtmlEntities(value)
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;|&#160;|&#x[aA]0;/g, " ")
+    .trim();
+}
+
 function initials(name = "?") {
   return String(name || "?").slice(0, 1);
 }
@@ -204,7 +212,7 @@ function sanitizeAssistantText(text = "") {
 }
 
 function roleTitle(user = {}, auth = {}) {
-  return user.role_name || auth.roleName || auth.roleKey || "鑰佷汉/瀹跺睘";
+  return user.role_name || auth.roleName || auth.roleKey || "老人/瀹跺睘";
 }
 
 function canShowPrivate(profile = {}) {
@@ -350,6 +358,12 @@ function decodeBasicHtmlEntities(value = "") {
 function isSupportedMobileAction(action = {}) {
   const key = String(action.action_key || "");
   if (!key) return false;
+  const explicitServerActions = new Set([
+    "travel_route.compare_destinations",
+    "travel_route.check_availability",
+    "travel_route.calculate_budget",
+  ]);
+  if (explicitServerActions.has(key)) return true;
   return key.startsWith("meal_plan.")
     || key.startsWith("travel_route.")
     || key.startsWith("health_risk_warning.")
@@ -358,6 +372,24 @@ function isSupportedMobileAction(action = {}) {
     || key.startsWith("nearby_resource.")
     || key === "sos.call_120"
     || key === "sos.notify_family";
+}
+
+function sanitizePhoneNumber(value = "") {
+  return String(value || "").replace(/[^\d+]/g, "").trim();
+}
+
+function isLikelyDialCapableDevice() {
+  const ua = navigator.userAgent || "";
+  return Boolean(
+    window.ReactNativeWebView
+    || window.webkit?.messageHandlers
+    || /android|iphone|ipod|ipad|windows phone|mobile/i.test(ua)
+  );
+}
+
+function isSosPhoneAction(action = {}) {
+  const key = String(action.action_key || "");
+  return key === "sos.call_120" || key === "sos.notify_family";
 }
 
 function debugStatusLabel(status = "") {
@@ -393,7 +425,7 @@ function debugTraceLabel(step = "") {
 }
 
 function parseVoiceSubmitCommand(text = "") {
-  const normalized = String(text || "").replace(/[锛屻€傦紒锛?.!?锛?]/g, " ").replace(/\s+/g, " ").trim();
+  const normalized = String(text || "").replace(/[，€！?.!?锛?]/g, " ").replace(/\s+/g, " ").trim();
   for (const command of VOICE_SUBMIT_COMMANDS) {
     const lower = command.toLowerCase();
     const current = normalized.toLowerCase();
@@ -712,7 +744,7 @@ class MobileApp {
         }
       }
     } catch (e) {
-      console.warn("[Mobile][ConversationHistory] 鍚庣鍔犺浇澶辫触:", e.message);
+      console.warn("[Mobile][ConversationHistory] 候车加载失败:", e.message);
     }
     return false;
   }
@@ -976,14 +1008,14 @@ class MobileApp {
     if (overlay) overlay.classList.add("open");
   }
 
-  // 鈽?Ctrl+X 鍒囨崲璋冩祴淇℃伅娴獥锛堝彲鎷栨嫿锛屼笉瑕嗙洊瀵硅瘽鍖猴級
+  // 鈽?Ctrl+X 切换璋冩祴信息娴窗（可拖拽，不覆盖对话区）
   async toggleDebugSidePanel() {
     const existing = document.querySelector(".mobile-debug-side-panel");
     if (existing && existing.classList.contains("open")) {
       this.closeDebugSidePanel();
       return;
     }
-    // 鍏堢'淇?health 淇℃伅瀛樺湪锛堝惈 baseUrl / model / agentId 绛夛級
+    // 先生'修?health 信息存在（含 baseUrl / model / agentId 等）
     if (!this.state.health) {
       await this.checkHealth();
     }
@@ -1020,7 +1052,7 @@ class MobileApp {
     let startTop = 0;
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
     head.addEventListener("pointerdown", (event) => {
-      // 鐐瑰嚮鍏抽棴鎸夐挳涓嶈Е鍙戞嫋鎷?      if (event.target.closest(".debug-side-close")) return;
+      // 点击关闭按钮不允Е发拖拽?      if (event.target.closest(".debug-side-close")) return;
       dragging = true;
       const rect = panel.getBoundingClientRect();
       startX = event.clientX;
@@ -1309,8 +1341,8 @@ class MobileApp {
         else if (func === "search") { this.switchTab("chat"); this.sendMessage("\u627e\u670d\u52a1"); }
         else if (func === "policy") { this.switchTab("chat"); this.sendMessage("\u67e5\u653f\u7b56"); }
         else if (func === "travel") { this.switchTab("chat"); this.sendMessage("\u5e2e\u6211\u89c4\u5212\u65c5\u5c45\u8def\u7ebf"); }
-        else if (func === "sos-120") { window.location.href = "tel:120"; }
-        else if (func === "sos-family") { const ec = localStorage.getItem("emergency_contact_phone"); if (ec) { window.location.href = "tel:" + ec; } else { this.switchTab("chat"); this.sendMessage("\u6211\u8981\u901a\u77e5\u5bb6\u5c5e"); } }
+        else if (func === "sos-120") { this.handlePhoneDial("120", { fallbackMessage: "当前浏览器无法直接拨号，请使用手机拨打 120" }); }
+        else if (func === "sos-family") { const ec = localStorage.getItem("emergency_contact_phone"); if (ec) { this.handlePhoneDial(ec); } else { this.switchTab("chat"); this.sendMessage("\u6211\u8981\u901a\u77e5\u5bb6\u5c5e"); } }
         else if (func === "sos-chat") { this.switchTab("chat"); this.sendMessage("\u6551\u547d\uff01\u7d27\u6025\u6c42\u52a9"); }
       });
     });
@@ -1578,7 +1610,7 @@ class MobileApp {
       });
       if (!res.ok) throw new Error(`sync failed: ${res.status}`);
     } catch (e) {
-      console.warn("[Mobile][ConversationHistory] 鍚屾澶辫触:", e.message);
+      console.warn("[Mobile][ConversationHistory] 同步失败:", e.message);
     }
   }
 
@@ -1844,6 +1876,42 @@ class MobileApp {
     setTimeout(() => toast.remove(), 2000);
   }
 
+  handlePhoneDial(phone, options = {}) {
+    const safePhone = sanitizePhoneNumber(phone);
+    if (!safePhone) {
+      this.showToast(options.missingMessage || "未配置可拨打的电话号码");
+      return false;
+    }
+    if (isLikelyDialCapableDevice()) {
+      window.location.href = `tel:${safePhone}`;
+      return true;
+    }
+    const message = options.fallbackMessage || `当前浏览器无法直接拨号，请使用手机拨打 ${safePhone}`;
+    this.showToast(message);
+    this.addSystemNotice(message);
+    return false;
+  }
+
+  handleSosPhoneAction(action = {}) {
+    const key = String(action.action_key || "");
+    if (key === "sos.call_120") {
+      this.handlePhoneDial("120", { fallbackMessage: "当前浏览器无法直接拨号，请使用手机拨打 120" });
+      return true;
+    }
+    if (key === "sos.notify_family") {
+      const phone = action.params?.phone || action.params?.emergency_phone || localStorage.getItem("emergency_contact_phone") || "";
+      if (phone) {
+        const safePhone = sanitizePhoneNumber(phone);
+        this.handlePhoneDial(phone, { fallbackMessage: `当前浏览器无法直接拨号，请使用手机拨打 ${safePhone}` });
+      } else {
+        this.switchTab("chat");
+        this.sendMessage("\u6211\u8981\u901a\u77e5\u5bb6\u5c5e");
+      }
+      return true;
+    }
+    return false;
+  }
+
   normalizeDebugResult(body = {}) {
     const result = body?.result_type === "skill_run" && body.envelope
       ? { ...body.envelope, action_result: { ...body, envelope: undefined } }
@@ -1932,11 +2000,11 @@ class MobileApp {
     this.appendAmbiguityOptions(normalizedBody);
     this.upsertTemplateTab(normalizedBody);
     this.renderTemplatePanel(normalizedBody);
-    // 鍙充晶璋冩祴鍗＄墖鑻ュ凡鎵撳紑锛屽垯鑷姩鍒锋柊
+    // 右侧调试卡片区域ュ已打开，则自姩刷新
     const sidePanel = document.querySelector(".mobile-debug-side-panel.open");
     if (sidePanel) this.renderDebugSidePanel();
-    // ========== 寮曞鎸夐挳娓叉煋 ==========
-    // 妫€娴?chat.busy_guide.v1 鍜?chat.queue_status.v1 妯℃澘
+    // ========== 寮曞按钮渲染 ==========
+    // 妫€娴?chat.busy_guide.v1 鍜?chat.queue_status.v1 模板
     const templateId = normalizedBody.template_id || normalizedBody.templateId;
     if (templateId === "chat.busy_guide.v1" || templateId === "chat.queue_status.v1") {
       this.renderBusyGuideButtons(body);
@@ -2011,7 +2079,9 @@ class MobileApp {
   }
 
   async handleAssistantAction(action = {}, button = null) {
-    if (!action?.action_key || this.state.sending) return;
+    if (!action?.action_key) return;
+    if (isSosPhoneAction(action) && this.handleSosPhoneAction(action)) return;
+    if (this.state.sending) return;
     this.state.sending = true;
     const conversation = this.currentConversation();
     const originalText = button?.textContent || action.label || action.action_key;
@@ -2094,7 +2164,15 @@ class MobileApp {
   }
 
   appendCompactFollowups(result = {}) {
-    const items = Array.isArray(result.compact_followups) ? result.compact_followups : [];
+    const items = Array.isArray(result.compact_followups)
+      ? result.compact_followups
+          .map((item) => ({
+            ...item,
+            label: visibleActionText(item?.label || item?.text || item?.title || item?.name),
+            action_key: visibleActionText(item?.action_key || item?.key),
+          }))
+          .filter((item) => item.label && item.action_key)
+      : [];
     if (!items.length) return;
     const bubbles = screen.querySelectorAll(".bubble.ai");
     const last = bubbles[bubbles.length - 1];
@@ -2292,7 +2370,7 @@ class MobileApp {
   }
 
   /**
-   * 娓叉煋寮曞鎸夐挳锛堝繖鏃跺紩瀵?鎺掗槦鐘舵€侊級
+   * 渲染寮曞按钮（此时引导?排队状态€侊級
    */
   renderBusyGuideButtons(body) {
     const templateId = body.template_id || body.templateId;
@@ -2305,11 +2383,11 @@ class MobileApp {
     const log = screen.querySelector("#mobileChatLog");
     if (!log) return;
     
-    // 绉婚櫎鏃х殑寮曞鎸夐挳
+    // 移除时х殑寮曞按钮
     const oldGuideButtons = log.querySelector(".busy-guide-buttons");
     if (oldGuideButtons) oldGuideButtons.remove();
     
-    // 鍒涘缓鎸夐挳瀹瑰櫒
+    // 创建按钮容器
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "busy-guide-buttons";
     buttonContainer.innerHTML = `
@@ -2323,25 +2401,25 @@ class MobileApp {
       </div>
     `;
     
-    // 缁戝畾鎸夐挳鐐瑰嚮浜嬩欢
+    // 绑定按钮点击事件
     buttonContainer.querySelectorAll(".busy-guide-btn").forEach((btn) => {
       btn.addEventListener("click", async (event) => {
         const actionKey = event.target.dataset.actionKey;
         const pendingMsg = event.target.dataset.pendingMessage;
         await this.executeBusyGuideAction(actionKey, pendingMsg);
-        // 绉婚櫎鎸夐挳瀹瑰櫒
+        // 移除按钮容器
         buttonContainer.remove();
       });
     });
     
-    // 娣诲姞鍒版秷鎭祦
+    // 添加到消息祦
     log.appendChild(buttonContainer);
     
-    // 婊氬姩鍒板簳閮?    log.scrollTop = log.scrollHeight;
+    // 滚动到底部?    log.scrollTop = log.scrollHeight;
   }
 
   /**
-   * 鎵ц寮曞鎸夐挳鍔ㄤ綔
+   * 鎵ц寮曞按钮动作ㄤ綔
    */
   async executeBusyGuideAction(actionKey, pendingMessage) {
     const conversation = this.currentConversation();
@@ -2379,7 +2457,7 @@ class MobileApp {
   upsertTemplateTab(result) {
     if (!result) return;
     const key = result.tab?.reuse_key || result.skill_key || result.page?.schema || "remote_answer";
-    const title = result.tab?.title || result.skill_title || result.page?.title || result.card?.title || "杩滅妯℃澘";
+    const title = result.tab?.title || result.skill_title || result.page?.title || result.card?.title || "杩滅模板";
     const existing = this.state.templateTabs.find((item) => item.key === key);
     if (existing) {
       existing.title = title;
@@ -2398,14 +2476,14 @@ class MobileApp {
     panel.classList.toggle("production-hidden", !this.state.debugEnabled);
     if (!this.state.debugEnabled) return;
     if (!result) {
-      panel.innerHTML = `<strong>椤甸潰妯℃澘</strong><p>娴嬭瘯鐜鏄剧ず杩滅鎶€鑳姐€佹ā鏉裤€佽瘉鎹€佽緭鍑烘寜閽拰瀹¤閾捐矾锛涚敓浜х幆澧冮殣钘忋€?/p>`;
+      panel.innerHTML = `<strong>椤甸潰模板</strong><p>测试环显示ず杩滅鎶€鑳姐€佹ā来。€验证€输出按钮拰瀹¤閾捐矾锛涚敓浜х环境隐藏。€?/p>`;
       return;
     }
     const active = this.state.templateTabs.find((item) => item.key === this.state.activeTemplateKey) || this.state.templateTabs[0];
     const activeResult = active?.result || result;
     panel.innerHTML = `
       <div class="mobile-template-head">
-        <strong>${escapeHtml(active?.title || activeResult.skill_title || "杩滅妯℃澘")}</strong>
+        <strong>${escapeHtml(active?.title || activeResult.skill_title || "杩滅模板")}</strong>
         <span>${escapeHtml(activeResult.platform?.mode || "remote_agent")}</span>
       </div>
       <div class="mobile-template-tabs">
@@ -2417,7 +2495,7 @@ class MobileApp {
         <span>${escapeHtml(activeResult.template_key || "remote_answer")}</span>
       </div>
       ${this.renderRemoteEvidence(activeResult)}
-      <button type="button" class="mobile-template-detail-button" id="mobileTemplateDetail">鏌ョ湅妯℃澘璇︽儏</button>
+      <button type="button" class="mobile-template-detail-button" id="mobileTemplateDetail">查看模板详情</button>
       ${this.renderOutputs(activeResult)}
       <div class="mobile-action-result" id="mobileActionResult"></div>
     `;
@@ -2520,9 +2598,9 @@ class MobileApp {
     host.innerHTML = `
       <div class="mobile-modal-backdrop">
         <section class="mobile-dialog template-detail-dialog">
-          <header><div><h2>椤甸潰妯℃澘</h2><p>${escapeHtml(result.template_key || "remote_answer")} 路 ${escapeHtml(result.skill_key || "UNKNOWN")}</p></div><button type="button" id="closeTemplateDetail">${mobileIconSvg("close")}</button></header>
+          <header><div><h2>椤甸潰模板</h2><p>${escapeHtml(result.template_key || "remote_answer")} 路 ${escapeHtml(result.skill_key || "UNKNOWN")}</p></div><button type="button" id="closeTemplateDetail">${mobileIconSvg("close")}</button></header>
           <div class="mobile-template-detail-body">
-            ${answerText ? `<article class="mobile-result-card"><h3>杩滅鍘熸枃</h3><div class="markdown-body">${renderMarkdown(answerText)}</div></article>` : ""}
+            ${answerText ? `<article class="mobile-result-card"><h3>杩滅原文</h3><div class="markdown-body">${renderMarkdown(answerText)}</div></article>` : ""}
             ${content}
             ${this.renderOutputs(result)}
             <div class="mobile-action-result" id="mobileActionResult"></div>
@@ -2553,7 +2631,7 @@ class MobileApp {
       if (payload.output?.type === "speech") {
         const text = payload.output.text || "";
         this.speakText(text);
-        target.innerHTML = `<div class="execution-card"><strong>${escapeHtml(output.label || "璇煶鎾姤")}</strong><p>${escapeHtml(text)}</p></div>`;
+        target.innerHTML = `<div class="execution-card"><strong>${escapeHtml(output.label || "语音播报")}</strong><p>${escapeHtml(text)}</p></div>`;
         return;
       }
       if (payload.output?.type === "page") {
@@ -2571,18 +2649,18 @@ class MobileApp {
         <button type="button" class="mobile-history-row" data-open-conversation="${escapeHtml(item.id)}">
           <strong>${item.favorite ? "鈽?" : ""}${escapeHtml(item.title)}</strong>
           <span>${escapeHtml(item.status)} 路 ${new Date(item.updatedAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}</span>
-          <small>闂細${escapeHtml(item.latestQuestion || "鏆傛棤鎻愰棶")}</small>
-          <small>绛旓細${escapeHtml(compactText(item.latestAnswer || "鏆傛棤绛斿", 42))}</small>
+          <small>闂細${escapeHtml(item.latestQuestion || "暂无提问")}</small>
+          <small>答：${escapeHtml(compactText(item.latestAnswer || "暂无答复", 42))}</small>
         </button>
-        <button type="button" class="mobile-history-delete-btn" data-delete-conversation="${escapeHtml(item.id)}" aria-label="鍒犻櫎姝ゅ璇?>
+        <button type="button" class="mobile-history-delete-btn" data-delete-conversation="${escapeHtml(item.id)}" aria-label="删除此对话"
           ${mobileIconSvg("close")}
         </button>
       </div>
-    `).join("") : `<p class="history-empty">鏆傛棤对话记录</p>`;
+    `).join("") : `<p class="history-empty">暂无对话记录</p>`;
     host.innerHTML = `
       <div class="mobile-modal-backdrop">
         <section class="mobile-dialog">
-          <header><div><h2>对话记录</h2><p>鏈€杩戠殑瀵硅瘽銆佺瓟澶嶇姸鎬佷笌鏀惰棌鎯呭喌</p></div><button type="button" id="closeHistory">${mobileIconSvg("close")}</button></header>
+          <header><div><h2>对话记录</h2><p>鏈€近的对话、答复状态与收藏情况</p></div><button type="button" id="closeHistory">${mobileIconSvg("close")}</button></header>
           <div class="mobile-history-list">${items}</div>
         </section>
       </div>
@@ -2600,7 +2678,7 @@ class MobileApp {
         this.updateFavoriteButton();
       });
     });
-    // 鍒犻櫎瀵硅瘽
+    // 删除瀵硅瘽
     host.querySelectorAll("[data-delete-conversation]").forEach((button) => {
       button.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -2794,7 +2872,7 @@ class MobileApp {
     } catch (e) {
       console.warn("[Mobile][ConversationHistory] 后端删除失败:", e.message);
     }
-    // 鍚屾鏀跺壊
+    // 同步录制
     try {
       await fetch("/api/conversation/harvest-sync", {
         method: "POST",
@@ -2802,7 +2880,7 @@ class MobileApp {
         body: JSON.stringify({ conversationId: id }),
       });
     } catch (e) {
-      console.warn("[Mobile][ConversationHistory] 鏀跺壊鍚屾澶辫触:", e.message);
+      console.warn("[Mobile][ConversationHistory] 录制同步失败:", e.message);
     }
     this.openHistoryModal();
   }
@@ -2898,7 +2976,10 @@ class MobileApp {
       await this.startServerVoiceInput({ reason: "当前浏览器不支持在线语音识别" });
       return;
     }
-    if (this.state.sending) return;
+    if (this.state.sending) {
+      this.showToast("消息处理中，请稍后再使用语音");
+      return;
+    }
     if (this.state.recognizing) {
       this.stopVisibleVoiceInput();
       return;
@@ -2945,7 +3026,7 @@ class MobileApp {
       }
       const message = ["not-allowed", "service-not-allowed"].includes(error)
         ? "浏览器未授予麦克风权限。请确认当前页面使用 HTTPS/localhost，并在地址栏允许麦克风。"
-        : `璇煶杈撳叆鏈畬鎴愶細${error}`;
+        : `语音输入未完成：${error}`;
       this.addBubble("ai", message, { error: true });
     };
     recognition.onend = () => {
@@ -3068,8 +3149,18 @@ window.FlatTalkMobileApp = new MobileApp();
 window.addEventListener('message', (event) => {
   try {
     const data = event.data;
-    if (!data || data.type !== 'flattalk_card_action') return;
     const app = window.FlatTalkMobileApp;
+    if (!data || !app) return;
+    if (data.type === 'flattalk_phone_dial' && typeof app.handlePhoneDial === 'function') {
+      app.handlePhoneDial(data.phone || '');
+      return;
+    }
+    if (data.type === 'flattalk_open_map') {
+      // 腾讯地图 URI API 调起：新窗口打开（移动端自动调起地图 App）
+      if (data.url) window.open(data.url, '_blank');
+      return;
+    }
+    if (data.type !== 'flattalk_card_action') return;
     if (app && typeof app.handleAssistantAction === 'function') {
       app.handleAssistantAction({
         action_key: data.action_key || '',

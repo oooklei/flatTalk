@@ -5,6 +5,10 @@
   if (window.__cardBridgeInitialized) return;
   window.__cardBridgeInitialized = true;
 
+  function telHrefToPhone(href) {
+    return String(href || '').replace(/^tel:/i, '').split(/[?#]/)[0].trim();
+  }
+
   function handleClick(e) {
     var btn = e.target.closest('[data-action-key]');
     if (!btn) return;
@@ -41,17 +45,29 @@
   document.addEventListener('click', handleClick, true);
 
   document.addEventListener('click', function (e) {
+    var telLink = e.target.closest('a[href^="tel:"]');
+    if (!telLink) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var href = telLink.getAttribute('href') || '';
+    window.parent.postMessage({
+      type: 'flattalk_phone_dial',
+      phone: telHrefToPhone(href),
+      href: href,
+      label: (telLink.textContent || '').trim(),
+    }, '*');
+  }, true);
+
+  document.addEventListener('click', function (e) {
     var mapLink = e.target.closest('[data-action-type="external_map"]');
     if (!mapLink) return;
     e.preventDefault();
     var url = mapLink.getAttribute('data-href') || mapLink.getAttribute('href') || '';
     if (!url) return;
-    var existingFrame = document.querySelector('.map-embed-frame');
-    if (existingFrame) existingFrame.remove();
-    var frame = document.createElement('iframe');
-    frame.className = 'map-embed-frame';
-    frame.style.cssText = 'width:100%;height:300px;border:none;border-radius:8px;margin-top:8px;';
-    frame.src = url;
-    mapLink.parentElement.appendChild(frame);
+    // URI API (/uri/v1/) 是跳转页，调起腾讯地图 App 或浏览器打开
+    window.parent.postMessage({
+      type: 'flattalk_open_map',
+      url: url,
+    }, '*');
   }, true);
 })();
