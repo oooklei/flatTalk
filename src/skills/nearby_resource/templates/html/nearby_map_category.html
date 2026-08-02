@@ -74,7 +74,7 @@
       var PAYLOAD = [];
       try { PAYLOAD = JSON.parse(document.getElementById('nearby-data').textContent); } catch (e) {}
       if (!PAYLOAD || !PAYLOAD.length) PAYLOAD = SAMPLE;
-      var CENTER = { lng: 108.166816, lat: 21.527905, name: '{{centerName}}' };
+      var CENTER = { lng: {{centerLng}}, lat: {{centerLat}}, name: '{{centerName}}' };
       try { var c = JSON.parse(document.getElementById('nearby-center').textContent); if (c && c.lat) CENTER = c; } catch (e) {}
       var RADIUS = parseInt('{{radiusKm}}' || '15', 10) || 15;
       var MAP_KEY = '{{map_key}}';

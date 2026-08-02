@@ -1156,10 +1156,17 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
   const catMarkers = cat ? within.filter((m) => m.cat === cat) : within;
 
   const center_json = JSON.stringify(center);
+  // 路线规划起点：优先用用户实时位置，否则用中心点
+  const fromCoord = { lat: center.lat, lng: center.lng, name: center.name || '当前位置' };
+  const from_json = JSON.stringify(fromCoord);
   const base = {
     centerName: center.name || '嘉路康养中心',
     centerLat: center.lat,
     centerLng: center.lng,
+    fromLat: fromCoord.lat,
+    fromLng: fromCoord.lng,
+    fromName: fromCoord.name,
+    from_json,
     radiusKm,
     map_key: process.env.TENCENT_MAP_JS_KEY || NEARBY_TENCENT_JS_KEY,
     center_json,

@@ -55,7 +55,14 @@
     const res = await fetch('/api/open/v1/map/locate-by-ip');
     const data = await res.json().catch(() => ({}));
     if (data.ok && data.result?.location) {
-      return { lat: data.result.location.lat, lng: data.result.location.lng, source: 'ip', accuracy: null };
+      return {
+        lat: data.result.location.lat,
+        lng: data.result.location.lng,
+        source: 'ip',
+        accuracy: null,
+        city: data.result.ad_info?.city || '',
+        province: data.result.ad_info?.province || '',
+      };
     }
     throw new Error('ip_locate_unavailable');
   }
