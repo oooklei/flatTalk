@@ -84,7 +84,7 @@
             '<div class="nb-no">' + (i + 1) + '</div>' +
             '<div><div class="nm">' + (p.emoji || '📍') + ' ' + (p.name || '未命名') + '<span class="role">' + (p.role || '') + '</span></div>' +
             '<div class="meta">' + (parseFloat(p.distance) || 0).toFixed(1) + 'km · ' + (p.biz_status || '营业中') + ' ' + tg + '</div>' +
-            '<div class="meta"><a class="nav-link action-btn" data-action-type="external_map" data-href="' + navUrl(p) + '">🧭 导航前往</a></div></div>' +
+            '<div class="meta"><a class="nav-link action-btn" data-action-type="external_map" data-href="' + navUrl(p) + '" data-params=\'' + JSON.stringify({lat:p.lat,lng:p.lng,name:p.name}) + '\'>🧭 导航前往</a></div></div>' +
             '</div>';
         }).join('');
       }

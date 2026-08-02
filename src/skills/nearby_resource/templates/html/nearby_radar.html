@@ -87,7 +87,7 @@
           return '<div class="nb-item">' +
             '<div class="nm"><span>' + (p.emoji || '📍') + ' ' + (p.name || '未命名') + '</span><span class="km">' + (parseFloat(p.distance) || 0).toFixed(1) + 'km</span></div>' +
             '<div class="addr">' + (p.address || '地址未知') + '</div>' +
-            '<div class="meta">' + st + tg + '<a class="nav-link action-btn" data-action-type="external_map" data-href="' + navUrl(p) + '">🧭 导航</a></div>' +
+            '<div class="meta">' + st + tg + '<a class="nav-link action-btn" data-action-type="external_map" data-href="' + navUrl(p) + '" data-params=\'' + JSON.stringify({lat:p.lat,lng:p.lng,name:p.name}) + '\'>🧭 导航</a></div>' +
             '</div>';
         }).join('');
       }

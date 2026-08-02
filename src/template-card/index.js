@@ -32,12 +32,27 @@ ${FOLLOWUP_CSS}`;
 // 用 data-action 暴露语义值，由宿主页面绑定点击（非卡片内硬编码动作），契合「按钮清除」意图。
 function renderFollowups(actions) {
   if (!Array.isArray(actions) || !actions.length) return '';
-  const items = actions.map((a) => {
-    const label = typeof a === 'string' ? a : (a.label || a.text || '');
-    const value = typeof a === 'string' ? a : (a.value || a.action || label);
+  const normalized = actions
+    .map((a) => {
+      const label = visibleText(typeof a === 'string' ? a : (a.label || a.text || ''));
+      const value = visibleText(typeof a === 'string' ? a : (a.value || a.action || label));
+      return { label, value };
+    })
+    .filter((a) => a.label && a.value);
+  if (!normalized.length) return '';
+  const items = normalized.map((a) => {
+    const { label, value } = a;
     return `<button type="button" class="tc-followup-btn" data-action="${escapeHtml(String(value))}">${escapeHtml(String(label))}</button>`;
   }).join('');
   return `<div class="tc-followups"><span class="tc-followups-label">您可以：</span>${items}</div>`;
+}
+
+function visibleText(value = '') {
+  return String(value ?? '')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;|&#160;|&#x[aA]0;/g, ' ')
+    .trim();
 }
 
 // 归一化输入：兼容 {template_id,data} / {data:{items}} / 纯对象 / 数组
@@ -117,7 +132,7 @@ export function renderCard(dir, json, options = {}) {
     score,             // 匹配度
     cardCount: records.length,
     pageCount: pages.length,
-    pages: pages.map(injectBridge), // string[] 每页一份完整 HTML（注入卡片交互桥接脚本）
+    pages: pages.map(h => injectBridge(h, { map_key: process.env.TENCENT_MAP_JS_KEY || '' })), // 注入卡片交互桥接脚本 + 地图Key
     library: describeLibrary(templates), // 可选：把这份清单回传给模型做精确选择
   };
 }

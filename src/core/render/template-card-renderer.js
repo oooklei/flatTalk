@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { renderCard, renderTemplate } from '../../template-card/index.js';
+import { injectBridge } from './bridge-injector.js';
 import { renderCompactFollowups } from '../compact-followups/renderer.js';
 
 const COMMON_HTML = path.join(process.cwd(), 'src', 'skills', 'common', 'templates', 'html', 'common');
@@ -12,6 +13,12 @@ function readTpl(p) { try { return fs.readFileSync(p, 'utf8'); } catch { return 
 const HTML_TAG_PATTERN = /<[^>]*>/g;
 const EVENT_HANDLER_PATTERN = /\bon[a-z]+\s*=/gi;
 const SCRIPT_PROTOCOL_PATTERN = /javascript\s*:/gi;
+const OPTIONAL_RELATED_TEMPLATE_IDS = new Set([
+  'diet_card',
+  'meal_dashboard_card',
+  'meal_overview_card',
+  'meal_timeline_card',
+]);
 
 export function renderTemplateCardResult({
   templateDir,
@@ -84,7 +91,7 @@ function normalizeLlmJson({ template_id, answer, data, actions, followups }) {
 
 function buildRenderData(llmJson, compactFollowupsHtml = '') {
   const rawData = llmJson.data && typeof llmJson.data === 'object' ? llmJson.data : {};
-  const data = llmJson.template_id === 'weekly_plan' ? normalizeWeeklyPlanData(rawData) : rawData;
+  const data = normalizeTemplateData(llmJson.template_id, rawData);
   return {
     ...data,
     answer: llmJson.answer,
@@ -93,6 +100,61 @@ function buildRenderData(llmJson, compactFollowupsHtml = '') {
     followup_suggestions: formatFollowupLabels(llmJson.followups),
     compact_followups: compactFollowupsHtml,
   };
+}
+
+function normalizeTemplateData(templateId, rawData) {
+  const data = templateId === 'weekly_plan' ? normalizeWeeklyPlanData(rawData) : rawData;
+  if (OPTIONAL_RELATED_TEMPLATE_IDS.has(templateId) || Array.isArray(data.related)) {
+    return normalizeRelatedData(data);
+  }
+  return data;
+}
+
+function normalizeRelatedData(data) {
+  const related = Array.isArray(data.related)
+    ? data.related
+        .map(normalizeRelatedItem)
+        .filter((item) => item.relHasContent)
+    : [];
+  return {
+    ...data,
+    related,
+    hasRelated: related.length > 0,
+  };
+}
+
+function normalizeRelatedItem(item) {
+  const source = item && typeof item === 'object' ? item : {};
+  const rawTitle = firstVisibleText(source.relTitle, source.title, source.label, source.name);
+  const rawDesc = firstVisibleText(source.relDesc, source.desc, source.description, source.subtitle);
+  const rawText = firstVisibleText(source.relText, source.text, rawTitle, rawDesc);
+  const relHasContent = hasVisibleText(rawText) || hasVisibleText(rawTitle) || hasVisibleText(rawDesc);
+  return {
+    ...source,
+    relText: hasVisibleText(rawText) ? toDisplayText(rawText).trim() : '',
+    relTitle: hasVisibleText(rawTitle) ? toDisplayText(rawTitle).trim() : '',
+    relDesc: hasVisibleText(rawDesc) ? toDisplayText(rawDesc).trim() : '',
+    relHasContent,
+  };
+}
+
+function firstVisibleText(...values) {
+  return values.find((value) => hasVisibleText(value)) ?? '';
+}
+
+function hasVisibleText(value) {
+  return toDisplayText(value)
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(HTML_TAG_PATTERN, '')
+    .replace(/&nbsp;|&#160;|&#x[aA]0;/g, ' ')
+    .trim().length > 0;
+}
+
+function toDisplayText(value) {
+  if (value && typeof value === 'object') {
+    return String(value.text ?? value.value ?? value.name ?? value.label ?? '');
+  }
+  return String(value ?? '');
 }
 
 function normalizeWeeklyPlanData(data) {
@@ -206,8 +268,10 @@ function formatFollowupLabels(followups) {
 function buildHtmlFallback(pageHtml) {
   // 注入自适配高度脚本：iframe 加载后按内容高度撑开，避免高卡片（如 7 天膳食）被固定高度裁切
   const autoHeightScript = `<script>(function(){try{var h=document.documentElement.scrollHeight||document.body.scrollHeight;var f=window.frameElement;if(f&&h){f.style.height=Math.min(h,1500)+'px';}}catch(e){}})();<\/script>`;
-  const injected = pageHtml.replace(/<\/body>/i, `${autoHeightScript}</body>`);
-  const finalHtml = injected.includes(autoHeightScript) ? injected : pageHtml + autoHeightScript;
+  const mapKey = process.env.TENCENT_MAP_JS_KEY || '';
+  const bridgedHtml = injectBridge(pageHtml, { map_key: mapKey });
+  const injected = bridgedHtml.replace(/<\/body>/i, `${autoHeightScript}</body>`);
+  const finalHtml = injected.includes(autoHeightScript) ? injected : bridgedHtml + autoHeightScript;
   return [
     '<article class="gxy-html-fallback" data-renderer="template-card-renderer">',
     '<style>',
@@ -239,11 +303,20 @@ function sanitizeModelValue(value) {
 }
 
 function sanitizeText(value) {
-  return String(value ?? '')
+  return decodeTextEntities(value)
     .replace(HTML_TAG_PATTERN, '')
     .replace(EVENT_HANDLER_PATTERN, '')
     .replace(SCRIPT_PROTOCOL_PATTERN, '')
     .trim();
+}
+
+function decodeTextEntities(value) {
+  return String(value ?? '')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&amp;/gi, '&');
 }
 
 function escapeAttribute(value) {

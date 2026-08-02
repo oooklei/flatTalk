@@ -16,17 +16,23 @@ function getBridgeScript() {
   return bridgeScriptCache;
 }
 
-export function injectBridge(html) {
+export function injectBridge(html, options = {}) {
   if (!html || typeof html !== 'string') return html || '';
   if (html.includes('card-bridge-script')) return html;
 
   const script = getBridgeScript();
   if (!script) return html;
 
+  // 注入地图 Key（供迷你地图动态加载使用）
+  const mapKeyTag = options.map_key
+    ? `<script>window.__MAP_KEY__=${JSON.stringify(options.map_key)};</script>`
+    : '';
+
   const bridgeTag = `<script id="card-bridge-script">${script}</script>`;
+  const inject = mapKeyTag + bridgeTag;
 
   if (html.includes('</body>')) {
-    return html.replace('</body>', `${bridgeTag}</body>`);
+    return html.replace('</body>', `${inject}</body>`);
   }
-  return html + bridgeTag;
+  return html + inject;
 }
