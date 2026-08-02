@@ -43,6 +43,7 @@
       <div class="pin">📍</div>
       <h1>{{centerName}} · 周边{{radiusKm}}公里康养生活圈</h1>
       <div class="src">本地知识库</div>
+      <button id="pickModeBtn" style="margin-left:auto;padding:4px 10px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#fff;font-size:12px;cursor:pointer;white-space:nowrap;">📍 选点</button>
     </header>
 
     <div class="nb-filters">
@@ -59,6 +60,7 @@
     <div class="nb-legend">
       {{#statsLabels}}<span><i class="nb-dot" style="background:{{color}}"></i>{{emoji}} {{label}} {{count}}</span>{{/statsLabels}}
     </div>
+    {{#isDefaultLocation}}<div style="padding:8px 16px;background:#FFF3E0;border-top:1px solid #FFCC80;font-size:12px;color:#E65100;display:flex;align-items:center;gap:6px;"><span>⚠️</span>未获取到您的实时位置，当前以嘉路康养中心为默认中心。如需切换，请允许定位权限或在输入中说明您的位置。</div>{{/isDefaultLocation}}
 
     <div class="nb-body">
       <div class="nb-map">
@@ -180,7 +182,7 @@
 
       function init() {
         PAYLOAD.forEach(function (p, i) { p._mi = i; p._bearing = bearing(CENTER, p); p.cat = p.cat || 'other'; });
-        renderList(); bindChips();
+        renderList(); bindChips(); bindPickMode();
         renderSVG();
         if (SVG_FALLBACK) { renderSVG(); return; }
         // 3秒超时：JS API 加载太慢时先降级到静态图
@@ -195,6 +197,60 @@
           s.onload = function () { clearTimeout(mapLoadTimer); try { buildMap(); } catch (e) { showStaticMap(); } };
           document.head.appendChild(s);
         }
+      }
+
+      var pickMode = false;
+      var pickMarker = null;
+      var pickInfo = null;
+
+      function togglePickMode() {
+        if (!map) return;
+        pickMode = !pickMode;
+        var btn = document.getElementById('pickModeBtn');
+        if (pickMode) {
+          btn.style.background = '#FF9800';
+          btn.textContent = '✅ 点击地图选点';
+          map.setOptions({ draggableCursor: 'crosshair' });
+        } else {
+          btn.style.background = 'rgba(255,255,255,.2)';
+          btn.textContent = '📍 选点';
+          map.setOptions({ draggableCursor: 'default' });
+          if (pickInfo) { pickInfo.close(); pickInfo = null; }
+        }
+      }
+
+      function onMapClick(evt) {
+        if (!pickMode || !map) return;
+        var lat = evt.latLng.getLat();
+        var lng = evt.latLng.getLng();
+        // 放置/移动选点标记
+        if (pickMarker) {
+          pickMarker.setGeometries([{ id: 'pick', position: evt.latLng }]);
+        } else {
+          pickMarker = new TMap.MultiMarker({ map: map, geometries: [{ id: 'pick', position: evt.latLng }], styles: { pick: new TMap.MarkerStyle({ width: 25, height: 35, anchor: { x: 12, y: 35 }, src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="25" height="35"><path d="M12 0C6 0 1 5 1 11c0 8 11 24 11 24s11-16 11-24c0-6-5-11-11-11z" fill="#FF6B35" stroke="#fff" stroke-width="2"/><circle cx="12" cy="11" r="4" fill="#fff"/></svg>') }) } });
+        }
+        // 弹出确认信息窗
+        if (pickInfo) pickInfo.close();
+        pickInfo = new TMap.InfoWindow({ map: map, position: evt.latLng, offset: { x: 0, y: -40 } });
+        pickInfo.open();
+        pickInfo.setContent('<div style="padding:10px;min-width:140px;text-align:center;">' +
+          '<div style="font-size:13px;color:#333;margin-bottom:8px;">将此位置设为我的位置？</div>' +
+          '<div style="font-size:11px;color:#999;margin-bottom:8px;">' + lat.toFixed(5) + ', ' + lng.toFixed(5) + '</div>' +
+          '<button id="confirmPickBtn" style="padding:6px 16px;background:#0E7C86;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;width:100%;">确认并重新搜索</button>' +
+          '</div>');
+        setTimeout(function () {
+          var cb = document.getElementById('confirmPickBtn');
+          if (cb) cb.onclick = function () {
+            window.parent.postMessage({ type: 'flattalk_pick_location', location: { lat: lat, lng: lng, source: 'user_pick' } }, '*');
+            if (pickInfo) { pickInfo.close(); pickInfo = null; }
+            togglePickMode();
+          };
+        }, 100);
+      }
+
+      function bindPickMode() {
+        var btn = document.getElementById('pickModeBtn');
+        if (btn) btn.addEventListener('click', togglePickMode);
       }
 
       function buildMap() {
@@ -222,6 +278,7 @@
           markers[i] = m;
         });
         applyMarkerVisibility();
+        map.on('click', onMapClick);
       }
 
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

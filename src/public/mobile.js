@@ -1979,7 +1979,7 @@ class MobileApp {
       };
       const fromName = agentNames[normalizedBody.agent_from] || normalizedBody.agent_from;
       const toName = agentNames[normalizedBody.agent_key] || normalizedBody.agent_key || '桂小养';
-      this.addSystemNotice(`已从「${fromName}」切换到「${toName}」，之前的话题随时可以回来`);
+      console.log(`[SceneSwitch] 已从「${fromName}」切换到「${toName}」，之前的话题随时可以回来`);
     }
     const answer = sanitizeAssistantText(normalizedBody.answer || normalizedBody.answer_text || normalizedBody.message || normalizedBody.error || "\u670d\u52a1\u5df2\u54cd\u5e94\u3002");
     const fallbackHtml = renderSafeHtmlFallback(normalizedBody);
@@ -3158,6 +3158,21 @@ window.addEventListener('message', (event) => {
     if (data.type === 'flattalk_open_map') {
       // 腾讯地图 URI API 调起：新窗口打开（移动端自动调起地图 App）
       if (data.url) window.open(data.url, '_blank');
+      return;
+    }
+    if (data.type === 'flattalk_pick_location' && data.location) {
+      // 用户在地图上选点 → 更新缓存 + 重新发送"周边资源"请求
+      try {
+        var loc = data.location;
+        loc.ts = Date.now();
+        localStorage.setItem('flattalk_location', JSON.stringify(loc));
+      } catch {}
+      if (app) {
+        app.state.location = data.location;
+        if (typeof app.sendMessage === 'function') {
+          app.sendMessage('看看我选的位置周边有什么资源');
+        }
+      }
       return;
     }
     if (data.type !== 'flattalk_card_action') return;

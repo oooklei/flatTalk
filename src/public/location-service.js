@@ -5,7 +5,8 @@
 (function () {
   const CACHE_KEY = 'flattalk_location';
   const CACHE_TTL = 30 * 60 * 1000; // 30 分钟
-  const DEFAULT_CENTER = { lat: 21.4906, lng: 109.1199, source: 'default', accuracy: null };
+  // 定位全失败时的兜底：嘉路康养中心坐标（与数据源一致）
+  const DEFAULT_CENTER = { lat: 21.527905, lng: 108.166816, source: 'default', accuracy: null, name: '嘉路康养中心' };
 
   function detectContainer() {
     if (window.FlatTalkNative?.getLocation) return 'flutter';

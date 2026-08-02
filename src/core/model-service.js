@@ -1162,6 +1162,7 @@ function fillNearbyResourceCard({ message = '', business_data = {}, intent_conte
     statsLabels: nbStatsLabels(stats),
     category: cat,
     categoryLabel: nbCatLabel(cat),
+    isDefaultLocation: business_data?._is_default_location || false,
   };
 
   let markers = template_id === 'nearby_map_overview' ? within : catMarkers;

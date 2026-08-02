@@ -27,6 +27,7 @@
         <div class="nb-chip" data-cat="transit"><span class="nb-emoji">🚐</span>行</div>
         <div class="nb-chip" data-cat="wellness"><span class="nb-emoji">🏥</span>养</div>
       </div>
+      {{#isDefaultLocation}}<div style="padding:8px 16px;background:#FFF3E0;border-top:1px solid #FFCC80;font-size:12px;color:#E65100;display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span>⚠️</span>未获取到您的实时位置，当前以嘉路康养中心为默认中心。</div>{{/isDefaultLocation}}
       <div class="nb-list">
         {{#markers}}
         <div class="nb-row" data-cat="{{cat}}">

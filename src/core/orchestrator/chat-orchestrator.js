@@ -935,7 +935,8 @@ async function loadBusinessData({ sceneDecision, request, dataService }) {
     // 拉取全量周边配套，分类/半径过滤与模板选择交由 fillNearbyResourceCard 按意图与语义完成
     const facilities = getJialuFacilities({ type: '', maxDistance: 0, limit: 0 });
     const requestLocation = request.context?.location || request.location;
-    const center = (requestLocation && typeof requestLocation.lat === 'number')
+    const isDefaultLocation = !requestLocation || requestLocation.source === 'default';
+    const center = (requestLocation && typeof requestLocation.lat === 'number' && !isDefaultLocation)
       ? { lat: requestLocation.lat, lng: requestLocation.lng, name: requestLocation.city ? requestLocation.city + '·您的位置' : '您的位置' }
       : getJialuCenter();
 
@@ -954,6 +955,7 @@ async function loadBusinessData({ sceneDecision, request, dataService }) {
     return {
       jialu_facilities: enrichedFacilities,
       jialu_center: center,
+      _is_default_location: isDefaultLocation,
       _enrich_stats: enrichStats,
     };
   }
