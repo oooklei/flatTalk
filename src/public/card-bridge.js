@@ -64,10 +64,44 @@
     e.preventDefault();
     var url = mapLink.getAttribute('data-href') || mapLink.getAttribute('href') || '';
     if (!url) return;
-    // URI API (/uri/v1/) 是跳转页，调起腾讯地图 App 或浏览器打开
-    window.parent.postMessage({
-      type: 'flattalk_open_map',
-      url: url,
-    }, '*');
+
+    // 优先尝试在卡片内显示路线预览（需要 TMap 已加载）
+    if (typeof TMap !== 'undefined' && window.__nbMapInstance) {
+      var params = mapLink.getAttribute('data-params');
+      if (params) {
+        try {
+          var poi = JSON.parse(params);
+          if (poi.lat && poi.lng) {
+            showInCardRoute(window.__nbMapInstance, poi, url);
+            return;
+          }
+        } catch {}
+      }
+    }
+
+    // 无地图实例时：在卡片内嵌入路线预览 iframe（腾讯地图 H5 页面）
+    var container = mapLink.parentElement;
+    var existing = container.querySelector('.nb-route-preview');
+    if (existing) { existing.remove(); return; } // 再次点击则收起
+    var routeFrame = document.createElement('iframe');
+    routeFrame.className = 'nb-route-preview';
+    routeFrame.style.cssText = 'width:100%;height:280px;border:1px solid #e0e0e0;border-radius:8px;margin-top:8px;';
+    // 使用腾讯地图 H5 嵌入页（支持 iframe）
+    routeFrame.src = url;
+    container.appendChild(routeFrame);
   }, true);
+
+  function showInCardRoute(map, poi, fallbackUrl) {
+    try {
+      map.setCenter(new TMap.LatLng(poi.lat, poi.lng));
+      map.setZoom(15);
+      var info = new TMap.InfoWindow({
+        map: map,
+        position: new TMap.LatLng(poi.lat, poi.lng),
+        content: '<div style="padding:4px 8px;font-size:13px;">' + (poi.name || '目的地') + '</div>'
+      });
+    } catch {
+      // TMap 操作失败，忽略
+    }
+  }
 })();

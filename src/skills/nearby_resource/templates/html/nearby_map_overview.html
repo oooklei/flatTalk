@@ -107,7 +107,7 @@
           var st = p.biz_status ? ('<span>' + p.biz_status + '</span>') : '';
           var op = p.open_time ? ('<span>⏰ ' + p.open_time + '</span>') : '';
           var tg = p.tags_text ? ('<span class="tg">🏷 ' + p.tags_text + '</span>') : '';
-          var nav = '<a class="nav-link action-btn" data-action-type="external_map" data-href="' + navUrl(p) + '">🧭 导航</a>';
+          var nav = '<a class="nav-link action-btn" data-action-type="external_map" data-href="' + navUrl(p) + '" data-params=\'' + JSON.stringify({lat:p.lat,lng:p.lng,name:p.name}) + '\'>🧭 导航</a>';
           return '<div class="nb-item" data-cat="' + p.cat + '" data-idx="' + idx + '" style="border-left-color:' + (p.color || '#9AA7B2') + '">' +
             '<div class="nm"><span>' + (p.emoji || '📍') + ' ' + (p.name || '未命名') + '</span><span class="km">' + (parseFloat(p.distance) || 0).toFixed(1) + 'km</span></div>' +
             '<div class="addr">' + (p.address || '地址未知') + '</div>' +
@@ -203,6 +203,7 @@
         document.getElementById('svgFallback').classList.remove('show');
         document.getElementById('mapCanvas').style.display = 'block';
         map = new TMap.Map(document.getElementById('mapCanvas'), { center: new TMap.LatLng(CENTER.lat, CENTER.lng), zoom: 10, baseMap: { type: 'vector', features: ['base', 'building3d'] } });
+        window.__nbMapInstance = map; // 暴露给 bridge 用于卡片内导航
         // 瓦片层失败检测：4秒后检查是否实际有瓦片渲染
         setTimeout(function () {
           var canvas = document.querySelector('#mapCanvas canvas, #mapCanvas img');

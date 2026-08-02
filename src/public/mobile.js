@@ -341,7 +341,7 @@ function recoverHtmlCardFromSource(value = "") {
     '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:hidden;}',
     '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:860px;border:0;border-radius:10px;background:#fff;overflow:hidden;}',
     '</style>',
-    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-popups" scrolling="no" srcdoc="${escapeHtml(pageHtml)}"></iframe>`,
+    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" scrolling="no" srcdoc="${escapeHtml(pageHtml)}"></iframe>`,
     '</article>',
   ].join('');
 }
