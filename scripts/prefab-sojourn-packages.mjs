@@ -272,6 +272,16 @@ function prefabDashboardExcel() {
 
     const dest = inferDestFromText(r.route_path || r.name || waypoints[0]?.name);
     const title = (r.route_path || r.name || routeId).replace(/^线路\d+_?/, '').slice(0, 40);
+    const itinerary = Array.isArray(r.itinerary) ? r.itinerary : [];
+    const highlights = (r.highlights && r.highlights.length)
+      ? r.highlights
+      : itinerary.map((it) => it.theme || it.day).filter(Boolean).slice(0, 6);
+    // 把行程主题写进 waypoint.spot_desc，便于 SVG/卡片展示
+    waypoints = waypoints.map((wp, i) => {
+      const it = itinerary[i] || itinerary.find((x) => String(x.day || '').includes(wp.name)) || null;
+      const desc = [it?.theme, it?.plan, wp.spot_desc].filter(Boolean).join(' · ').slice(0, 120);
+      return { ...wp, spot_desc: desc || wp.spot_desc || '' };
+    });
     const { svgStandard, svgElder } = buildSvg(waypoints, routeId, title);
     writePackage({
       routeId,
@@ -280,10 +290,14 @@ function prefabDashboardExcel() {
         destination: dest,
         days: r.days || 7,
         summary: r.description || r.summary || '',
-        highlights: r.highlights || [],
+        highlights,
         suitable_for: r.suitable_for || '',
+        medical_support: r.medical_support || '',
+        accommodation_standard: r.accommodation_standard || '',
+        meal_standard: r.meal_standard || '',
+        transport: r.transport || '',
         waypoints,
-        itinerary: r.itinerary || [],
+        itinerary,
         source: 'flatTalk-dashboard',
         dashboard_id: r.id,
       },

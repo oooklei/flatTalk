@@ -5,7 +5,7 @@
     "destination": "巴马",
     "status": "published",
     "product_type": "wellness",
-    "updated_at": "2026-08-05T20:41:35.113Z"
+    "updated_at": "2026-08-05T20:56:57.112Z"
   },
   {
     "route_id": "fcg_route_001",
@@ -13,7 +13,7 @@
     "destination": "防城港",
     "status": "published",
     "product_type": "coastal",
-    "updated_at": "2026-08-05T20:41:34.460Z"
+    "updated_at": "2026-08-05T20:56:56.346Z"
   },
   {
     "route_id": "fcg_route_002",
@@ -21,7 +21,7 @@
     "destination": "防城港",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.461Z"
+    "updated_at": "2026-08-05T20:56:56.346Z"
   },
   {
     "route_id": "fcg_route_003",
@@ -29,7 +29,7 @@
     "destination": "防城港",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.461Z"
+    "updated_at": "2026-08-05T20:56:56.347Z"
   },
   {
     "route_id": "fcg_route_004",
@@ -37,7 +37,7 @@
     "destination": "防城港",
     "status": "published",
     "product_type": "ecology",
-    "updated_at": "2026-08-05T20:41:34.463Z"
+    "updated_at": "2026-08-05T20:56:56.348Z"
   },
   {
     "route_id": "fcg_route_005",
@@ -45,7 +45,7 @@
     "destination": "防城港",
     "status": "published",
     "product_type": "coastal",
-    "updated_at": "2026-08-05T20:41:34.463Z"
+    "updated_at": "2026-08-05T20:56:56.349Z"
   },
   {
     "route_id": "gx_excel_01",
@@ -53,7 +53,7 @@
     "destination": "桂林",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.421Z"
+    "updated_at": "2026-08-05T20:56:56.309Z"
   },
   {
     "route_id": "gx_excel_02",
@@ -61,7 +61,7 @@
     "destination": "贺州",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.428Z"
+    "updated_at": "2026-08-05T20:56:56.314Z"
   },
   {
     "route_id": "gx_excel_03",
@@ -69,7 +69,7 @@
     "destination": "南宁",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.434Z"
+    "updated_at": "2026-08-05T20:56:56.319Z"
   },
   {
     "route_id": "gx_excel_04",
@@ -77,7 +77,7 @@
     "destination": "防城港",
     "status": "published",
     "product_type": "coastal",
-    "updated_at": "2026-08-05T20:41:34.441Z"
+    "updated_at": "2026-08-05T20:56:56.323Z"
   },
   {
     "route_id": "gx_excel_05",
@@ -85,7 +85,7 @@
     "destination": "南宁",
     "status": "published",
     "product_type": "coastal",
-    "updated_at": "2026-08-05T20:41:34.445Z"
+    "updated_at": "2026-08-05T20:56:56.327Z"
   },
   {
     "route_id": "gx_excel_06",
@@ -93,7 +93,7 @@
     "destination": "南宁",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.449Z"
+    "updated_at": "2026-08-05T20:56:56.332Z"
   },
   {
     "route_id": "gx_excel_08",
@@ -101,7 +101,7 @@
     "destination": "桂林",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.453Z"
+    "updated_at": "2026-08-05T20:56:56.338Z"
   },
   {
     "route_id": "gx_excel_09",
@@ -109,7 +109,7 @@
     "destination": "桂林",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.456Z"
+    "updated_at": "2026-08-05T20:56:56.341Z"
   },
   {
     "route_id": "gx_excel_10",
@@ -117,7 +117,7 @@
     "destination": "柳州",
     "status": "published",
     "product_type": "culture",
-    "updated_at": "2026-08-05T20:41:34.459Z"
+    "updated_at": "2026-08-05T20:56:56.345Z"
   },
   {
     "route_id": "jtd_2070305000000000240",
@@ -125,7 +125,7 @@
     "destination": "七洞乡",
     "status": "published",
     "product_type": "wellness",
-    "updated_at": "2026-08-05T20:41:35.121Z"
+    "updated_at": "2026-08-05T20:56:57.119Z"
   },
   {
     "route_id": "jtd_2070305000000000266",
@@ -133,7 +133,7 @@
     "destination": "巴马",
     "status": "published",
     "product_type": "wellness",
-    "updated_at": "2026-08-05T20:41:35.117Z"
+    "updated_at": "2026-08-05T20:56:57.115Z"
   },
   {
     "route_id": "jtd_2070305000000000271",
@@ -141,7 +141,7 @@
     "destination": "七洞乡",
     "status": "published",
     "product_type": "wellness",
-    "updated_at": "2026-08-05T20:41:35.111Z"
+    "updated_at": "2026-08-05T20:56:57.110Z"
   },
   {
     "route_id": "jtd_mock_bama_001",
@@ -149,6 +149,6 @@
     "destination": "巴马",
     "status": "draft",
     "product_type": "wellness",
-    "updated_at": "2026-08-05T20:41:35.122Z"
+    "updated_at": "2026-08-05T20:56:57.120Z"
   }
 ]

@@ -25,10 +25,10 @@
   <path d="M 349 142 L 513 350" fill="none" stroke="#1976D2" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
   </g>
   <g class="markers">
-  <g class="route-marker" style="cursor:pointer" data-type="arrival" data-day="Day1" data-name="宁明花山岩画" data-plan="宁明花山岩画" data-lat="22.14" data-lng="107.072" data-spot-desc="宁明花山岩画" transform="translate(331,454)"><circle r="10" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">起</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">宁明花山岩画</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day2" data-name="大新德天瀑布" data-plan="大新德天瀑布" data-lat="22.849" data-lng="106.726" data-spot-desc="大新德天瀑布" transform="translate(107,143)"><circle r="8" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">景</text><text y="21" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">大新德天瀑布</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day3" data-name="明仕田园" data-plan="明仕田园" data-lat="22.85" data-lng="107.1" data-spot-desc="明仕田园" transform="translate(349,142)"><circle r="8" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">景</text><text y="21" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">明仕田园</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="departure" data-day="Day4" data-name="左江斜塔" data-plan="左江斜塔" data-lat="22.377" data-lng="107.353" data-spot-desc="左江斜塔" transform="translate(513,350)"><circle r="10" fill="#1976D2" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">返</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">左江斜塔</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="arrival" data-day="Day1" data-name="宁明花山岩画" data-plan="宁明花山岩画" data-lat="22.14" data-lng="107.072" data-spot-desc="南宁市 · 1. 抵达南宁，专人接站，入住中国（南宁）乐养城；2. 健康建档与基础体检，适应广西气候；3. 下午游览青秀山风景区，开展森林养老漫步；4. 晚上体验壮药足浴养生，八段锦适应性训练" transform="translate(331,454)"><circle r="10" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">起</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">宁明花山岩画</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day2" data-name="大新德天瀑布" data-plan="大新德天瀑布" data-lat="22.849" data-lng="106.726" data-spot-desc="南宁市→崇左市 · 1. 8:30早餐后晨练，健康讲堂；2、户外山水治疗愈；午餐后午休；3. 下午游石景林风景区，开展喀斯特地貌养老漫步；4. 晚上体验壮药理疗" transform="translate(107,143)"><circle r="8" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">景</text><text y="21" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">大新德天瀑布</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day3" data-name="明仕田园" data-plan="明仕田园" data-lat="22.85" data-lng="107.1" data-spot-desc="崇左市→宁明县 · 1. 8:30早餐后出发，乘车前往宁明县（车程约1小时）；2. 抵达后入住宁明县旅居养老基地，午餐后午休；3. 下午游览花山岩画景区，体验非遗文化研学；4. 开展派阳山森林公园森林养老徒步，呼吸高负氧离子空气；5. 晚上" transform="translate(349,142)"><circle r="8" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">景</text><text y="21" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">明仕田园</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="departure" data-day="Day4" data-name="左江斜塔" data-plan="左江斜塔" data-lat="22.377" data-lng="107.353" data-spot-desc="宁明县 · 1. 8:30早餐后，晨练太极；2. 上午开展壮瑶医药健康讲座，一对一养老咨询；3. 午餐后午休；4. 下午体验非遗壮锦手作，静心疗愈；5. 晚上开展养老联谊活动，交流养生心得" transform="translate(513,350)"><circle r="10" fill="#1976D2" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">返</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">左江斜塔</text></g>
   </g>
   <g class="legend" transform="translate(10, 535)">
   <rect width="600" height="28" rx="6" fill="rgba(255,255,255,0.92)" stroke="#ddd" stroke-width="0.5"/>
@@ -40,12 +40,13 @@
   <g class="wellness-info" transform="translate(10, 570)">
   <rect width="600" height="70" rx="10" fill="#FFF8E1" stroke="#FFE0B2" stroke-width="0.8"/>
   <text x="15" y="22" fill="#E65100" font-size="17" font-weight="bold">康养特色</text>
-  <text x="15" y="42" fill="#555" font-size="14">康养旅居 · 慢节奏 · 自然疗愈</text>
+  <text x="15" y="42" fill="#555" font-size="14">南宁市 · 1. 抵达南宁，专人接站，入住中国（南宁）乐养城；2. 健康建档与基础体</text>
+  <text x="15" y="60" fill="#555" font-size="14">检，适应广西气候；3. 下午游览青秀山风景区，开展森林养老漫步；4. 晚上体验壮药足</text>
   </g>
   <g class="spot-list" transform="translate(10, 650)">
   <rect width="600" height="190" rx="10" fill="#FAFAFA" stroke="#EEE" stroke-width="0.5"/>
   <text x="15" y="20" fill="#333" font-size="16" font-weight="bold">行程景点</text>
-  <g class="spot-item" data-name="大新德天瀑布" data-day="Day2" data-spot-desc=""><circle cx="18" cy="39" r="3" fill="#FF7826"/><text x="28" y="42" fill="#333" font-size="14">大新德天瀑布 · Day2 · 大新德天瀑布</text></g>
-  <g class="spot-item" data-name="明仕田园" data-day="Day3" data-spot-desc=""><circle cx="18" cy="57" r="3" fill="#FF7826"/><text x="28" y="60" fill="#333" font-size="14">明仕田园 · Day3 · 明仕田园</text></g>
+  <g class="spot-item" data-name="大新德天瀑布" data-day="Day2" data-spot-desc="南宁市→崇左市 · 1. 8:30早餐后晨练，健康讲堂；2、户外山水治疗愈；午餐后午休；3. 下午游石景林风景区，开展喀斯特地貌养老漫步；4. 晚上体验壮药理疗"><circle cx="18" cy="39" r="3" fill="#FF7826"/><text x="28" y="42" fill="#333" font-size="14">大新德天瀑布 · Day2 · 大新德天瀑布</text></g>
+  <g class="spot-item" data-name="明仕田园" data-day="Day3" data-spot-desc="崇左市→宁明县 · 1. 8:30早餐后出发，乘车前往宁明县（车程约1小时）；2. 抵达后入住宁明县旅居养老基地，午餐后午休；3. 下午游览花山岩画景区，体验非遗文化研学；4. 开展派阳山森林公园森林养老徒步，呼吸高负氧离子空气；5. 晚上"><circle cx="18" cy="57" r="3" fill="#FF7826"/><text x="28" y="60" fill="#333" font-size="14">明仕田园 · Day3 · 明仕田园</text></g>
   </g>
   </svg>
