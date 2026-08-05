@@ -491,7 +491,8 @@ body {
           }
           el.querySelectorAll('text').forEach(function(t) {
             var fs = parseFloat(t.getAttribute('font-size') || '0');
-            if (fs > 0 && fs < 14) t.setAttribute('font-size', String(Math.round(fs * 1.75)));
+            if (fs > 22) t.setAttribute('font-size', '10');
+            else if (fs > 0 && fs < 8) t.setAttribute('font-size', '10');
           });
           el.style.cursor = 'pointer';
           function openInfo() {

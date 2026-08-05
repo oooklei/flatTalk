@@ -674,13 +674,59 @@ function shortName(name, maxLen = 6) {
   return name.length > maxLen ? name.slice(0, maxLen) + '…' : name;
 }
 
+/** 适老版整体略放大；标准版以 10 为默认基准 */
+function svgFontScale(version) {
+  return version === 'elder' ? 1.25 : 1;
+}
+
+/**
+ * 按角色取字号（图框外/装饰默认约 10，标题略大）
+ */
+function roleFontSize(role, version = 'standard') {
+  const s = svgFontScale(version);
+  const table = {
+    hero_title: 18,
+    hero_sub: 10,
+    map_deco: 9,
+    legend: 10,
+    panel_title: 12,
+    panel_body: 10,
+    list_item: 10,
+    marker_glyph: 10,
+  };
+  return Math.max(8, Math.round((table[role] || 10) * s));
+}
+
+/**
+ * 地图端点名称字号：开敞区略放大，贴边/出框缩小，默认约 10
+ */
+function markerNameFontSize(x, y, mapRegion, version = 'standard') {
+  const s = svgFontScale(version);
+  const base = 10 * s;
+  const openMax = 13 * s;
+  const edgeMin = 8 * s;
+  const { x: mx, y: my, width: mw, height: mh } = mapRegion;
+  const edgeDist = Math.min(x - mx, mx + mw - x, y - my, my + mh - y);
+  const margin = 48;
+  if (edgeDist < 0) return Math.max(7, Math.round(edgeMin - 1));
+  if (edgeDist < margin) {
+    const t = edgeDist / margin;
+    return Math.max(7, Math.round(edgeMin + (base - edgeMin) * t));
+  }
+  const cx = mx + mw / 2;
+  const cy = my + mh / 2;
+  const dx = (x - cx) / Math.max(mw / 2, 1);
+  const dy = (y - cy) / Math.max(mh / 2, 1);
+  const centerScore = 1 - Math.min(1, Math.sqrt(dx * dx + dy * dy));
+  return Math.round(base + (openMax - base) * centerScore * 0.85);
+}
+
 export function generateSvg(waypoints, routeId, routeName, version = 'standard', staticMapUrl = '', boundaryPolygons = []) {
   // staticMapUrl 参数保留以向后兼容，但不再使用（已切换为纯矢量SVG，无光栅底图）
   void staticMapUrl;
   const preset = VERSION_PRESETS[version] || VERSION_PRESETS.standard;
-  // 卡片常见展示宽 ~360px，相对 620 viewBox 约 0.58×；再放大 2 倍保证可读
-  const fontScale = version === 'elder' ? 4.2 : 3.5;
-  const markerScale = version === 'elder' ? 2.2 : 1.9;
+  // 端点圆点略放大即可，字号交给 roleFontSize / markerNameFontSize
+  const markerScale = version === 'elder' ? 1.25 : 1.1;
 
   // 固定卡片尺寸 620×850（不再从 preset.viewBox 取）
   const VB_W = 620, VB_H = 850;
@@ -796,12 +842,12 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
   // ===== Hero 标题栏 (y=0-58) =====
   parts.push(`<rect x="0" y="0" width="${VB_W}" height="58" rx="16" fill="url(#heroGrad)"/>`);
   parts.push(
-    `<text x="18" y="36" fill="#fff" font-size="${Math.round(22 * fontScale)}" ` +
+    `<text class="svg-text" data-role="hero_title" x="18" y="36" fill="#fff" font-size="${roleFontSize('hero_title', version)}" ` +
     `font-weight="bold">${escXml(shortName(routeNameSim, 20))}</text>`
   );
   parts.push(
-    `<text x="18" y="51" fill="rgba(255,255,255,0.75)" ` +
-    `font-size="${Math.round(11 * fontScale)}">康养旅居 · 精品路线</text>`
+    `<text class="svg-text" data-role="hero_sub" x="18" y="51" fill="rgba(255,255,255,0.75)" ` +
+    `font-size="${roleFontSize('hero_sub', version)}">康养旅居 · 精品路线</text>`
   );
 
   // ===== 地理地图区域背景 (y=68-528) =====
@@ -834,8 +880,8 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     `fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>`
   );
   parts.push(
-    `<text x="${MAP_X + 70}" y="${MAP_Y + 88}" fill="#2E7D32" ` +
-    `font-size="${Math.round(10 * fontScale)}" opacity="0.55" font-style="italic">山区</text>`
+    `<text class="svg-text" data-role="map_deco" x="${MAP_X + 70}" y="${MAP_Y + 88}" fill="#2E7D32" ` +
+    `font-size="${roleFontSize('map_deco', version)}" opacity="0.55" font-style="italic">山区</text>`
   );
   parts.push('</g>');
 
@@ -860,8 +906,8 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     `fill="none" stroke="url(#riverGrad)" stroke-width="6" stroke-linecap="round" opacity="0.5"/>`
   );
   parts.push(
-    `<text x="${MAP_X + 210}" y="${MAP_Y + MAP_H * 0.58}" fill="#1565C0" ` +
-    `font-size="${Math.round(10 * fontScale)}" opacity="0.65">主要河流</text>`
+    `<text class="svg-text" data-role="map_deco" x="${MAP_X + 210}" y="${MAP_Y + MAP_H * 0.58}" fill="#1565C0" ` +
+    `font-size="${roleFontSize('map_deco', version)}" opacity="0.65">主要河流</text>`
   );
   parts.push('</g>');
 
@@ -897,8 +943,9 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
       color = '#FF7826'; label = '景'; baseR = 7;
     }
     const radius = Math.round(baseR * markerScale);
-    const labelFs = Math.round(10 * fontScale);
-    const hitR = Math.max(22, radius + 14);
+    const glyphFs = roleFontSize('marker_glyph', version);
+    const nameFs = markerNameFontSize(m.x, m.y, mapRegion, version);
+    const hitR = Math.max(20, radius + 12);
     const simName = toSimplified(m.name || '');
     const simDesc = toSimplified(m.spot_desc || m.plan || '');
     const simPlan = toSimplified(m.plan || '');
@@ -914,9 +961,9 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
       ` transform="translate(${m.x},${m.y})">` +
       `<circle class="hit-area" r="${hitR}" fill="transparent" pointer-events="all"/>` +
       `<circle r="${radius}" fill="${color}" stroke="#fff" stroke-width="2"/>` +
-      `<text text-anchor="middle" dy="${Math.round(labelFs * 0.35)}" fill="#fff" ` +
-      `font-size="${labelFs}" font-weight="bold">${label}</text>` +
-      `<text y="${radius + labelFs}" text-anchor="middle" font-size="${labelFs}" ` +
+      `<text class="svg-text" data-role="marker_glyph" text-anchor="middle" dy="${Math.round(glyphFs * 0.35)}" fill="#fff" ` +
+      `font-size="${glyphFs}" font-weight="bold">${label}</text>` +
+      `<text class="svg-text" data-role="marker_name" y="${radius + nameFs}" text-anchor="middle" font-size="${nameFs}" ` +
       `fill="#000" font-family="sans-serif">${escXml(shortName(simName, 8))}</text>` +
       `</g>`
     );
@@ -935,12 +982,12 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     { color: '#8E24AA', label: '康养' },
     { color: '#1976D2', label: '返程' },
   ];
-  const legFs = Math.round(11 * fontScale);
+  const legFs = roleFontSize('legend', version);
   legendEntries.forEach((e, i) => {
     const cx = i * 110 + 30;
     parts.push(
       `<circle cx="${cx}" cy="14" r="6" fill="${e.color}"/>` +
-      `<text x="${cx + 12}" y="18" font-size="${legFs}" fill="#333">${e.label}</text>`
+      `<text class="svg-text" data-role="legend" x="${cx + 12}" y="18" font-size="${legFs}" fill="#333">${e.label}</text>`
     );
   });
   parts.push('</g>');
@@ -952,18 +999,18 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     `stroke="#FFE0B2" stroke-width="0.8"/>`
   );
   parts.push(
-    `<text x="15" y="22" fill="#E65100" font-size="${Math.round(13 * fontScale)}" ` +
+    `<text class="svg-text" data-role="panel_title" x="15" y="22" fill="#E65100" font-size="${roleFontSize('panel_title', version)}" ` +
     `font-weight="bold">康养特色</text>`
   );
   // 信息文字可能很长，分两行
   const text1 = wellnessText.length > 42 ? wellnessText.slice(0, 42) : wellnessText;
   const text2 = wellnessText.length > 42 ? wellnessText.slice(42, 84) : '';
   parts.push(
-    `<text x="15" y="42" fill="#555" font-size="${Math.round(11 * fontScale)}">${escXml(text1)}</text>`
+    `<text class="svg-text" data-role="panel_body" x="15" y="42" fill="#555" font-size="${roleFontSize('panel_body', version)}">${escXml(text1)}</text>`
   );
   if (text2) {
     parts.push(
-      `<text x="15" y="60" fill="#555" font-size="${Math.round(11 * fontScale)}">${escXml(text2)}</text>`
+      `<text class="svg-text" data-role="panel_body" x="15" y="60" fill="#555" font-size="${roleFontSize('panel_body', version)}">${escXml(text2)}</text>`
     );
   }
   parts.push('</g>');
@@ -975,11 +1022,11 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     `stroke="#EEE" stroke-width="0.5"/>`
   );
   parts.push(
-    `<text x="15" y="20" fill="#333" font-size="${Math.round(12 * fontScale)}" ` +
+    `<text class="svg-text" data-role="panel_title" x="15" y="20" fill="#333" font-size="${roleFontSize('panel_title', version)}" ` +
     `font-weight="bold">行程景点</text>`
   );
   let yPos = 42;
-  const itemFs = Math.round(11 * fontScale);
+  const itemFs = roleFontSize('list_item', version);
   for (const m of markers) {
     if (m.type === 'base' || m.type === 'arrival' || m.type === 'departure') continue;
     const simName = toSimplified(m.name || '');
@@ -993,7 +1040,7 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
       ` data-spot-desc="${escXml(simDesc)}"` +
       (imgUrl ? ` data-spot-img="${escXml(imgUrl)}"` : '') + `>` +
       `<circle cx="18" cy="${yPos - 3}" r="3" fill="#FF7826"/>` +
-      `<text x="28" y="${yPos}" fill="#333" font-size="${itemFs}">` +
+      `<text class="svg-text" data-role="list_item" x="28" y="${yPos}" fill="#333" font-size="${itemFs}">` +
       `${escXml(shortName(simName, 10))}` +
       (simDay ? ` · ${escXml(simDay)}` : '') +
       (simPlan ? ` · ${escXml(shortName(simPlan, 18))}` : '') +

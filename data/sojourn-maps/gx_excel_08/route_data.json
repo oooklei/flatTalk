@@ -57,7 +57,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp2",
@@ -97,7 +97,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp3",
@@ -137,7 +137,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp4",
@@ -177,7 +177,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     }
   ],
   "itinerary": [
@@ -227,6 +227,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路8_桂林_阳朔_贺州山水瑶泉康养旅居线",
   "route_id": "gx_excel_08",
-  "updated_at": "2026-08-05T22:05:59.125Z",
+  "updated_at": "2026-08-05T22:13:28.073Z",
   "spot_images_source": "dashboard_local_kb"
 }

@@ -56,7 +56,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp2",
@@ -98,7 +98,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp3",
@@ -115,7 +115,7 @@
         "https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,width=400,height=265,dpr=2/tour_img/0f4680bb8d60f7ffbcc51ef0c4f7873a483b6e890faa1a7c0de26a6fe7a25e88.jpg"
       ],
       "related_spots": [],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp4",
@@ -157,7 +157,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     }
   ],
   "price_label": "398元/人/天",
@@ -166,6 +166,6 @@
     "route_dash_fcg_1"
   ],
   "route_id": "fcg_route_001",
-  "updated_at": "2026-08-05T22:05:59.068Z",
+  "updated_at": "2026-08-05T22:13:28.013Z",
   "spot_images_source": "dashboard_local_kb"
 }

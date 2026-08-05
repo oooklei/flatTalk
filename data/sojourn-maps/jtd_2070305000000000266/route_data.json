@@ -54,7 +54,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp3",
@@ -96,7 +96,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp4",
@@ -111,6 +111,6 @@
   "source": "jintiaodong",
   "jtd_product_id": "2070305000000000266",
   "route_id": "jtd_2070305000000000266",
-  "updated_at": "2026-08-05T22:05:59.143Z",
+  "updated_at": "2026-08-05T22:13:28.097Z",
   "spot_images_source": "dashboard_local_kb"
 }

@@ -53,7 +53,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp2",
@@ -93,7 +93,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp3",
@@ -133,7 +133,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp4",
@@ -173,7 +173,7 @@
           "category": "旅游景点:海滩"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp5",
@@ -213,7 +213,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     }
   ],
   "itinerary": [
@@ -263,6 +263,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路5_南宁_北海_钦州_防城港滨海养老旅居线",
   "route_id": "gx_excel_05",
-  "updated_at": "2026-08-05T22:05:59.114Z",
+  "updated_at": "2026-08-05T22:13:28.061Z",
   "spot_images_source": "dashboard_local_kb"
 }

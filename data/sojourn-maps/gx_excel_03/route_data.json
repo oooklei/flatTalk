@@ -55,7 +55,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp2",
@@ -95,7 +95,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp3",
@@ -135,7 +135,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp4",
@@ -175,7 +175,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp5",
@@ -215,7 +215,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp6",
@@ -255,7 +255,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp7",
@@ -295,7 +295,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     }
   ],
   "itinerary": [
@@ -345,6 +345,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路3南宁崇左全域",
   "route_id": "gx_excel_03",
-  "updated_at": "2026-08-05T22:05:59.103Z",
+  "updated_at": "2026-08-05T22:13:28.049Z",
   "spot_images_source": "dashboard_local_kb"
 }

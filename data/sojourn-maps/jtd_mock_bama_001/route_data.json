@@ -68,7 +68,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp3",
@@ -110,7 +110,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp4",
@@ -170,5 +170,5 @@
     "喀斯特"
   ],
   "spot_images_source": "dashboard_local_kb",
-  "updated_at": "2026-08-05T22:05:59.153Z"
+  "updated_at": "2026-08-05T22:13:28.107Z"
 }

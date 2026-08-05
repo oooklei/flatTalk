@@ -81,7 +81,7 @@
           "category": "旅游景点:国家级景点"
         }
       ],
-      "image_source": "local_poster"
+      "image_source": "route_data"
     },
     {
       "id": "wp4",
@@ -141,6 +141,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路10_柳州_金秀_荔浦_平乐山水温泉长寿养老旅居线",
   "route_id": "gx_excel_10",
-  "updated_at": "2026-08-05T22:05:59.134Z",
+  "updated_at": "2026-08-05T22:13:28.082Z",
   "spot_images_source": "dashboard_local_kb"
 }

@@ -164,11 +164,6 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  /* 旧包 SVG 字号按 620 宽绘制；卡片约 360 宽时用 CSS 抬升可读性 */
-  font-size: 16px;
-}
-.svg-container svg text {
-  font-size: 1em;
 }
 .route-marker { cursor: pointer; transition: opacity 0.15s; pointer-events: auto; }
 .route-marker:hover { opacity: 0.82; }
@@ -477,27 +472,49 @@ body {
       });
     }
 
-    /** 卡片嵌入后 viewBox 缩放导致字号过小：抬升旧包 SVG 文本与热区 */
+    /** 补热区；仅把过小旧字号轻抬到默认约 10，不做整图暴增 */
     function enhanceSvgForCard(root) {
       if (!root) return;
+      var svg = root.querySelector('svg');
+      if (!svg) return;
+      var vb = (svg.getAttribute('viewBox') || '0 0 620 850').split(/[\s,]+/).map(Number);
+      var map = { x: 10, y: 68, w: 600, h: 460 };
       root.querySelectorAll('text').forEach(function(t) {
         var fs = parseFloat(t.getAttribute('font-size') || '0');
         if (!(fs > 0)) return;
-        // 旧包再放大约 3.5×（相对原稿 10），对齐新生成器字号
-        if (fs < 20) t.setAttribute('font-size', String(Math.round(fs * 3.5)));
-        else if (fs < 36) t.setAttribute('font-size', String(Math.round(fs * 2)));
+        // 已按新策略生成的包（约 8–20）不要再放大
+        if (fs >= 8 && fs <= 22) return;
+        // 暴增版旧包（>24）压回合理区间
+        if (fs > 22) {
+          var role = t.getAttribute('data-role') || '';
+          if (role === 'hero_title') t.setAttribute('font-size', '18');
+          else if (role === 'marker_name') t.setAttribute('font-size', '11');
+          else t.setAttribute('font-size', '10');
+          return;
+        }
+        // 过小旧包抬到默认 10
+        if (fs < 8) t.setAttribute('font-size', '10');
       });
+      // 贴边端点名称再收一档（仅旧包无 data-role 时）
       root.querySelectorAll('.route-marker').forEach(function(g) {
+        var tr = g.getAttribute('transform') || '';
+        var m = tr.match(/translate\(([-0-9.]+)\s*,\s*([-0-9.]+)\)/);
+        var nameText = g.querySelector('text[data-role="marker_name"]') || g.querySelectorAll('text')[1];
+        if (m && nameText) {
+          var x = parseFloat(m[1]), y = parseFloat(m[2]);
+          var edge = Math.min(x - map.x, map.x + map.w - x, y - map.y, map.y + map.h - y);
+          var fs = parseFloat(nameText.getAttribute('font-size') || '10');
+          if (edge < 40 && fs > 10) nameText.setAttribute('font-size', String(Math.max(8, Math.round(fs * 0.85))));
+        }
         if (g.querySelector('circle.hit-area')) return;
         var vis = g.querySelector('circle:not(.hit-area)');
         var r = vis ? parseFloat(vis.getAttribute('r') || '7') : 7;
         var hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         hit.setAttribute('class', 'hit-area');
-        hit.setAttribute('r', String(Math.max(28, r + 18)));
+        hit.setAttribute('r', String(Math.max(20, r + 12)));
         hit.setAttribute('fill', 'transparent');
         hit.setAttribute('pointer-events', 'all');
         g.insertBefore(hit, g.firstChild);
-        if (vis && r < 14) vis.setAttribute('r', String(Math.round(r * 1.9)));
       });
     }
 

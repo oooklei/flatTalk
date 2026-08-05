@@ -56,7 +56,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     },
     {
       "id": "wp2",
@@ -118,7 +118,7 @@
           "category": "旅游景点:风景名胜"
         }
       ],
-      "image_source": "local_photo"
+      "image_source": "route_data"
     }
   ],
   "price_label": "428元/人/天",
@@ -127,6 +127,6 @@
     "route_dash_fcg_4"
   ],
   "route_id": "fcg_route_004",
-  "updated_at": "2026-08-05T22:05:59.084Z",
+  "updated_at": "2026-08-05T22:13:28.027Z",
   "spot_images_source": "dashboard_local_kb"
 }
