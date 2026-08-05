@@ -800,6 +800,16 @@ async function acceptScene(request, sceneDecision) {
     request.context?.ambiguity_scene_key || (ambiguityPick ? request.skill_key : '')
   );
   if (ambiguityPick && ambiguityScene) {
+    logSceneDecision({
+      utterance: request.message || request.text || '',
+      candidates: sceneDecision?.candidates || [],
+      margin: sceneDecision?.margin,
+      transition_type: 'ambiguity_pick',
+      ambiguity: true,
+      final_scene: ambiguityScene,
+      conflict_notes: ['ambiguity_pick'],
+      disambiguation_result: ambiguityScene,
+    });
     return {
       scene_key: ambiguityScene,
       intent: request.intent || `${ambiguityScene}.ambiguity_pick`,

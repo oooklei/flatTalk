@@ -16,6 +16,7 @@ export function logSceneDecision(entry) {
     transition_type: entry.transition_type || null,
     ambiguity: Boolean(entry.ambiguity),
     final_scene: entry.final_scene || null,
+    disambiguation_result: entry.disambiguation_result ?? null,
   };
   ring.push(row);
   if (ring.length > MAX) ring.shift();
@@ -27,4 +28,9 @@ export function logSceneDecision(entry) {
 
 export function getRecentSceneDecisions(limit = 50) {
   return ring.slice(-limit);
+}
+
+/** Test-only: clear ring buffer between cases. */
+export function _resetDecisionLogForTests() {
+  ring.length = 0;
 }
