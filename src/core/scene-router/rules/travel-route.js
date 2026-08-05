@@ -3,11 +3,20 @@ import { includesTerm } from '../scoring-engine.js';
 const travelTopicTerms = [
   '旅居', '旅游', '旅行', '康养', '旅养', '路线', '线路', '行程', '目的地', '基地', '景点',
   '广西', '百色', '南宁', '桂林', '北海', '巴马', '防城港', '钦州', '崇左',
+  // 扩充目的地/产品类型词
+  '三江', '龙胜', '靖西', '东兴', '河池', '涠洲岛',
+  '德天瀑布', '明仕田园', '花山岩画', '银滩', '白浪滩', '百魔洞', '长寿村', '水晶宫', '赐福湖',
+  '风雨桥', '鼓楼', '侗族', '瑶族', '壮族', '苗族',
   'winter care', 'travel route', 'route plan',
   // 防城港旅居试点线路相关场景词
-  '防城港旅居', '旅居养老', '京族', '芒街', '东兴', '十万大山', '嘉路', '嘉路康旅', '嘉路滨海',
+  '防城港旅居', '旅居养老', '京族', '芒街', '十万大山', '嘉路', '嘉路康旅', '嘉路滨海',
   '银发爱情', '跨境', '非遗', '长寿', '药膳', '大本营', '康养基地', '旅居机构', '适老化旅居',
   '森林轻氧', '壮村民俗', '滨海文化', '边境风情',
+  // 产品主题词（康养/滨海/文化/生态）
+  '海边', '海滩', '海岛', '度假', '海鲜', '沙滩', '滨海',
+  '民族文化', '古镇', '民俗', '百家宴', '大歌', '手作',
+  '生态', '山水', '喀斯特', '溶洞', '瀑布', '梯田', '森林', '湿地', '漂流', '徒步', '摄影',
+  '负氧离子', '地磁', '温泉', '养生', '疗养',
 ];
 
 const routePlanSignalTerms = [
@@ -32,8 +41,19 @@ const travelIntentTerms = [
 
 const elderTravelTerms = [
   '老人', '长者', '老年人', '爸妈', '父母', '家属', '慢病', '康复', '轮椅', '陪护',
-  '血压', '糖尿病', '心脏', '医疗', '医院', '安全',
+  '安全',
   '适合老人', '长者玩法',
+];
+
+const productThemeTerms = [
+  // 康养
+  '负氧离子', '地磁', '温泉', '养生', '疗养', '康养', '长寿',
+  // 滨海
+  '海边', '海滩', '海岛', '度假', '海鲜', '沙滩', '滨海',
+  // 文化
+  '民族文化', '古镇', '民俗', '百家宴', '大歌', '非遗', '风雨桥', '鼓楼',
+  // 生态
+  '生态', '山水', '喀斯特', '溶洞', '瀑布', '梯田', '森林', '湿地', '漂流', '徒步', '摄影',
 ];
 
 const bookingTerms = ['预订', '预约', '下单', '报名', '可订', '余量', '入住', '付款'];
@@ -42,7 +62,7 @@ export const travelRouteRuleSet = {
   scene_key: 'travel_route',
   default_intent: 'travel_route_plan',
   threshold: 6,
-  template_candidates: ['travel_itinerary_card', 'route_card', 'base_candidates', 'booking_handoff', 'fallback'],
+  template_candidates: ['route_svg', 'route_wellness', 'route_coastal', 'route_culture', 'route_ecology', 'sojourn_route', 'travel_itinerary_card', 'sojourn_base', 'booking_handoff', 'fallback'],
   required_data: ['gxy_travel_route_plan'],
   required_knowledge: ['travel_route', 'trace_route'],
   actions_allowed: [
@@ -64,6 +84,7 @@ export const travelRouteRuleSet = {
     { group: 'travel_topic', weight: 3, terms: travelTopicTerms },
     { group: 'route_plan_signal', weight: 4, terms: routePlanSignalTerms },
     { group: 'travel_intent', weight: 3, terms: travelIntentTerms },
+    { group: 'product_theme', weight: 3, terms: productThemeTerms },
     { group: 'elder_travel_constraint', weight: 2, terms: elderTravelTerms },
     { group: 'booking', weight: 2, terms: bookingTerms },
   ],
@@ -81,6 +102,9 @@ export const travelRouteRuleSet = {
     { group: 'dispatch_manage', penalty: 4, terms: ['派单', '工单', '调度', '处理进度', '客服'] },
     { group: 'acute_health_risk', penalty: 3.5, terms: ['胸痛', '昏迷', '呼吸困难', '中风', '急救', '120'] },
     { group: 'nearby_resource', penalty: 4, terms: ['地图', '周边', '附近', '打点', '分布', '配套', '资源', '大屏', '15公里', '展示地图', '地图展示', '周边资源', '周边配套', '餐馆', '餐厅', '医疗', '医院'] },
+    { group: 'service_quality_eval', penalty: 8, terms: ['服务质量', '质量评估', '服务评价', '满意度', '投诉', '整改', '评分', '督导', '质量报告'] },
+    { group: 'health_risk_warning', penalty: 6, terms: ['血压', '血糖', '风险评估', '健康预警', '体质', '舌诊', '慢病风险', '预警报告', '心率异常', '血氧异常'] },
+    { group: 'find_service', penalty: 5, terms: ['上门护理', '护工', '找服务', '养老机构', '服务目录', '下单服务', '预约护工'] },
   ],
   infer_intent(input) {
     if (has(input, bookingTerms)) return 'travel_route_booking';
@@ -92,12 +116,45 @@ export const travelRouteRuleSet = {
     if (has(input, ['景点', '景区', '游玩', '适合老人'])) return 'travel_route_spot';
     if (has(input, ['医疗', '医院', '买药', '就医'])) return 'travel_route_medical';
     if (has(input, ['行程', '安排', '日程', '行程表', '时间安排'])) return 'travel_route_itinerary';
+    if (has(input, ['规划', '制定', '生成', '路线参考', '线路参考', '行程参考', '路线推荐', '线路推荐', '行程推荐', '帮我规划'])) return 'travel_route_plan';
     if (has(input, ['方案', '确认', '总结', '最终方案'])) return 'travel_route_plan';
     if (has(input, ['详情', '介绍', '适合谁', '适配人群', '线路', '路线'])) return 'travel_route_query';
-    if (has(input, ['规划', '制定', '生成', '路线参考', '线路参考', '行程参考', '路线推荐', '线路推荐', '行程推荐', '帮我规划'])) return 'travel_route_plan';
     return 'travel_route_plan';
   },
 };
+
+// ============================================================
+// 产品类型推断：康养/滨海/文化/生态
+// ============================================================
+
+const ROUTE_TYPE_KEYWORDS = {
+  route_wellness: ['康养', '旅居', '长寿', '养生', '负氧离子', '地磁', '温泉', '疗养', '百魔洞', '长寿村', '水晶宫', '赐福湖', '巴马', '慢病', '康复'],
+  route_coastal:  ['滨海', '海滩', '海岛', '度假', '海鲜', '沙滩', '海边', '银滩', '白浪滩', '涠洲岛', '京族', '边境', '口岸', '防城港', '北海', '东兴'],
+  route_culture:  ['民族文化', '古镇', '非遗', '民俗', '侗族', '瑶族', '壮族', '苗族', '风雨桥', '鼓楼', '百家宴', '大歌', '手作', '三江', '龙胜', '靖西', '花山'],
+  route_ecology:  ['生态', '山水', '喀斯特', '溶洞', '瀑布', '梯田', '森林', '湿地', '漂流', '徒步', '摄影', '德天', '明仕', '崇左', '桂林'],
+};
+
+/**
+ * 从用户输入推断产品类型
+ * @param {string|object} input
+ * @returns {string} route_wellness | route_coastal | route_culture | route_ecology
+ */
+export function inferRouteType(input) {
+  const text = typeof input === 'string'
+    ? input
+    : [input?.text, input?.utterance, input?.message, input?.query].filter(Boolean).join(' ');
+
+  let bestType = 'route_wellness'; // 兜底
+  let bestScore = 0;
+  for (const [type, terms] of Object.entries(ROUTE_TYPE_KEYWORDS)) {
+    const score = terms.filter((t) => includesTerm(text, t)).length;
+    if (score > bestScore) {
+      bestScore = score;
+      bestType = type;
+    }
+  }
+  return bestType;
+}
 
 function has(input, terms) {
   const text = typeof input === 'string'

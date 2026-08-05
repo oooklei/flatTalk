@@ -167,6 +167,17 @@ function keywordsFrom(...parts) {
   return [...bag].slice(0, 12);
 }
 
+function extractShortTags(name = '') {
+  const t = String(name);
+  const tags = [];
+  if (/京族/.test(t)) tags.push('京族');
+  if (/银发爱情|边境/.test(t)) tags.push('银发爱情', '边境线');
+  if (/壮村|民俗/.test(t)) tags.push('壮村', '民俗');
+  if (/森林|轻氧/.test(t)) tags.push('森林', '轻氧');
+  if (/芒街|跨境/.test(t)) tags.push('芒街', '跨境');
+  return tags;
+}
+
 // ---------- FCG 002-005 from local fangchenggang-routes ----------
 function prefabFcg() {
   const routes = JSON.parse(fs.readFileSync(FCG_FILE, 'utf8'));
@@ -213,6 +224,7 @@ function prefabFcg() {
         keywords: [
           r.product_name,
           ...(r.tags || []).slice(0, 3),
+          ...extractShortTags(r.product_name),
         ].filter(Boolean),
         product_type: typeMap[routeId] || inferProductType(r.product_name + (r.tags || []).join('')),
         title: r.product_name,

@@ -10,7 +10,7 @@ import { extractCities } from '../city-extractor/index.js';
 import { renderTemplateCardResult } from '../render/template-card-renderer.js';
 import { identifyScene } from '../scene-router/index.js';
 import { resolveTemplateId, resolveTemplateWithRouteType } from '../scene-router/intent-template-map.js';
-import { matchPublishedPackages } from '../scene-router/publish-index.js';
+import { matchPublishedPackages, getPublishedPackageById } from '../scene-router/publish-index.js';
 import { inferRouteType } from '../scene-router/rules/travel-route.js';
 import { createDataService } from '../../services/data-service.js';
 import { createRagService } from '../../services/rag-service.js';
@@ -423,18 +423,13 @@ export function createChatOrchestrator(options = {}) {
           const forcedRouteId = String(request.context?.publish_route_id || request.context?.route_id || '').trim();
           let hits = matchPublishedPackages(sceneInput.text);
           if (forcedRouteId) {
-            const forced = hits.find((h) => h.route_id === forcedRouteId)
-              || matchPublishedPackages(forcedRouteId).find((h) => h.route_id === forcedRouteId);
-            // 点选锁定：直接用该包，必要时构造最小 hit
+            // 点选锁定：仅接受已 published 的包，拒绝客户端伪造 route_id
+            const forced = getPublishedPackageById(forcedRouteId)
+              || hits.find((h) => h.route_id === forcedRouteId);
             if (forced) {
               hits = [forced];
             } else {
-              hits = [{
-                route_id: forcedRouteId,
-                score: 999,
-                meta: { route_id: forcedRouteId, title: forcedRouteId, product_type: 'wellness' },
-                product_template_id: 'route_wellness',
-              }];
+              mark('publish_route_id_rejected', '拒绝未发布线路锁定', { forcedRouteId });
             }
           }
           const top = hits[0];

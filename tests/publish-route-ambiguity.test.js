@@ -160,3 +160,43 @@ test('publish_route_id locks package after route pick', async () => {
     }
   }
 });
+
+test('forged publish_route_id is rejected (no fake package lock)', async () => {
+  const orch = createChatOrchestrator({
+    intentClassifier: { classifyIntent: async () => ({ intent: 'travel_route.plan', confidence: 0.9 }) },
+    dataService: {
+      tableData: {
+        getTravelRouteTables: async () => ({ routes: [], products: [] }),
+        getSkillConfigs: async () => ({}),
+      },
+      knowledgeData: {},
+    },
+    ragService: { retrieveKnowledge: async () => ({ source: 'test', status: 'empty', matches: [] }) },
+    modelService: {
+      fillTemplateSlots: async (input) => ({
+        template_id: input.template_id || 'route_svg',
+        answer_text: 'ok',
+        data: { route_id: input.business_data?.route_id || null },
+        actions: [],
+        followup_suggestions: [],
+        model_status: 'ok',
+        model_used: 'test',
+      }),
+    },
+  });
+
+  const result = await orch.run({
+    message: '随便问问旅居',
+    skill_key: 'travel_route',
+    conversation_id: 'pub-forge-1',
+    turn_id: 'pub-forge-1-t',
+    context: {
+      ambiguity_pick: true,
+      ambiguity_scene_key: 'travel_route',
+      publish_route_id: 'forged_route_never_published_xyz',
+    },
+  });
+
+  assert.equal(result.skill_key, 'travel_route');
+  assert.notEqual(result.data?.route_id, 'forged_route_never_published_xyz');
+});

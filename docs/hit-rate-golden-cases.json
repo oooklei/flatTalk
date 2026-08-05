@@ -1,12 +1,16 @@
 {
-  "version": 1,
+  "version": 2,
   "crosstalk": [
     { "id": "ct-01", "message": "查看桂林夕阳红养老服务中心本月的服务质量评估报告", "expect_scene": "service_quality_eval", "not_scene": "travel_route" },
     { "id": "ct-02", "message": "老人最近血压偏高有什么风险", "expect_scene": "health_risk_warning", "not_scene": "travel_route" },
     { "id": "ct-03", "message": "帮我找一下附近的上门护理服务", "expect_scene": "find_service", "not_scene": "travel_route" },
     { "id": "ct-04", "message": "想去防城港滨海三日游旅居", "expect_scene": "travel_route", "not_scene": "find_service" },
     { "id": "ct-05", "message": "巴马康养旅居线路怎么安排", "expect_scene": "travel_route", "not_scene": "health_risk_warning" },
-    { "id": "ct-06", "message": "机构护理员被投诉了怎么整改", "expect_scene": "service_quality_eval", "not_scene": "travel_route" }
+    { "id": "ct-06", "message": "机构护理员被投诉了怎么整改", "expect_scene": "service_quality_eval", "not_scene": "travel_route" },
+    { "id": "ct-07", "message": "老人舌诊体质偏虚有什么健康风险预警", "expect_scene": "health_risk_warning", "not_scene": "travel_route" },
+    { "id": "ct-08", "message": "帮我预约一个上门护工照顾老人", "expect_scene": "find_service", "not_scene": "travel_route" },
+    { "id": "ct-09", "message": "京族滨海文化线三日游怎么走", "expect_scene": "travel_route", "not_scene": "health_risk_warning" },
+    { "id": "ct-10", "message": "服务质量巡检发现防滑不规范怎么整改", "expect_scene": "service_quality_eval", "not_scene": "travel_route" }
   ],
   "ambiguity_labels": [
     { "id": "am-01", "label": "旅居规划", "skill_key": "travel_route" },
@@ -40,5 +44,12 @@
       ],
       "expect_route_id": "fixture_fcg_coastal"
     }
+  ],
+  "live_publish": [
+    { "id": "lp-01", "message": "防城港滨海京族", "expect_route_id": "fcg_route_001" },
+    { "id": "lp-02", "message": "银发爱情边境", "expect_route_id": "fcg_route_002" },
+    { "id": "lp-03", "message": "南宁北海钦州防城港滨海养老旅居", "expect_route_id": "gx_excel_05" },
+    { "id": "lp-04", "message": "巴马康养百魔洞", "expect_route_id": "bama_5d4n" },
+    { "id": "lp-05", "message": "七洞乡线路产品", "expect_route_id": "jtd_2070305000000000240" }
   ]
 }
