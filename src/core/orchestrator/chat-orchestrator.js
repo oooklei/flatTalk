@@ -438,10 +438,16 @@ export function createChatOrchestrator(options = {}) {
             publishHit = top;
             routeType = top.product_template_id || inferRouteType(sceneInput.text);
             businessData.route_id = top.route_id;
+            businessData.route_title = top.meta?.title || top.route_id;
+            businessData.destination = Array.isArray(top.meta?.destination)
+              ? (top.meta.destination[0] || businessData.destination)
+              : (top.meta?.destination || businessData.destination);
             businessData.publish_match = {
               route_id: top.route_id,
               score: top.score,
               product_type: top.meta?.product_type,
+              destination: top.meta?.destination || [],
+              title: top.meta?.title || '',
             };
           } else if (top && second && top.score === second.score && !forcedRouteId) {
             // 第二刀同分：回传选线选项，避免静默落到错包

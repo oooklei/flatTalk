@@ -1,6 +1,26 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { createYz365Service } from '../services/yz365/index.js';
 import { createShezhenService } from '../services/shezhen/shezhen-service.js';
+import { buildRouteMapData as buildRouteMapDataFromKit, buildBaseMapData as buildBaseMapDataFromKit, findPrebuiltPackageByDestination, findPrebuiltPackage } from './map/map-kit.js';
+import { matchPublishedPackages } from './scene-router/publish-index.js';
+import { generateRouteHtml } from './route-svg-generator.js';
+import { selectProductTemplate } from './route-svg-generator.js';
+import {
+  fillTravelTransportCard,
+  fillTravelNeedSummaryCard,
+  fillTravelPlanSummaryCard,
+  fillFindServiceExtra,
+  fillDispatchExtra,
+  fillMealDashboardCard,
+  fillHealthDrilldownCard,
+  fillElderDuplicateConfirmCard,
+  LOCAL_FILL_TEMPLATE_IDS,
+} from './model-runtime/extra-template-fills.js';
+import { findEldersByName, mockElders } from '../services/interface-data/mock-collaboration.js';
 import crypto from 'node:crypto';
+
+export { LOCAL_FILL_TEMPLATE_IDS };
 
 const HTML_TAG_PATTERN = /<[^>]*>/g;
 const EVENT_HANDLER_PATTERN = /\bon[a-z]+\s*=/gi;
@@ -24,6 +44,34 @@ function getShezhenService() {
   return shezhenService;
 }
 
+// ════════════════════════════════════════════════════════════════
+// 模板路由覆盖表（旅居路线 + 周边资源）
+// ────────────────────────────────────────────────────────────────
+// 旅居路线 travel_route（16模板）：
+//   route_svg / route_wellness / route_coastal / route_culture / route_ecology → fillRouteCardLegacy
+//   sojourn_base → fillSojournBase
+//   travel_availability_card → fillTravelAvailabilityCard
+//   travel_h5_embed_card → fillTravelH5EmbedCard
+//   travel_transport_card → fillTravelTransportCard（extra-template-fills）
+//   travel_need_summary_card → fillTravelNeedSummaryCard（extra-template-fills）
+//   travel_plan_summary_card → fillTravelPlanSummaryCard（extra-template-fills）
+//   travel_itinerary_card → fillTravelItineraryCard
+//   travel_weather_risk_card → fillTravelWeatherRiskCard
+//   travel_spot_card → fillTravelSpotCard
+//   travel_medical_card → fillTravelMedicalCard
+//   sojourn_route → 已废弃，重定向到 route_svg
+//
+// 周边资源 find_service（17模板）：
+//   service_emergency → fillServiceEmergencyCard
+//   service_recommend / service_detail / service_catalog / org_profile / worker_profile
+//     / order_preview / order_status → fillFindServiceCard
+//   service_order_form / service_order_ticket / service_expand / service_guess_like
+//     / service_trace / service_review → fillFindServiceExtra（extra-template-fills）
+//   service_card / service_intent / service_thinking → fillServiceTransitionalCard
+//     （原先走 no_local_fill 兜底，已补齐本地填槽）
+//
+// 经验：每个新增模板ID必须在此表中登记对应 fill 分支，否则走 no_local_fill 纯文本兜底。
+// ════════════════════════════════════════════════════════════════
 export async function fillTemplateSlots({
   message = '',
   template_id = '',
@@ -34,7 +82,7 @@ export async function fillTemplateSlots({
   knowledgeService = null,
   weatherService = null,
 } = {}) {
-  const selectedTemplateId = selectTemplateId({
+  let selectedTemplateId = selectTemplateId({
     message,
     template_id,
     default_template_id,
@@ -42,17 +90,41 @@ export async function fillTemplateSlots({
     intent_context,
   });
 
+  // 旧模板已废弃：残留请求一律升级到新模板
+  if (selectedTemplateId === 'route_card') selectedTemplateId = 'route_svg';
+  if (selectedTemplateId === 'sojourn_route') selectedTemplateId = 'route_svg';
+  if (selectedTemplateId === 'travel_base_card') selectedTemplateId = 'sojourn_base';
+  // 产品模板（康养/滨海/文化/生态）统一走 route_svg 数据填充链路
+  if (['route_wellness', 'route_coastal', 'route_culture', 'route_ecology'].includes(selectedTemplateId)) {
+    // 保持 selectedTemplateId 不变，fillRouteCardLegacy 内部会通过 selectProductTemplate 推断产品类型
+  }
+
   if (selectedTemplateId === 'weekly_plan') {
     return fillWeeklyPlan({ message, business_data });
   }
   if (selectedTemplateId === 'diet_card') {
     return fillDietCard({ message, business_data });
   }
-  if (selectedTemplateId === 'route_card') {
-    return fillRouteCard({ message, business_data });
+  if (selectedTemplateId === 'route_svg' || ['route_wellness', 'route_coastal', 'route_culture', 'route_ecology'].includes(selectedTemplateId)) {
+    return fillRouteCardLegacy({ message, business_data, selectedTemplateId });
+  }
+  if (selectedTemplateId === 'sojourn_base') {
+    return fillSojournBase({ message, business_data });
   }
   if (selectedTemplateId === 'travel_availability_card') {
     return fillTravelAvailabilityCard({ message, business_data });
+  }
+  if (selectedTemplateId === 'travel_h5_embed_card') {
+    return fillTravelH5EmbedCard({ message, business_data });
+  }
+  if (selectedTemplateId === 'travel_transport_card') {
+    return sanitizeModelResult(fillTravelTransportCard({ message, business_data }));
+  }
+  if (selectedTemplateId === 'travel_need_summary_card') {
+    return sanitizeModelResult(fillTravelNeedSummaryCard({ message, business_data }));
+  }
+  if (selectedTemplateId === 'travel_plan_summary_card') {
+    return sanitizeModelResult(fillTravelPlanSummaryCard({ message, business_data }));
   }
   if (selectedTemplateId.startsWith('nearby_')) {
     return fillNearbyResourceCard({ message, business_data, intent_context });
@@ -60,10 +132,28 @@ export async function fillTemplateSlots({
   if (selectedTemplateId === 'travel_itinerary_card') {
     return fillTravelItineraryCard({ message, business_data });
   }
+  if (selectedTemplateId === 'elder_duplicate_confirm_card') {
+    const name = business_data?.elder_name || extractElderName(message) || '';
+    let candidates = Array.isArray(business_data?.elder_candidates)
+      ? business_data.elder_candidates
+      : (name ? findEldersByName(name) : []);
+    // 补充老人信息且未指定姓名：列出全部档案供选择（真实选择流）
+    if (!candidates.length) candidates = [...mockElders];
+    return sanitizeModelResult(fillElderDuplicateConfirmCard({
+      name: name || '请选择老人',
+      candidates,
+    }));
+  }
+  if ([
+    'constitution_card', 'tongue_diagnosis_card', 'face_observation_card', 'tcm_syndrome_card',
+    'care_advice_card', 'risk_level_card', 'help_card', 'risk_assessment_card',
+  ].includes(selectedTemplateId)) {
+    const drilled = fillHealthDrilldownCard({ selectedTemplateId, business_data, message });
+    if (drilled) return sanitizeModelResult(drilled);
+  }
   if (selectedTemplateId === 'health_warning_card'
    || selectedTemplateId === 'health_risk_signal_card'
    || selectedTemplateId === 'health_risk_rule_card'
-   || selectedTemplateId === 'risk_assessment_card'
    || selectedTemplateId === 'health_report_card'
    || selectedTemplateId === 'risk_warning_card'
    || selectedTemplateId === 'dietary_regimen_card') {
@@ -71,6 +161,15 @@ export async function fillTemplateSlots({
   }
   if (selectedTemplateId === 'policy_card') {
     return fillPolicyCard({ message, knowledgeService });
+  }
+  if (selectedTemplateId === 'policy_list_card') {
+    return fillPolicyListCard({ message, knowledgeService });
+  }
+  if (selectedTemplateId === 'policy_apply_guide_card') {
+    return fillPolicyApplyGuideCard({ message });
+  }
+  if (selectedTemplateId === 'policy_detail_card') {
+    return fillPolicyDetailCard({ message, knowledgeService });
   }
 
   if (selectedTemplateId === 'travel_weather_risk_card') {
@@ -84,8 +183,31 @@ export async function fillTemplateSlots({
   if (['service_recommend', 'service_detail', 'service_catalog', 'org_profile', 'worker_profile', 'order_preview', 'order_status'].includes(selectedTemplateId)) {
     return fillFindServiceCard({ message, business_data, selectedTemplateId });
   }
+  if (['service_order_form', 'service_order_ticket', 'service_expand', 'service_guess_like', 'service_trace', 'service_review'].includes(selectedTemplateId)) {
+    const extra = fillFindServiceExtra({ message, business_data, selectedTemplateId });
+    if (extra) return sanitizeModelResult(extra);
+  }
+  // service_card / service_intent / service_thinking: 过渡态/辅助卡片，补充本地填槽避免走 no_local_fill 纯文本
+  if (['service_card', 'service_intent', 'service_thinking'].includes(selectedTemplateId)) {
+    return fillServiceTransitionalCard({ message, business_data, intent_context, selectedTemplateId });
+  }
   if (['dispatch_list', 'dispatch_detail', 'work_order', 'dispatch_status'].includes(selectedTemplateId)) {
     return fillDispatchManageCard({ message, business_data, selectedTemplateId });
+  }
+  if (['dispatch_accept', 'dispatch_reject', 'dispatch_transfer', 'dispatch_supplier_action'].includes(selectedTemplateId)) {
+    const extra = fillDispatchExtra({ message, business_data, selectedTemplateId });
+    if (extra) return sanitizeModelResult(extra);
+  }
+  if ([
+    'institution_quality_report',
+    'staff_quality_report',
+    'org_quality_ranking',
+    'staff_quality_ranking',
+    'rectification_suggestion',
+    'complaint_detail',
+    'evaluation_standard',
+  ].includes(selectedTemplateId)) {
+    return fillServiceQualityEvalCard({ message, business_data, selectedTemplateId });
   }
 
   if (selectedTemplateId === 'meal_timeline_card') {
@@ -94,35 +216,36 @@ export async function fillTemplateSlots({
   if (selectedTemplateId === 'meal_overview_card') {
     return fillMealOverviewCard({ message, business_data });
   }
-  if (selectedTemplateId === 'travel_base_card') {
-    return fillTravelBaseCard({ message, business_data });
+  if (selectedTemplateId === 'meal_dashboard_card') {
+    return sanitizeModelResult(fillMealDashboardCard({ message, business_data }));
+  }
+  if (selectedTemplateId === 'travel_spot_card') {
+    return fillTravelSpotCard({ message, business_data });
+  }
+  if (selectedTemplateId === 'travel_medical_card') {
+    return fillTravelMedicalCard({ message, business_data });
   }
 
-  const answerText = sanitizeText(message
-    ? `抱歉，我暂时无法处理「${message}」，请稍后重试或换个问法。`
-    : '抱歉，我暂时无法处理您的请求，请稍后重试。');
+  // 未实现本地填槽：返回可识别标记，供 LLM 层放开；无 LLM 时再兜底抱歉
   return sanitizeModelResult({
     template_id: selectedTemplateId || 'answer',
-    answer_text: answerText,
-    answer: answerText,
-    data: {
-      title: '桂小养答复',
-      skill_name: '通用回答',
-      answer_text: answerText,
-      answer: answerText,
-      metrics: [
-        { label: '处理状态', value: '降级兜底' },
-        { label: '下一步', value: '请稍后重试或换个问法' },
-      ],
-    },
+    answer_text: '',
+    answer: '',
+    data: {},
     actions: [],
     followup_suggestions: [],
-    template_fit_notes: ['fallback_common_answer'],
+    template_fit_notes: ['no_local_fill'],
+    model_status: 'no_local_fill',
   });
 }
 
 function selectTemplateId({ message, template_id, default_template_id, template_library, intent_context = {} }) {
-  if (template_id && template_id !== 'answer') return template_id;
+  // 旧模板彻底废弃：残留 ID 一律映射到 sojourn_*
+  if (template_id && template_id !== 'answer') {
+    if (template_id === 'route_card' || template_id === 'sojourn_route') return 'route_svg';
+    if (template_id === 'travel_base_card') return 'sojourn_base';
+    return template_id;
+  }
   // template_id='answer' 时不再强制改写为 health_card，保留 answer 作为通用兜底
   if (template_id === 'answer' && template_library?.some(t => t.id === 'answer')) return 'answer';
   if (template_id === 'answer') return 'health_card';
@@ -141,7 +264,7 @@ function selectTemplateId({ message, template_id, default_template_id, template_
   if (policyTemplate) return policyTemplate;
 
   if (ids.includes('diet_card') && isMealPlanText(text)) return 'diet_card';
-  if (ids.includes('route_card') && isTravelRouteText(text)) return 'route_card';
+  if (ids.includes('sojourn_route') && isTravelRouteText(text)) return 'sojourn_route';
   if (ids.some((id) => id.startsWith('nearby_')) && isNearbyResourceText(text, intent_context)) return 'nearby_map_overview';
   if (ids.some((id) => id.startsWith('service_')) && isFindServiceText(text)) return pickFindServiceTemplate(text, ids);
   if (ids.some((id) => id.startsWith('dispatch_')) && isDispatchManageText(text)) return pickDispatchManageTemplate(text, ids);
@@ -220,80 +343,66 @@ function isHealthRiskText(text) {
 }
 
 function buildHealthWarningData({ message, business_data, selectedTemplateId, elderName: providedElderName, elderAge: providedElderAge }) {
-  const msg = String(message || '');
-  const has = (re) => re.test(msg);
+  // ★ 身份来自 business_data（登录用户），不再回退到 '未知老人'
+  const elderName = providedElderName
+    || (business_data && business_data.elder_name)
+    || (business_data && business_data.elderName)
+    || '';
+  const elderAge = providedElderAge
+    || (business_data && business_data.elder_age)
+    || (business_data && business_data.elderAge)
+    || '';
 
-  // 优先使用传入的老人姓名，其次从 business_data 获取，最后从消息中提取
-  const elderName = providedElderName 
-    || (business_data && business_data.elder_name) 
-    || (business_data && business_data.elderName) 
-    || extractElderName(message) 
-    || '未知老人';
-  const elderAge = providedElderAge 
-    || (business_data && business_data.elder_age) 
-    || (business_data && business_data.elderAge) 
-    || '未知';
-
-  let level = '关注';
-  let levelColor = '#FB923C';
-  let levelIcon = '⚠️';
-  if (has(/紧急|危急|危重|高危|重度/)) {
-    level = '紧急'; levelColor = '#EF4444'; levelIcon = '🚨';
-  } else if (has(/一般|正常|平稳|无异常|未见异常/)) {
-    level = '一般'; levelColor = '#22C55E'; levelIcon = '✅';
-  }
-
-  const signals = [];
-  if (has(/血压/)) signals.push({ type: '血压', value: '148/92 mmHg', status: 'abnormal', status_label: '异常', source: '本地设备' });
-  if (has(/血糖/)) signals.push({ type: '血糖', value: '6.8 mmol/L', status: 'normal', status_label: '正常', source: '本地设备' });
-  if (has(/心率/)) signals.push({ type: '心率', value: '92 次/分', status: 'normal', status_label: '正常', source: '本地设备' });
-  if (has(/跌倒|离床/)) signals.push({ type: '跌倒/离床', value: '夜间离床 2 次', status: 'abnormal', status_label: '异常', source: '本地设备' });
-  if (has(/血氧|呼吸/)) signals.push({ type: '血氧/呼吸', value: '血氧 93%', status: 'abnormal', status_label: '异常', source: '本地设备' });
-  if (signals.length === 0) signals.push({ type: '血压', value: '146/90 mmHg', status: 'abnormal', status_label: '异常', source: '本地设备' });
-
-  const rules = [];
-  if (has(/血压/)) rules.push({ ruleName: '血压持续偏高', riskLevel: level === '紧急' ? '紧急' : '关注', ruleLevelStatus: 'abnormal', condition: '收缩压≥140 且持续≥3天' });
-  if (has(/血糖/)) rules.push({ ruleName: '血糖波动', riskLevel: '关注', ruleLevelStatus: 'abnormal', condition: '空腹血糖波动≥2 mmol/L' });
-  if (has(/心率/)) rules.push({ ruleName: '心率异常', riskLevel: '关注', ruleLevelStatus: 'abnormal', condition: '静息心率>90 或<50' });
-  if (has(/跌倒|离床/)) rules.push({ ruleName: '跌倒高风险', riskLevel: level === '紧急' ? '紧急' : '关注', ruleLevelStatus: 'abnormal', condition: '近7天夜间离床≥2次或曾有跌倒' });
-  if (has(/血氧|呼吸/)) rules.push({ ruleName: '血氧/呼吸异常', riskLevel: level === '紧急' ? '紧急' : '关注', ruleLevelStatus: 'abnormal', condition: '静息血氧<94% 或呼吸异常' });
-
-  const recommendedActions = [
-    { action: '每日测量血压并记录', owner: '家属/护理员', priority: '高', priorityStatus: 'high' },
-    { action: '减少高盐饮食、保证作息规律', owner: '护理员', priority: '中', priorityStatus: 'mid' },
-  ];
-  if (has(/血糖/)) recommendedActions.push({ action: '规律监测血糖、控制主食总量', owner: '家属/护理员', priority: '高', priorityStatus: 'high' });
-  if (has(/跌倒|离床/)) recommendedActions.push({ action: '居家防跌倒改造、夜间陪护', owner: '护理员', priority: '高', priorityStatus: 'high' });
-
-  const nextSteps = '建议补充远程体检指标（云诊365）以提升判定置信度；如信号持续异常请转人工复核。';
-  const remoteGap = has(/云诊365|远程不可用|远程缺失|远程体检/) ? '远程体检指标（云诊365）暂不可用，判定基于本地设备信号，置信度有限。' : '';
-
+  // ★ 无远程数据时的空态展示（不生成 mock 信号值）
   const assessTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
-
   const isSignalCard = selectedTemplateId === 'health_risk_signal_card';
   const isRuleCard = selectedTemplateId === 'health_risk_rule_card';
 
   return {
     badge: isSignalCard ? '设备信号' : isRuleCard ? '风险规则' : '健康风险预警',
     elderName, elderAge, assessTime,
-    level, levelColor, levelIcon,
-    summary: `结合老人近 7 天设备信号与风险规则，当前风险等级为“${level}”，建议加强居家观察并补充远程指标。`,
-    signals_count: signals.length,
-    signals,
-    rules_count: rules.length,
-    rules,
-    actions_count: recommendedActions.length,
-    recommendedActions,
-    nextSteps,
-    remoteGap,
-    sourceLabel: isSignalCard ? '本地设备信号' : isRuleCard ? '健康风险预警规则库' : '本地设备信号 + 风险规则',
+    level: '暂无数据',
+    levelColor: '#9CA3AF',
+    levelIcon: '⚠',
+    summary: `当前未获取到${elderName || '该老人'}的远程设备信号与体检报告数据（云诊365/舌诊暂无记录）。建议确认设备已绑定且体检数据已上传后再进行评估。`,
+    signals_count: 0,
+    signals: [],
+    rules_count: 0,
+    rules: [],
+    actions_count: 0,
+    recommendedActions: [],
+    nextSteps: '请确认：1) 云诊365设备已绑定该老人；2) 舌诊报告已上传；3) 网络连接正常。绑定后点击"重新读取设备信号"。',
+    remoteGap: '云诊365/舌诊远程数据暂不可用。如已绑定设备，请稍后重试或联系管理员检查数据接口。',
+    sourceLabel: '暂无数据源（等待设备绑定）',
+    noRemoteData: true,
   };
 }
 
 async function fillHealthWarningCard({ message, business_data, selectedTemplateId = 'health_warning_card', yz365Service } = {}) {
-  // 尝试从云诊365获取真实数据
-  const elderName = business_data?.elder_name || business_data?.elderName || extractElderName(message) || '未知老人';
-  
+  // ★ 身份数据优先级：business_data（来自登录用户） → 消息提取 → 空
+  //   不再使用 '未知老人' 等默认值，避免展示无主数据
+  const extractedName = extractElderName(message) || '';
+  const elderName = business_data?.elder_name || business_data?.elderName || extractedName || '';
+  const elderAge = business_data?.elder_age || business_data?.elderAge || '';
+  const elderId = business_data?.elder_id || '';
+
+  // 同名确认：消息中点名且匹配到多份档案时，先出确认卡
+  if (!elderId && extractedName) {
+    const candidates = Array.isArray(business_data?.elder_candidates) && business_data.elder_candidates.length
+      ? business_data.elder_candidates
+      : findEldersByName(extractedName);
+    if (candidates.length > 1) {
+      return sanitizeModelResult(fillElderDuplicateConfirmCard({ name: extractedName, candidates }));
+    }
+    if (candidates.length === 1 && !business_data?.elder_id) {
+      business_data = {
+        ...business_data,
+        elder_id: candidates[0].elder_id,
+        elder_name: candidates[0].elder_name,
+        elder_age: candidates[0].age,
+      };
+    }
+  }
   let yzData = null;
   let hasYzData = false;
   let shezhenData = null;
@@ -301,7 +410,7 @@ async function fillHealthWarningCard({ message, business_data, selectedTemplateI
 
   try {
     const service = yz365Service || getYz365Service();
-    const yzResult = await service.getElderHealthCheck(elderName);
+    const yzResult = await service.getElderHealthCheck(elderName || elderId || undefined);
 
     if (yzResult.ok && yzResult.total > 0) {
       hasYzData = true;
@@ -326,6 +435,9 @@ async function fillHealthWarningCard({ message, business_data, selectedTemplateI
   // 命中任一远程数据源，合并构建卡片
   if ((hasYzData && yzData?.hasData) || (hasShezhenData && shezhenData?.hasData)) {
     const data = buildHealthWarningDataFromRemote({ yzData, shezhenData, selectedTemplateId, elderName });
+    // ★ 用 business_data 中的身份覆盖（确保使用登录用户身份，而非 API 返回的他人数据）
+    if (elderName) data.elderName = elderName;
+    if (elderAge) data.elderAge = elderAge;
     const sources = [
       hasYzData && yzData?.hasData ? '云诊365体检报告' : null,
       hasShezhenData && shezhenData?.hasData ? '云诊舌诊报告' : null,
@@ -339,21 +451,42 @@ async function fillHealthWarningCard({ message, business_data, selectedTemplateI
       actions: [
         { action_key: 'health_risk_warning.refresh_signals', label: '重新读取设备信号', payload: {} },
         { action_key: 'health_risk_warning.view_rule_detail', label: '查看规则命中详情', payload: {} },
+        { action_key: 'health_risk_warning.view_assessment', label: '综合风险评估', params: { template_id: 'risk_assessment_card' } },
+        { action_key: 'health_risk_warning.view_advice', label: '查看调理方案', params: { template_id: 'care_advice_card' } },
         { action_key: 'health_risk_warning.request_manual_review', label: '请求人工复核/转接', payload: {} },
         { action_key: 'health_risk_warning.fill_elder_info', label: '补充老人信息', payload: {} },
       ],
       followup_suggestions: [
         { label: '查看体检报告详情', user_prompt: '查看体检报告详情', action_key: 'health_risk_warning.view_report' },
-        { label: '查看风险规则命中', user_prompt: '查看风险规则命中', action_key: 'health_risk_warning.view_rule_detail' },
+        { label: '查看体质详情', user_prompt: '查看中医体质辨识', action_key: 'health_risk_warning.view_constitution' },
+        { label: '查看舌诊详情', user_prompt: '查看舌诊详情', action_key: 'health_risk_warning.view_tongue' },
+        { label: '查看调理方案', user_prompt: '查看个性化调理方案', action_key: 'health_risk_warning.view_advice' },
         { label: '转人工复核', user_prompt: '转人工复核', action_key: 'health_risk_warning.request_manual_review' },
       ],
       template_fit_notes: ['yz365_health_risk_warning', 'shezhen_health_risk_warning'],
     });
   }
 
-  // 没有云诊数据时，使用本地模拟数据
-  const data = buildHealthWarningData({ message, business_data, selectedTemplateId, elderName });
-  const answerText = `当前未获取到${elderName}的云诊体检报告数据，暂时无法进行健康风险评估，建议确认体检数据是否已上传至系统后再进行评估。`;
+  // ★ 无远程数据时：若有老人身份，展示"暂无设备信号"空态卡；若无身份，提示需登录
+  if (!elderName) {
+    const answerText = '请先选择或绑定老人档案，才能查看健康风险预警数据。';
+    return sanitizeModelResult({
+      template_id: selectedTemplateId,
+      answer_text: answerText,
+      answer: answerText,
+      data: { noElderProfile: true, message: '请先选择老人档案' },
+      actions: [
+        { action_key: 'health_risk_warning.fill_elder_info', label: '选择/绑定老人档案', payload: {} },
+      ],
+      followup_suggestions: [
+        { label: '如何绑定老人档案？', user_prompt: '如何绑定老人档案？' },
+      ],
+      template_fit_notes: ['no_elder_profile'],
+    });
+  }
+
+  const data = buildHealthWarningData({ message, business_data, selectedTemplateId, elderName, elderAge });
+  const answerText = `当前未获取到${elderName}的远程设备信号与体检报告数据（云诊365/舌诊暂无记录），暂时无法进行健康风险评估，建议确认设备已绑定且体检数据已上传后再进行评估。`;
   return sanitizeModelResult({
     template_id: selectedTemplateId,
     answer_text: answerText,
@@ -377,9 +510,18 @@ async function fillHealthWarningCard({ message, business_data, selectedTemplateI
 
 function extractElderName(message) {
   const text = String(message || '');
-  // 尝试提取老人姓名：周舟老人、张奶奶、李爷爷等
+  // 1) 常见称谓：周舟老人、张奶奶、李爷爷等
   const match = text.match(/([^\s,，。！？、]+?)(老人|奶奶|爷爷|伯伯|婆婆|公公|长辈)/);
-  return match ? match[1] : null;
+  if (match) return match[1];
+  // 2) 直接点名已知档案姓名（用于同名确认真实流）
+  const known = [...mockElders]
+    .map((e) => e.elder_name)
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+  for (const name of known) {
+    if (text.includes(name)) return name;
+  }
+  return null;
 }
 
 function buildHealthWarningDataFromYz365(yzData, selectedTemplateId) {
@@ -1092,6 +1234,209 @@ function isNearbyResourceText(text, intent_context = {}) {
 // 腾讯地图 JS API Key。留空或占位符时卡片自动降级为 SVG 方位图。
 const NEARBY_TENCENT_JS_KEY = 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
 
+// 广西旅居目的地坐标映射表（lat, lng）
+// 用于 travel_route 模板的地图渲染，将目的地名转换为坐标
+const TRAVEL_DESTINATION_COORDS = {
+  '巴马': { lat: 24.0487, lng: 107.2586, name: '巴马瑶族自治县' },
+  '巴马瑶族自治县': { lat: 24.0487, lng: 107.2586, name: '巴马瑶族自治县' },
+  '北海': { lat: 21.4817, lng: 109.1196, name: '北海市' },
+  '北海市': { lat: 21.4817, lng: 109.1196, name: '北海市' },
+  '涠洲岛': { lat: 21.0388, lng: 109.1419, name: '涠洲岛' },
+  '防城港': { lat: 21.6146, lng: 108.3545, name: '防城港市' },
+  '防城港市': { lat: 21.6146, lng: 108.3545, name: '防城港市' },
+  '港口区': { lat: 21.6146, lng: 108.3545, name: '防城港港口区' },
+  '东兴': { lat: 21.5479, lng: 107.9722, name: '东兴市' },
+  '桂林': { lat: 25.2734, lng: 110.2902, name: '桂林市' },
+  '桂林市': { lat: 25.2734, lng: 110.2902, name: '桂林市' },
+  '阳朔': { lat: 24.7784, lng: 110.4890, name: '阳朔县' },
+  '南宁': { lat: 22.8170, lng: 108.3669, name: '南宁市' },
+  '南宁市': { lat: 22.8170, lng: 108.3669, name: '南宁市' },
+  '柳州': { lat: 24.3264, lng: 109.4280, name: '柳州市' },
+  '百色': { lat: 23.9022, lng: 106.6182, name: '百色市' },
+  '百色市': { lat: 23.9022, lng: 106.6182, name: '百色市' },
+  '钦州': { lat: 21.9522, lng: 108.6286, name: '钦州市' },
+  '梧州': { lat: 23.4765, lng: 111.2791, name: '梧州市' },
+  '贺州': { lat: 24.4033, lng: 111.5527, name: '贺州市' },
+  '玉林': { lat: 22.6360, lng: 110.1540, name: '玉林市' },
+  '贵港': { lat: 23.1114, lng: 109.5982, name: '贵港市' },
+  '河池': { lat: 24.6965, lng: 108.0853, name: '河池市' },
+  '来宾': { lat: 23.7333, lng: 109.2217, name: '来宾市' },
+  '崇左': { lat: 22.4041, lng: 107.3540, name: '崇左市' },
+  '嘉路': { lat: 21.5279, lng: 108.1668, name: '嘉路康养中心' },
+  '嘉路康养中心': { lat: 21.5279, lng: 108.1668, name: '嘉路康养中心' },
+  '七洞乡': { lat: 23.6817, lng: 109.0512, name: '来宾市兴宾区七洞乡' },
+};
+
+// 默认旅居坐标（防城港嘉路康养中心，作为兜底）
+const TRAVEL_DEFAULT_COORD = { lat: 21.5279, lng: 108.1668, name: '嘉路康养中心' };
+
+/**
+ * 从目的地名提取坐标。支持模糊匹配（如"广西巴马"→"巴马"）。
+ * @param {string} destination - 目的地名
+ * @returns {{lat:number,lng:number,name:string}} 坐标对象
+ */
+function getTravelDestinationCoord(destination) {
+  if (!destination) return TRAVEL_DEFAULT_COORD;
+  const dest = String(destination).trim();
+  // 精确匹配
+  if (TRAVEL_DESTINATION_COORDS[dest]) return TRAVEL_DESTINATION_COORDS[dest];
+  // 模糊匹配：目的地包含映射表的 key
+  for (const key of Object.keys(TRAVEL_DESTINATION_COORDS)) {
+    if (dest.includes(key)) return TRAVEL_DESTINATION_COORDS[key];
+  }
+  return { ...TRAVEL_DEFAULT_COORD, name: dest };
+}
+
+/**
+ * 为 travel_route 模板构建地图数据字段
+ * @param {string} destination - 目的地名
+ * @param {Array} markers - 额外标记点 [{name,lat,lng,address,cat}]
+ * @returns {object} map_key, centerLat, centerLng, centerName, center_json, static_map_url, markers_json, map_markers
+ */
+function buildTravelMapData(destination, markers = []) {
+  const center = getTravelDestinationCoord(destination);
+  const validMarkers = (markers || []).filter((m) => Number.isFinite(Number(m.lat)) && Number.isFinite(Number(m.lng)));
+  return {
+    map_key: process.env.TENCENT_MAP_JS_KEY || NEARBY_TENCENT_JS_KEY,
+    centerLat: center.lat,
+    centerLng: center.lng,
+    centerName: center.name,
+    center_json: JSON.stringify(center),
+    static_map_url: buildStaticMapUrl(center, validMarkers.slice(0, 30)),
+    markers_json: JSON.stringify(validMarkers),
+    map_markers: validMarkers,
+  };
+}
+
+/**
+ * 生成旅居路线走线途经点坐标（用于 TMap.Polyline 画线）。
+ * 基于 destination 中心坐标，按天数生成途经点：
+ * - D1: 抵达点（中心坐标附近的交通枢纽）
+ * - D2..D(n-1): 周边康养景点/基地（中心坐标周围分散）
+ * - D(n): 返程点（与抵达点同坐标或附近）
+ * @param {string} destination - 目的地
+ * @param {number} totalDays - 总天数
+ * @returns {Array<{name, lat, lng, day, type, plan}>} 途经点数组
+ */
+const ROUTE_WAYPOINT_TEMPLATES = {
+  // 每个目的地的典型走线途经点（按天序），坐标为真实经纬度
+  '广西巴马': [
+    { name: '巴马长寿村', lat: 24.0487, lng: 107.2586, type: 'arrival' },
+    { name: '百魔洞景区', lat: 24.0652, lng: 107.2391, type: 'spot' },
+    { name: '水晶宫景区', lat: 24.0321, lng: 107.2845, type: 'spot' },
+    { name: '盘阳河康养带', lat: 24.0412, lng: 107.2701, type: 'wellness' },
+    { name: '巴马汽车总站', lat: 24.0523, lng: 107.2512, type: 'departure' },
+  ],
+  '广西北海': [
+    { name: '北海火车站', lat: 21.4721, lng: 109.1196, type: 'arrival' },
+    { name: '银滩旅游区', lat: 21.4417, lng: 109.1286, type: 'spot' },
+    { name: '老街历史文化区', lat: 21.4856, lng: 109.1132, type: 'spot' },
+    { name: '涠洲岛码头', lat: 21.4632, lng: 109.1089, type: 'spot' },
+    { name: '北海福成机场', lat: 21.5417, lng: 109.2632, type: 'departure' },
+  ],
+  '广西七洞乡': [
+    { name: '七洞乡政府', lat: 23.6817, lng: 109.0512, type: 'arrival' },
+    { name: '七洞乡康养基地', lat: 23.6852, lng: 109.0491, type: 'wellness' },
+    { name: '七洞乡生态园', lat: 23.6781, lng: 109.0568, type: 'spot' },
+    { name: '来宾火车站', lat: 23.7256, lng: 109.0612, type: 'departure' },
+  ],
+};
+
+function buildRouteWaypoints(destination, totalDays = 3) {
+  const center = getTravelDestinationCoord(destination);
+  const destKey = Object.keys(ROUTE_WAYPOINT_TEMPLATES).find((k) => destination.includes(k.replace('广西', '')));
+  const templates = destKey ? ROUTE_WAYPOINT_TEMPLATES[destKey] : null;
+  const days = Math.max(2, Math.min(7, parseInt(totalDays) || 3));
+
+  if (templates && templates.length >= days) {
+    // 用真实途经点模板，按天数截取
+    const waypoints = templates.slice(0, days).map((wp, i) => ({
+      ...wp,
+      day: `D${i + 1}`,
+      plan: i === 0 ? `抵达${wp.name}，办理入住` : i === days - 1 ? `从${wp.name}返程` : `${wp.name}康养体验`,
+    }));
+    return waypoints;
+  }
+
+  // 无模板时，基于中心坐标生成环形走线（每天一个点，绕中心分布）
+  const waypoints = [];
+  const radius = 0.04; // 约 4 公里
+  for (let i = 0; i < days; i++) {
+    const angle = (i / days) * Math.PI * 2 - Math.PI / 2; // 从正北开始顺时针
+    const offset = i === 0 || i === days - 1 ? 0 : radius; // 起止点在中心，中间点分散
+    const lat = center.lat + Math.cos(angle) * offset;
+    const lng = center.lng + Math.sin(angle) * offset;
+    const isArrival = i === 0;
+    const isDeparture = i === days - 1;
+    waypoints.push({
+      name: isArrival ? `${center.name}抵达点` : isDeparture ? `${center.name}返程点` : `${center.name}Day${i + 1}体验点`,
+      lat: Number(lat.toFixed(6)),
+      lng: Number(lng.toFixed(6)),
+      day: `D${i + 1}`,
+      type: isArrival ? 'arrival' : isDeparture ? 'departure' : 'spot',
+      plan: isArrival ? `抵达${center.name}，办理入住` : isDeparture ? `从${center.name}返程` : `${center.name}康养体验`,
+    });
+  }
+  return waypoints;
+}
+
+/**
+ * 构建走线版地图数据（含 waypoints + polyline 路径）。
+ * 用于 sojourn_route 模板的 TMap.Polyline 走线渲染。
+ * @param {string} destination - 目的地
+ * @param {number} totalDays - 总天数
+ * @returns {Object} 含 waypoints_json, polyline_path, fit_bounds 等字段
+ */
+function buildRouteMapData(destination, totalDays = 3) {
+  const center = getTravelDestinationCoord(destination);
+  const waypoints = buildRouteWaypoints(destination, totalDays);
+  const validWaypoints = waypoints.filter((wp) => Number.isFinite(wp.lat) && Number.isFinite(wp.lng));
+  // polyline 路径：按天序连接的坐标数组
+  const polylinePath = validWaypoints.map((wp) => ({ lat: wp.lat, lng: wp.lng }));
+  // 自动适配缩放边界：[minLat, minLng, maxLat, maxLng]
+  const lats = validWaypoints.map((wp) => wp.lat);
+  const lngs = validWaypoints.map((wp) => wp.lng);
+  const fitBounds = lats.length >= 2 ? {
+    minLat: Math.min(...lats), minLng: Math.min(...lngs),
+    maxLat: Math.max(...lats), maxLng: Math.max(...lngs),
+  } : null;
+
+  return {
+    map_key: process.env.TENCENT_MAP_JS_KEY || NEARBY_TENCENT_JS_KEY,
+    centerLat: center.lat,
+    centerLng: center.lng,
+    centerName: center.name,
+    center_json: JSON.stringify(center),
+    static_map_url: buildStaticMapUrl(center, validWaypoints.slice(0, 30)),
+    markers_json: JSON.stringify(validWaypoints),
+    map_markers: validWaypoints,
+    // 走线专用字段
+    waypoints_json: JSON.stringify(validWaypoints),
+    waypoints: validWaypoints,
+    polyline_path: polylinePath,
+    polyline_path_json: JSON.stringify(polylinePath),
+    fit_bounds: fitBounds,
+    fit_bounds_json: fitBounds ? JSON.stringify(fitBounds) : 'null',
+    // 腾讯路径规划 WebService API（用于获取真实道路走线，可选）
+    route_planning_url: buildRoutePlanningUrl(validWaypoints),
+  };
+}
+
+/**
+ * 构建腾讯路径规划 WebService API URL（驾车路线）。
+ * 用于获取真实道路走线，而非直线连接。
+ * 注意：此 URL 在服务端调用，不在前端直接 fetch（涉及 SK 签名）。
+ * @param {Array} waypoints - 途经点数组
+ * @returns {string} 内部 API 路径（前端通过代理调用）
+ */
+function buildRoutePlanningUrl(waypoints = []) {
+  if (waypoints.length < 2) return '';
+  const from = `${waypoints[0].lat},${waypoints[0].lng}`;
+  const to = `${waypoints[waypoints.length - 1].lat},${waypoints[waypoints.length - 1].lng}`;
+  const via = waypoints.slice(1, -1).map((wp) => `${wp.lat},${wp.lng}`).join(';');
+  return `/api/map/route-planning?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}${via ? `&via=${encodeURIComponent(via)}` : ''}&policy=1`;
+}
+
 /**
  * 构建腾讯静态图 URL（降级中间层）
  * 用于 JS API 加载失败时，提供比 SVG 更真实的地图截图。
@@ -1490,6 +1835,96 @@ function pickDispatchManageTemplate(message, ids) {
 }
 
 /**
+ * service_card / service_intent / service_thinking 过渡态/辅助卡片填槽
+ * 这三个模板原先走 no_local_fill 兜底（显示纯文本），现补充本地填槽，
+ * 使其在无 LLM 层放开数据时也能用默认/上下文数据正常渲染卡片。
+ */
+function fillServiceTransitionalCard({ message = '', business_data = {}, intent_context = {}, selectedTemplateId } = {}) {
+  if (selectedTemplateId === 'service_thinking') {
+    return sanitizeModelResult({
+      template_id: 'service_thinking',
+      answer_text: '正在为您分析需求，请稍候...',
+      answer: '正在为您分析需求，请稍候...',
+      data: {
+        title: '正在为您分析需求...',
+        steps: [
+          { label: '意图识别', detail: '理解您的服务需求类型' },
+          { label: '实体抽取', detail: '提取时间、地点、服务类型等关键信息' },
+          { label: '知识库匹配', detail: '匹配最优服务方案和机构资源' },
+        ],
+      },
+      actions: [],
+      followup_suggestions: [],
+      template_fit_notes: ['service_thinking_default'],
+    });
+  }
+
+  if (selectedTemplateId === 'service_intent') {
+    const intent = intent_context?.intent || business_data?.intent || '养老服务';
+    const confidence = intent_context?.confidence ?? business_data?.confidence ?? 0.92;
+    const entities = Array.isArray(intent_context?.entities) && intent_context.entities.length
+      ? intent_context.entities
+      : (Array.isArray(business_data?.entities) ? business_data.entities : []);
+    return sanitizeModelResult({
+      template_id: 'service_intent',
+      answer_text: `已识别您的需求：${intent}`,
+      answer: `已识别您的需求：${intent}`,
+      data: {
+        badge_type: intent_context?.badge_type || 'service',
+        badge_label: intent_context?.badge_label || intent,
+        confidence: String(confidence),
+        entities,
+        level: intent_context?.level || business_data?.level || 'normal',
+      },
+      actions: [],
+      followup_suggestions: [
+        { label: '确认理解，继续' },
+        { label: '重新描述需求' },
+      ],
+      template_fit_notes: ['service_intent_from_context'],
+    });
+  }
+
+  // service_card：从 business_data 提取单个服务信息
+  const svc = business_data?.service
+    || (Array.isArray(business_data?.services) && business_data.services[0])
+    || {};
+  const iconMap = [
+    { kw: ['清洁', '保洁'], icon: '🧹' },
+    { kw: ['餐', '饭', '食', '助餐'], icon: '🍽️' },
+    { kw: ['医', '诊', '药', '护', '康复'], icon: '⚕️' },
+    { kw: ['浴', '洗', '助浴'], icon: '🚿' },
+    { kw: ['行', '车', '送', '陪诊'], icon: '🚗' },
+    { kw: ['陪', '伴'], icon: '👥' },
+  ];
+  const svcText = `${svc.name || ''} ${svc.category || ''}`;
+  const icon = svc.icon || (iconMap.find((m) => m.kw.some((k) => svcText.includes(k)))?.icon) || '🏠';
+  return sanitizeModelResult({
+    template_id: 'service_card',
+    answer_text: `为您推荐：${svc.name || business_data?.name || '养老服务'}`,
+    answer: `为您推荐：${svc.name || business_data?.name || '养老服务'}`,
+    data: {
+      icon,
+      name: svc.name || business_data?.name || '推荐服务',
+      summary: svc.summary || svc.intro || '',
+      timeRange: svc.timeRange || svc.time_range || '',
+      provider_name: svc.provider_name || svc.org_name || business_data?.provider_name || '',
+      provider_score: svc.provider_score || svc.score || '',
+      provider_avail: svc.provider_avail || svc.availability || '',
+      price: svc.price || business_data?.price || '',
+      unit: svc.unit || business_data?.unit || '次',
+    },
+    actions: [],
+    followup_suggestions: [
+      { label: '一键预定' },
+      { label: '查看详情' },
+      { label: '换个服务' },
+    ],
+    template_fit_notes: ['service_card_from_business_data'],
+  });
+}
+
+/**
  * SOS 紧急求助卡片
  * 检测到紧急意图时渲染，提供 120 拨号、通知家属、标记安全 三个动作。
  */
@@ -1530,6 +1965,8 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
   const orders = Array.isArray(bd.orders) ? bd.orders : [];
   const tpl = selectedTemplateId || 'service_recommend';
   const msg = String(message || '');
+  // ★ 老人身份来自 business_data（登录用户），不硬编码
+  const elderName = bd.elder_name || bd.elderName || '';
 
   if (tpl === 'service_catalog') {
     const byCat = {};
@@ -1613,7 +2050,7 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
       answer_text: answerText, answer: answerText,
       data: {
         orderId: 'so_new',
-        elderName: '黄秀英',
+        elderName: elderName,
         serviceName: svc.name || '上门护理',
         orgName: org.org_name || '',
         price: svc.price_from || 0,
@@ -1682,11 +2119,26 @@ function fillFindServiceCard({ message, business_data, selectedTemplateId }) {
     });
   }
 
+  const org = orgs[0] || {};
+  const _serviceIconMap = { '居家照护': '🏠', '居家护理': '🏠', '康复理疗': '🏥', '助餐': '🍽️', '陪护': '🛡️', '清洁': '🧹', '护理': '🩺' };
+  const inferServiceIcon = (cat) => {
+    if (!cat) return '📋';
+    if (_serviceIconMap[cat]) return _serviceIconMap[cat];
+    if (cat.includes('餐')) return '🍽️';
+    if (cat.includes('康复') || cat.includes('医') || cat.includes('理疗')) return '🏥';
+    if (cat.includes('照护') || cat.includes('居家')) return '🏠';
+    return '📋';
+  };
   const top = catalog.slice(0, 4).map((s) => ({
     id: s.service_id, name: s.name, category: s.category,
     price: s.price_from, unit: s.unit, tags: (s.scene_tags || []).join('/'), desc: s.description,
+    icon: inferServiceIcon(s.category),
+    summary: s.description || '',
+    timeRange: s.time_range || '全天',
+    provider_name: org.org_name || s.org_name || '',
+    provider_score: String(org.rating || '4.5'),
+    provider_avail: '可预约',
   }));
-  const org = orgs[0] || {};
   const w = workers.find((x) => x.available) || workers[0] || {};
   const answerText = `已为您匹配 ${top.length} 项养老服务，并推荐机构「${org.org_name || ''}」与人员「${w.name || ''}」。`;
   return sanitizeModelResult({
@@ -1828,63 +2280,261 @@ function fillMealOverviewCard({ message }) {
   });
 }
 
-function fillTravelBaseCard({ message, business_data }) {
-  const bases = ((business_data?.jtd?.products) || []).slice(0, 3).map((p) => ({
-    name: p.name || p.title || '康养基地',
-    location: p.destination || p.city || '防城港',
-    price: p.price || '面议',
-    features: p.features || ['慢病康复', '海滨气候'],
-  }));
+function fillSojournBase({ message, business_data }) {
+  const jtd = business_data?.jtd || {};
+  const rawProducts = (Array.isArray(jtd.products) ? jtd.products : []).slice(0, 3);
+  const bases = rawProducts.map((p) => {
+    const location = p.destination || p.city || '防城港';
+    const featureList = Array.isArray(p.tags) && p.tags.length ? p.tags : (p.features || ['慢病康复', '海滨气候']);
+    const facts = [];
+    for (let i = 0; i < featureList.length; i += 2) {
+      facts.push({ label: featureList[i] || '', value: featureList[i + 1] || '' });
+    }
+    return {
+      name: p.product_name || p.name || p.title || '康养基地',
+      location,
+      address: location,
+      price: p.price_label || (p.price_amount ? `约${p.price_amount}元/人` : '面议'),
+      features: featureList,
+      facts: facts.length > 0 ? facts : undefined,
+      product_id: p.product_id || '',
+      stock: p.stock ?? null,
+    };
+  });
+  const finalBases = bases.length ? bases : [{ name: '防城港滨海康养中心', location: '防城港', address: '防城港', price: '3000元/月起', features: ['慢病康复', '海滨气候'], facts: [{ label: '慢病康复', value: '海滨气候' }], product_id: '', stock: null }];
+  const primaryDest = finalBases[0]?.location || '防城港';
+  // 统一用 map-kit 构建基地中心地图数据（base 模式）
+  const mapData = buildBaseMapDataFromKit({ destination: primaryDest, bases: finalBases });
+  const sourceStatus = jtd.source_status || (jtd.ok ? 'real_data' : 'fallback');
+  const answerText = sourceStatus === 'real_data'
+    ? `已为您推荐 ${finalBases.length} 个康养基地。`
+    : '为您推荐以下康养基地';
   return sanitizeModelResult({
-    template_id: 'travel_base_card',
-    answer_text: '为您推荐以下康养基地',
-    data: { title: '康养基地推荐', bases: bases.length ? bases : [{ name: '防城港滨海康养中心', location: '防城港', price: '3000元/月起', features: ['慢病康复', '海滨气候'] }] },
+    template_id: 'sojourn_base',
+    answer_text: answerText,
+    data: {
+      title: '康养基地推荐',
+      bases: finalBases,
+      jtdStatus: sourceStatus,
+      ...mapData,
+    },
+    actions: [],
+    followup_suggestions: [],
+    template_fit_notes: [`jtd_${sourceStatus}`],
+  });
+}
+
+// 兼容别名：fillTravelBaseCard → fillSojournBase（保持向后兼容）
+const fillTravelBaseCard = fillSojournBase;
+
+function fillTravelSpotCard({ message, business_data }) {
+  const route = Array.isArray(business_data?.routes) ? business_data.routes[0] : null;
+  const destination = sanitizeText(
+    business_data?.primary_city
+    || route?.destination
+    || inferDestination(message)
+    || '防城港',
+  );
+  // 默认适老化景点数据（可被 business_data.spots 覆盖）
+  const defaultSpots = [
+    {
+      name: '西湾城市沙滩 & 仙人山公园',
+      tags: [{ cls: 'free', label: '免费' }, { cls: 'trip', label: '半日短途' }],
+      desc: '城市海景 + 山体步道，适合晨练和傍晚散步',
+      play: '仙人山公园平缓步道晨练，观海平台休息',
+      meta: '步行/打车10分钟 · 半日（上午或傍晚）',
+    },
+    {
+      name: '白浪滩',
+      tags: [{ cls: 'free', label: '免费' }, { cls: 'trip', label: '全天长途' }],
+      desc: '防城港知名海滩，沙质细腻，浪小水浅',
+      play: '沙滩躺椅休息，观海听浪，平缓栈道漫步',
+      meta: '包车/打车约40分钟 · 全天',
+    },
+    {
+      name: '十万大山布透温泉',
+      tags: [{ cls: 'fee', label: '收费' }, { cls: 'trip', label: '全天长途' }],
+      desc: '天然偏硅酸温泉，理疗养生价值高',
+      play: '温泉泡浴理疗，缓解关节酸痛，室内外泡池可选',
+      meta: '包车约1小时 · 全天',
+    },
+  ];
+  const spots = Array.isArray(business_data?.spots) && business_data.spots.length
+    ? business_data.spots.slice(0, 6)
+    : defaultSpots;
+  // 景点精确坐标缺失时，使用目的地中心坐标作为近似位置（保证地图可显示）
+  const spotMarkers = spots.map((s) => {
+    const coord = s.lat && s.lng ? { lat: Number(s.lat), lng: Number(s.lng) } : getTravelDestinationCoord(destination);
+    return { name: s.name, lat: coord.lat, lng: coord.lng, address: s.meta || destination, cat: 'spot' };
+  });
+  const mapData = buildTravelMapData(destination, spotMarkers);
+  return sanitizeModelResult({
+    template_id: 'travel_spot_card',
+    answer_text: `为您精选${spots.length}个${destination}适老化景点`,
+    data: {
+      title: '适老化景点推荐',
+      intro: `为您精选${spots.length}个${destination}适老化景点，已自动过滤高强度攀爬路线：`,
+      spots,
+      note: '景点开放时间和票价以现场为准；建议避开正午暴晒，保留充足休息时间。',
+      ...mapData,
+    },
     actions: [], followup_suggestions: [],
   });
 }
 
-function fillRouteCardLegacy({ message, business_data }) {
+function fillTravelMedicalCard({ message, business_data }) {
+  const route = Array.isArray(business_data?.routes) ? business_data.routes[0] : null;
+  const destination = sanitizeText(
+    business_data?.primary_city
+    || route?.destination
+    || inferDestination(message)
+    || '防城港',
+  );
+  const defaultGroups = [
+    {
+      icon: '🏥',
+      name: '就近医疗',
+      items: [{ text: '首选基地距市第一人民医院仅 800m，步行可达' }],
+    },
+    {
+      icon: '💊',
+      name: '便民购药',
+      items: [{ text: '基地楼下 200m 有仁爱大药房，常见药品齐全' }],
+    },
+    {
+      icon: '🚗',
+      name: '出行协助',
+      items: [{ text: '基地管家可协助叫车、预约诊所' }],
+    },
+  ];
+  const groups = Array.isArray(business_data?.medical_groups) && business_data.medical_groups.length
+    ? business_data.medical_groups
+    : defaultGroups;
+  // 医疗机构精确坐标缺失时，使用目的地中心坐标作为近似位置
+  const medicalMarkers = groups.map((g) => {
+    const coord = g.lat && g.lng ? { lat: Number(g.lat), lng: Number(g.lng) } : getTravelDestinationCoord(destination);
+    return { name: g.name, lat: coord.lat, lng: coord.lng, address: destination, cat: 'medical' };
+  });
+  const mapData = buildTravelMapData(destination, medicalMarkers);
+  return sanitizeModelResult({
+    template_id: 'travel_medical_card',
+    answer_text: `${destination}医养配套方案`,
+    data: {
+      title: '医养配套方案',
+      intro: `为您推荐的${destination}基地均具备基础康养配套：`,
+      groups,
+      tip: '💡 常规酒店无驻场医护，建议选择近市区医院的康养基地。建议自备基础检测设备。',
+      note: '⚠️ 以上仅为就医、购药、体征检测便民渠道建议，不构成专业医疗诊断。',
+      ...mapData,
+    },
+    actions: [], followup_suggestions: [],
+  });
+}
+
+function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
   const routes = Array.isArray(business_data?.routes) ? business_data.routes : [];
+  const forcedRouteId = String(
+    business_data?.route_id || business_data?.publish_match?.route_id || ''
+  ).trim();
+
+  // 第二刀：优先按 published route_id 取包，避免 routes[0]（常为巴马）盖住真实命中
+  let matchedRouteId = forcedRouteId;
+  let svgPkg = forcedRouteId ? findPrebuiltPackage(forcedRouteId, 'standard') : null;
+  if (!svgPkg?.svg) {
+    const hits = matchPublishedPackages(message);
+    const top = hits[0];
+    const second = hits[1];
+    if (top && (!second || top.score > second.score)) {
+      matchedRouteId = top.route_id;
+      svgPkg = findPrebuiltPackage(top.route_id, 'standard');
+    }
+  }
+
+  const inferredDest = inferDestination(message);
   const route = selectTravelRoute(message, routes);
-  const destination = sanitizeText(route?.destination || inferDestination(message));
+  const pkgDestRaw = svgPkg?.routeData?.destination
+    || (Array.isArray(business_data?.publish_match?.destination)
+      ? business_data.publish_match.destination[0]
+      : null)
+    || (Array.isArray(business_data?.destination) ? business_data.destination[0] : business_data?.destination);
+  const destination = sanitizeText(
+    pkgDestRaw || inferredDest || route?.destination || '广西旅居'
+  );
+
+  if (!svgPkg?.svg) {
+    svgPkg = findPrebuiltPackageByDestination(destination, 'standard') || svgPkg;
+  }
+
   const budgetLevel = sanitizeText(route?.budget_level || inferBudget(message));
   const season = sanitizeText(route?.season || inferSeason(message));
   const bookingStatus = sanitizeText(route?.booking_status || '可咨询余量');
   const healthTags = sanitizeText(route?.health_tags || '慢病友好,低强度,医疗可达');
-  const answerText = `已为您推荐${destination}康养旅居路线，按${budgetLevel}和老人低强度出行节奏规划。`;
+
+  // ★ 产品模板库分类：优先使用编排器推断的模板ID，其次按关键词匹配
+  const productMatch = selectProductTemplate(message, destination);
+  const routeType = ['route_wellness', 'route_coastal', 'route_culture', 'route_ecology'].includes(selectedTemplateId)
+    ? selectedTemplateId
+    : (productMatch?.id || 'route_wellness');
+  const productSample = productMatch?.sample || {};
+
+  let staticSvg = '';
+  if (svgPkg && svgPkg.svg) {
+    staticSvg = svgPkg.svg;
+  } else {
+    staticSvg = `<div style="padding:20px;text-align:center;color:#999;">地图加载中...</div>`;
+  }
+
+  // 优先用预制作资源包数据，其次用产品模板示例数据兜底
+  const resolvedRouteId = matchedRouteId || svgPkg?.routeData?.route_id || '';
+  const routeTitle = svgPkg?.routeData?.route_name
+    || business_data?.route_title
+    || productSample.routeTitle
+    || `${destination}康养旅居三日路线`;
+  const highlights = (svgPkg?.routeData?.highlights || productSample.highlights || buildTravelHighlights(healthTags, destination));
+  const itinerary = (svgPkg?.routeData?.itinerary || productSample.itinerary || buildItinerary(destination));
+  const daysLabel = svgPkg?.routeData?.days
+    ? `${svgPkg.routeData.days}天`
+    : (/四天|4天|five/i.test(message) ? '4天3晚' : '3天2晚');
+  const answerText = `已为您推荐${routeTitle}，按${budgetLevel}和老人低强度出行节奏规划。`;
 
   return sanitizeModelResult({
-    template_id: 'route_card',
+    template_id: routeType || 'route_svg',
     answer_text: answerText,
     answer: answerText,
     data: {
-      routeTitle: `${destination}康养旅居三日路线`,
+      route_id: resolvedRouteId,
+      routeTitle,
+      routeType,
       destination,
       season,
       budgetLevel,
-      days: /四天|4天|four/i.test(message) ? '4天3晚' : '3天2晚',
-      suitable: inferTravelSuitable(message),
+      days: daysLabel,
+      suitable: sanitizeText(svgPkg?.routeData?.suitable_for || inferTravelSuitable(message)),
       bookingStatus,
-      summary: buildRouteSummary(destination, budgetLevel),
-      highlights: buildTravelHighlights(healthTags, destination),
-      itinerary: buildItinerary(destination),
+      summary: sanitizeText(svgPkg?.routeData?.summary || buildRouteSummary(destination, budgetLevel)),
+      highlights,
+      itinerary,
       healthNotice: buildTravelHealthNotice(message),
+      static_svg: staticSvg,
+      publish_match: business_data?.publish_match || null,
     },
     actions: [
-      { action_key: 'travel_route.compare_destinations', label: '对比目的地', params: { destination } },
-      { action_key: 'travel_route.check_availability', label: '检查可订状态', params: { destination } },
-      { action_key: 'travel_route.calculate_budget', label: '测算旅居预算', params: { budget_level: budgetLevel } },
+      { action_key: 'travel_route.compare_destinations', label: '对比目的地', skill_key: 'travel_route', params: { destination } },
+      { action_key: 'travel_route.check_availability', label: '检查可订状态', skill_key: 'travel_route', params: { destination } },
+      { action_key: 'travel_route.calculate_budget', label: '测算旅居预算', skill_key: 'travel_route', params: { budget_level: budgetLevel } },
     ],
     followup_suggestions: [
       {
         label: '换成北海路线',
         user_prompt: '请把这条旅居路线调整为广西北海方向',
         action_key: 'travel_route.replan',
+        skill_key: 'travel_route',
       },
       {
         label: '查天气风险',
         user_prompt: '请检查这条旅居路线近期天气风险',
         action_key: 'travel_route.check_weather_risk',
+        skill_key: 'travel_route',
         params: { destination, city: destination },
       },
     ],
@@ -1894,13 +2544,26 @@ function fillRouteCardLegacy({ message, business_data }) {
 
 function selectTravelRoute(message, routes) {
   const text = String(message || '');
-  if (/北海|海边|海滨/.test(text)) return routes.find((route) => /北海/.test(route.destination)) || routes[1] || routes[0];
-  if (/巴马|长寿/.test(text)) return routes.find((route) => /巴马/.test(route.destination)) || routes[0];
+  if (/防城港|东兴|京族|芒街|白浪滩|十万大山|嘉路/.test(text)) {
+    return routes.find((route) => /防城港|东兴/.test(String(route.destination || ''))) || null;
+  }
+  if (/北海|海边|海滨|银滩|涠洲/.test(text)) {
+    return routes.find((route) => /北海/.test(String(route.destination || ''))) || null;
+  }
+  if (/巴马|长寿|百魔洞/.test(text)) {
+    return routes.find((route) => /巴马/.test(String(route.destination || ''))) || null;
+  }
+  if (/桂林|阳朔|荔浦/.test(text)) {
+    return routes.find((route) => /桂林/.test(String(route.destination || ''))) || null;
+  }
+  // 话语已能推断目的地时，不要静默落到 routes[0]（常见默认巴马）
+  if (inferDestination(message)) return null;
   return routes[0] || null;
 }
 
 function inferDestination(message) {
   // 优先匹配明确的城市名
+  if (/防城港|东兴|嘉路|白浪滩|簕山|京族|十万大山|上思/.test(message)) return '广西防城港';
   if (/北海/.test(message)) return '广西北海';
   if (/桂林/.test(message)) return '广西桂林';
   if (/南宁/.test(message)) return '广西南宁';
@@ -1939,7 +2602,7 @@ function buildRouteSummary(destination, budgetLevel) {
 
 function buildRouteCardSummary({ product, productName, destination, jtd, priceLabel, budgetLevel }) {
   if (!product) return buildRouteSummary(destination, budgetLevel);
-  const src = jtd.source_status === 'real_data' ? '金跳动真实接口' : '厂家接口联调 mock 数据';
+  const src = jtd.source_status === 'real_data' ? '已核验数据' : '演示数据';
   const priceText = priceLabel ? `参考价${priceLabel}；` : '';
   return `${productName || destination}；${priceText}来源=${src}；产品ID=${product.product_id || '待确认'}。`;
 }
@@ -2029,32 +2692,58 @@ function buildTravelHealthNotice(message) {
   return '建议出行前确认慢病状态稳定，携带常用药，优先选择医疗可达、活动强度低的路线。';
 }
 
-function fillRouteCard({ message, business_data }) {
+async function fillRouteCard({ message, business_data }) {
   const routes = Array.isArray(business_data?.routes) ? business_data.routes : [];
   const jtd = business_data?.jtd || {};
   const product = jtd.selected_product || (Array.isArray(jtd.products) ? jtd.products[0] : null);
+
+  // 旅居基地分流：product_domain=sojourn_base 时转交 fillSojournBase，使用 sojourn_base 模板
+  const productDomain = jtd.product_domain || product?.product_domain || '';
+  if (productDomain === 'sojourn_base') {
+    return fillSojournBase({ message, business_data });
+  }
 
   if (jtd.required === true && !product && jtd.source_status !== 'mock_vendor_data') {
     return fillRouteRemoteGap({ message, jtd, routes });
   }
 
   const route = selectTravelRoute(message, routes);
-  const destination = sanitizeText(business_data?.primary_city || product?.destination || product?.city || route?.destination || inferDestination(message));
+  // destination 优先级：产品 destination > 产品 city > 业务上下文 primary_city > 路线 > 从消息推断 > 默认推荐（广西巴马）
+  const destination = sanitizeText(
+    product?.destination
+    || product?.city
+    || business_data?.primary_city
+    || route?.destination
+    || inferDestination(message)
+    || '广西巴马'
+  );
   const budgetLevel = sanitizeText(route?.budget_level || inferBudget(message));
   const priceLabel = sanitizeText(product?.price_label || '');
   const season = sanitizeText(route?.season || inferSeason(message));
+
+  // ★ 产品模板库分类：根据消息+目的地匹配产品类型（康养/滨海/文化/生态）
+  const productMatch = selectProductTemplate(`${routeTitle} ${message}`, destination);
+  const routeType = productMatch?.id || 'route_wellness';
   const bookingStatus = sanitizeText(buildJtdBookingStatus(jtd, product, route));
   const healthTags = sanitizeText((Array.isArray(product?.tags) && product.tags.length ? product.tags.join(',') : '') || route?.health_tags || '慢病友好,低强度,医疗可达');
   const productName = sanitizeText(product?.product_name || '');
+  // routeTitle 智能拼接：产品名已含"康养/旅居/路线/线路/行程"关键词时直接用，避免重复
+  const routeTitle = (() => {
+    if (!productName) return `${destination}康养旅居路线`;
+    if (/(康养|旅居|路线|线路|行程)/.test(productName)) return productName;
+    return `${productName}康养旅居路线`;
+  })();
   
   // 从可信结构化字段、产品标题和用户输入依次提取总天数。
   // 注意：JTD routeProduct.dayNumber 表示“第几日”，不是产品总天数，不能当 duration。
   const { totalDays } = resolveTravelDuration({ product, title: productName, message, fallbackDays: 3 });
   
   const answerText = product
-    ? (jtd.source_status === 'real_data'
-        ? `已调用金跳动真实接口，为您匹配到${productName || destination}，可继续查看详情或做可售校验。`
-        : `当前使用金跳动厂家联调 mock 数据，为您匹配到${productName || destination}；这不是正式可订结果。`)
+    ? (jtd.data_source === 'local_routes'
+        ? `已为您匹配到${productName || destination}，本线路为防城港官方认证旅居线路。`
+        : jtd.source_status === 'real_data'
+        ? `已为您匹配到${productName || destination}，可继续查看详情或做可售校验。`
+        : `已为您匹配到${productName || destination}（演示数据），实际可订状态请以最终核验为准。`)
     : `已为您推荐${destination}康养旅居路线，按${budgetLevel}和老人低强度出行节奏规划。`;
   const productParams = product ? {
     product_id: product.product_id,
@@ -2067,6 +2756,7 @@ function fillRouteCard({ message, business_data }) {
     {
       label: '查天气风险',
       action_key: 'travel_route.check_weather_risk',
+      skill_key: 'travel_route',
       params: { city: destination },
       input: {
         type: 'select',
@@ -2081,42 +2771,129 @@ function fillRouteCard({ message, business_data }) {
     },
   ];
 
+  // 注入走线版地图数据：途经点 + Polyline 路径 + 腾讯路径规划 URL
+  // 统一用 map-kit 构建地图数据（走线模式 route）
+  const jtdWaypoints = Array.isArray(jtd.waypoints) && jtd.waypoints.length ? jtd.waypoints : null;
+  let routeMapData;
+  let waypoints;
+  if (jtdWaypoints) {
+    // 用 jtd-service 已生成的 waypoints（含景点图层），map-kit 会自动脱敏 + 构建 polyline
+    routeMapData = buildRouteMapDataFromKit({ destination, waypoints: jtdWaypoints, routeId: product?.product_id });
+    waypoints = routeMapData.waypoints || [];
+  } else {
+    // 无 jtd waypoints 时自生成（基于目的地模板）
+    routeMapData = buildRouteMapData(destination, totalDays);
+    waypoints = routeMapData.waypoints || [];
+  }
+
+  // ★ 实时SVG生成：若 map-kit 未命中预制作资源包（static_svg 为空），用 generateRouteHtml 生成
+  if (!routeMapData.static_svg && waypoints.length > 0) {
+    try {
+      const routeName = routeTitle || `${destination}康养旅居`;
+      const genResult = await generateRouteHtml(routeName, summary || routeName, {
+        waypoints: waypoints.map((wp) => ({
+          name: wp.name,
+          lat: wp.lat,
+          lng: wp.lng,
+          type: wp.type || 'spot',
+          day: wp.day || '',
+          plan: wp.plan || '',
+          spot_images: wp.spot_images || [],
+          spot_desc: wp.spot_desc || '',
+        })),
+        destination,
+        season,
+        budgetLevel,
+        priceLabel,
+        suitable: suitableText,
+        highlights,
+        itinerary: itinerary.map((it) => ({ day: it.time || '', wp_name: it.wp_name || '', plan: it.content || '' })),
+        healthNotice: buildTravelHealthNotice(message),
+      });
+      routeMapData.static_svg = genResult.svg;
+    } catch (e) {
+      // 实时生成失败时保持原行为（空 SVG）
+    }
+  }
+  // 提取所有特色景点（用于独立景点图层 + 景点列表展示）
+  const allSpots = waypoints.flatMap((wp) => (wp.spots || []).map(({ source: _omit, ...s }) => ({ ...s, parent_waypoint: wp.name, parent_day: wp.day })));
+  const spotImages = waypoints.flatMap((wp) => wp.spot_images || []).slice(0, 4);
+  const spotStatus = waypoints.find((wp) => wp.spot_status)?.spot_status || '';
+  // 行程附加途经点名称（wp_name），与走线地图联动
+  // 本地线路（防城港5条）有结构化 itinerary，优先使用
+  const itinerary = Array.isArray(product?.itinerary) && product.itinerary.length
+    ? product.itinerary.map((item, i) => ({
+        time: item.time || '',
+        content: item.content || '',
+        note: item.note || '',
+        wp_name: waypoints[i]?.name || '',
+      }))
+    : buildItinerary(destination, totalDays).map((item, i) => ({
+        ...item,
+        wp_name: waypoints[i]?.name || '',
+      }));
+
+  // 本地线路有结构化 highlights / summary / suitable_for，优先使用
+  const summary = product?.summary
+    ? sanitizeText(product.summary)
+    : buildRouteCardSummary({ product, productName, destination, jtd, priceLabel, budgetLevel });
+  const highlights = Array.isArray(product?.highlights) && product.highlights.length
+    ? product.highlights
+    : buildTravelHighlights(healthTags, destination);
+  const suitableText = product?.suitable_for
+    ? sanitizeText(product.suitable_for)
+    : inferTravelSuitable(message);
+
   return sanitizeModelResult({
-    template_id: 'route_card',
+    template_id: routeType || 'route_svg',
     answer_text: answerText,
     answer: answerText,
     data: {
-      routeTitle: `${productName || destination}康养旅居路线`,
+      routeTitle,
+      routeType,
       destination,
       season,
       budgetLevel,
       priceLabel,
       days: /四天|4天|four/i.test(message) ? '4天3晚' : `${totalDays}天${totalDays - 1}晚`,
-      suitable: inferTravelSuitable(message),
+      suitable: suitableText,
       bookingStatus,
-      summary: buildRouteCardSummary({ product, productName, destination, jtd, priceLabel, budgetLevel }),
-      highlights: buildTravelHighlights(healthTags, destination),
-      itinerary: buildItinerary(destination, totalDays),
+      summary,
+      highlights,
+      itinerary,
       healthNotice: buildTravelHealthNotice(message),
       jtdStatus: jtd.source_status || '',
+      dataSource: jtd.data_source || '',
       productId: product?.product_id || '',
       skuId: product?.sku_id || '',
+      comboPrice: jtd.combo_price || '',
+      discount: jtd.discount || '',
+      ...routeMapData,
+      // Tavily 特色景点图层（独立 JSON + 图层数据）
+      spots_json: JSON.stringify(allSpots),
+      spots: allSpots,
+      spot_images: spotImages,
+      spot_images_json: JSON.stringify(spotImages),
+      spot_status: spotStatus,
+      hasSpots: allSpots.length > 0,
     },
     actions: [
-      { action_key: 'travel_route.compare_destinations', label: '对比目的地', params: productParams },
-      ...(product ? [{ action_key: 'travel_route.check_availability', label: '检查可订状态', params: productParams }] : []),
-      { action_key: 'travel_route.calculate_budget', label: '测算旅居预算', params: { ...productParams, budget_level: budgetLevel } },
+      { action_key: 'travel_route.compare_destinations', label: '对比目的地', skill_key: 'travel_route', params: productParams },
+      ...(product ? [{ action_key: 'travel_route.check_availability', label: '检查可订状态', skill_key: 'travel_route', params: productParams }] : []),
+      { action_key: 'travel_route.calculate_budget', label: '测算旅居预算', skill_key: 'travel_route', params: { ...productParams, budget_level: budgetLevel } },
     ],
     followup_suggestions: [
       {
         label: '换成北海路线',
         user_prompt: '请把这条旅居路线调整为广西北海方向',
         action_key: 'travel_route.replan',
+        skill_key: 'travel_route',
       },
       {
         label: '查天气风险',
         user_prompt: '请检查这条旅居路线近期天气风险',
         action_key: 'travel_route.check_weather_risk',
+        skill_key: 'travel_route',
         params: { city: destination },
       },
     ],
@@ -2132,9 +2909,9 @@ function fillTravelAvailabilityCard({ message, business_data }) {
   const route = selectTravelRoute(message, routes);
   const normalized = jtd.availability?.normalized || null;
   const destination = sanitizeText(
-    business_data?.primary_city
-    || product?.destination
+    product?.destination
     || product?.city
+    || business_data?.primary_city
     || route?.destination
     || inferDestination(message)
     || '旅居目的地',
@@ -2178,11 +2955,13 @@ function fillTravelAvailabilityCard({ message, business_data }) {
       stockLabel: stockValue === null || stockValue === undefined || stockValue === '' ? '待接口确认' : String(stockValue),
       priceLabel: priceValue ? `约${priceValue}元/人` : sanitizeText(product?.price_label || '待接口确认'),
       checkWindow,
-      sourceLabel: sourceStatus === 'real_data'
-        ? '金跳动真实接口'
+      sourceLabel: jtd.data_source === 'local_routes'
+        ? '官方认证线路'
+        : sourceStatus === 'real_data'
+        ? '已核验数据'
         : sourceStatus === 'mock_vendor_data'
-        ? '金跳动联调 mock'
-        : '金跳动接口不可用',
+        ? '演示数据'
+        : '数据待确认',
       productName,
       destination,
       productId: productId || '待接口返回',
@@ -2192,23 +2971,39 @@ function fillTravelAvailabilityCard({ message, business_data }) {
       availabilitySourceStatus: sourceStatus,
       availabilityAvailable: isAvailable,
       availabilityRaw: normalized?.raw || {},
+      handoffUrls: {
+        h5_order_url: normalized?.h5_order_url || product?.handoff_urls?.h5_order_url || '',
+        h5_product_url: normalized?.h5_product_url || product?.handoff_urls?.h5_product_url || '',
+        mini_program_url: normalized?.mini_program_url || product?.handoff_urls?.mini_program_url || '',
+      },
     },
     actions: [
-      ...(product ? [{ action_key: 'travel_route.view_product_detail', label: '查看产品详情', params: productParams }] : []),
-      ...(isAvailable && jtd.handoff_enabled ? [{ action_key: 'travel_route.booking_handoff', label: '继续预订', params: productParams }] : []),
-      { action_key: 'travel_route.request_manual_review', label: '人工复核', params: { ...productParams, reason: isMock ? 'jtd_mock_availability' : 'jtd_availability_review' } },
+      ...(product ? [{ action_key: 'travel_route.view_product_detail', label: '查看产品详情', skill_key: 'travel_route', params: productParams }] : []),
+      ...(isAvailable && jtd.handoff_enabled ? [{
+        action_key: 'travel_route.booking_handoff',
+        label: '继续预订',
+        skill_key: 'travel_route',
+        params: {
+          ...productParams,
+          h5_order_url: normalized?.h5_order_url || product?.handoff_urls?.h5_order_url || '',
+          h5_product_url: normalized?.h5_product_url || product?.handoff_urls?.h5_product_url || '',
+        },
+      }] : []),
+      { action_key: 'travel_route.request_manual_review', label: '人工复核', skill_key: 'travel_route', params: { ...productParams, reason: isMock ? 'jtd_mock_availability' : 'jtd_availability_review' } },
     ],
     followup_suggestions: [
       {
         label: '换个日期再查',
         user_prompt: '请换一个入住日期重新查询这条旅居产品是否可订',
         action_key: 'travel_route.check_availability',
+        skill_key: 'travel_route',
         params: productParams,
       },
       {
         label: '查看路线详情',
         user_prompt: '请展示这条旅居路线的详细安排',
         action_key: 'travel_route.view_detail',
+        skill_key: 'travel_route',
         params: productParams,
       },
     ],
@@ -2217,25 +3012,25 @@ function fillTravelAvailabilityCard({ message, business_data }) {
 }
 
 function availabilityStatusText({ hasAvailability, isAvailable, isMock, sourceStatus }) {
-  if (!hasAvailability) return '未完成金跳动可订校验';
-  if (isMock) return isAvailable ? '联调 mock 显示可订' : '联调 mock 显示不可订';
-  if (sourceStatus === 'unavailable') return '金跳动可订接口不可用';
-  return isAvailable ? '金跳动已校验可订' : '金跳动已校验当前不可订';
+  if (!hasAvailability) return '未完成可订校验';
+  if (isMock) return isAvailable ? '演示数据，显示可订' : '演示数据，显示不可订';
+  if (sourceStatus === 'unavailable') return '可订校验暂不可用';
+  return isAvailable ? '已校验可订' : '已校验当前不可订';
 }
 
 function availabilityMessageText({ hasAvailability, isAvailable, isMock, sourceStatus, jtd }) {
-  if (!hasAvailability) return '本次响应没有取得 checkAvailability 结果，请补充入住日期、人数后重新查询。';
-  if (isMock) return '当前结果来自厂家接口联调 mock 数据，只能验证流程，不能作为正式下单或库存承诺。';
-  if (sourceStatus === 'unavailable') return `可订接口暂不可用：${jtd.availability?.error || '未返回有效结果'}。`;
+  if (!hasAvailability) return '本次响应没有取得可订校验结果，请补充入住日期、人数后重新查询。';
+  if (isMock) return '当前结果为演示数据，仅用于流程预览，不作为正式下单或库存承诺。';
+  if (sourceStatus === 'unavailable') return `可订校验暂不可用：${jtd.availability?.error || '未返回有效结果'}。`;
   return isAvailable
-    ? '已从金跳动可订接口取得可订结果，请在继续预订前再次核对入住日期、人数和最终价格。'
-    : '已从金跳动可订接口取得结果，当前日期或库存暂不支持预订。';
+    ? '已取得可订校验结果，请在继续预订前再次核对入住日期、人数和最终价格。'
+    : '已取得校验结果，当前日期或库存暂不支持预订。';
 }
 
 function nextAvailabilityStep({ hasAvailability, isAvailable, isMock, sourceStatus, jtd }) {
   if (!hasAvailability) return '请补充入住日期、离店日期和人数后重新查询，避免只展示路线信息。';
-  if (isMock) return '请切换到金跳动真实环境或请求人工复核，mock 结果不可作为真实可订依据。';
-  if (sourceStatus === 'unavailable') return '请检查金跳动接口配置、签名和网络连通性，必要时转人工复核。';
+  if (isMock) return '请切换到真实环境或请求人工复核，演示数据不可作为真实可订依据。';
+  if (sourceStatus === 'unavailable') return '请稍后重试或联系人工复核，必要时检查接口配置与网络连通性。';
   if (isAvailable && jtd.handoff_enabled) return '可继续进入预订跳转，并在下单页确认最终价格与库存。';
   if (isAvailable) return '接口显示可订，但未返回可用预订跳转地址，请先人工确认后再下单。';
   return '建议更换入住日期、减少人数或选择其他旅居产品。';
@@ -2252,8 +3047,113 @@ function buildAvailabilityWindow(requestPayload = {}, message = '') {
   return '待确认入住日期';
 }
 
-function fillTravelItineraryCard({ message, business_data }) {
-  const routeResult = fillRouteCard({ message, business_data });
+export function fillTravelH5EmbedCard({ message, business_data } = {}) {
+  const jtd = business_data?.jtd || {};
+  const product = jtd.selected_product || jtd.products?.[0] || {};
+  const availability = jtd.availability?.normalized || {};
+  const handoffUrls = product.handoff_urls || {};
+  const dataSource = jtd.data_source || jtd.source_status || '';
+
+  // H5 URL：优先使用金跳动提供的下单页 URL
+  //（不再用 iframe 内嵌，改为新标签页打开 → 用户可先登录再下单）
+  let h5Url = availability.h5_order_url
+    || handoffUrls.h5_order_url
+    || availability.h5_product_url
+    || handoffUrls.h5_product_url
+    || '';
+
+  // 确保 hash 路由格式
+  if (h5Url && !h5Url.includes('#/pages/')) {
+    h5Url = h5Url.replace(/\/h5\/pages\//, '/h5/#/pages/');
+  }
+
+  const productName = sanitizeText(product.product_name || inferDestination(message) || '旅居产品');
+  const destination = sanitizeText(product.destination || product.city || business_data?.primary_city || '');
+  const priceLabel = product.price_label || (product.price_amount ? `约${product.price_amount}元/人` : '');
+  const productId = product.product_id || '';
+
+  // 场景1：无 H5 URL — 友好降级提示（区分原因）
+  if (!h5Url) {
+    // 判断原因：本地线路（防城港5条）没有金跳动产品ID
+    const isLocalRoute = productId.startsWith('fcg_') || dataSource === 'local_routes';
+    // 判断原因：可订校验未通过
+    const isUnavailable = availability && availability.available === false;
+
+    let reasonText = '';
+    let answerText = '';
+
+    if (isLocalRoute) {
+      reasonText = '官方认证线路';
+      answerText = `${productName}是官方推荐的旅居线路，目前尚未接入在线预订系统。`;
+    } else if (isUnavailable) {
+      reasonText = '当前日期不可订';
+      answerText = `${productName}在您选择的日期暂不可预订。建议更换入住日期或减少出行人数后重试。`;
+    } else {
+      reasonText = '暂未开放在线预订';
+      answerText = `${productName}暂时无法提供在线预订页面。您可以联系旅居顾问（400-xxx-xxxx）获取最新报价和预订信息。`;
+    }
+
+    return {
+      template_id: 'travel_h5_embed_card',
+      answer_text: answerText,
+      data: {
+        h5Url: '',
+        productName,
+        destination,
+        priceLabel,
+        productId,
+        hasH5Url: false,
+        reasonText,
+        isLocalRoute,
+        isUnavailable,
+      },
+      actions: [],
+    };
+  }
+
+  // 场景2：有 H5 URL — 正常嵌入
+  return {
+    template_id: 'travel_h5_embed_card',
+    answer_text: `正在为您加载${productName}的预订页面，请在页面内确认入住日期、人数和价格后完成下单。`,
+    data: {
+      h5Url,
+      productName,
+      destination,
+      priceLabel,
+      productId,
+      hasH5Url: true,
+    },
+    actions: [
+      { action_key: 'travel_route.open_h5_external', label: '在新页面打开', skill_key: 'travel_route', params: { h5_url: h5Url, product_id: productId } },
+    ],
+  };
+}
+
+async function fillTravelItineraryCard({ message, business_data }) {
+  let routeResult;
+  try {
+    routeResult = await fillRouteCard({ message, business_data });
+  } catch (e) {
+    console.error('[fillTravelItineraryCard] fillRouteCard 调用失败，降级返回基础行程:', e?.message || e);
+    const destination = sanitizeText(inferDestination(message) || '旅居目的地');
+    const fallbackDays = 3;
+    const days = buildItinerary(destination, fallbackDays).map((item, index) => buildItineraryDay(item, index, destination, fallbackDays));
+    return sanitizeModelResult({
+      template_id: 'travel_itinerary_card',
+      answer_text: `已为您生成${destination}行程安排建议。`,
+      answer: `已为您生成${destination}行程安排建议。`,
+      data: {
+        title: `${destination}行程安排`,
+        intro: '按低强度、少赶路、每日留足休息时间来安排，适合长者和家属陪同出行。',
+        days,
+        note: '行程可随身体状态、天气和可订日期灵活调整；下单前请继续做可售校验。',
+        destination,
+      },
+      actions: [],
+      followup_suggestions: [],
+      template_fit_notes: ['travel_itinerary_card_fallback'],
+    });
+  }
   const routeData = routeResult.data || {};
   const destination = sanitizeText(routeData.destination || inferDestination(message));
   const productName = sanitizeText(String(routeData.routeTitle || '').replace(/康养旅居路线$/, '')) || destination;
@@ -2287,10 +3187,12 @@ function fillTravelItineraryCard({ message, business_data }) {
   });
   
   const days = itinerary.map((item, index) => buildItineraryDay(item, index, destination, itinerary.length));
-  const sourceText = routeData.jtdStatus === 'real_data'
-    ? '来源：金跳动真实接口'
+  const sourceText = routeData.dataSource === 'local_routes'
+    ? '来源：官方认证线路'
+    : routeData.jtdStatus === 'real_data'
+    ? '来源：已核验数据'
     : routeData.jtdStatus === 'mock_vendor_data'
-      ? '来源：厂家联调数据'
+      ? '来源：演示数据'
       : '来源：本地行程建议';
 
   return sanitizeModelResult({
@@ -2300,7 +3202,7 @@ function fillTravelItineraryCard({ message, business_data }) {
       title: `${productName}行程安排`,
       intro: `${sourceText}。按低强度、少赶路、每日留足休息时间来安排，适合长者和家属陪同出行。`,
       days,
-      note: '行程可随身体状态、天气和可订日期灵活调整；下单前请继续做金跳动可售校验。',
+      note: '行程可随身体状态、天气和可订日期灵活调整；下单前请继续做可售校验。',
       routeTitle: routeData.routeTitle,
       destination,
       season: routeData.season,
@@ -2415,9 +3317,9 @@ export async function fillTravelWeatherRiskCard({ message, business_data, weathe
       },
       actions: [],
       followup_suggestions: [
-        { text: '查询北海天气', action_key: 'travel_route.check_weather_risk', params: { city: '广西北海' } },
-        { text: '查询昆明天气', action_key: 'travel_route.check_weather_risk', params: { city: '云南昆明' } },
-        { text: '查询三亚天气', action_key: 'travel_route.check_weather_risk', params: { city: '海南三亚' } },
+        { text: '查询北海天气', action_key: 'travel_route.check_weather_risk', skill_key: 'travel_route', params: { city: '广西北海' } },
+        { text: '查询昆明天气', action_key: 'travel_route.check_weather_risk', skill_key: 'travel_route', params: { city: '云南昆明' } },
+        { text: '查询三亚天气', action_key: 'travel_route.check_weather_risk', skill_key: 'travel_route', params: { city: '海南三亚' } },
       ],
       template_fit_notes: ['missing_destination'],
     });
@@ -2494,10 +3396,10 @@ export async function fillTravelWeatherRiskCard({ message, business_data, weathe
       degradedNote: ok ? '' : '暂未获取到实时天气，以下为通用提醒，请以当地实际预报为准。',
     },
     actions: [
-      { action_key: 'travel_route.replan', label: '调整行程避开恶劣天气', params: { destination: cityName } },
+      { action_key: 'travel_route.replan', label: '调整行程避开恶劣天气', skill_key: 'travel_route', params: { destination: cityName } },
     ],
     followup_suggestions: [
-      { label: '查看可订状态', user_prompt: '请检查这条旅居路线近期是否可预订', action_key: 'travel_route.check_availability', params: { destination: cityName } },
+      { label: '查看可订状态', user_prompt: '请检查这条旅居路线近期是否可预订', action_key: 'travel_route.check_availability', skill_key: 'travel_route', params: { destination: cityName } },
     ],
     model_used: 'flatTalk.travel.weather',
     model_status: ok ? 'ok' : 'degraded',
@@ -2561,8 +3463,11 @@ function fillRouteRemoteGap({ message, jtd, routes }) {
   const route = selectTravelRoute(message, routes);
   const destination = sanitizeText(route?.destination || inferDestination(message));
   const answerText = '金跳动旅居产品接口当前不可用，已停止生成可订产品推荐，可先保留需求并转人工确认。';
+  // ★ 兜底也尝试加载预制作 SVG
+  const svgPkg = findPrebuiltPackageByDestination(destination, 'standard');
+  const staticSvg = (svgPkg && svgPkg.svg) ? svgPkg.svg : '';
   return sanitizeModelResult({
-    template_id: 'route_card',
+    template_id: 'route_svg',
     answer_text: answerText,
     answer: answerText,
     data: {
@@ -2580,16 +3485,18 @@ function fillRouteRemoteGap({ message, jtd, routes }) {
       jtdStatus: jtd.source_status || 'unavailable',
       productId: '',
       skuId: '',
+      static_svg: staticSvg,
     },
     actions: [
-      { action_key: 'travel_route.request_manual_review', label: '请求人工复核', params: { reason: 'jtd_unavailable', destination } },
-      { action_key: 'travel_route.replan', label: '重新规划路线', params: { destination } },
+      { action_key: 'travel_route.request_manual_review', label: '请求人工复核', skill_key: 'travel_route', params: { reason: 'jtd_unavailable', destination } },
+      { action_key: 'travel_route.replan', label: '重新规划路线', skill_key: 'travel_route', params: { destination } },
     ],
     followup_suggestions: [
       {
         label: '补充出行偏好',
         user_prompt: '我先补充出行日期、人数和预算，等接口恢复后再校验可订状态',
         action_key: 'travel_route.fill_preferences',
+        skill_key: 'travel_route',
       },
     ],
     template_fit_notes: ['jtd_remote_gap'],
@@ -2598,19 +3505,621 @@ function fillRouteRemoteGap({ message, jtd, routes }) {
 
 function buildJtdBookingStatus(jtd, product, route) {
   if (!product) return route?.booking_status || '可咨询余量';
-  if (jtd.availability?.normalized?.available) return '金跳动已校验可订';
-  if (jtd.availability && !jtd.availability.normalized?.available) return '金跳动已校验，当前日期不可订';
-  if (jtd.source_status === 'real_data') return '金跳动已返回真实产品，待日期可售校验';
-  if (jtd.source_status === 'mock_vendor_data') return '厂家接口联调 mock 数据，不能视为真实可订';
-  return '金跳动接口状态待确认';
+  if (jtd.availability?.normalized?.available) return '已校验可订';
+  if (jtd.availability && !jtd.availability.normalized?.available) return '已校验，当前日期不可订';
+  if (jtd.source_status === 'real_data') return '已返回真实产品，待日期可售校验';
+  if (jtd.source_status === 'mock_vendor_data') return '演示数据，不能视为真实可订';
+  return '数据状态待确认';
 }
 
-function sanitizeModelResult(result) {
-  if (Array.isArray(result)) return result.map((item) => sanitizeModelResult(item));
-  if (result && typeof result === 'object') {
-    return Object.fromEntries(Object.entries(result).map(([key, value]) => [key, sanitizeModelResult(value)]));
+async function fillPolicyListCard({ message, knowledgeService }) {
+  const text = String(message || '');
+  let policyContent = null;
+
+  try {
+    const keywords = extractPolicyKeywords(text);
+    if (knowledgeService?.retriever && keywords.length > 0) {
+      const knowledgeResult = await knowledgeService.retriever.retrieve({
+        skill_key: 'common',
+        query: keywords.join(' '),
+        limit: 5,
+      });
+      if (knowledgeResult?.matches?.length > 0) {
+        policyContent = summarizePolicyKnowledge(knowledgeResult.matches, text);
+      }
+    }
+  } catch (error) {
+    console.error('[PolicyListCard] 知识库查询失败:', error.message);
   }
-  if (typeof result === 'string') return sanitizeText(result);
+
+  const policies = (policyContent?.items?.length ? policyContent.items : buildDefaultPolicyList(text))
+    .slice(0, 6)
+    .map((item, index) => ({
+      id: item.id || `policy_${String(index + 1).padStart(3, '0')}`,
+      icon: item.icon || '📋',
+      title: item.title || item.label || '养老政策信息',
+      description: item.description || item.detail || '可继续补充老人年龄、户籍、失能情况，我会整理申请条件和办理材料。',
+      tags: item.tags || inferPolicyTags(item.label || item.title || item.detail || text),
+    }));
+
+  const answerText = policyContent?.summary
+    || '已为您整理社区居家养老、补贴和支持政策方向。具体标准通常与老人年龄、户籍或居住地、失能等级和经济状况有关。';
+
+  return sanitizeModelResult({
+    template_id: 'policy_list_card',
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      eyebrow: '📋 政策知识库',
+      title: /社区居家养老|居家养老|社区养老/.test(text) ? '社区居家养老支持政策' : '养老补贴相关政策',
+      summary: answerText,
+      count: policies.length,
+      policies,
+      hint: '💡 可继续告诉我老人所在城市、年龄、户籍和失能情况，我会按当地口径整理申请条件、材料和办理流程。',
+    },
+    actions: [],
+    followup_suggestions: [
+      { label: '查询办理流程', user_prompt: '养老补贴应该去哪里办理，流程是什么' },
+      { label: '整理办理材料', user_prompt: '办理养老补贴需要准备哪些材料' },
+      { label: '说明老人情况', user_prompt: '老人80岁，广西户籍，想了解可以申请哪些补贴' },
+    ],
+    template_fit_notes: ['deterministic_policy_list'],
+  });
+}
+
+function fillPolicyApplyGuideCard({ message }) {
+  const text = String(message || '');
+  const isHomeModification = /适老化改造|居家改造/.test(text);
+  const title = isHomeModification ? '适老化改造补贴申请指引' : '养老补贴申请指引';
+  const answerText = isHomeModification
+    ? '适老化改造补贴一般先确认老人身份和改造需求，再向社区、街道或民政部门提交申请，审核评估后按当地目录实施改造和验收。'
+    : '养老补贴通常按“确认条件、准备材料、提交申请、审核评估、发放或服务兑现”的流程办理，具体以当地民政、人社、医保部门要求为准。';
+
+  return sanitizeModelResult({
+    template_id: 'policy_apply_guide_card',
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      eyebrow: '📝 办事指引',
+      title,
+      subtitle: isHomeModification ? '防滑、扶手、如厕洗浴、室内安全等居家改造申请流程' : '高龄津贴、护理补贴、困难老人补助等申请流程',
+      conditions: {
+        items: isHomeModification
+          ? [
+              { label: '老人范围', value: '高龄、失能、残疾、困难或有居家安全改造需求的老人' },
+              { label: '居住地', value: '通常需在申请地常住，具体看当地政策' },
+              { label: '改造需求', value: '经入户评估确认存在防跌倒、如厕洗浴等改造需求' },
+              { label: '补贴限制', value: '同一住房或同一老人是否重复享受，以当地规定为准' },
+            ]
+          : [
+              { label: '年龄', value: '通常为60周岁及以上，部分津贴按更高年龄段' },
+              { label: '户籍/居住', value: '以当地户籍、居住证或常住要求为准' },
+              { label: '能力等级', value: '护理类补贴一般需失能或半失能评估' },
+              { label: '经济状况', value: '困难类补贴需符合当地收入或救助认定标准' },
+            ],
+      },
+      steps: {
+        items: [
+          { number: '1', title: '确认政策口径', description: '先确认老人所在城市/区县、年龄、户籍、居住地和身体能力情况。' },
+          { number: '2', title: '准备申请材料', description: '准备身份证、户口本或居住证明、评估材料、银行卡等基础资料。' },
+          { number: '3', title: '提交申请', description: '到社区、街道办事处、民政窗口或当地线上政务平台提交申请。' },
+          { number: '4', title: '审核评估', description: '相关部门审核材料，必要时进行入户评估、公示或复核。' },
+          { number: '5', title: '结果兑现', description: isHomeModification ? '审核通过后按改造目录施工、验收，再按规定结算或补贴。' : '审核通过后按月发放补贴，或以服务券、服务包等方式兑现。' },
+        ],
+      },
+      materials: {
+        items: isHomeModification
+          ? ['身份证原件及复印件', '户口本或居住证明', '房屋权属或居住证明', '改造需求评估表', '银行卡信息', '委托代办材料']
+          : ['身份证原件及复印件', '户口本或居住证明', '近期免冠照片', '能力/失能评估报告', '银行卡信息', '困难证明或救助材料'],
+      },
+      contact: {
+        location: '户籍或常住地社区/街道办事处/民政部门',
+        phone: '12345政务服务热线或当地民政窗口',
+        duration: '一般15-30个工作日，具体以当地规定为准',
+      },
+      highlight: '⚠️ 提示：各地补贴对象、金额、材料和办理入口可能不同，建议补充城市/区县后再核对当地最新口径。',
+    },
+    actions: [],
+    followup_suggestions: [
+      { label: '整理办理材料', user_prompt: `${isHomeModification ? '适老化改造' : '养老补贴'}办理需要准备哪些材料` },
+      { label: '查询补贴条件', user_prompt: `${isHomeModification ? '适老化改造' : '养老补贴'}申请条件是什么` },
+    ],
+    template_fit_notes: ['deterministic_policy_apply_guide'],
+  });
+}
+
+async function fillPolicyDetailCard({ message, knowledgeService }) {
+  const text = String(message || '');
+  let policyContent = null;
+
+  try {
+    const keywords = extractPolicyKeywords(text);
+    if (knowledgeService?.retriever && keywords.length > 0) {
+      const knowledgeResult = await knowledgeService.retriever.retrieve({
+        skill_key: 'common',
+        query: keywords.join(' '),
+        limit: 5,
+      });
+      if (knowledgeResult?.matches?.length > 0) {
+        policyContent = summarizePolicyKnowledge(knowledgeResult.matches, text);
+      }
+    }
+  } catch (error) {
+    console.error('[PolicyDetailCard] 知识库查询失败:', error.message);
+  }
+
+  const isHomeModification = /适老化改造|居家改造/.test(text);
+  const answerText = policyContent?.summary
+    || (isHomeModification
+      ? '适老化改造政策重点关注居家安全风险，常见改造包括防滑处理、安装扶手、如厕洗浴改造、紧急呼叫和室内通行优化。'
+      : '养老政策通常覆盖高龄津贴、长期护理保险、护理补贴、助餐补贴、社区居家养老服务和能力评估等内容。');
+
+  return sanitizeModelResult({
+    template_id: 'policy_detail_card',
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      eyebrow: '政策解读',
+      title: isHomeModification ? '适老化改造政策解读' : '养老政策要点解读',
+      tags: inferPolicyTags(text),
+      summary: answerText,
+      highlights: {
+        items: (policyContent?.items?.length ? policyContent.items : buildDefaultPolicyList(text)).slice(0, 4).map((item, index) => ({
+          icon: String(index + 1),
+          text: item.detail || item.description || item.title || item.label,
+        })),
+      },
+      details: {
+        heading: '办理提示',
+        content: '<p>建议先确认老人所在城市/区县、年龄、户籍或居住情况、失能等级和经济状况。</p><p>不同地区对补贴标准、材料清单、审核时限和发放方式会有差异，最终以当地民政、人社、医保等部门最新要求为准。</p>',
+      },
+      footer_tip: '如需了解具体申请条件和办理流程，请告诉我老人年龄、户籍和失能情况。',
+    },
+    actions: [],
+    followup_suggestions: [
+      { label: '查询办理流程', user_prompt: '这个政策怎么办理，流程是什么' },
+      { label: '整理办理材料', user_prompt: '办理这个政策需要哪些材料' },
+    ],
+    template_fit_notes: ['deterministic_policy_detail'],
+  });
+}
+
+function buildDefaultPolicyList(text = '') {
+  if (/适老化改造|居家改造/.test(text)) {
+    return [
+      { icon: '🏠', title: '居家适老化改造补贴', description: '围绕防滑、扶手、如厕洗浴、通行安全和紧急呼叫等项目进行改造支持。', tags: ['适老化改造', '居家安全'] },
+      { icon: '🧾', title: '困难老年人改造支持', description: '部分地区优先支持低保、特困、失能、残疾、高龄等困难老年人家庭。', tags: ['困难老人', '补贴'] },
+      { icon: '🛠️', title: '改造目录和验收', description: '通常需先评估后施工，按当地改造目录、限额和验收标准执行。', tags: ['办理流程', '验收'] },
+    ];
+  }
+
+  return [
+    { icon: '💰', title: '高龄津贴', description: '面向达到当地规定年龄的老年人，通常与户籍、年龄档次和申请审核有关。', tags: ['津贴', '高龄'] },
+    { icon: '🏥', title: '长期护理保险', description: '面向经评估达到护理需求等级的参保人员，提供护理服务或待遇支付。', tags: ['长护险', '护理'] },
+    { icon: '🤝', title: '社区居家养老服务', description: '包含助餐送餐、上门照护、日间照料、探访关爱等服务支持。', tags: ['居家养老', '社区服务'] },
+    { icon: '🍽️', title: '助餐补贴', description: '部分地区对符合条件老人提供助餐、送餐或老年食堂价格优惠。', tags: ['助餐', '补贴'] },
+    { icon: '🏠', title: '适老化改造', description: '对符合条件家庭开展防滑、扶手、如厕洗浴等居家安全改造支持。', tags: ['适老化', '安全'] },
+  ];
+}
+
+function inferPolicyTags(text = '') {
+  const tags = [];
+  if (/补贴|津贴/.test(text)) tags.push('补贴政策');
+  if (/社区居家养老|居家养老|社区养老/.test(text)) tags.push('居家养老');
+  if (/适老化改造|居家改造/.test(text)) tags.push('适老化改造');
+  if (/长护险|长期护理保险/.test(text)) tags.push('长护险');
+  if (/办理|申请|流程|材料/.test(text)) tags.push('办理指引');
+  return tags.length ? tags : ['养老政策'];
+}
+
+function fillServiceQualityEvalCard({ message = '', business_data = {}, selectedTemplateId = 'institution_quality_report' } = {}) {
+  const rows = Array.isArray(business_data?.quality_evaluation?.rows) ? business_data.quality_evaluation.rows : [];
+  const feedback = business_data?.feedback_metrics || {};
+  const metrics = feedback.metrics || {};
+  const samples = Array.isArray(feedback.samples) ? feedback.samples : [];
+  const summary = buildQualitySummary(rows, metrics, samples);
+  const sourceStatus = [business_data?.quality_evaluation?.source, feedback.source].filter(Boolean).join('+') || 'unavailable';
+
+  if (selectedTemplateId === 'evaluation_standard') return fillQualityStandardCard(sourceStatus);
+  if (selectedTemplateId === 'staff_quality_report') return fillStaffQualityReport(summary, sourceStatus);
+  if (selectedTemplateId === 'org_quality_ranking') return fillOrgQualityRanking(summary, sourceStatus);
+  if (selectedTemplateId === 'staff_quality_ranking') return fillStaffQualityRanking(summary, sourceStatus);
+  if (selectedTemplateId === 'rectification_suggestion') return fillRectificationSuggestion(summary, sourceStatus);
+  if (selectedTemplateId === 'complaint_detail') return fillComplaintDetail(summary, sourceStatus);
+
+  const answerText = `${summary.orgName}服务质量综合评分 ${summary.totalScore} 分，等级 ${summary.level}，投诉率 ${summary.complaintRate}%。`;
+  return sanitizeModelResult({
+    template_id: 'institution_quality_report',
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      orgName: summary.orgName,
+      period: summary.period,
+      serviceScope: summary.serviceScope,
+      totalScore: summary.totalScore,
+      level: summary.level,
+      percentile: summary.percentile,
+      delta: summary.delta,
+      rankLabel: summary.rankLabel,
+      workOrderCount: summary.workOrderCount,
+      goodRate: summary.goodRate,
+      complaintRate: summary.complaintRate,
+      complaintClass: summary.complaintRate >= 5 ? 'bad' : summary.complaintRate >= 2 ? 'warn' : 'ok',
+      dimensions: summary.dimensions,
+      problemTop: summary.problemTop,
+      praiseTags: summary.praiseTags,
+      riskTags: summary.riskTags,
+      aiSuggestions: summary.aiSuggestions,
+      showWarn: summary.totalScore < 70 || summary.complaintRate >= 5,
+      warnText: summary.totalScore < 70
+        ? '当前评分进入重点关注区间，建议生成整改任务并转督导复核。'
+        : '当前未进入后 10% 预警，但投诉与工单质量需连续跟踪。',
+    },
+    actions: qualityActions(),
+    followup_suggestions: qualityFollowups(),
+    model_used: 'flatTalk.service_quality.rules',
+    model_status: sourceStatus.includes('simulated') ? 'degraded' : 'ok',
+    template_fit_notes: [`service_quality_source:${sourceStatus}`],
+  });
+}
+
+function buildQualitySummary(rows, metrics, samples) {
+  const now = new Date().toISOString().slice(0, 10);
+  const workOrderCount = rows.length || Number(metrics.total || 0) || 0;
+  const ratings = rows
+    .map((row) => Number(row.order_rating ?? row.work_rating ?? row.rating ?? 0))
+    .filter((rating) => rating > 0);
+  const avgRating = ratings.length ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : Number(metrics.avg_rating || 4);
+  const goodRate = workOrderCount ? round1((ratings.filter((rating) => rating >= 4).length / Math.max(ratings.length, 1)) * 100) : 0;
+  const complaintCount = Number(metrics.by_type?.find?.((item) => /投诉/.test(item.feedback_type || item.type || ''))?.cnt || 0)
+    || samples.filter((item) => /投诉/.test(item.feedback_type || item.type || item.title || '')).length;
+  const complaintRate = workOrderCount ? round1((complaintCount / workOrderCount) * 100) : (complaintCount ? 100 : 0);
+  const onTimeIssues = rows.filter((row) => /迟到|超时|延迟/.test(`${row.evaluate_tags || ''}${row.exception_type || ''}${row.evaluate_content || ''}`)).length;
+  const completeCount = rows.filter((row) => /已完成|完成/.test(`${row.work_status || row.status || ''}`)).length;
+  const d1 = clampScore(avgRating * 20);
+  const d2 = workOrderCount ? clampScore((completeCount / workOrderCount) * 100) : 85;
+  const d3 = workOrderCount ? clampScore(100 - (onTimeIssues / workOrderCount) * 40) : 82;
+  const d4 = clampScore(100 - complaintRate * 8);
+  const totalScore = round1(d1 * 0.3 + d2 * 0.2 + d3 * 0.2 + d4 * 0.3);
+  const orgName = firstNonEmpty(rows, ['org_name', 'orgName']) || firstNonEmpty(samples, ['org_name', 'orgName']) || '嘉路康养中心';
+  const staffName = firstNonEmpty(rows, ['staff_name', 'nurse_name', 'staffName', 'nurseName']) || '服务人员';
+  const weak = [
+    { code: 'D1', name: '用户评价评分', score: round1(d1), weight: '30%', desc: '由订单评价星级与好中差评加权推导' },
+    { code: 'D2', name: '流程完成度', score: round1(d2), weight: '20%', desc: '由已完成工单占比与闭环字段推导' },
+    { code: 'D3', name: '工单服务质量', score: round1(d3), weight: '20%', desc: '由准时、完成、异常标签综合推导' },
+    { code: 'D4', name: '投诉率', score: round1(d4), weight: '30%', desc: '由投诉件数/参评工单数反向计分' },
+  ].sort((a, b) => a.score - b.score)[0];
+  const dimensions = [
+    { code: 'D1', name: '用户评价评分', weight: '30%', score: round1(d1), pct: round1(d1), barClass: d1 < 70 ? 'warn' : '', desc: '由评价星级、评价内容与好中差评标签推导' },
+    { code: 'D2', name: '流程完成度', weight: '20%', score: round1(d2), pct: round1(d2), barClass: d2 < 70 ? 'warn' : '', desc: '完成闭环工单占比，缺少签退/小结会扣分' },
+    { code: 'D3', name: '工单服务质量', weight: '20%', score: round1(d3), pct: round1(d3), barClass: d3 < 70 ? 'warn' : '', desc: '准时到达、服务过程、异常标签共同影响' },
+    { code: 'D4', name: '投诉率', weight: '30%', score: round1(d4), pct: round1(d4), barClass: d4 < 70 ? 'warn' : '', desc: '投诉越少得分越高，重复投诉触发整改' },
+  ];
+  const riskTags = extractTags(rows, samples, false);
+  const praiseTags = extractTags(rows, samples, true);
+  return {
+    period: now,
+    orgName,
+    staffName,
+    staffNo: firstNonEmpty(rows, ['staff_no', 'staffNo', 'staff_id']) || '未登记',
+    serviceScope: '上门/院内/巡访',
+    totalScore,
+    level: scoreLevel(totalScore),
+    percentile: totalScore >= 90 ? 20 : totalScore >= 80 ? 50 : totalScore >= 70 ? 75 : 90,
+    delta: totalScore >= 80 ? '+1.2' : '-2.4',
+    rankLabel: totalScore < 70 ? '后10%预警' : totalScore >= 90 ? '前20%推荐' : '正常归档',
+    workOrderCount,
+    goodRate,
+    complaintCount,
+    complaintRate,
+    dimensions,
+    weak,
+    praiseTags: praiseTags.length ? praiseTags : ['沟通清晰', '耐心细致'],
+    riskTags: riskTags.length ? riskTags : (complaintCount ? ['服务时效'] : ['暂无高频风险']),
+    problemTop: [
+      { title: weak.name, count: Math.max(1, complaintCount || onTimeIssues || 1), desc: `${weak.code} 为当前薄弱维度，建议优先复核相关工单与投诉。`, itemClass: weak.score < 70 ? 'bad' : 'warn', pillClass: weak.score < 70 ? 'bad' : 'warn' },
+      { title: '服务过程留痕', count: Math.max(0, onTimeIssues), desc: '迟到、签退、服务小结等过程字段会直接影响 D2/D3。', itemClass: onTimeIssues ? 'warn' : '', pillClass: onTimeIssues ? 'warn' : 'blue' },
+    ],
+    aiSuggestions: [
+      { type: `${weak.code}偏弱`, dimension: weak.name, text: `建议围绕「${weak.name}」建立日清复核：抽查低分工单、补齐证据、复盘责任人。`, itemClass: weak.score < 70 ? 'bad' : 'warn', pillClass: weak.score < 70 ? 'bad' : 'warn' },
+      { type: '投诉闭环', dimension: 'D4', text: '投诉样本需关联机构、人员、工单与处理结果，关闭后再回写评分。', itemClass: '', pillClass: 'blue' },
+    ],
+    samples,
+    rows,
+  };
+}
+
+function fillStaffQualityReport(summary, sourceStatus) {
+  const answerText = `${summary.staffName}服务质量评分 ${summary.totalScore} 分，${summary.rankLabel}。`;
+  return sanitizeModelResult({
+    template_id: 'staff_quality_report',
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      staffName: summary.staffName,
+      staffNo: summary.staffNo,
+      orgName: summary.orgName,
+      serviceType: '上门服务',
+      totalScore: summary.totalScore,
+      level: summary.level,
+      orgRank: summary.totalScore >= 90 ? 3 : summary.totalScore >= 70 ? 18 : 58,
+      orgTotal: 58,
+      tagStatus: summary.rankLabel,
+      workOrderCount: summary.workOrderCount,
+      onTimeRate: round1(Math.max(0, summary.dimensions[2].score)),
+      complaintCount: summary.complaintCount,
+      complaintClass: summary.complaintCount ? 'warn' : 'ok',
+      dimensions: summary.dimensions,
+      goodTags: summary.praiseTags,
+      badTags: summary.riskTags,
+      reviews: summary.rows.slice(0, 3).map((row) => ({
+        who: row.elder_name || row.user_name || '服务对象',
+        stars: `${row.order_rating || row.work_rating || row.rating || 4}星`,
+        text: row.evaluate_content || row.service_summary || '服务已完成，建议补充评价文本。',
+      })),
+      aiSuggestions: summary.aiSuggestions,
+    },
+    actions: qualityActions(),
+    followup_suggestions: qualityFollowups(),
+    model_used: 'flatTalk.service_quality.rules',
+    model_status: sourceStatus.includes('simulated') ? 'degraded' : 'ok',
+    template_fit_notes: [`service_quality_source:${sourceStatus}`],
+  });
+}
+
+function fillOrgQualityRanking(summary, sourceStatus) {
+  const ranking = buildOrgRanking(summary);
+  return sanitizeModelResult({
+    template_id: 'org_quality_ranking',
+    answer_text: `已生成${summary.orgName}所在区域机构质量排名视图。`,
+    answer: `已生成${summary.orgName}所在区域机构质量排名视图。`,
+    data: {
+      region: '广西养老服务辖区',
+      period: summary.period,
+      orgTotal: ranking.length,
+      recommendCount: ranking.filter((item) => item.tag === '优先推荐').length,
+      warningCount: ranking.filter((item) => item.tag === '预警推送').length,
+      ranking,
+      alertClass: summary.totalScore < 70 ? 'bad' : 'ok',
+      supervisionNote: summary.totalScore < 70 ? '该机构应进入整改跟踪队列。' : '当前无末位预警，建议持续跟踪薄弱维度。',
+    },
+    actions: qualityActions(),
+    followup_suggestions: qualityFollowups(),
+    model_used: 'flatTalk.service_quality.rules',
+    model_status: sourceStatus.includes('simulated') ? 'degraded' : 'ok',
+  });
+}
+
+function fillStaffQualityRanking(summary, sourceStatus) {
+  const ranking = buildStaffRanking(summary);
+  return sanitizeModelResult({
+    template_id: 'staff_quality_ranking',
+    answer_text: `已生成${summary.orgName}服务人员质量排名。`,
+    answer: `已生成${summary.orgName}服务人员质量排名。`,
+    data: {
+      orgName: summary.orgName,
+      period: summary.period,
+      staffTotal: ranking.length,
+      adaptCount: ranking.filter((item) => item.tag === '服务适配').length,
+      warningCount: ranking.filter((item) => item.tag === '预警').length,
+      ranking,
+      complaintTop: ranking.filter((item) => item.complaints > 0).map((item) => ({
+        staffName: item.staffName,
+        count: item.complaints,
+        summary: '投诉与低分评价需关联工单复盘。',
+        itemClass: item.complaints >= 2 ? 'bad' : 'warn',
+        pillClass: item.complaints >= 2 ? 'bad' : 'warn',
+      })),
+    },
+    actions: qualityActions(),
+    followup_suggestions: qualityFollowups(),
+    model_used: 'flatTalk.service_quality.rules',
+    model_status: sourceStatus.includes('simulated') ? 'degraded' : 'ok',
+  });
+}
+
+function fillRectificationSuggestion(summary, sourceStatus) {
+  return sanitizeModelResult({
+    template_id: 'rectification_suggestion',
+    answer_text: `已围绕${summary.weak.code}生成整改建议。`,
+    answer: `已围绕${summary.weak.code}生成整改建议。`,
+    data: {
+      period: summary.period,
+      targetName: summary.orgName,
+      weakDimension: `${summary.weak.code} ${summary.weak.name}`,
+      weakScore: summary.weak.score,
+      confidence: sourceStatus.includes('simulated') ? 62 : 86,
+      openIssues: Math.max(1, summary.complaintCount || 1),
+      complaints: summary.complaintCount,
+      slaHours: summary.totalScore < 70 ? 24 : 72,
+      causes: summary.problemTop.map((item) => ({ title: item.title, dimension: summary.weak.code, desc: item.desc, itemClass: item.itemClass, pillClass: item.pillClass })),
+      suggestions: [
+        { title: '补齐服务过程闭环节点', owner: '机构管理员', action: '复核签到、签退、服务小结、评价与投诉处理结果，缺项生成补证任务。', acceptance: 'D2/D3 连续 7 日不低于 85 分' },
+        { title: '建立投诉日清复盘', owner: '督导人员', action: '投诉提交后 24 小时内关联人员和工单，形成原因、措施、回访结果。', acceptance: 'D4 回升且同类投诉不连续出现' },
+      ],
+      handoffClass: summary.totalScore < 70 ? 'bad' : 'warn',
+      handoffText: summary.totalScore < 70 ? '建议转监管端督导，并生成整改工单。' : '建议机构内部整改跟踪，必要时转人工督导。',
+    },
+    actions: qualityActions(),
+    followup_suggestions: qualityFollowups(),
+    model_used: 'flatTalk.service_quality.rules',
+    model_status: sourceStatus.includes('simulated') ? 'degraded' : 'ok',
+  });
+}
+
+function fillComplaintDetail(summary, sourceStatus) {
+  const sample = summary.samples.find((item) => /投诉/.test(item.feedback_type || item.type || item.title || '')) || summary.samples[0] || {};
+  return sanitizeModelResult({
+    template_id: 'complaint_detail',
+    answer_text: `已生成投诉详情：${sample.title || '服务质量投诉'}`,
+    answer: `已生成投诉详情：${sample.title || '服务质量投诉'}`,
+    data: {
+      status: sample.status || '待处理',
+      title: sample.title || '服务质量投诉',
+      complaintId: sample.feedback_id || sample.id || '待生成',
+      createdAt: sample.create_time || sample.created_at || summary.period,
+      severity: summary.totalScore < 70 ? '较重' : '一般',
+      complainant: sample.user_name || sample.complainant || '服务对象/家属',
+      orgName: sample.org_name || summary.orgName,
+      staffName: sample.staff_name || summary.staffName,
+      complaintType: sample.feedback_type || '投诉',
+      workOrderNo: sample.work_order_no || sample.workOrderNo || '未关联',
+      description: sample.content || sample.description || '投诉描述暂未补齐，需要关联原始反馈记录。',
+      timeline: [
+        { time: sample.create_time || summary.period, node: '投诉提交', detail: '系统记录投诉反馈', stepClass: 'bad' },
+        { time: sample.handle_time || '待处理', node: '处理跟进', detail: sample.handle_result || '等待机构补充处理结果', stepClass: sample.handle_result ? 'done' : '' },
+      ],
+      orgImpact: summary.complaintCount ? '-2.0' : '0',
+      staffImpact: summary.complaintCount ? '-3.0' : '0',
+      impactClass: summary.complaintCount ? 'bad' : 'ok',
+      impactAnalysis: '投诉需回写 D4，并与机构、人员、工单形成闭环证据。',
+      resultTitle: sample.handle_result ? '已记录处理结果' : '待补充处理结果',
+      satisfaction: sample.status || '待回访',
+      resultText: sample.handle_result || '建议完成投诉回访后再关闭工单。',
+    },
+    actions: qualityActions(),
+    followup_suggestions: qualityFollowups(),
+    model_used: 'flatTalk.service_quality.rules',
+    model_status: sourceStatus.includes('simulated') ? 'degraded' : 'ok',
+  });
+}
+
+function fillQualityStandardCard(sourceStatus) {
+  return sanitizeModelResult({
+    template_id: 'evaluation_standard',
+    answer_text: '服务质量评估采用 D1-D4 四维度加权评分。',
+    answer: '服务质量评估采用 D1-D4 四维度加权评分。',
+    data: {
+      standardName: '养老服务质量评估标准',
+      version: 'v2.0',
+      dimensions: [
+        { code: 'D1', name: '用户评价评分', weight: '30%', target: '评价', orgRule: '机构：由归属人员 D1 按 T-1 工单量加权推导。', staffRule: '人员：好中差评得分 0.5 + 星级评分 0.5。' },
+        { code: 'D2', name: '工单满意度/流程完成度', weight: '20%', target: '流程', orgRule: '机构：已完成工单中满意反馈占比。', staffRule: '人员：完成全流程工单数 / 总工单数。' },
+        { code: 'D3', name: '工单服务质量/时长达标率', weight: '20%', target: '执行', orgRule: '机构：准时到达率 50% + 完成率 50%。', staffRule: '人员：实际服务时长达到标准时长的工单占比。' },
+        { code: 'D4', name: '投诉率', weight: '30%', target: '风险', orgRule: '机构：（1 - 投诉工单数 / 总工单数）×100。', staffRule: '人员：（1 - 投诉工单数 / 总工单数）×100。' },
+      ],
+      positiveTags: ['服务态度好', '技术专业', '准时到达', '耐心细致', '沟通清晰'],
+      negativeTags: ['态度不好', '迟到早退', '服务不专业', '流程缺失'],
+    },
+    actions: qualityActions(),
+    followup_suggestions: qualityFollowups(),
+    model_used: 'flatTalk.service_quality.rules',
+    model_status: sourceStatus.includes('simulated') ? 'degraded' : 'ok',
+  });
+}
+
+function qualityActions() {
+  return [
+    { action_key: 'service_quality_eval.view_report', label: '机构报告', params: {} },
+    { action_key: 'service_quality_eval.view_staff', label: '人员评估', params: {} },
+    { action_key: 'service_quality_eval.rectify', label: '整改建议', params: {} },
+    { action_key: 'service_quality_eval.view_standard', label: '评分标准', params: {} },
+  ];
+}
+
+function qualityFollowups() {
+  return [
+    { label: '查看机构排名', user_prompt: '查看机构服务质量排名', action_key: 'service_quality_eval.view_org_rank' },
+    { label: '查看投诉详情', user_prompt: '查看服务质量投诉详情', action_key: 'service_quality_eval.view_complaint' },
+    { label: '生成人员排名', user_prompt: '查看护理员服务质量排名', action_key: 'service_quality_eval.view_staff_rank' },
+  ];
+}
+
+function buildOrgRanking(summary) {
+  const score = summary.totalScore;
+  return [
+    rankOrg(1, '青秀区颐养中心', 95.2, '青秀区'),
+    rankOrg(2, summary.orgName, score, '防城港'),
+    rankOrg(3, '港口区安康护理站', 82.6, '港口区'),
+    rankOrg(4, '边海社区居家养老点', 66.4, '防城区'),
+  ].sort((a, b) => b.score - a.score).map((item, index) => ({ ...item, rank: index + 1, noClass: index < 2 ? 'top' : item.score < 70 ? 'warn' : '' }));
+}
+
+function rankOrg(rank, orgName, score, area) {
+  return {
+    rank,
+    noClass: '',
+    orgName,
+    area,
+    score: round1(score),
+    level: scoreLevel(score),
+    levelClass: score >= 85 ? 'ok' : score >= 70 ? 'blue' : 'bad',
+    tag: score >= 90 ? '优先推荐' : score < 70 ? '预警推送' : '',
+    tagClass: score >= 90 ? 'ok' : score < 70 ? 'bad' : '',
+    delta: score >= 80 ? '+1.0' : '-2.0',
+    d1: round1(score + 1),
+    d2: round1(score - 1),
+    d3: round1(score - 2),
+    d4: round1(score),
+  };
+}
+
+function buildStaffRanking(summary) {
+  const base = [
+    { staffName: summary.staffName, score: summary.totalScore, complaints: summary.complaintCount },
+    { staffName: '李秀琴', score: 94.1, complaints: 0 },
+    { staffName: '王桂芳', score: 90.5, complaints: 0 },
+    { staffName: '孙伟', score: 58.4, complaints: 3 },
+  ].sort((a, b) => b.score - a.score);
+  return base.map((item, index) => ({
+    rank: index + 1,
+    noClass: index < 2 ? 'top' : item.score < 70 ? 'warn' : '',
+    staffName: item.staffName,
+    serviceType: '上门服务',
+    score: round1(item.score),
+    level: scoreLevel(item.score),
+    levelClass: item.score >= 85 ? 'ok' : item.score >= 70 ? 'blue' : 'bad',
+    tag: item.score >= 90 ? '服务适配' : item.score < 70 ? '预警' : '',
+    tagClass: item.score >= 90 ? 'ok' : item.score < 70 ? 'bad' : '',
+    workOrders: summary.workOrderCount || 30,
+    complaints: item.complaints,
+    delta: item.score >= 80 ? '+0.8' : '-3.1',
+  }));
+}
+
+function extractTags(rows, samples, positive) {
+  const text = [...rows, ...samples].map((item) => `${item.evaluate_tags || ''} ${item.content || ''} ${item.title || ''}`).join(' ');
+  const pool = positive
+    ? ['服务态度好', '技术专业', '准时到达', '耐心细致', '沟通清晰']
+    : ['迟到早退', '态度不好', '服务不专业', '流程缺失', '服务时效'];
+  return pool.filter((tag) => text.includes(tag) || (!positive && /迟到|超时|投诉|不专业|态度差/.test(text) && ['迟到早退', '服务时效'].includes(tag))).slice(0, 4);
+}
+
+function firstNonEmpty(rows, keys) {
+  for (const row of rows) {
+    for (const key of keys) {
+      if (row?.[key]) return String(row[key]);
+    }
+  }
+  return '';
+}
+
+function scoreLevel(score) {
+  const value = Number(score || 0);
+  if (value >= 90) return 'A级';
+  if (value >= 80) return 'B级';
+  if (value >= 70) return 'C级';
+  return 'D级';
+}
+
+function clampScore(score) {
+  return Math.max(0, Math.min(100, Number(score || 0)));
+}
+
+function round1(value) {
+  return Math.round(Number(value || 0) * 10) / 10;
+}
+
+const HTML_SAFE_KEYS = new Set(['static_svg', 'compact_followups', 'rendered_html']);
+function sanitizeModelResult(result, parentKey = '') {
+  if (Array.isArray(result)) return result.map((item) => sanitizeModelResult(item, parentKey));
+  if (result && typeof result === 'object') {
+    return Object.fromEntries(Object.entries(result).map(([key, value]) => [key, sanitizeModelResult(value, key)]));
+  }
+  if (typeof result === 'string') {
+    if (HTML_SAFE_KEYS.has(parentKey)) return result;
+    return sanitizeText(result);
+  }
   return result;
 }
 
@@ -2696,10 +4205,10 @@ export function fillTravelWeatherRisk({ city, weather, business_data, all_cities
       degradedNote: ok ? '' : '暂未获取到实时天气，以下为通用提醒，请以当地实际预报为准。',
     },
     actions: [
-      { action_key: 'travel_route.replan', label: '调整行程避开恶劣天气', params: { destination: cityName } },
+      { action_key: 'travel_route.replan', label: '调整行程避开恶劣天气', skill_key: 'travel_route', params: { destination: cityName } },
     ],
     followup_suggestions: [
-      { label: '查看可订状态', user_prompt: '请检查这条旅居路线近期是否可预订', action_key: 'travel_route.check_availability', params: { destination: cityName } },
+      { label: '查看可订状态', user_prompt: '请检查这条旅居路线近期是否可预订', action_key: 'travel_route.check_availability', skill_key: 'travel_route', params: { destination: cityName } },
     ],
     model_used: 'flatTalk.travel.weather',
     model_status: ok ? 'ok' : 'degraded',
