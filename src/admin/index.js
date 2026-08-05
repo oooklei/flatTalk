@@ -6,6 +6,7 @@ import { handleModuleApi } from './modules.js';
 import { handleIntegrationsApi } from './integrations.js';
 import { handleOpenApiAdmin } from './openapi.js';
 import { handleAccessApi } from './access.js';
+import { handleMapStudioApi } from './mapstudio.js';
 
 const ADMIN_DIR = path.join(process.cwd(), 'src', 'public', 'admin');
 
@@ -25,6 +26,9 @@ export function handleAdminApi(req, res, url) {
   }
   if (parts[0] === 'access' || parts[0] === 'embeds') {
     return handleAccessApi(req, res, method, parts);
+  }
+  if (parts[0] === 'mapstudio') {
+    return handleMapStudioApi(req, res, method, parts.slice(1));
   }
   return handleModuleApi(req, res, method, parts);
 }

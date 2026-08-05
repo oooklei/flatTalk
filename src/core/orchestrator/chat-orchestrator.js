@@ -318,6 +318,46 @@ export function createChatOrchestrator(options = {}) {
           );
           mark('scene_route', '场景路由', { scene_key: sceneDecision?.scene_key, decision: sceneDecision?.decision, confidence: sceneDecision?.confidence });
           acceptedScene = await acceptScene(request, sceneDecision);
+          // 消歧短路：把 ambiguity_options 直接回传客户端，避免继续走完整管线冲掉选项
+          if (Array.isArray(acceptedScene?.ambiguity_options) && acceptedScene.ambiguity_options.length) {
+            mark('ambiguity', '场景消歧', {
+              options: acceptedScene.ambiguity_options.map((o) => o.scene_key || o.skill_key),
+            });
+            const ambSkill = acceptedScene.skill_key || 'common';
+            const ambAnswer = acceptedScene.slot_overrides?.answer_text
+              || '我不确定您想了解哪个方面，请选择：';
+            const ambEnvelope = buildEnvelope({
+              request_id: request.request_id,
+              conversation_id: request.conversation_id,
+              turn_id: request.turn_id,
+              skill_key: ambSkill,
+              agent_key: ambSkill,
+              intent: 'common.ambiguity',
+              template_id: acceptedScene.template_id || 'answer',
+              template_key: acceptedScene.template_id || 'answer',
+              answer_text: ambAnswer,
+              data: {},
+              actions: [],
+              followup_suggestions: [],
+              evidence: [],
+              route: {
+                source: acceptedScene.route_source || 'flatTalk.ambiguity_resolver',
+                scene_key: ambSkill,
+                decision: 'ambiguous',
+                confidence: 0,
+                routed: false,
+                intent_context: intentContext,
+              },
+            });
+            return {
+              ...ambEnvelope,
+              ambiguity_options: acceptedScene.ambiguity_options,
+              answer: ambAnswer,
+              context_snapshot: buildSnapshot(ambEnvelope),
+              stages,
+              debug: { ambiguity: true, option_count: acceptedScene.ambiguity_options.length },
+            };
+          }
           skillKey = acceptedScene?.scene_key || 'common';
         }
         const skillTemplates = resolveSkillTemplates(skillKey);
