@@ -12,6 +12,29 @@ function stripAdmin(s) {
   return String(s || '').replace(/省|市|县|区|自治区|特别行政区/g, '');
 }
 
+/** 广西旅居常用城/县，用于 destination 亲和与过境长线降权 */
+const CITY_HINTS = [
+  '防城港', '东兴', '北海', '钦州', '南宁', '巴马', '桂林', '阳朔', '永福', '恭城', '荔浦',
+  '崇左', '大新', '宁明', '百色', '河池', '柳州', '梧州', '玉林', '贺州', '来宾', '贵港', '涠洲',
+];
+
+function extractCities(textNorm) {
+  const t = String(textNorm || '');
+  return CITY_HINTS.filter((c) => t.includes(c));
+}
+
+function destOverlapsCities(dests, cities) {
+  return cities.some((c) => dests.some((d) => {
+    const dn = stripAdmin(d);
+    return dn && (dn.includes(c) || c.includes(dn));
+  }));
+}
+
+function isCorridorTitle(title) {
+  const cities = extractCities(stripAdmin(title));
+  return cities.length >= 3 && /[-－—→>]/.test(String(title || ''));
+}
+
 /** 关键词/标题软命中：整词 > 去尾缀词干 > 最长中文子串(≥3) */
 function scorePhraseHit(text, phrase) {
   const p = String(phrase || '').trim();
@@ -98,6 +121,33 @@ export function matchPublishedPackages(utterance, { baseDir } = {}) {
     // 别名命中
     for (const a of p.aliases || []) {
       if (a && text.includes(a)) score += 5;
+    }
+
+    // 滨海意图：抬高 coastal / 含滨海标签的包（须在 destination 降权之前加分，避免蹭城复活）
+    if (/滨海|海边|银滩|京族|海岛|涠洲/.test(text)) {
+      if (p.product_type === 'coastal') score += 4;
+      const blob = `${title} ${(p.keywords || []).join(' ')}`;
+      if (/滨海|银滩|京族|海边|涠洲/.test(blob)) score += 4;
+    }
+
+    // destination 亲和：话语点名城市必须落在包 destination 上，否则降权「标题/关键词蹭过境城」
+    const utteredCities = extractCities(textNorm);
+    if (utteredCities.length) {
+      const overlap = destOverlapsCities(dests, utteredCities);
+      if (overlap) {
+        score += 10;
+        // 单城话术 vs 多城走廊长线：本地包优先（防城港滨海 ≠ 南宁-北海-钦州-防城港）
+        if (utteredCities.length === 1 && isCorridorTitle(title)) {
+          score = Math.max(0, score - 12);
+        }
+      } else if (utteredCities.length === 1) {
+        score = Math.max(0, score - 14);
+      } else {
+        // 多城话术但 destination 无交集：需标题至少覆盖 2 个话语城市，否则降权
+        const titleCities = extractCities(stripAdmin(title));
+        const covered = utteredCities.filter((c) => titleCities.includes(c)).length;
+        if (covered < 2) score = Math.max(0, score - 10);
+      }
     }
 
     if (score <= 0) continue;

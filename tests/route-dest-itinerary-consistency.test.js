@@ -40,3 +40,16 @@ test('巴马话术仍可用巴马示例', async () => {
   assert.match(String(result.data?.destination || ''), /巴马/);
   assert.doesNotMatch(String(result.data?.destination || ''), /北海/);
 });
+
+test('防城港滨海三日游不得落到南宁长线目的地', async () => {
+  const result = await fillTemplateSlots({
+    skill_key: 'travel_route',
+    template_id: 'route_svg',
+    message: '防城港滨海三日游',
+    business_data: { routes: [] },
+  });
+  assert.match(String(result.data?.destination || ''), /防城港/);
+  assert.doesNotMatch(String(result.data?.destination || ''), /^南宁$/);
+  assert.equal(result.data?.route_id, 'fcg_route_001');
+  assert.doesNotMatch(String(result.data?.routeTitle || ''), /南宁-北海-钦州/);
+});

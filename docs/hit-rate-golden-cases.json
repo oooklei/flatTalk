@@ -50,6 +50,8 @@
     { "id": "lp-02", "message": "银发爱情边境", "expect_route_id": "fcg_route_002" },
     { "id": "lp-03", "message": "南宁北海钦州防城港滨海养老旅居", "expect_route_id": "gx_excel_05" },
     { "id": "lp-04", "message": "巴马康养百魔洞", "expect_route_id": "bama_5d4n" },
-    { "id": "lp-05", "message": "七洞乡线路产品", "expect_route_id": "jtd_2070305000000000240" }
+    { "id": "lp-05", "message": "七洞乡线路产品", "expect_route_id": "jtd_2070305000000000240" },
+    { "id": "lp-06", "message": "防城港滨海三日游", "expect_route_id": "fcg_route_001" },
+    { "id": "lp-07", "message": "想去防城港旅居", "expect_route_id_prefix": "fcg_route_" }
   ]
 }
