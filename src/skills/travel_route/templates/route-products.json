@@ -1,0 +1,46 @@
+{
+  "version": "1.1",
+  "description": "旅游线路产品模板库索引 — 每个产品含 manifest 定义 + 示例数据，统一使用 route_svg.html 渲染",
+  "render_template": "route_svg.html",
+  "generator": "generateRouteHtml (src/core/route-svg-generator.js)",
+  "products": [
+    {
+      "id": "route_wellness",
+      "name": "康养旅居",
+      "description": "健康养生主题，含负氧离子/地磁/温泉/长寿文化",
+      "manifest": "html/route_wellness.manifest.json",
+      "sample": "data/route_wellness.sample.json",
+      "destinations": ["巴马", "河池", "盘阳河"],
+      "match_keywords": ["康养", "长寿", "养生", "负氧离子", "地磁", "温泉", "百魔洞", "巴马"]
+    },
+    {
+      "id": "route_coastal",
+      "name": "滨海度假",
+      "description": "海洋文化/海滩休闲主题，含沙滩/海岛/海鲜/边境口岸",
+      "manifest": "html/route_coastal.manifest.json",
+      "sample": "data/route_coastal.sample.json",
+      "destinations": ["北海", "防城港", "东兴", "钦州", "涠洲"],
+      "match_keywords": ["滨海", "海滩", "海岛", "度假", "海鲜", "边境", "银滩", "海边", "白浪滩", "京族", "北海"]
+    },
+    {
+      "id": "route_culture",
+      "name": "民族文化",
+      "description": "少数民族文化/历史古迹，含民俗节庆/非遗手作/古村落",
+      "manifest": "html/route_culture.manifest.json",
+      "sample": "data/route_culture.sample.json",
+      "destinations": ["三江", "龙胜", "靖西"],
+      "match_keywords": ["民族文化", "古镇", "非遗", "民俗", "瑶族", "壮族", "侗族"]
+    },
+    {
+      "id": "route_ecology",
+      "name": "生态山水",
+      "description": "自然山水/喀斯特地貌，含溶洞/瀑布/梯田/湿地",
+      "manifest": "html/route_ecology.manifest.json",
+      "sample": "data/route_ecology.sample.json",
+      "destinations": ["崇左", "百色", "桂林", "阳朔"],
+      "match_keywords": ["生态", "山水", "喀斯特", "溶洞", "瀑布", "梯田", "漂流"]
+    }
+  ],
+  "selection_rule": "1. 关键词匹配产品类型 → 2. 目的地与示例数据必须同城一致 → 3. 类型兜底但不强行套用异地示例行程",
+  "boundary_geojson_dir": "geographicSVG/"
+}

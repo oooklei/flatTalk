@@ -5,7 +5,7 @@ import { createShezhenService } from '../services/shezhen/shezhen-service.js';
 import { buildRouteMapData as buildRouteMapDataFromKit, buildBaseMapData as buildBaseMapDataFromKit, findPrebuiltPackageByDestination, findPrebuiltPackage } from './map/map-kit.js';
 import { matchPublishedPackages } from './scene-router/publish-index.js';
 import { generateRouteHtml } from './route-svg-generator.js';
-import { selectProductTemplate } from './route-svg-generator.js';
+import { selectProductTemplate, isSampleCompatibleWithDestination } from './route-svg-generator.js';
 import {
   fillTravelTransportCard,
   fillTravelNeedSummaryCard,
@@ -2476,6 +2476,8 @@ function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
     ? selectedTemplateId
     : (productMatch?.id || 'route_wellness');
   const productSample = productMatch?.sample || {};
+  const sampleOk = isSampleCompatibleWithDestination(productSample, destination)
+    || isSampleCompatibleWithDestination(productSample, message);
 
   let staticSvg = '';
   if (svgPkg && svgPkg.svg) {
@@ -2484,17 +2486,23 @@ function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
     staticSvg = `<div style="padding:20px;text-align:center;color:#999;">地图加载中...</div>`;
   }
 
-  // 优先用预制作资源包数据，其次用产品模板示例数据兜底
+  // 优先用预制作资源包；示例数据仅在与目的地同城时使用，禁止「北海目的地 + 巴马行程」
   const resolvedRouteId = matchedRouteId || svgPkg?.routeData?.route_id || '';
   const routeTitle = svgPkg?.routeData?.route_name
     || business_data?.route_title
-    || productSample.routeTitle
-    || `${destination}康养旅居三日路线`;
-  const highlights = (svgPkg?.routeData?.highlights || productSample.highlights || buildTravelHighlights(healthTags, destination));
-  const itinerary = (svgPkg?.routeData?.itinerary || productSample.itinerary || buildItinerary(destination));
+    || (sampleOk ? productSample.routeTitle : '')
+    || `${destination.replace(/^广西/, '')}旅居路线`;
+  const highlights = (svgPkg?.routeData?.highlights?.length
+    ? svgPkg.routeData.highlights
+    : (sampleOk && productSample.highlights?.length ? productSample.highlights : buildTravelHighlights(healthTags, destination)));
+  const itinerary = (svgPkg?.routeData?.itinerary?.length
+    ? svgPkg.routeData.itinerary
+    : (sampleOk && productSample.itinerary?.length ? productSample.itinerary : buildItinerary(destination)));
   const daysLabel = svgPkg?.routeData?.days
-    ? `${svgPkg.routeData.days}天`
-    : (/四天|4天|five/i.test(message) ? '4天3晚' : '3天2晚');
+    ? (String(svgPkg.routeData.days).includes('天') ? String(svgPkg.routeData.days) : `${svgPkg.routeData.days}天`)
+    : (sampleOk && productSample.days)
+      ? productSample.days
+      : (/四天|4天|five/i.test(message) ? '4天3晚' : `${Math.max(itinerary.length, 3)}天${Math.max(itinerary.length - 1, 2)}晚`);
   const answerText = `已为您推荐${routeTitle}，按${budgetLevel}和老人低强度出行节奏规划。`;
 
   return sanitizeModelResult({
@@ -2509,9 +2517,17 @@ function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
       season,
       budgetLevel,
       days: daysLabel,
-      suitable: sanitizeText(svgPkg?.routeData?.suitable_for || inferTravelSuitable(message)),
+      suitable: sanitizeText(
+        svgPkg?.routeData?.suitable_for
+        || (sampleOk ? productSample.suitable : '')
+        || inferTravelSuitable(message)
+      ),
       bookingStatus,
-      summary: sanitizeText(svgPkg?.routeData?.summary || buildRouteSummary(destination, budgetLevel)),
+      summary: sanitizeText(
+        svgPkg?.routeData?.summary
+        || (sampleOk ? productSample.summary : '')
+        || buildRouteSummary(destination, budgetLevel)
+      ),
       highlights,
       itinerary,
       healthNotice: buildTravelHealthNotice(message),
@@ -2609,7 +2625,13 @@ function buildRouteCardSummary({ product, productName, destination, jtd, priceLa
 
 function buildTravelHighlights(healthTags, destination) {
   const tags = healthTags.split(/[,，]/).map((item) => item.trim()).filter(Boolean);
-  return [...new Set([...tags, destination.includes('北海') ? '海滨慢行' : '康养基地', '家属可陪同'])].slice(0, 5);
+  const dest = String(destination || '');
+  let placeTags = ['康养基地', '家属可陪同'];
+  if (/北海/.test(dest)) placeTags = ['银滩慢行', '海鲜养生餐', '海滨低强度'];
+  else if (/防城港|东兴|京族/.test(dest)) placeTags = ['白浪滩漫步', '京族滨海文化', '边境风情'];
+  else if (/巴马/.test(dest)) placeTags = ['负氧离子', '长寿乡漫步', '低强度康养'];
+  else if (/桂林|阳朔/.test(dest)) placeTags = ['漓江慢游', '喀斯特风光', '适老步道'];
+  return [...new Set([...tags, ...placeTags])].slice(0, 5);
 }
 
 function resolveTravelDuration({ product = {}, title = '', message = '', fallbackDays = 3 } = {}) {
@@ -2663,26 +2685,40 @@ function chineseNumberToInt(text) {
 }
 
 function buildItinerary(destination, days = 3) {
-  // 根据实际天数构建行程
+  const dest = String(destination || '旅居目的地');
+  const totalDays = Math.max(1, Math.min(30, parseInt(days, 10) || 3));
+
+  if (/北海/.test(dest)) {
+    const beihai = [
+      { day: 'D1', wp_name: '北海市区', plan: '抵达北海，入住海滨酒店，银滩晚风慢行与健康确认。' },
+      { day: 'D2', wp_name: '银滩/老街', plan: '银滩漫步或北海老街轻游，海鲜养生餐，午休充足。' },
+      { day: 'D3', wp_name: '海滨返程', plan: '海滨晨练或短途观海后返程，预留交通缓冲。' },
+      { day: 'D4', wp_name: '涠洲补给日', plan: '可选涠洲岛低强度环岛，避免赶船赶程。' },
+    ];
+    return beihai.slice(0, totalDays);
+  }
+  if (/防城港|东兴|京族/.test(dest)) {
+    const fcg = [
+      { day: 'D1', wp_name: '防城港市区', plan: '抵达防城港，入住海滨住宿，白浪滩轻行。' },
+      { day: 'D2', wp_name: '京族三岛', plan: '京族文化体验与滨海慢行，午后充分休息。' },
+      { day: 'D3', wp_name: '东兴口岸', plan: '边境口岸观光后返程，预留交通缓冲。' },
+    ];
+    return fcg.slice(0, totalDays);
+  }
+
   const itinerary = [];
-  const totalDays = Math.max(1, Math.min(30, parseInt(days) || 3));
-  
   for (let i = 0; i < totalDays; i++) {
     const dayNum = i + 1;
     let plan = '';
-    
     if (i === 0) {
-      plan = `抵达${destination}，办理入住，完成健康情况确认，安排轻松周边散步。`;
+      plan = `抵达${dest}，办理入住，完成健康情况确认，安排轻松周边散步。`;
     } else if (i === totalDays - 1) {
       plan = '根据体力选择短途游览或返程，预留交通缓冲，避免赶行程。';
     } else {
-      // 中间天数：康养活动或基地体验
       plan = `第${dayNum}天康养活动或基地体验，下午低强度游览，晚间保留充分休息时间。`;
     }
-    
     itinerary.push({ day: `D${dayNum}`, plan });
   }
-  
   return itinerary;
 }
 
@@ -2720,12 +2756,6 @@ async function fillRouteCard({ message, business_data }) {
   const budgetLevel = sanitizeText(route?.budget_level || inferBudget(message));
   const priceLabel = sanitizeText(product?.price_label || '');
   const season = sanitizeText(route?.season || inferSeason(message));
-
-  // ★ 产品模板库分类：根据消息+目的地匹配产品类型（康养/滨海/文化/生态）
-  const productMatch = selectProductTemplate(`${routeTitle} ${message}`, destination);
-  const routeType = productMatch?.id || 'route_wellness';
-  const bookingStatus = sanitizeText(buildJtdBookingStatus(jtd, product, route));
-  const healthTags = sanitizeText((Array.isArray(product?.tags) && product.tags.length ? product.tags.join(',') : '') || route?.health_tags || '慢病友好,低强度,医疗可达');
   const productName = sanitizeText(product?.product_name || '');
   // routeTitle 智能拼接：产品名已含"康养/旅居/路线/线路/行程"关键词时直接用，避免重复
   const routeTitle = (() => {
@@ -2733,6 +2763,12 @@ async function fillRouteCard({ message, business_data }) {
     if (/(康养|旅居|路线|线路|行程)/.test(productName)) return productName;
     return `${productName}康养旅居路线`;
   })();
+
+  // ★ 产品模板库分类：根据消息+目的地匹配产品类型（康养/滨海/文化/生态）
+  const productMatch = selectProductTemplate(`${routeTitle} ${message}`, destination);
+  const routeType = productMatch?.id || 'route_wellness';
+  const bookingStatus = sanitizeText(buildJtdBookingStatus(jtd, product, route));
+  const healthTags = sanitizeText((Array.isArray(product?.tags) && product.tags.length ? product.tags.join(',') : '') || route?.health_tags || '慢病友好,低强度,医疗可达');
   
   // 从可信结构化字段、产品标题和用户输入依次提取总天数。
   // 注意：JTD routeProduct.dayNumber 表示“第几日”，不是产品总天数，不能当 duration。
@@ -2820,8 +2856,14 @@ async function fillRouteCard({ message, business_data }) {
   const spotImages = waypoints.flatMap((wp) => wp.spot_images || []).slice(0, 4);
   const spotStatus = waypoints.find((wp) => wp.spot_status)?.spot_status || '';
   // 行程附加途经点名称（wp_name），与走线地图联动
-  // 本地线路（防城港5条）有结构化 itinerary，优先使用
-  const itinerary = Array.isArray(product?.itinerary) && product.itinerary.length
+  // 本地线路（防城港5条）有结构化 itinerary，优先使用；但必须与 destination 同城
+  const productContentOk = !product || isSampleCompatibleWithDestination({
+    destination: product.destination || product.city || '',
+    routeTitle: product.product_name || '',
+    highlights: product.highlights || [],
+    itinerary: product.itinerary || [],
+  }, destination);
+  const itinerary = productContentOk && Array.isArray(product?.itinerary) && product.itinerary.length
     ? product.itinerary.map((item, i) => ({
         time: item.time || '',
         content: item.content || '',
@@ -2830,17 +2872,17 @@ async function fillRouteCard({ message, business_data }) {
       }))
     : buildItinerary(destination, totalDays).map((item, i) => ({
         ...item,
-        wp_name: waypoints[i]?.name || '',
+        wp_name: waypoints[i]?.name || item.wp_name || '',
       }));
 
   // 本地线路有结构化 highlights / summary / suitable_for，优先使用
-  const summary = product?.summary
+  const summary = productContentOk && product?.summary
     ? sanitizeText(product.summary)
-    : buildRouteCardSummary({ product, productName, destination, jtd, priceLabel, budgetLevel });
-  const highlights = Array.isArray(product?.highlights) && product.highlights.length
+    : buildRouteCardSummary({ product: productContentOk ? product : null, productName: productContentOk ? productName : '', destination, jtd, priceLabel, budgetLevel });
+  const highlights = productContentOk && Array.isArray(product?.highlights) && product.highlights.length
     ? product.highlights
     : buildTravelHighlights(healthTags, destination);
-  const suitableText = product?.suitable_for
+  const suitableText = productContentOk && product?.suitable_for
     ? sanitizeText(product.suitable_for)
     : inferTravelSuitable(message);
 

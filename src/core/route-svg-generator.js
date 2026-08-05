@@ -319,7 +319,7 @@ function loadBoundaryFromLocal(destination) {
   return [];
 }
 
-export { DESTINATION_BOUNDARY_MAP, DESTINATION_CENTER, loadBoundaryFromLocal, inferDestination, selectProductTemplate, loadProductSample };
+export { DESTINATION_BOUNDARY_MAP, DESTINATION_CENTER, loadBoundaryFromLocal, inferDestination, selectProductTemplate, loadProductSample, isSampleCompatibleWithDestination };
 
 // ============================================================
 // 产品模板库：选择器
@@ -333,19 +333,17 @@ function selectProductTemplate(routeName, description) {
   const index = loadProductIndex();
   if (!index || !Array.isArray(index.products)) return null;
 
-  const text = `${routeName} ${description}`;
+  const text = `${routeName || ''} ${description || ''}`;
   let bestMatch = null;
   let bestScore = 0;
 
   for (const product of index.products) {
     let score = 0;
-    // 关键词匹配
     for (const kw of (product.match_keywords || [])) {
-      if (text.includes(kw)) score += 2;
+      if (kw && text.includes(kw)) score += 2;
     }
-    // 目的地匹配
     for (const dest of (product.destinations || [])) {
-      if (text.includes(dest)) score += 1;
+      if (dest && text.includes(dest)) score += 3; // 目的地权重大于泛化主题词
     }
     if (score > bestScore) {
       bestScore = score;
@@ -353,14 +351,19 @@ function selectProductTemplate(routeName, description) {
     }
   }
 
-  // 兜底：无匹配则用第一个产品（康养旅居）
-  if (!bestMatch && index.products.length > 0) {
-    bestMatch = index.products[0];
+  // 兜底：有明确滨海目的地时优先 coastal，而不是永远落到 wellness 示例（巴马）
+  if (!bestMatch || bestScore <= 0) {
+    if (/北海|防城港|东兴|钦州|银滩|涠洲|海边|海滩|滨海/.test(text)) {
+      bestMatch = index.products.find((p) => p.id === 'route_coastal') || index.products[0];
+    } else if (/巴马|百魔洞|长寿村|赐福湖/.test(text)) {
+      bestMatch = index.products.find((p) => p.id === 'route_wellness') || index.products[0];
+    } else {
+      bestMatch = index.products[0];
+    }
   }
 
   if (!bestMatch) return null;
 
-  // 加载 manifest 和示例数据
   const tplDir = path.join(process.cwd(), 'src', 'skills', 'travel_route', 'templates');
   let manifest = {};
   let sample = {};
@@ -371,7 +374,48 @@ function selectProductTemplate(routeName, description) {
     sample = JSON.parse(fs.readFileSync(path.join(tplDir, bestMatch.sample), 'utf8'));
   } catch {}
 
+  // 示例数据与目标目的地不一致时，只保留模板类型，不套用异地行程/亮点
+  if (!isSampleCompatibleWithDestination(sample, text)) {
+    sample = {};
+  }
+
   return { id: bestMatch.id, name: bestMatch.name, manifest, sample };
+}
+
+const DESTINATION_LANDMARKS = {
+  巴马: ['巴马', '百魔洞', '赐福湖', '盘阳河', '命河', '长寿村', '水晶宫'],
+  北海: ['北海', '银滩', '涠洲'],
+  防城港: ['防城港', '京族', '白浪滩', '东兴', '芒街', '江山半岛'],
+  桂林: ['桂林', '阳朔', '漓江', '象鼻山', '遇龙河'],
+  南宁: ['南宁', '青秀山'],
+  贺州: ['贺州', '黄姚'],
+};
+
+function inferLandmarkCity(text = '') {
+  const raw = String(text || '');
+  for (const [city, marks] of Object.entries(DESTINATION_LANDMARKS)) {
+    if (raw.includes(city) || marks.some((m) => m !== city && raw.includes(m))) return city;
+  }
+  return '';
+}
+
+function isSampleCompatibleWithDestination(sample, destinationOrText) {
+  if (!sample || typeof sample !== 'object') return false;
+  const targetCity = inferLandmarkCity(destinationOrText);
+  if (!targetCity) return true;
+  const sampleCity = inferLandmarkCity([
+    sample.destination,
+    sample.routeTitle,
+    ...(Array.isArray(sample.highlights) ? sample.highlights : []),
+    JSON.stringify(sample.itinerary || []),
+  ].filter(Boolean).join(' '));
+  if (sampleCity && sampleCity !== targetCity) return false;
+  // 目标是北海时，绝不能出现巴马地标簇
+  if (targetCity === '北海') {
+    const blob = JSON.stringify(sample);
+    if (/巴马|百魔洞|赐福湖|盘阳河/.test(blob)) return false;
+  }
+  return true;
 }
 
 /**
