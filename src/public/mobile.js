@@ -1804,12 +1804,28 @@ class MobileApp {
     this.resetVisibleVoiceInput();
   }
 
-  async sendMessage(text) {
-    const message = String(text || "").trim();
+  async sendMessage(text, options = {}) {
+    // Support queued items as { message, skill_key, context }
+    let message;
+    let sendOptions = options;
+    if (text && typeof text === "object" && !Array.isArray(text)) {
+      message = String(text.message || "").trim();
+      sendOptions = {
+        skill_key: text.skill_key,
+        context: text.context || {},
+      };
+    } else {
+      message = String(text || "").trim();
+    }
     if (!message) return;
+    const queuedItem = {
+      message,
+      skill_key: sendOptions.skill_key,
+      context: sendOptions.context,
+    };
     if (this.state.sending) {
       // 排队等待当前请求完成后自动发送
-      this.state.pendingQueue.push(message);
+      this.state.pendingQueue.push(queuedItem);
       this.showToast("消息已排队，当前处理完成后自动发送");
       return;
     }
@@ -1827,30 +1843,37 @@ class MobileApp {
     this.addBubble("user", message);
     this.addBubble("ai", "\u601d\u8003\u4e2d...", { pending: true });
     try {
+      const payload = {
+        message,
+        conversationId: conversation?.id || "",
+        conversationHistory,
+        roleKey: this.auth.roleKey,
+        channel: "mobile",
+        userToken: this.auth.token,
+        elderScope: this.auth.elderScope,
+        terminal: this.auth.terminal,
+        authLevel: this.auth.authLevel,
+        userName: this.auth.userName,
+        orgName: this.auth.orgName,
+        presetKey: this.auth.presetKey,
+        location: this.state.location || null,
+      };
+      if (sendOptions.skill_key) {
+        payload.skill_key = sendOptions.skill_key;
+      }
+      if (sendOptions.context && typeof sendOptions.context === "object") {
+        payload.context = { ...sendOptions.context };
+      }
       const body = await fetchJson("/api/chat/message", {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          message,
-          conversationId: conversation?.id || "",
-          conversationHistory,
-          roleKey: this.auth.roleKey,
-          channel: "mobile",
-          userToken: this.auth.token,
-          elderScope: this.auth.elderScope,
-          terminal: this.auth.terminal,
-          authLevel: this.auth.authLevel,
-          userName: this.auth.userName,
-          orgName: this.auth.orgName,
-          presetKey: this.auth.presetKey,
-          location: this.state.location || null,
-        })
+        body: JSON.stringify(payload)
       });
       this.handleRemoteResult(body);
     } catch (err) {
       if (err.status === 409) {
         // 会话繁忙，重新排队等待
-        this.state.pendingQueue.unshift(message);
+        this.state.pendingQueue.unshift(queuedItem);
         this.showToast("系统处理中，消息已排队");
       } else {
         this.updateLastAiBubble(`\u8bf7\u6c42\u672a\u5b8c\u6210\uff1a${err.message}`, { error: true });
@@ -1865,7 +1888,15 @@ class MobileApp {
 
   flushPendingQueue() {
     const next = this.state.pendingQueue.shift();
-    if (next) this.sendMessage(next);
+    if (!next) return;
+    if (typeof next === "string") {
+      this.sendMessage(next);
+    } else {
+      this.sendMessage(next.message, {
+        skill_key: next.skill_key,
+        context: next.context,
+      });
+    }
   }
 
   showToast(text) {
@@ -2071,8 +2102,11 @@ class MobileApp {
       });
       btn.addEventListener("click", () => {
         const label = btn.getAttribute("data-label");
-        // 点击后以选项标签作为新消息发送（走完整 scene-router）
-        this.sendMessage(label);
+        const scene = btn.getAttribute("data-scene");
+        this.sendMessage(label, {
+          skill_key: scene,
+          context: { ambiguity_pick: true, ambiguity_scene_key: scene },
+        });
       });
     });
     last.appendChild(container);

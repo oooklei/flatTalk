@@ -655,6 +655,23 @@ async function applySmartFallback(modelResult, input, smartFallbackHandler, cont
 }
 
 async function acceptScene(request, sceneDecision) {
+  const ambiguityPick = request.context?.ambiguity_pick === true
+    || request.context?.ambiguity_pick === 'true';
+  const ambiguityScene = normalizeForcedSkillKey(
+    request.context?.ambiguity_scene_key || (ambiguityPick ? request.skill_key : '')
+  );
+  if (ambiguityPick && ambiguityScene) {
+    return {
+      scene_key: ambiguityScene,
+      intent: request.intent || `${ambiguityScene}.ambiguity_pick`,
+      decision: 'accept',
+      confidence: 1,
+      routed: true,
+      forced: true,
+      ambiguity_pick: true,
+    };
+  }
+
   const forcedSceneKey = normalizeForcedSkillKey(request.skill_key || request.skillKey);
   if (forcedSceneKey) {
     // Guard: check if user input actually matches the forced skill
