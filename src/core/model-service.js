@@ -2441,14 +2441,30 @@ function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
   // 第二刀：优先按 published route_id 取包，避免 routes[0]（常为巴马）盖住真实命中
   let matchedRouteId = forcedRouteId;
   let svgPkg = forcedRouteId ? findPrebuiltPackage(forcedRouteId, 'standard') : null;
+  const inferredEarly = inferDestination(message);
+  const rejectCrossCityPublish = (hit) => {
+    if (!hit || !inferredEarly) return false;
+    const destBlob = JSON.stringify(hit.meta?.destination || hit.route_id || '');
+    // 嘉路/防城港话术不得锁巴马包；巴马话术不得锁北海/防城港包
+    if (/防城港/.test(inferredEarly) && /巴马|百魔洞|bama/i.test(destBlob) && !/巴马|百魔洞/.test(message)) return true;
+    if (/巴马/.test(inferredEarly) && /(北海|防城港|东兴)/.test(destBlob) && !/(北海|防城港|东兴)/.test(message)) return true;
+    if (/北海/.test(inferredEarly) && /巴马|百魔洞|bama/i.test(destBlob) && !/巴马|百魔洞/.test(message)) return true;
+    return false;
+  };
   if (!svgPkg?.svg) {
-    const hits = matchPublishedPackages(message);
+    const hits = matchPublishedPackages(message).filter((h) => !rejectCrossCityPublish(h));
     const top = hits[0];
     const second = hits[1];
     if (top && (!second || top.score > second.score)) {
       matchedRouteId = top.route_id;
       svgPkg = findPrebuiltPackage(top.route_id, 'standard');
     }
+  } else if (forcedRouteId && rejectCrossCityPublish({
+    route_id: forcedRouteId,
+    meta: business_data?.publish_match || {},
+  })) {
+    matchedRouteId = '';
+    svgPkg = null;
   }
 
   const inferredDest = inferDestination(message);

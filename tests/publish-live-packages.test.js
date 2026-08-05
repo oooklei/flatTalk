@@ -56,6 +56,18 @@ test('live match: 单城防城港滨海三日游 → fcg_route_001，不串南�
   assert.ok(!hits.slice(0, 3).some((h) => h.route_id === 'gx_excel_05'));
 });
 
+test('live match: 嘉路康养中心 → fcg，不串巴马', () => {
+  const hits = matchPublishedPackages('嘉路康养中心', { baseDir: BASE });
+  assert.equal(hits[0]?.route_id, 'fcg_route_001');
+  assert.ok(!hits.slice(0, 5).some((h) => h.route_id === 'bama_5d4n'));
+});
+
+test('live match: 嘉路附近旅居路线 → fcg 本地包', () => {
+  const hits = matchPublishedPackages('嘉路附近有什么旅居路线', { baseDir: BASE });
+  assert.ok(String(hits[0]?.route_id || '').startsWith('fcg_route_'));
+  assert.notEqual(hits[0]?.route_id, 'bama_5d4n');
+});
+
 test('live match: 巴马康养 → bama_5d4n（合并 excel7/jtd0724，不命中 draft）', () => {
   const hits = matchPublishedPackages('巴马5天4晚康养百魔洞旅居线路', { baseDir: BASE });
   assert.equal(hits[0]?.route_id, 'bama_5d4n');

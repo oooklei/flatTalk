@@ -18,9 +18,41 @@ const CITY_HINTS = [
   '崇左', '大新', '宁明', '百色', '河池', '柳州', '梧州', '玉林', '贺州', '来宾', '贵港', '涠洲',
 ];
 
+/** 品牌/乡镇 → 归属城市（话语无城市名时也能做 destination 亲和） */
+const PLACE_ALIASES = {
+  嘉路: ['防城港', '东兴'],
+  嘉路康养: ['防城港', '东兴'],
+  嘉路康养中心: ['防城港', '东兴'],
+  嘉路滨海: ['防城港', '东兴'],
+  白浪滩: ['防城港'],
+  金滩: ['防城港', '东兴'],
+  簕山: ['防城港'],
+  京族三岛: ['防城港', '东兴'],
+  芒街: ['防城港', '东兴'],
+  七洞: ['桂林'],
+  七洞乡: ['桂林'],
+  百魔洞: ['巴马'],
+  赐福湖: ['巴马'],
+  银滩: ['北海'],
+  涠洲: ['北海'],
+};
+
+/** 过宽关键词：单独出现不得抬分（「嘉路康养中心」不能因「康养」命中巴马） */
+const GENERIC_KEYWORDS = new Set([
+  '康养', '旅居', '线路', '路线', '旅游', '养老', '三日游', '七日', '测试', '长寿', '南宁',
+]);
+
 function extractCities(textNorm) {
   const t = String(textNorm || '');
-  return CITY_HINTS.filter((c) => t.includes(c));
+  const cities = CITY_HINTS.filter((c) => t.includes(c));
+  for (const [alias, mapped] of Object.entries(PLACE_ALIASES)) {
+    if (t.includes(alias)) {
+      for (const c of mapped) {
+        if (!cities.includes(c)) cities.push(c);
+      }
+    }
+  }
+  return cities;
 }
 
 function destOverlapsCities(dests, cities) {
@@ -36,9 +68,10 @@ function isCorridorTitle(title) {
 }
 
 /** 关键词/标题软命中：整词 > 去尾缀词干 > 最长中文子串(≥3) */
-function scorePhraseHit(text, phrase) {
+function scorePhraseHit(text, phrase, { allowGeneric = false } = {}) {
   const p = String(phrase || '').trim();
   if (!p) return 0;
+  if (!allowGeneric && (GENERIC_KEYWORDS.has(p) || p.length < 2)) return 0;
   if (text.includes(p)) return Math.min(12, 2 + p.length);
   const stem = p.replace(/(体验线|文化线|边境线|康养线|旅居线|线路|路线|三日游|线|游)$/g, '');
   if (stem.length >= 4 && text.includes(stem)) return Math.min(11, 2 + stem.length);
@@ -49,14 +82,16 @@ function scorePhraseHit(text, phrase) {
   if (/芒街/.test(p)) shortTags.push('芒街');
   if (/百魔洞/.test(p)) shortTags.push('百魔洞');
   if (/七洞/.test(p)) shortTags.push('七洞', '七洞乡');
+  if (/嘉路/.test(p)) shortTags.push('嘉路');
   for (const t of shortTags) {
     if (text.includes(t)) return Math.min(10, 4 + t.length);
   }
-  // 最长连续中文子串 ≥4
+  // 最长连续中文子串 ≥4（跳过泛词子串）
   const src = stem.length >= 3 ? stem : p;
   for (let len = Math.min(src.length, 8); len >= 4; len -= 1) {
     for (let i = 0; i <= src.length - len; i += 1) {
       const sub = src.slice(i, i + len);
+      if (GENERIC_KEYWORDS.has(sub)) continue;
       if (/^[\u4e00-\u9fff]+$/.test(sub) && text.includes(sub)) {
         return Math.min(9, len);
       }
@@ -110,7 +145,7 @@ export function matchPublishedPackages(utterance, { baseDir } = {}) {
     if (destHit) score += 8;
 
     const title = String(p.title || '');
-    const titleHit = scorePhraseHit(text, title);
+    const titleHit = scorePhraseHit(text, title, { allowGeneric: true });
     if (titleHit) score += titleHit >= 10 ? 20 : Math.max(6, titleHit);
 
     for (const kw of p.keywords || []) {
@@ -121,6 +156,12 @@ export function matchPublishedPackages(utterance, { baseDir } = {}) {
     // 别名命中
     for (const a of p.aliases || []) {
       if (a && text.includes(a)) score += 5;
+    }
+
+    // 嘉路/白浪滩等品牌意图：抬高防城港本地包
+    if (/嘉路|白浪滩|簕山|京族三岛/.test(text)) {
+      if (destOverlapsCities(dests, ['防城港', '东兴'])) score += 14;
+      else score = Math.max(0, score - 16);
     }
 
     // 滨海意图：抬高 coastal / 含滨海标签的包（须在 destination 降权之前加分，避免蹭城复活）

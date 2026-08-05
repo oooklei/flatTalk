@@ -101,7 +101,7 @@ export const travelRouteRuleSet = {
     { group: 'meal_plan', penalty: 4, terms: ['膳食', '饮食', '早餐', '午餐', '晚餐', '菜谱', '控糖餐', '低盐'] },
     { group: 'dispatch_manage', penalty: 4, terms: ['派单', '工单', '调度', '处理进度', '客服'] },
     { group: 'acute_health_risk', penalty: 3.5, terms: ['胸痛', '昏迷', '呼吸困难', '中风', '急救', '120'] },
-    { group: 'nearby_resource', penalty: 4, terms: ['地图', '周边', '附近', '打点', '分布', '配套', '资源', '大屏', '15公里', '展示地图', '地图展示', '周边资源', '周边配套', '餐馆', '餐厅', '医疗', '医院'] },
+    { group: 'nearby_resource', penalty: 4, terms: ['地图', '周边', '附近', '打点', '分布', '配套', '资源', '大屏', '15公里', '展示地图', '地图展示', '周边资源', '周边配套', '餐馆', '餐厅', '医疗', '医院', '嘉路康养中心', '嘉路周边', '生活圈'] },
     { group: 'service_quality_eval', penalty: 8, terms: ['服务质量', '质量评估', '服务评价', '满意度', '投诉', '整改', '评分', '督导', '质量报告'] },
     { group: 'health_risk_warning', penalty: 6, terms: ['血压', '血糖', '风险评估', '健康预警', '体质', '舌诊', '慢病风险', '预警报告', '心率异常', '血氧异常'] },
     { group: 'find_service', penalty: 5, terms: ['上门护理', '护工', '找服务', '养老机构', '服务目录', '下单服务', '预约护工'] },

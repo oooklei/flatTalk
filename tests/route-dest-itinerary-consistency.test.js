@@ -53,3 +53,16 @@ test('防城港滨海三日游不得落到南宁长线目的地', async () => {
   assert.equal(result.data?.route_id, 'fcg_route_001');
   assert.doesNotMatch(String(result.data?.routeTitle || ''), /南宁-北海-钦州/);
 });
+
+test('嘉路康养中心不得落到巴马线路', async () => {
+  const result = await fillTemplateSlots({
+    skill_key: 'travel_route',
+    template_id: 'route_svg',
+    message: '嘉路康养中心',
+    business_data: { routes: [] },
+  });
+  assert.doesNotMatch(String(result.data?.destination || ''), /巴马/);
+  assert.doesNotMatch(String(result.data?.routeTitle || ''), /巴马|百魔洞/);
+  assert.doesNotMatch(JSON.stringify(result.data?.itinerary || []), /巴马|百魔洞/);
+  assert.match(String(result.data?.destination || result.data?.routeTitle || ''), /防城港|京族|嘉路|东兴/);
+});

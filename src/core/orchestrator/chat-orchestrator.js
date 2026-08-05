@@ -422,6 +422,14 @@ export function createChatOrchestrator(options = {}) {
         if (skillKey === 'travel_route' && acceptedScene) {
           const forcedRouteId = String(request.context?.publish_route_id || request.context?.route_id || '').trim();
           let hits = matchPublishedPackages(sceneInput.text);
+          // 举一反三：话语归属城市与包 destination 冲突时剔除（嘉路≠巴马）
+          const text = String(sceneInput.text || '');
+          hits = hits.filter((h) => {
+            const dests = (h.meta?.destination || []).join('|');
+            if (/嘉路|白浪滩|簕山|京族/.test(text) && /巴马|百魔洞/.test(dests) && !/巴马|百魔洞/.test(text)) return false;
+            if (/巴马|百魔洞/.test(text) && /(北海|防城港|东兴)/.test(dests) && !/(北海|防城港|东兴|嘉路)/.test(text)) return false;
+            return true;
+          });
           if (forcedRouteId) {
             // 点选锁定：仅接受已 published 的包，拒绝客户端伪造 route_id
             const forced = getPublishedPackageById(forcedRouteId)
