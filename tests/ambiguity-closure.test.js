@@ -35,3 +35,44 @@ test('ambiguity_pick hard-locks scene even if label is short', async () => {
   });
   assert.equal(result.skill_key, 'travel_route');
 });
+
+test('ambiguity_pick hard-locks even when label conflicts with scene', async () => {
+  // Adversarial: label suggests health, but pick locks travel_route.
+  // Inject services to avoid JTD/network; hard-lock is decided in acceptScene.
+  const orchestrator = createChatOrchestrator({
+    intentClassifier: {
+      classifyIntent: async () => ({ intent: 'common.chat', confidence: 0.5, source: 'test' }),
+    },
+    dataService: {
+      tableData: {
+        getTravelRouteTables: async () => ({ routes: [], products: [] }),
+        getSkillConfigs: async () => ({}),
+      },
+      knowledgeData: {},
+    },
+    ragService: {
+      retrieveKnowledge: async () => ({ source: 'test', status: 'empty', matches: [] }),
+    },
+    modelService: {
+      fillTemplateSlots: async (input) => ({
+        template_id: input.template_id || 'answer',
+        answer_text: 'ok',
+        data: {},
+        actions: [],
+        followup_suggestions: [],
+        model_status: 'ok',
+        model_used: 'test',
+      }),
+    },
+  });
+  const result = await orchestrator.run({
+    message: '健康预警',
+    skill_key: 'travel_route',
+    conversation_id: 'amb-2',
+    turn_id: 'amb-2-t',
+    context: { ambiguity_pick: true, ambiguity_scene_key: 'travel_route' },
+  });
+  assert.equal(result.skill_key, 'travel_route');
+  // Hard-lock sets acceptScene.intent; surfaced on envelope without API expansion
+  assert.equal(result.intent, 'travel_route.ambiguity_pick');
+});
