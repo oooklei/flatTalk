@@ -1,0 +1,175 @@
+<svg viewBox="0 0 620 850" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width:100%;max-width:620px;background:linear-gradient(180deg,#F5F0E8 0%,#E0F0F8 100%);border-radius:16px;font-family:'PingFang SC','Microsoft YaHei',sans-serif" data-route-id="fcg_route_001" data-version="rich" data-route-name="防城港京族滨海文化线" data-center-lat="21.55" data-center-lng="108.10">
+  <defs>
+    <linearGradient id="seaGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#81D4FA" stop-opacity="0.7"/><stop offset="100%" stop-color="#0277BD" stop-opacity="0.5"/></linearGradient>
+    <linearGradient id="coastGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFF8E1" stop-opacity="0.95"/><stop offset="100%" stop-color="#FFE0B2" stop-opacity="0.6"/></linearGradient>
+    <linearGradient id="hillGrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#81C784" stop-opacity="0.6"/><stop offset="100%" stop-color="#2E7D32" stop-opacity="0.3"/></linearGradient>
+    <linearGradient id="heroGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF7826"/><stop offset="100%" stop-color="#E65100"/></linearGradient>
+    <linearGradient id="startLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2E7D32"/><stop offset="100%" stop-color="#43A047"/></linearGradient>
+    <linearGradient id="viaLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#FF7826"/><stop offset="100%" stop-color="#FF9800"/></linearGradient>
+    <linearGradient id="endLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#1976D2"/><stop offset="100%" stop-color="#42A5F5"/></linearGradient>
+    <linearGradient id="returnLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#D32F2F"/><stop offset="100%" stop-color="#EF5350"/></linearGradient>
+    <marker id="arrowStart" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 8 5 L 0 9 z" fill="#2E7D32"/></marker>
+    <marker id="arrowVia" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 8 5 L 0 9 z" fill="#FF7826"/></marker>
+    <marker id="arrowReturn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 8 5 L 0 9 z" fill="#D32F2F"/></marker>
+    <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter>
+    <filter id="imgShadow"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/></filter>
+    <clipPath id="imgClip"><rect x="0" y="0" width="100" height="70" rx="8"/></clipPath>
+  </defs>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="620" height="58" rx="16" fill="url(#heroGrad)"/>
+  <text x="18" y="38" fill="#fff" font-size="22" font-weight="bold">防城港京族滨海文化线</text>
+  <text x="18" y="52" fill="rgba(255,255,255,0.75)" font-size="11">广西·防城港·东兴 | 中国唯一海洋民族</text>
+
+  <!-- 地理底图 -->
+  <rect x="10" y="68" width="600" height="520" rx="12" fill="#F0F5F0" stroke="#B8D0B0" stroke-width="0.8"/>
+
+  <!-- 北部湾海域 -->
+  <path d="M440,310 Q480,370 500,450 Q520,530 510,590 L610,590 L610,68 L440,68 Q450,120 460,180 Q470,250 460,290 Z" fill="url(#seaGrad)" stroke="#4FC3F7" stroke-width="0.5"/>
+  <!-- 海浪纹理 -->
+  <g opacity="0.2" fill="none" stroke="#fff" stroke-width="1.5">
+    <path d="M460,350 Q475,340 490,350 Q505,360 520,350"/>
+    <path d="M470,400 Q485,390 500,400 Q515,410 530,400"/>
+    <path d="M480,450 Q495,440 510,450 Q525,460 540,450"/>
+    <path d="M490,500 Q505,490 520,500 Q535,510 550,500"/>
+  </g>
+  <text x="510" y="480" fill="#01579B" font-size="14" font-weight="bold" opacity="0.4" transform="rotate(75,510,480)">北部湾</text>
+
+  <!-- 海岸线 -->
+  <path d="M440,310 Q420,290 400,310 Q380,330 360,320 Q340,310 330,330 Q320,350 310,340 Q290,330 280,350 Q270,370 260,360 Q240,340 230,360 Q220,380 210,370" fill="none" stroke="#FFB74D" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+  <path d="M440,310 Q420,290 400,310 Q380,330 360,320 Q340,310 330,330 Q320,350 310,340 Q290,330 280,350 Q270,370 260,360 Q240,340 230,360 Q220,380 210,370" fill="url(#coastGrad)" stroke="none" opacity="0.5"/>
+  <text x="340" y="290" fill="#E65100" font-size="10" opacity="0.6">海岸线</text>
+
+  <!-- 十万大山 -->
+  <g opacity="0.45">
+    <path d="M20,130 Q38,85 55,132 Q68,78 88,132 Q102,72 122,132 Q138,68 158,132 Q172,75 192,132" fill="url(#hillGrad2)" stroke="#4CAF50" stroke-width="0.6"/>
+    <path d="M45,195 Q62,155 80,198 Q95,148 112,198 Q128,150 145,198" fill="url(#hillGrad2)" stroke="#4CAF50" stroke-width="0.5"/>
+  </g>
+  <text x="100" y="115" fill="#2E7D32" font-size="10" opacity="0.55" font-style="italic">十万大山</text>
+
+  <!-- 防城江 -->
+  <path d="M200,150 Q220,200 230,250 Q240,290 245,330" fill="none" stroke="#64B5F6" stroke-width="5" stroke-linecap="round" opacity="0.55"/>
+  <text x="210" y="190" fill="#1565C0" font-size="9" opacity="0.7">防城江</text>
+
+  <!-- 中越界河 -->
+  <path d="M15,220 Q30,250 25,300 Q20,350 30,400 Q40,450 35,500" fill="none" stroke="#64B5F6" stroke-width="3" stroke-linecap="round" opacity="0.45" stroke-dasharray="6 4"/>
+  <text x="28" y="310" fill="#1565C0" font-size="8" opacity="0.5" transform="rotate(80,28,310)">中越界河</text>
+
+  <!-- ========== 走线 ========== -->
+  <g class="route-paths" filter="url(#glow)">
+    <!-- 【起点线】嘉路基地→东兴京族三岛（绿色） -->
+    <path d="M280,370 Q220,340 160,310 Q120,290 90,265" fill="none" stroke="url(#startLine)" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowStart)" opacity="0.9"/>
+    <!-- 【途径线】东兴→金滩（橙色） -->
+    <path d="M90,265 Q75,300 60,340 Q55,360 60,380" fill="none" stroke="url(#viaLine)" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowVia)" opacity="0.9"/>
+    <!-- 【返程线】金滩→嘉路基地（红色虚线） -->
+    <path d="M60,380 Q110,400 160,390 Q220,380 280,370" fill="none" stroke="url(#returnLine)" stroke-width="4" stroke-dasharray="8 5" stroke-linecap="round" marker-end="url(#arrowReturn)" opacity="0.75"/>
+  </g>
+
+  <!-- ========== 景点标注 ========== -->
+  <g class="markers">
+    <!-- 【起点】嘉路滨海旅居基地 -->
+    <g class="marker" data-type="start" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="大本营出发·康养起点" data-lat="21.5279" data-lng="108.1668" data-spot-desc="防城港核心旅居康养基地，提供健康管理、中医艾灸理疗、瑶药浴、药膳养生餐等一站式康养服务。" transform="translate(280,370)">
+      <circle r="20" fill="#2E7D32" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
+      <text text-anchor="middle" dy="7" fill="#fff" font-size="15" font-weight="bold">起</text>
+      <text y="32" text-anchor="middle" font-size="11" fill="#1B5E20" font-weight="bold">嘉路基地</text>
+      <text y="44" text-anchor="middle" font-size="8" fill="#555">滨海康养·艾灸理疗</text>
+      <g transform="translate(28,-30)">
+        <rect x="0" y="0" width="100" height="70" rx="8" fill="#fff" stroke="#ddd" stroke-width="0.5" filter="url(#imgShadow)"/>
+        <image xlink:href="http://guangxi.china.com.cn/pic/2025-06/30/d4941b5a-98c4-4e89-aba8-4a52307cb5f6.png" x="2" y="2" width="96" height="66" preserveAspectRatio="xMidYMid slice" opacity="0.9"/>
+      </g>
+    </g>
+
+    <!-- 【途径点】东兴京族三岛 -->
+    <g class="marker" data-type="spot" data-day="Day1" data-name="东兴京族三岛" data-plan="京族非遗体验+独弦琴" data-lat="21.5083" data-lng="107.8833" data-spot-desc="京族是中国唯一的海洋民族，独弦琴非遗传承人现场教学，哈节民俗体验，感受独特的海洋文化。" transform="translate(90,265)">
+      <circle r="18" fill="#FF7826" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
+      <text text-anchor="middle" dy="6" fill="#fff" font-size="14" font-weight="bold">景</text>
+      <text y="-30" text-anchor="middle" font-size="11" fill="#BF360C" font-weight="bold">京族三岛</text>
+      <text y="-18" text-anchor="middle" font-size="8" fill="#888">独弦琴·哈节民俗</text>
+      <g transform="translate(-105,-40)">
+        <rect x="0" y="0" width="100" height="70" rx="8" fill="#fff" stroke="#ddd" stroke-width="0.5" filter="url(#imgShadow)"/>
+        <image xlink:href="https://www.gxlvyouwang.com/uploads/allimg/20251225/1-251225230129522.jpg" x="2" y="2" width="96" height="66" preserveAspectRatio="xMidYMid slice" opacity="0.9"/>
+      </g>
+    </g>
+
+    <!-- 【终点】金滩 -->
+    <g class="marker" data-type="spot" data-day="Day1" data-name="金滩" data-plan="滨海慢走+渔耕体验" data-lat="21.495" data-lng="107.87" data-spot-desc="京族滨海沙滩，浅滩渔耕轻体验，负氧离子疗养，感受北部湾的温暖海风和金色沙滩。" transform="translate(60,380)">
+      <circle r="18" fill="#1976D2" stroke="#fff" stroke-width="3" filter="url(#shadow)"/>
+      <text text-anchor="middle" dy="6" fill="#fff" font-size="14" font-weight="bold">终</text>
+      <text y="30" text-anchor="middle" font-size="11" fill="#0D47A1" font-weight="bold">金滩</text>
+      <text y="42" text-anchor="middle" font-size="8" fill="#555">滨海慢走·渔耕体验</text>
+      <g transform="translate(28,-10)">
+        <rect x="0" y="0" width="100" height="70" rx="8" fill="#fff" stroke="#ddd" stroke-width="0.5" filter="url(#imgShadow)"/>
+        <image xlink:href="https://ak-d.tripcdn.com/images/1mi6412000t7k8lj74332_W_320_0_R5_Q30.jpg?proc=source/trip" x="2" y="2" width="96" height="66" preserveAspectRatio="xMidYMid slice" opacity="0.9"/>
+      </g>
+    </g>
+
+    <!-- 【返程标记】 -->
+    <g class="marker" data-type="return" data-day="Day1" data-name="返程" data-plan="返回基地康养休整" transform="translate(280,370)">
+      <circle r="14" fill="#D32F2F" stroke="#fff" stroke-width="2.5" filter="url(#shadow)" cx="0" cy="55"/>
+      <text text-anchor="middle" dy="60" fill="#fff" font-size="12" font-weight="bold">返</text>
+    </g>
+  </g>
+
+  <!-- 日标签 -->
+  <g class="day-labels" font-size="9" fill="#fff" font-weight="bold">
+    <rect x="290" y="358" width="40" height="18" rx="9" fill="#2E7D32" opacity="0.95"/><text x="310" y="371" text-anchor="middle">Day1</text>
+  </g>
+
+  <!-- 特色标注卡片 -->
+  <g transform="translate(15,440)" opacity="0.88">
+    <rect x="0" y="0" width="120" height="55" rx="10" fill="#E8F5E9" stroke="#4CAF50" stroke-width="1"/>
+    <text x="60" y="18" text-anchor="middle" font-size="10" fill="#2E7D32" font-weight="bold">京族非遗</text>
+    <text x="60" y="34" text-anchor="middle" font-size="9" fill="#388E3C">独弦琴·哈节</text>
+    <text x="60" y="48" text-anchor="middle" font-size="8" fill="#66BB6A">中国唯一海洋民族</text>
+  </g>
+  <g transform="translate(150,440)" opacity="0.88">
+    <rect x="0" y="0" width="120" height="55" rx="10" fill="#E3F2FD" stroke="#1976D2" stroke-width="1"/>
+    <text x="60" y="18" text-anchor="middle" font-size="10" fill="#0D47A1" font-weight="bold">滨海负氧离子</text>
+    <text x="60" y="34" text-anchor="middle" font-size="9" fill="#1565C0">海风·天然疗养</text>
+    <text x="60" y="48" text-anchor="middle" font-size="8" fill="#42A5F5">金花茶·海鸭蛋</text>
+  </g>
+  <g transform="translate(285,440)" opacity="0.88">
+    <rect x="0" y="0" width="120" height="55" rx="10" fill="#FFF3E0" stroke="#E65100" stroke-width="1"/>
+    <text x="60" y="18" text-anchor="middle" font-size="10" fill="#BF360C" font-weight="bold">中医艾灸理疗</text>
+    <text x="60" y="34" text-anchor="middle" font-size="9" fill="#E65100">瑶药浴·拔罐</text>
+    <text x="60" y="48" text-anchor="middle" font-size="8" fill="#FF8F00">药膳养生餐</text>
+  </g>
+
+  <!-- 图例 -->
+  <g class="legend" transform="translate(15,510)">
+    <rect x="0" y="0" width="590" height="32" rx="8" fill="rgba(255,255,255,0.95)" stroke="#ddd" stroke-width="0.5" filter="url(#shadow)"/>
+    <circle cx="22" cy="16" r="6" fill="#2E7D32"/><text x="35" y="20" font-size="11" fill="#333">起点</text>
+    <circle cx="90" cy="16" r="6" fill="#FF7826"/><text x="103" y="20" font-size="11" fill="#333">途径景点</text>
+    <circle cx="190" cy="16" r="6" fill="#1976D2"/><text x="203" y="20" font-size="11" fill="#333">终点</text>
+    <circle cx="260" cy="16" r="6" fill="#D32F2F"/><text x="273" y="20" font-size="11" fill="#333">返程</text>
+    <line x1="325" y1="16" x2="360" y2="16" stroke="#FF7826" stroke-width="4" stroke-linecap="round"/><text x="370" y="20" font-size="11" fill="#333">走线</text>
+    <line x1="415" y1="16" x2="450" y2="16" stroke="#D32F2F" stroke-width="4" stroke-dasharray="6 3" stroke-linecap="round"/><text x="460" y="20" font-size="11" fill="#333">返程线</text>
+    <rect x="510" y="5" width="25" height="20" rx="3" fill="url(#seaGrad)" stroke="#4FC3F7" stroke-width="0.5"/><text x="545" y="20" font-size="11" fill="#333">海</text>
+  </g>
+
+  <!-- 底部信息栏 -->
+  <g transform="translate(10,555)">
+    <rect x="0" y="0" width="600" height="78" rx="10" fill="#FFF8F0" stroke="#FFE0B2" stroke-width="0.6"/>
+    <text x="15" y="20" fill="#E65100" font-size="12" font-weight="bold">滨海文化特色</text>
+    <text x="15" y="38" fill="#555" font-size="10">京族独弦琴·哈节民俗·传统渔耕文化·滨海负氧离子·中医艾灸理疗</text>
+    <text x="15" y="54" fill="#555" font-size="10">食药同源：金花茶·海鸭蛋·沙虫·五指毛桃·珍珠黄玉米</text>
+    <text x="15" y="70" fill="#999" font-size="9">398元/人/天 | 5条组合套餐1880元 | 60岁以上立减20元/人</text>
+    <rect x="480" y="10" width="105" height="22" rx="11" fill="#E8F5E9"/>
+    <text x="532" y="25" text-anchor="middle" font-size="9" fill="#2E7D32" font-weight="bold">数据来源: Tavily</text>
+  </g>
+
+  <script type="text/javascript"><![CDATA[
+    (function(){
+      var markers = document.querySelectorAll('.marker');
+      markers.forEach(function(m){
+        m.style.cursor = 'pointer';
+        m.addEventListener('click', function(){
+          var name = this.getAttribute('data-name');
+          var desc = this.getAttribute('data-spot-desc') || '';
+          console.log('景点:', name, '｜', desc);
+        });
+      });
+    })();
+  ]]></script>
+</svg>
