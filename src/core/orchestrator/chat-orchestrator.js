@@ -27,6 +27,7 @@ import {
 } from '../actions/fallback-prompt-builder.js';
 import { decideTransition, TRANSITION_TYPE } from '../scene-router/scene-transition-manager.js';
 import { resolveAmbiguity } from '../scene-router/ambiguity-resolver.js';
+import { logSceneDecision } from '../scene-router/decision-log.js';
 import { buildSnapshot } from '../../core/conversation/context-snapshot.js';
 import { createSupervisor } from '../agents/supervisor.js';
 
@@ -737,6 +738,17 @@ async function acceptScene(request, sceneDecision) {
   const transition = decideTransition(candidates, {
     previous_scene: request.previous_scene || request.context?.previous_scene,
     message: request.message || request.text || '',
+  });
+
+  logSceneDecision({
+    utterance: request.message || request.text || '',
+    candidates: sceneDecision?.candidates || [],
+    margin: sceneDecision?.margin,
+    transition_type: transition?.type,
+    ambiguity: transition?.type === TRANSITION_TYPE.AMBIGUOUS,
+    final_scene: transition?.type === TRANSITION_TYPE.AMBIGUOUS
+      ? null
+      : (transition?.scene?.scene_key || sceneDecision?.scene_key || null),
   });
 
   // AMBIGUOUS：消歧追问
