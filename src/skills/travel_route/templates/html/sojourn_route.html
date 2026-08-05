@@ -475,15 +475,37 @@ body {
       // 已移除动态 TMap 地图，所有路线用 SVG 绘制
 
       function bindSvgMarkerClicks(container) {
-        var markers = container.querySelectorAll('.marker[data-name]');
+        // 兼容旧 .marker 与新 .route-marker / .spot-item
+        var markers = container.querySelectorAll('.route-marker, .spot-item, .marker[data-name]');
         markers.forEach(function(el) {
+          // 旧包补热区与字号
+          if (el.classList.contains('route-marker') && !el.querySelector('circle.hit-area')) {
+            var vis = el.querySelector('circle:not(.hit-area)');
+            var r = vis ? parseFloat(vis.getAttribute('r') || '7') : 7;
+            var hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            hit.setAttribute('class', 'hit-area');
+            hit.setAttribute('r', String(Math.max(22, r + 14)));
+            hit.setAttribute('fill', 'transparent');
+            hit.setAttribute('pointer-events', 'all');
+            el.insertBefore(hit, el.firstChild);
+          }
+          el.querySelectorAll('text').forEach(function(t) {
+            var fs = parseFloat(t.getAttribute('font-size') || '0');
+            if (fs > 0 && fs < 14) t.setAttribute('font-size', String(Math.round(fs * 1.75)));
+          });
           el.style.cursor = 'pointer';
-          el.addEventListener('click', function() {
-            var name = this.getAttribute('data-name') || '';
-            var desc = this.getAttribute('data-spot-desc') || '';
-            var plan = this.getAttribute('data-plan') || '';
-            var day = this.getAttribute('data-day') || '';
-            var html = '<div style="padding:12px;min-width:180px;font-size:14px;">';
+          function openInfo() {
+            var name = el.getAttribute('data-name') || '';
+            var desc = el.getAttribute('data-spot-desc') || '';
+            var plan = el.getAttribute('data-plan') || '';
+            var day = el.getAttribute('data-day') || '';
+            var imgRaw = el.getAttribute('data-spot-img') || '';
+            var imgs = imgRaw ? imgRaw.split(',').map(function(u){return u.replace(/&amp;/g,'&').trim();}).filter(Boolean) : [];
+            var html = '<div style="padding:12px;min-width:180px;font-size:14px;position:relative;">';
+            html += '<button type="button" style="position:absolute;top:6px;right:8px;border:0;background:#eee;border-radius:50%;width:22px;height:22px;cursor:pointer;" onclick="this.parentNode.parentNode.style.display=\'none\'">&times;</button>';
+            if (imgs.length) {
+              html += '<img src="' + imgs[0] + '" alt="" referrerpolicy="no-referrer" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:120px;object-fit:cover;" onerror="this.style.display=\'none\'"/>';
+            }
             html += '<div style="font-weight:bold;font-size:16px;margin-bottom:6px;color:#333;">' + name + '</div>';
             if (day) html += '<div style="color:#FF7826;font-size:12px;margin-bottom:4px;">' + day + '</div>';
             if (plan) html += '<div style="color:#666;margin-bottom:6px;">' + plan + '</div>';
@@ -499,7 +521,9 @@ body {
             }
             info.innerHTML = html;
             info.style.display = 'block';
-          });
+          }
+          el.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); openInfo(); });
+          el.addEventListener('touchstart', function(e) { e.preventDefault(); openInfo(); }, { passive: false });
         });
       }
 

@@ -157,10 +157,12 @@ body {
   display: block;
   width: 100%;
   height: auto;
+  font-size: 16px;
 }
-
-.route-marker { cursor: pointer; transition: opacity 0.15s; }
+.route-marker { cursor: pointer; transition: opacity 0.15s; pointer-events: auto; }
 .route-marker:hover { opacity: 0.82; }
+.route-marker .hit-area { pointer-events: all; }
+.spot-item { cursor: pointer; }
 
 .spot-popup {
   display: none;

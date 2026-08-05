@@ -25,7 +25,37 @@
       "plan": "贺州温泉",
       "lat": 24.45,
       "lng": 111.52,
-      "spot_desc": "入驻适应 + 健康建档 + 长寿文化初体验 · 接站入住→医护建档与基础体检→药膳午餐→贺州园博园慢走（生态氧疗）→康养晚餐→夜游贺江慢行调息→AI 中医体测、智能睡眠监测"
+      "spot_desc": "入驻适应 + 健康建档 + 长寿文化初体验 · 接站入住→医护建档与基础体检→药膳午餐→贺州园博园慢走（生态氧疗）→康养晚餐→夜游贺江慢行调息→AI 中医体测、智能睡眠监测",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E8%B4%BA%E5%B7%9E%E6%B8%A9%E6%B3%89%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 78296.92,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 38641.69,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 8381.44,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 21098.08,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp2",
@@ -35,7 +65,37 @@
       "plan": "姑婆山森林公园",
       "lat": 24.52,
       "lng": 111.47,
-      "spot_desc": "富硒茶养 + 古镇静心 + 温泉初疗 · 晨间八段锦→康养早餐→昭平茶园采茶、制茶、品茶（茶疗康养）→长寿药膳午餐→黄姚古镇慢游（外骨骼辅助行走）→返程温泉基地→森林富硒温泉泡浴→民俗体验"
+      "spot_desc": "富硒茶养 + 古镇静心 + 温泉初疗 · 晨间八段锦→康养早餐→昭平茶园采茶、制茶、品茶（茶疗康养）→长寿药膳午餐→黄姚古镇慢游（外骨骼辅助行走）→返程温泉基地→森林富硒温泉泡浴→民俗体验",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%A7%91%E5%A9%86%E5%B1%B1%E6%A3%AE%E6%9E%97%E5%85%AC%E5%9B%AD%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 15815.35,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 80270.5,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 40196.62,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 17205.57,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp3",
@@ -45,7 +105,37 @@
       "plan": "黄姚古镇",
       "lat": 24.38,
       "lng": 111.33,
-      "spot_desc": "山水康养 + 民俗体验 + 气血调理 · 晨间太极晨练→康养早餐→钟山十里画廊慢游→长寿药膳午餐→英家红色文化体验→返程温泉基地→药膳晚餐 + 壮瑶药泡浴"
+      "spot_desc": "山水康养 + 民俗体验 + 气血调理 · 晨间太极晨练→康养早餐→钟山十里画廊慢游→长寿药膳午餐→英家红色文化体验→返程温泉基地→药膳晚餐 + 壮瑶药泡浴",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%BB%84%E5%A7%9A%E5%8F%A4%E9%95%87%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 36821.88,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 59198.88,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 19139.09,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 20220.66,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp4",
@@ -55,7 +145,37 @@
       "plan": "昭平茶山",
       "lat": 24.17,
       "lng": 110.81,
-      "spot_desc": "瑶药康养 + 民俗养心 + 固本培元 · 康养早餐 + 健康复盘→富川古明城慢游→长寿药膳午餐→瑶药非遗体验→秀水状元村生态慢游→返程温泉基地→分区温泉理疗→自由静养"
+      "spot_desc": "瑶药康养 + 民俗养心 + 固本培元 · 康养早餐 + 健康复盘→富川古明城慢游→长寿药膳午餐→瑶药非遗体验→秀水状元村生态慢游→返程温泉基地→分区温泉理疗→自由静养",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%98%AD%E5%B9%B3%E8%8C%B6%E5%B1%B1%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 92061.64,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 25493.26,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 41648.34,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 76489.87,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp5",
@@ -65,7 +185,37 @@
       "plan": "钟山百里水墨",
       "lat": 24.528,
       "lng": 111.33,
-      "spot_desc": "森林氧疗 + 玉石康养 + 经络舒缓 · 康养早餐→玉石林森林康养（高负氧环境静养）→长寿药膳午餐→玉石文化体验→返程温泉基地→药膳晚餐 + 瑶药足浴理疗"
+      "spot_desc": "森林氧疗 + 玉石康养 + 经络舒缓 · 康养早餐→玉石林森林康养（高负氧环境静养）→长寿药膳午餐→玉石文化体验→返程温泉基地→药膳晚餐 + 瑶药足浴理疗",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%92%9F%E5%B1%B1%E7%99%BE%E9%87%8C%E6%B0%B4%E5%A2%A8%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 26225.84,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 72433.85,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 33594.95,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 26409.52,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp6",
@@ -75,7 +225,37 @@
       "plan": "富川瑶族古村",
       "lat": 24.815,
       "lng": 111.277,
-      "spot_desc": "深度森林疗愈 + 康养知识学习 · 康养早餐 + 养生科普→姑婆山徒步（天然氧吧深度疗愈）→原生态午餐→温泉研学 + 专业深度理疗→收官温补晚餐"
+      "spot_desc": "深度森林疗愈 + 康养知识学习 · 康养早餐 + 养生科普→姑婆山徒步（天然氧吧深度疗愈）→原生态午餐→温泉研学 + 专业深度理疗→收官温补晚餐",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%AF%8C%E5%B7%9D%E7%91%B6%E6%97%8F%E5%8F%A4%E6%9D%91%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 34895.26,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 98916.29,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 63671.78,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 55221.92,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     }
   ],
   "itinerary": [
@@ -125,5 +305,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路2贺州全域",
   "route_id": "gx_excel_02",
-  "updated_at": "2026-08-05T21:01:58.655Z"
+  "updated_at": "2026-08-05T22:05:59.098Z",
+  "spot_images_source": "dashboard_local_kb"
 }

@@ -18,6 +18,7 @@ import {
   LOCAL_FILL_TEMPLATE_IDS,
 } from './model-runtime/extra-template-fills.js';
 import { findEldersByName, mockElders } from '../services/interface-data/mock-collaboration.js';
+import { enrichWaypointsFromDashboardKb } from '../skills/travel_route/dashboard-spot-kb.js';
 import crypto from 'node:crypto';
 
 export { LOCAL_FILL_TEMPLATE_IDS };
@@ -2504,6 +2505,18 @@ function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
       ? productSample.days
       : (/四天|4天|five/i.test(message) ? '4天3晚' : `${Math.max(itinerary.length, 3)}天${Math.max(itinerary.length - 1, 2)}晚`);
   const answerText = `已为您推荐${routeTitle}，按${budgetLevel}和老人低强度出行节奏规划。`;
+  const rawWaypoints = Array.isArray(svgPkg?.routeData?.waypoints)
+    ? svgPkg.routeData.waypoints
+    : (Array.isArray(business_data?.waypoints) ? business_data.waypoints : []);
+  const waypointSpots = enrichWaypointsFromDashboardKb(rawWaypoints);
+  const waypointSpotsJson = JSON.stringify(waypointSpots.map((wp) => ({
+    name: wp?.name || '',
+    day: wp?.day || '',
+    plan: wp?.plan || '',
+    spot_desc: wp?.spot_desc || '',
+    spot_images: Array.isArray(wp?.spot_images) ? wp.spot_images : [],
+    related_spots: Array.isArray(wp?.related_spots) ? wp.related_spots : [],
+  })));
 
   return sanitizeModelResult({
     template_id: routeType || 'route_svg',
@@ -2532,6 +2545,8 @@ function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
       itinerary,
       healthNotice: buildTravelHealthNotice(message),
       static_svg: staticSvg,
+      waypoint_spots_json: waypointSpotsJson,
+      hasSpots: waypointSpots.some((wp) => (wp?.spot_images || []).length > 0 || (wp?.spot_desc || '').length > 0),
       publish_match: business_data?.publish_match || null,
     },
     actions: [
@@ -2917,7 +2932,15 @@ async function fillRouteCard({ message, business_data }) {
       spot_images: spotImages,
       spot_images_json: JSON.stringify(spotImages),
       spot_status: spotStatus,
-      hasSpots: allSpots.length > 0,
+      hasSpots: allSpots.length > 0 || waypoints.some((wp) => (wp?.spot_images || []).length > 0 || (wp?.spot_desc || '').length > 0),
+      waypoint_spots_json: JSON.stringify(enrichWaypointsFromDashboardKb(waypoints || []).map((wp) => ({
+        name: wp?.name || '',
+        day: wp?.day || '',
+        plan: wp?.plan || '',
+        spot_desc: wp?.spot_desc || '',
+        spot_images: Array.isArray(wp?.spot_images) ? wp.spot_images : [],
+        related_spots: Array.isArray(wp?.related_spots) ? wp.related_spots : [],
+      }))),
     },
     actions: [
       { action_key: 'travel_route.compare_destinations', label: '对比目的地', skill_key: 'travel_route', params: productParams },
@@ -3528,6 +3551,13 @@ function fillRouteRemoteGap({ message, jtd, routes }) {
       productId: '',
       skuId: '',
       static_svg: staticSvg,
+      waypoint_spots_json: JSON.stringify((svgPkg?.routeData?.waypoints || []).map((wp) => ({
+        name: wp?.name || '',
+        day: wp?.day || '',
+        plan: wp?.plan || '',
+        spot_desc: wp?.spot_desc || '',
+        spot_images: Array.isArray(wp?.spot_images) ? wp.spot_images : [],
+      }))),
     },
     actions: [
       { action_key: 'travel_route.request_manual_review', label: '请求人工复核', skill_key: 'travel_route', params: { reason: 'jtd_unavailable', destination } },
@@ -4152,7 +4182,7 @@ function round1(value) {
   return Math.round(Number(value || 0) * 10) / 10;
 }
 
-const HTML_SAFE_KEYS = new Set(['static_svg', 'compact_followups', 'rendered_html']);
+const HTML_SAFE_KEYS = new Set(['static_svg', 'compact_followups', 'rendered_html', 'waypoint_spots_json']);
 function sanitizeModelResult(result, parentKey = '') {
   if (Array.isArray(result)) return result.map((item) => sanitizeModelResult(item, parentKey));
   if (result && typeof result === 'object') {

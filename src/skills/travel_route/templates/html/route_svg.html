@@ -164,10 +164,16 @@ body {
   display: block;
   width: 100%;
   height: auto;
+  /* 旧包 SVG 字号按 620 宽绘制；卡片约 360 宽时用 CSS 抬升可读性 */
+  font-size: 16px;
 }
-
-.route-marker { cursor: pointer; transition: opacity 0.15s; }
+.svg-container svg text {
+  font-size: 1em;
+}
+.route-marker { cursor: pointer; transition: opacity 0.15s; pointer-events: auto; }
 .route-marker:hover { opacity: 0.82; }
+.route-marker .hit-area { pointer-events: all; }
+.spot-item { cursor: pointer; }
 
 .spot-popup {
   display: none;
@@ -348,7 +354,7 @@ body {
 
   </style>
 </head>
-<body data-layout="vertical" data-map-mode="static_svg">
+<body data-layout="vertical" data-static-svg="1">
   <article class="route-card" data-theme="wellness">
     <!-- Hero 标题栏 -->
     <header class="hero">
@@ -359,7 +365,7 @@ body {
 
     <!-- SVG 地图区（核心） -->
     <section class="svg-map-section">
-      <h2>📍 走线路线 {{#hasSpots}}<span class="hint">悬停景点查看详情</span>{{/hasSpots}}</h2>
+      <h2>📍 走线路线 <span class="hint">点击端点查看详情</span></h2>
       <div class="svg-container" id="svgMapContainer">
         <!-- SVG 通过 JS 注入 -->
       </div>
@@ -417,13 +423,87 @@ body {
   </article>
 
   <script type="text/html" id="staticSvgData">{{{static_svg}}}</script>
+  <script type="application/json" id="waypointSpotsData">{{{waypoint_spots_json}}}</script>
   <script>
     // 从 script[type=text/html] 读取 SVG（避免多行/含引号的 SVG 破坏 JS 字符串字面量）
     var STATIC_SVG = (document.getElementById('staticSvgData') || {}).textContent || '';
     var hideTimer = null;
+    var activeMarker = null;
+
+    function parseWaypointSpots() {
+      try {
+        var raw = (document.getElementById('waypointSpotsData') || {}).textContent || '[]';
+        raw = String(raw).trim();
+        if (!raw || raw === '{{{waypoint_spots_json}}}' || raw === 'null') return [];
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) { return []; }
+    }
+
+    function pickImgs(list) {
+      if (!Array.isArray(list) || !list.length) return '';
+      return list.map(function(img) {
+        if (typeof img === 'string') return img;
+        return (img && (img.url || img.src)) || '';
+      }).filter(Boolean).join(',');
+    }
+
+    function hydrateMarkersFromMeta(container, metaList) {
+      if (!metaList || !metaList.length) return;
+      var byName = {};
+      metaList.forEach(function(wp) {
+        var n = String(wp.name || '').trim();
+        if (n) byName[n] = wp;
+      });
+      container.querySelectorAll('.route-marker, .spot-item').forEach(function(el) {
+        var name = (el.getAttribute('data-name') || '').trim();
+        var wp = byName[name];
+        if (!wp) return;
+        if (!el.getAttribute('data-spot-img') && (wp.spot_images || []).length) {
+          el.setAttribute('data-spot-img', pickImgs(wp.spot_images));
+        }
+        if (!el.getAttribute('data-spot-desc') && wp.spot_desc) {
+          el.setAttribute('data-spot-desc', wp.spot_desc);
+        }
+        if (!el.getAttribute('data-plan') && wp.plan) {
+          el.setAttribute('data-plan', wp.plan);
+        }
+        if (!el.getAttribute('data-day') && wp.day) {
+          el.setAttribute('data-day', wp.day);
+        }
+        if (!el.getAttribute('data-related-spots') && (wp.related_spots || []).length) {
+          try { el.setAttribute('data-related-spots', JSON.stringify(wp.related_spots.slice(0, 4))); } catch (e) {}
+        }
+      });
+    }
+
+    /** 卡片嵌入后 viewBox 缩放导致字号过小：抬升旧包 SVG 文本与热区 */
+    function enhanceSvgForCard(root) {
+      if (!root) return;
+      root.querySelectorAll('text').forEach(function(t) {
+        var fs = parseFloat(t.getAttribute('font-size') || '0');
+        if (!(fs > 0)) return;
+        // 旧包再放大约 3.5×（相对原稿 10），对齐新生成器字号
+        if (fs < 20) t.setAttribute('font-size', String(Math.round(fs * 3.5)));
+        else if (fs < 36) t.setAttribute('font-size', String(Math.round(fs * 2)));
+      });
+      root.querySelectorAll('.route-marker').forEach(function(g) {
+        if (g.querySelector('circle.hit-area')) return;
+        var vis = g.querySelector('circle:not(.hit-area)');
+        var r = vis ? parseFloat(vis.getAttribute('r') || '7') : 7;
+        var hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        hit.setAttribute('class', 'hit-area');
+        hit.setAttribute('r', String(Math.max(28, r + 18)));
+        hit.setAttribute('fill', 'transparent');
+        hit.setAttribute('pointer-events', 'all');
+        g.insertBefore(hit, g.firstChild);
+        if (vis && r < 14) vis.setAttribute('r', String(Math.round(r * 1.9)));
+      });
+    }
 
     function showPopup(marker) {
       cancelHide();
+      activeMarker = marker;
       var name = marker.getAttribute('data-name') || '';
       var day = marker.getAttribute('data-day') || '';
       var plan = marker.getAttribute('data-plan') || '';
@@ -432,11 +512,11 @@ body {
       var imgs = imgRaw ? imgRaw.split(',').map(function(u){return u.replace(/&amp;/g,'&').trim();}).filter(function(u){return u;}) : [];
 
       var html = '';
-      // 多图轮播
       if (imgs.length > 0) {
         var showNav = imgs.length > 1;
         html += '<div class="spot-gallery" id="spotGallery">';
-        html += '<img class="spot-img" id="spotGalleryImg" src="' + imgs[0] + '" alt="' + name + '" onerror="this.style.display=\'none\'" />';
+        html += '<img class="spot-img" id="spotGalleryImg" src="' + imgs[0] + '" alt="' + name +
+          '" referrerpolicy="no-referrer" loading="lazy" onerror="this.parentNode.style.display=\'none\'" />';
         if (showNav) {
           html += '<button class="gallery-btn gallery-prev" onclick="gallerySlide(-1)" style="display:flex">&#10094;</button>';
           html += '<button class="gallery-btn gallery-next" onclick="gallerySlide(1)" style="display:flex">&#10095;</button>';
@@ -446,17 +526,23 @@ body {
         window.__spotImgs = imgs;
         window.__spotImgIdx = 0;
       }
-      if (name) {
-        html += '<div class="spot-name">' + name + '</div>';
+      if (name) html += '<div class="spot-name">' + name + '</div>';
+      if (day) html += '<span class="day-tag">' + day + '</span>';
+      if (plan) html += '<div class="spot-plan">' + plan + '</div>';
+      if (desc) html += '<div class="spot-desc">' + desc + '</div>';
+      var relatedRaw = marker.getAttribute('data-related-spots') || '';
+      if (relatedRaw) {
+        try {
+          var related = JSON.parse(relatedRaw);
+          if (Array.isArray(related) && related.length) {
+            html += '<div class="spot-desc" style="margin-top:8px;border-top:1px solid #eee;padding-top:8px;"><b>周边景点</b><br/>'
+              + related.map(function(r){ return (r && r.name) ? ('· ' + r.name) : ''; }).filter(Boolean).join('<br/>')
+              + '</div>';
+          }
+        } catch (e) {}
       }
-      if (day) {
-        html += '<span class="day-tag">' + day + '</span>';
-      }
-      if (plan) {
-        html += '<div class="spot-plan">' + plan + '</div>';
-      }
-      if (desc) {
-        html += '<div class="spot-desc">' + desc + '</div>';
+      if (!name && !plan && !desc && !imgs.length) {
+        html += '<div class="spot-desc">暂无该端点详情</div>';
       }
       document.getElementById('popupContent').innerHTML = html;
       document.getElementById('spotPopup').classList.add('show');
@@ -467,13 +553,18 @@ body {
       if (!imgs || imgs.length <= 1) return;
       window.__spotImgIdx = (window.__spotImgIdx + dir + imgs.length) % imgs.length;
       var imgEl = document.getElementById('spotGalleryImg');
-      if (imgEl) imgEl.src = imgs[window.__spotImgIdx];
+      if (imgEl) {
+        imgEl.style.display = '';
+        imgEl.src = imgs[window.__spotImgIdx];
+        if (imgEl.parentNode) imgEl.parentNode.style.display = '';
+      }
       var counter = document.getElementById('galleryCounter');
       if (counter) counter.textContent = (window.__spotImgIdx + 1) + '/' + imgs.length;
     }
 
     function hidePopup() {
       cancelHide();
+      activeMarker = null;
       var popup = document.getElementById('spotPopup');
       if (popup) popup.classList.remove('show');
     }
@@ -483,7 +574,8 @@ body {
       hideTimer = setTimeout(function() {
         var popup = document.getElementById('spotPopup');
         if (popup) popup.classList.remove('show');
-      }, 3000);
+        activeMarker = null;
+      }, 4500);
     }
 
     function cancelHide() {
@@ -493,8 +585,24 @@ body {
       }
     }
 
+    function bindMarker(el) {
+      el.style.cursor = 'pointer';
+      el.addEventListener('mouseenter', function() { showPopup(el); });
+      el.addEventListener('mouseleave', function() { scheduleHide(); });
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showPopup(el);
+        scheduleHide();
+      });
+      el.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        showPopup(el);
+        scheduleHide();
+      }, { passive: false });
+    }
+
     (function() {
-      // 1. 将静态 SVG 注入容器
       var container = document.getElementById('svgMapContainer');
       if (container && STATIC_SVG && STATIC_SVG.indexOf('<svg') !== -1) {
         container.innerHTML = STATIC_SVG;
@@ -503,34 +611,22 @@ body {
       var popup = document.getElementById('spotPopup');
       if (!container || !popup) return;
 
-      // 2. 查找所有 .route-marker 元素，绑定交互事件
-      var markers = container.querySelectorAll('.route-marker');
-      markers.forEach(function(marker) {
-        marker.style.cursor = 'pointer';
+      enhanceSvgForCard(container);
+      hydrateMarkersFromMeta(container, parseWaypointSpots());
 
-        // 悬停显示
-        marker.addEventListener('mouseenter', function() {
-          showPopup(marker);
-        });
+      container.querySelectorAll('.route-marker, .spot-item, .marker[data-name]').forEach(bindMarker);
 
-        // 离开延迟 3 秒隐藏
-        marker.addEventListener('mouseleave', function() {
-          scheduleHide();
-        });
-
-        // 触摸支持
-        marker.addEventListener('touchstart', function(e) {
-          e.preventDefault();
-          showPopup(marker);
-          scheduleHide();
-        }, { passive: false });
-      });
-
-      // 浮窗自身悬停时取消隐藏定时器
       popup.addEventListener('mouseenter', cancelHide);
       popup.addEventListener('mouseleave', scheduleHide);
+      popup.addEventListener('click', cancelHide);
 
-      // 3. 操作按钮 postMessage
+      document.addEventListener('click', function(e) {
+        if (!popup.classList.contains('show')) return;
+        if (popup.contains(e.target)) return;
+        if (activeMarker && activeMarker.contains(e.target)) return;
+        hidePopup();
+      });
+
       document.querySelectorAll('[data-action]').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var actionKey = this.getAttribute('data-action');

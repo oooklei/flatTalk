@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
@@ -348,7 +348,7 @@ body {
 
   </style>
 </head>
-<body data-layout="vertical" data-map-mode="static_svg">
+<body data-layout="vertical" data-static-svg="1">
   <article class="route-card" data-theme="wellness">
     <header class="hero">
       <div class="eyebrow">{{season}} · {{budgetLevel}}</div>
@@ -356,7 +356,7 @@ body {
       <p class="subtitle">{{#priceLabel}}<span class="price-tag">{{priceLabel}}</span> {{/priceLabel}}{{summary}}</p>
     </header>
     <section class="svg-map-section">
-      <h2>📍 走线路线 {{#hasSpots}}<span class="hint">悬停景点查看详情</span>{{/hasSpots}}</h2>
+      <h2>📍 走线路线 {{#hasSpots}}<span class="hint">点击端点查看详情</span>{{/hasSpots}}</h2>
       <div class="svg-container" id="svgMapContainer"></div>
       <div class="spot-popup" id="spotPopup">
         <button class="close-btn" onclick="hidePopup()">&times;</button>

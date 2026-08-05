@@ -3,42 +3,126 @@
   "route_name": "巴马5天4晚康养旅居",
   "version": "1.1",
   "generated_at": "2026-08-05T00:00:00.000Z",
-  "data_sources": { "map": "tencent_map_poi", "spots": "tavily_search_merged", "route": "tencent_driving" },
+  "data_sources": {
+    "map": "tencent_map_poi",
+    "spots": "tavily_search_merged",
+    "route": "tencent_driving"
+  },
   "destination": "巴马",
   "days": 5,
   "summary": "巴马长寿之乡5天4晚深度康养，涵盖百魔洞磁疗、长寿村文化、命河奇观、百鸟岩水晶宫溶洞、赐福湖疗养",
-  "highlights": ["百魔洞负氧离子2-7万/cm³", "长寿村7位百岁老人", "命河'命'字河道奇观", "水晶宫全球最大卷曲石花", "赐福湖百岛长湖疗养"],
+  "highlights": [
+    "百魔洞负氧离子2-7万/cm³",
+    "长寿村7位百岁老人",
+    "命河'命'字河道奇观",
+    "水晶宫全球最大卷曲石花",
+    "赐福湖百岛长湖疗养"
+  ],
   "suitable_for": "60—75周岁无重大基础病活力长者",
   "waypoints": [
     {
-      "id": "wp1", "name": "巴马县城", "type": "arrival", "day": "Day1", "plan": "抵达巴马，入住康养基地",
-      "lat": 24.12, "lng": 107.25,
+      "id": "wp1",
+      "name": "巴马县城",
+      "type": "arrival",
+      "day": "Day1",
+      "plan": "抵达巴马，入住康养基地",
+      "lat": 24.12,
+      "lng": 107.25,
       "spot_images": [],
       "spot_desc": "巴马瑶族自治县县城，世界长寿之乡核心区。海拔600-800米，地磁强度适中，空气负氧离子高达2-7万个/cm³，盘阳河穿城而过，是康养旅居的集散中心。县城配套完善，有长寿博物馆、民族文化广场，可品鉴巴马火麻汤、苞谷粥等长寿饮食。"
     },
     {
-      "id": "wp2", "name": "百魔洞", "type": "spot", "day": "Day2", "plan": "天下第一洞·负氧离子磁疗",
-      "lat": 24.15, "lng": 107.05,
+      "id": "wp2",
+      "name": "百魔洞",
+      "type": "spot",
+      "day": "Day2",
+      "plan": "天下第一洞·负氧离子磁疗",
+      "lat": 24.15,
+      "lng": 107.05,
       "spot_images": [
         "https://dimg04.c-ctrip.com/images/1mf2h12000be4fpbd5CEC_W_640_0_Q90.jpg?proc=autoorient",
         "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/0e/ac/36/baimo-cave.jpg?w=1200&h=-1&s=1",
         "https://img.yijuhome.com.cn/20250928/1988751759041223.jpg"
       ],
-      "spot_desc": "百魔洞是巴马最著名的溶洞景点，洞内钟乳石千姿百态，石笋林立，洞厅宏伟壮观。洞内富含负氧离子和地磁，被誉为天然氧吧和磁场养生圣地，是康养旅居的理想之地。游客可在洞内漫步感受自然的神奇魅力，体验独特的地磁养生效果。"
+      "spot_desc": "百魔洞是巴马最著名的溶洞景点，洞内钟乳石千姿百态，石笋林立，洞厅宏伟壮观。洞内富含负氧离子和地磁，被誉为天然氧吧和磁场养生圣地，是康养旅居的理想之地。游客可在洞内漫步感受自然的神奇魅力，体验独特的地磁养生效果。",
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 43456.55,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 29091.53,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 176370.29,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 102608.16,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "route_data"
     },
     {
-      "id": "wp3", "name": "长寿村", "type": "wellness", "day": "Day3", "plan": "探访百岁老人·养生文化",
-      "lat": 24.10, "lng": 107.15,
+      "id": "wp3",
+      "name": "长寿村",
+      "type": "wellness",
+      "day": "Day3",
+      "plan": "探访百岁老人·养生文化",
+      "lat": 24.1,
+      "lng": 107.15,
       "spot_images": [
         "https://www.gxlvyouwang.com/uploads/allimg/20250806/1-250P6000045507.jpg",
         "https://static.gxrb.com.cn/image/uploadpic/20250713/34f321dd4e3266715d994b7fd5171f36.png",
         "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064322606780"
       ],
-      "spot_desc": "长寿村即巴盘屯，是世界著名的长寿之乡。村内百岁老人众多，被誉为世界长寿之乡的典型代表。这里空气清新，水质优良，地磁强度适中，是养生康居的理想之地。游客可探访百岁老人，了解长寿秘诀，体验原生态的乡村生活。"
+      "spot_desc": "长寿村即巴盘屯，是世界著名的长寿之乡。村内百岁老人众多，被誉为世界长寿之乡的典型代表。这里空气清新，水质优良，地磁强度适中，是养生康居的理想之地。游客可探访百岁老人，了解长寿秘诀，体验原生态的乡村生活。",
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 37172.59,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 23014.88,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 171402.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 95510.87,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "route_data"
     },
     {
-      "id": "wp4", "name": "命河", "type": "spot", "day": "Day3", "plan": "命字河道奇观",
-      "lat": 24.12, "lng": 107.10,
+      "id": "wp4",
+      "name": "命河",
+      "type": "spot",
+      "day": "Day3",
+      "plan": "命字河道奇观",
+      "lat": 24.12,
+      "lng": 107.1,
       "spot_images": [
         "https://imgs.tom.com/travel/202203/1552028316/CONTENTe016426849834b0b.jpg",
         "https://imgs.tom.com/travel/202203/1552028316/CONTENT60095e8e2735df43.jpg"
@@ -46,8 +130,13 @@
       "spot_desc": "命河是巴马母亲河盘阳河的一段，因河道蜿蜒曲折，形似命字而得名。河水清澈见底，两岸青山翠绿，风光旖旎。命河沿岸负氧离子含量极高，是天然的养生走廊。游客可泛舟河上，欣赏两岸田园风光，感受巴马独特的山水意境。"
     },
     {
-      "id": "wp5", "name": "百鸟岩", "type": "spot", "day": "Day4", "plan": "乘船穿越三天三夜",
-      "lat": 24.18, "lng": 107.00,
+      "id": "wp5",
+      "name": "百鸟岩",
+      "type": "spot",
+      "day": "Day4",
+      "plan": "乘船穿越三天三夜",
+      "lat": 24.18,
+      "lng": 107,
       "spot_images": [
         "https://dimg04.c-ctrip.com/images/1mf6o12000be4fnjz1ADB_W_640_0_Q90.jpg?proc=autoorient",
         "https://dimg04.c-ctrip.com/images/1mf3l12000be4fsjmF302_W_640_0_Q90.jpg?proc=autoorient"
@@ -55,8 +144,13 @@
       "spot_desc": "百鸟岩又名百魔洞支洞，是巴马第二大溶洞景观。洞内钟乳石洁白晶莹，形态各异，似鸟似兽，惟妙惟肖。洞内空气清新，负氧离子含量极高，是天然的养生宝地。游客可乘船游览地下河，欣赏洞内奇特的地质景观，感受大自然的鬼斧神工。"
     },
     {
-      "id": "wp6", "name": "水晶宫", "type": "spot", "day": "Day4", "plan": "溶洞天花板·鹅管群",
-      "lat": 24.30, "lng": 106.95,
+      "id": "wp6",
+      "name": "水晶宫",
+      "type": "spot",
+      "day": "Day4",
+      "plan": "溶洞天花板·鹅管群",
+      "lat": 24.3,
+      "lng": 106.95,
       "spot_images": [
         "https://www.365135.com/upimg/userup/2509/0210525224Q.jpg",
         "https://v2.cri.cn/784fb719-0133-48b0-af0e-b6868483901e/image/d8b34262a5b447e28472835711a4f834.1268x793.jpg"
@@ -64,8 +158,13 @@
       "spot_desc": "水晶宫是巴马最具代表性的溶洞之一，以其晶莹剔透的钟乳石闻名。洞内石笋、石幔、石花遍布，宛如水晶宫殿。洞内恒温恒湿，空气清新，富含多种对人体有益的微量元素。是观光、养生、度假的绝佳去处，被誉为地下艺术宫殿。"
     },
     {
-      "id": "wp7", "name": "赐福湖", "type": "wellness", "day": "Day5", "plan": "百岛长湖·游船疗养",
-      "lat": 24.08, "lng": 107.30,
+      "id": "wp7",
+      "name": "赐福湖",
+      "type": "wellness",
+      "day": "Day5",
+      "plan": "百岛长湖·游船疗养",
+      "lat": 24.08,
+      "lng": 107.3,
       "spot_images": [
         "https://static.gxrb.com.cn/image/uploadpic/20250711/e4f615339c84ec5c514998b9ba95d6b4.jpg",
         "https://static.gxrb.com.cn/image/uploadpic/20250713/34f321dd4e3266715d994b7fd5171f36.png"
@@ -73,12 +172,24 @@
       "spot_desc": "赐福湖是巴马最大的人工湖，湖水清澈，四周青山环抱，景色秀丽。湖畔有长寿岛、赐福长寿村等景点，是康养度假的理想之地。湖边建有温泉度假村，可体验地磁温泉养生。游客可乘船游湖，欣赏湖光山色，感受巴马的宁静与美好。"
     },
     {
-      "id": "wp8", "name": "返程", "type": "departure", "day": "Day5", "plan": "盘阳河漂流·返程",
-      "lat": 24.12, "lng": 107.25,
+      "id": "wp8",
+      "name": "返程",
+      "type": "departure",
+      "day": "Day5",
+      "plan": "盘阳河漂流·返程",
+      "lat": 24.12,
+      "lng": 107.25,
       "spot_images": [],
       "spot_desc": "结束愉快康养之旅，沿盘阳河畔返程。盘阳河是巴马母亲河，沿岸风光旖旎，负氧离子含量极高，被誉为长寿走廊。返程途中可最后感受巴马的山水意境与清新空气。"
     }
   ],
   "polyline_path": [],
-  "tags": ["长寿之乡", "康养旅居", "负氧离子", "喀斯特"]
+  "tags": [
+    "长寿之乡",
+    "康养旅居",
+    "负氧离子",
+    "喀斯特"
+  ],
+  "spot_images_source": "dashboard_local_kb",
+  "updated_at": "2026-08-05T22:05:59.060Z"
 }

@@ -295,6 +295,7 @@ function buildHtmlFallback(pageHtml) {
   // 地图/走线卡必须 iframe 隔离，保证模板 CSS 变量与 SVG 交互不被宿主页冲掉
   const htmlWithoutAutoHeight = finalHtml.replace(autoHeightScript, '');
   const needsIframe = htmlWithoutAutoHeight.includes('data-map-mode')
+    || htmlWithoutAutoHeight.includes('data-static-svg')
     || /class=["'][^"']*\broute-card\b/i.test(htmlWithoutAutoHeight)
     || /class=["'][^"']*\bsvg-map-section\b/i.test(htmlWithoutAutoHeight)
     || /id=["']svgMapContainer["']/i.test(htmlWithoutAutoHeight)
@@ -329,7 +330,7 @@ function buildHtmlFallback(pageHtml) {
   ].join('');
 }
 
-const HTML_SAFE_KEYS = new Set(['static_svg', 'compact_followups', 'rendered_html']);
+const HTML_SAFE_KEYS = new Set(['static_svg', 'compact_followups', 'rendered_html', 'waypoint_spots_json']);
 function sanitizeModelValue(value, parentKey = '') {
   if (Array.isArray(value)) {
     return value.map((item) => sanitizeModelValue(item, parentKey));

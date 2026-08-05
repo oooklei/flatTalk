@@ -19,6 +19,7 @@ import { TencentMapAdapter } from '../services/map/tencent-map-adapter.js';
 import { searchCategory } from '../services/nearby-resource/tavily-nearby-adapter.js';
 import { toSimplified, toSimplifiedDeep } from '../core/utils/simplified-chinese.js';
 import { generateRouteHtml } from '../core/route-svg-generator.js';
+import { lookupDashboardSpotImages } from '../skills/travel_route/dashboard-spot-kb.js';
 
 const ROOT = process.cwd();
 const MAPS_DIR = path.join(ROOT, 'data', 'sojourn-maps');
@@ -213,25 +214,48 @@ async function fetchPolyline(waypoints) {
 }
 
 /**
- * 为每个端点/景点调用 Tavily 搜索获取描述+图片
- * ★ 不再跳过 base/arrival/departure，所有端点都搜索（起点终点用"目的地"搜索获取区域介绍）
+ * 为每个端点/景点补描述+图片。
+ * 默认只读 flatTalk-dashboard 本地知识库（49 端点），不消耗 Tavily 日额度。
+ * 仅当 SPOT_IMAGES_TAVILY=1 且本地未命中时才回退 Tavily。
  */
 async function enrichWithTavily(waypoints, destination) {
+  const allowTavily = String(process.env.SPOT_IMAGES_TAVILY || '').trim() === '1';
   const results = await Promise.all(
     waypoints.map(async (wp) => {
-      // departure（纯返程）跳过
       if (wp.type === 'departure') {
         return { ...wp, spots: [], spot_images: [], spot_desc: wp.spot_desc || '' };
       }
+
+      const local = lookupDashboardSpotImages(wp.name)
+        || lookupDashboardSpotImages(`${destination || ''}${wp.name || ''}`)
+        || lookupDashboardSpotImages(destination);
+      if (local?.spot_images?.length) {
+        return {
+          ...wp,
+          spots: (local.related_spots || []).slice(0, 3).map((s) => ({
+            name: toSimplified(s.name || ''),
+            desc: toSimplified(s.address || s.category || ''),
+          })),
+          spot_images: local.spot_images,
+          spot_desc: toSimplified(wp.spot_desc || local.spot_desc || ''),
+          spot_status: local.image_source || 'dashboard_local_kb',
+        };
+      }
+
+      if (!allowTavily) {
+        return {
+          ...wp,
+          spots: [],
+          spot_images: Array.isArray(wp.spot_images) ? wp.spot_images : [],
+          spot_desc: wp.spot_desc || '',
+          spot_status: 'local_kb_miss',
+        };
+      }
+
       try {
-        // base/arrival 用目的地名称搜索（获取区域整体介绍），景点用景点名搜索
         const isEndpoint = wp.type === 'base' || wp.type === 'arrival';
         const searchName = isEndpoint ? destination : `${destination} ${wp.name}`;
-        const center = {
-          name: searchName,
-          lat: wp.lat,
-          lng: wp.lng,
-        };
+        const center = { name: searchName, lat: wp.lat, lng: wp.lng };
         const tavilyResult = await searchCategory('spot', center, 8000);
         const spots = (tavilyResult.source_results || [])
           .slice(0, 3)
@@ -240,15 +264,11 @@ async function enrichWithTavily(waypoints, destination) {
             desc: toSimplified((s.content || '').slice(0, 160)),
           }))
           .filter((s) => s.name && s.name.length >= 2);
-
         const images = (tavilyResult.images || []).slice(0, 3);
-
-        // Tavily answer 作为整体描述（端点截取更长，用于区域介绍）
         const descMaxLen = isEndpoint ? 240 : 160;
         const enrichDesc = tavilyResult.description
           ? toSimplified(tavilyResult.description.slice(0, descMaxLen))
           : '';
-
         return {
           ...wp,
           spots,
@@ -256,7 +276,7 @@ async function enrichWithTavily(waypoints, destination) {
           spot_desc: enrichDesc,
           spot_status: spots.length > 0 || images.length > 0 ? 'enriched' : 'empty',
         };
-      } catch (e) {
+      } catch {
         return { ...wp, spots: [], spot_images: [], spot_status: 'failed' };
       }
     })
@@ -658,9 +678,9 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
   // staticMapUrl 参数保留以向后兼容，但不再使用（已切换为纯矢量SVG，无光栅底图）
   void staticMapUrl;
   const preset = VERSION_PRESETS[version] || VERSION_PRESETS.standard;
-  // 适老版放大系数：字体1.3倍，标点1.2倍
-  const fontScale = version === 'elder' ? 1.3 : 1;
-  const markerScale = version === 'elder' ? 1.2 : 1;
+  // 卡片常见展示宽 ~360px，相对 620 viewBox 约 0.58×；再放大 2 倍保证可读
+  const fontScale = version === 'elder' ? 4.2 : 3.5;
+  const markerScale = version === 'elder' ? 2.2 : 1.9;
 
   // 固定卡片尺寸 620×850（不再从 preset.viewBox 取）
   const VB_W = 620, VB_H = 850;
@@ -878,6 +898,7 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     }
     const radius = Math.round(baseR * markerScale);
     const labelFs = Math.round(10 * fontScale);
+    const hitR = Math.max(22, radius + 14);
     const simName = toSimplified(m.name || '');
     const simDesc = toSimplified(m.spot_desc || m.plan || '');
     const simPlan = toSimplified(m.plan || '');
@@ -891,6 +912,7 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
       ` data-spot-desc="${escXml(simDesc)}"` +
       (imgUrl ? ` data-spot-img="${escXml(imgUrl)}"` : '') +
       ` transform="translate(${m.x},${m.y})">` +
+      `<circle class="hit-area" r="${hitR}" fill="transparent" pointer-events="all"/>` +
       `<circle r="${radius}" fill="${color}" stroke="#fff" stroke-width="2"/>` +
       `<text text-anchor="middle" dy="${Math.round(labelFs * 0.35)}" fill="#fff" ` +
       `font-size="${labelFs}" font-weight="bold">${label}</text>` +

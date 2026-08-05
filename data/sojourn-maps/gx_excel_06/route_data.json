@@ -26,7 +26,37 @@
       "plan": "宁明花山岩画",
       "lat": 22.14,
       "lng": 107.072,
-      "spot_desc": "南宁市 · 1. 抵达南宁，专人接站，入住中国（南宁）乐养城；2. 健康建档与基础体检，适应广西气候；3. 下午游览青秀山风景区，开展森林养老漫步；4. 晚上体验壮药足浴养生，八段锦适应性训练"
+      "spot_desc": "南宁市 · 1. 抵达南宁，专人接站，入住中国（南宁）乐养城；2. 健康建档与基础体检，适应广西气候；3. 下午游览青秀山风景区，开展森林养老漫步；4. 晚上体验壮药足浴养生，八段锦适应性训练",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E8%8A%B1%E5%B1%B1%E5%B2%A9%E7%94%BB%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%B4%87%E5%B7%A6%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 80776.49,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 64527.9,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 64569.48,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 9019,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp2",
@@ -36,7 +66,37 @@
       "plan": "大新德天瀑布",
       "lat": 22.849,
       "lng": 106.726,
-      "spot_desc": "南宁市→崇左市 · 1. 8:30早餐后晨练，健康讲堂；2、户外山水治疗愈；午餐后午休；3. 下午游石景林风景区，开展喀斯特地貌养老漫步；4. 晚上体验壮药理疗"
+      "spot_desc": "南宁市→崇左市 · 1. 8:30早餐后晨练，健康讲堂；2、户外山水治疗愈；午餐后午休；3. 下午游石景林风景区，开展喀斯特地貌养老漫步；4. 晚上体验壮药理疗",
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300m1200000rpb33D9F36_W_640_0_Q90.jpg"
+      ],
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 7828.1,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 26298.01,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 36304.45,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "友谊关景区",
+          "address": "广西壮族自治区崇左市凭祥市G322",
+          "distance": 97092.36,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp3",
@@ -46,7 +106,37 @@
       "plan": "明仕田园",
       "lat": 22.85,
       "lng": 107.1,
-      "spot_desc": "崇左市→宁明县 · 1. 8:30早餐后出发，乘车前往宁明县（车程约1小时）；2. 抵达后入住宁明县旅居养老基地，午餐后午休；3. 下午游览花山岩画景区，体验非遗文化研学；4. 开展派阳山森林公园森林养老徒步，呼吸高负氧离子空气；5. 晚上"
+      "spot_desc": "崇左市→宁明县 · 1. 8:30早餐后出发，乘车前往宁明县（车程约1小时）；2. 抵达后入住宁明县旅居养老基地，午餐后午休；3. 下午游览花山岩画景区，体验非遗文化研学；4. 开展派阳山森林公园森林养老徒步，呼吸高负氧离子空气；5. 晚上",
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300k1200000rnweaN442F_W_640_0_Q90.jpg"
+      ],
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 31481.28,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 23935.5,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 15360.29,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 70565.43,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp4",
@@ -56,7 +146,37 @@
       "plan": "左江斜塔",
       "lat": 22.377,
       "lng": 107.353,
-      "spot_desc": "宁明县 · 1. 8:30早餐后，晨练太极；2. 上午开展壮瑶医药健康讲座，一对一养老咨询；3. 午餐后午休；4. 下午体验非遗壮锦手作，静心疗愈；5. 晚上开展养老联谊活动，交流养生心得"
+      "spot_desc": "宁明县 · 1. 8:30早餐后，晨练太极；2. 上午开展壮瑶医药健康讲座，一对一养老咨询；3. 午餐后午休；4. 下午体验非遗壮锦手作，静心疗愈；5. 晚上开展养老联谊活动，交流养生心得",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%B7%A6%E6%B1%9F%E6%96%9C%E5%A1%94%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%B4%87%E5%B7%A6%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 75560.92,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 56851.59,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 49203.97,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 36058.01,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     }
   ],
   "itinerary": [
@@ -106,5 +226,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路6_南宁_宁明_大新_崇左边关壮瑶养老旅居线",
   "route_id": "gx_excel_06",
-  "updated_at": "2026-08-05T21:01:58.674Z"
+  "updated_at": "2026-08-05T22:05:59.120Z",
+  "spot_images_source": "dashboard_local_kb"
 }

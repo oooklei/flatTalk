@@ -21,7 +21,40 @@
       "lng": 107.05,
       "type": "spot",
       "day": "Day2",
-      "plan": "负氧磁疗"
+      "plan": "负氧磁疗",
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/1mf2h12000be4fpbd5CEC_W_640_0_Q90.jpg?proc=autoorient",
+        "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/0e/ac/36/baimo-cave.jpg?w=1200&h=-1&s=1",
+        "https://img.yijuhome.com.cn/20250928/1988751759041223.jpg"
+      ],
+      "spot_desc": "百魔洞是巴马最著名的溶洞景点，洞内钟乳石千姿百态，石笋林立，洞厅宏伟壮观。洞内富含负氧离子和地磁，被誉为\"天然氧吧\"和\"磁场养生圣地\"，是康养旅居的理想之地。游客可在洞内漫步感受自然的神奇魅力，体验独特的地磁养生效果。",
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 43456.55,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 29091.53,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 176370.29,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 102608.16,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp3",
@@ -30,7 +63,40 @@
       "lng": 107.15,
       "type": "wellness",
       "day": "Day3",
-      "plan": "长寿文化"
+      "plan": "长寿文化",
+      "spot_images": [
+        "https://www.gxlvyouwang.com/uploads/allimg/20250806/1-250P6000045507.jpg",
+        "https://static.gxrb.com.cn/image/uploadpic/20250713/34f321dd4e3266715d994b7fd5171f36.png",
+        "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064322606780"
+      ],
+      "spot_desc": "长寿村即巴盘屯，是世界著名的长寿之乡。村内百岁老人众多，被誉为\"世界长寿之乡\"的典型代表。这里空气清新，水质优良，地磁强度适中，是养生康居的理想之地。游客可探访百岁老人，了解长寿秘诀，体验原生态的乡村生活。",
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 37172.59,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 23014.88,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 171402.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 95510.87,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp4",
@@ -45,5 +111,6 @@
   "source": "jintiaodong",
   "jtd_product_id": "2070305000000000266",
   "route_id": "jtd_2070305000000000266",
-  "updated_at": "2026-08-05T21:01:59.419Z"
+  "updated_at": "2026-08-05T22:05:59.143Z",
+  "spot_images_source": "dashboard_local_kb"
 }

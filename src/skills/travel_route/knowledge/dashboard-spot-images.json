@@ -1,0 +1,1786 @@
+{
+  "generated_at": "2026-08-05T22:01:32.874Z",
+  "source": "flatTalk-dashboard local KB (travelRouteGeo + route-nearby-cache + geographicSVG)",
+  "endpoint_count": 49,
+  "photo_count": 11,
+  "poster_count": 38,
+  "endpoints": [
+    {
+      "name": "桂林象鼻山",
+      "city": "桂林",
+      "lat": 25.2736,
+      "lng": 110.2923,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%A1%82%E6%9E%97%E8%B1%A1%E9%BC%BB%E5%B1%B1%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 1392.36,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 38647.55,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 731.86,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "���江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 19882.03,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "永福金钟山",
+      "city": "桂林",
+      "lat": 24.95,
+      "lng": 109.95,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%B0%B8%E7%A6%8F%E9%87%91%E9%92%9F%E5%B1%B1%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：月亮山景区-观光台、荔浦天河瀑布景区、玉龙滩旅游风景区",
+      "related_spots": [
+        {
+          "name": "月亮山景区-观光台",
+          "address": "广西壮族自治区桂林市阳朔县桂荔公路西侧高田镇凤楼村(阳朔城南侧8.5公里处)月亮山景区内",
+          "distance": 58355.92,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "荔浦天河瀑布景区",
+          "address": "广西壮族自治区桂林市荔浦市蒲芦瑶族乡黎村",
+          "distance": 45379.41,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "玉龙滩旅游风景区",
+          "address": "广西壮族自治区桂林市龙胜各族自治县县城西端",
+          "distance": 102416.82,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "阳朔漓江景区",
+          "address": "广西壮族自治区桂林市阳朔县兴坪码头附近",
+          "distance": 58292.47,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "漓江百里画廊",
+      "city": "桂林",
+      "lat": 25,
+      "lng": 110.29,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%BC%93%E6%B1%9F%E7%99%BE%E9%87%8C%E7%94%BB%E5%BB%8A%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 31178.72,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 64787.32,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 29913.47,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 21744.25,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "阳朔西街",
+      "city": "桂林",
+      "lat": 24.7739,
+      "lng": 110.494,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%98%B3%E6%9C%94%E8%A5%BF%E8%A1%97%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 59476.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 84733.47,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 58547.47,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 42027.5,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "恭城瑶药博物馆",
+      "city": "桂林",
+      "lat": 24.833,
+      "lng": 110.83,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%81%AD%E5%9F%8E%E7%91%B6%E8%8D%AF%E5%8D%9A%E7%89%A9%E9%A6%86%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 72689.87,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 83031.61,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 72389.86,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 53271.8,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "荔浦丰鱼岩",
+      "city": "桂林",
+      "lat": 24.489,
+      "lng": 110.397,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E8%8D%94%E6%B5%A6%E4%B8%B0%E9%B1%BC%E5%B2%A9%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 88525.67,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 117260.52,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 87373.98,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 73354.35,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "尧山森林公园",
+      "city": "桂林",
+      "lat": 25.3,
+      "lng": 110.35,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%B0%A7%E5%B1%B1%E6%A3%AE%E6%9E%97%E5%85%AC%E5%9B%AD%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 5118.71,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 32687.89,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 6369.22,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 18897.95,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "贺州温泉",
+      "city": "贺州",
+      "lat": 24.45,
+      "lng": 111.52,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E8%B4%BA%E5%B7%9E%E6%B8%A9%E6%B3%89%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂江生态旅游景区、黄姚古镇景区、紫云仙境景区",
+      "related_spots": [
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 78296.92,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 38641.69,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 8381.44,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 21098.08,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "姑婆山森林公园",
+      "city": "贺州",
+      "lat": 24.52,
+      "lng": 111.47,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%A7%91%E5%A9%86%E5%B1%B1%E6%A3%AE%E6%9E%97%E5%85%AC%E5%9B%AD%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：姑婆山旅游区、桂江生态旅游景区、黄姚古镇景区",
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 15815.35,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 80270.5,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 40196.62,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 17205.57,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "黄姚古镇",
+      "city": "贺州",
+      "lat": 24.38,
+      "lng": 111.33,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%BB%84%E5%A7%9A%E5%8F%A4%E9%95%87%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：姑婆山旅游区、桂江生态旅游景区、黄姚古镇景区",
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 36821.88,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 59198.88,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 19139.09,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 20220.66,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "昭平茶山",
+      "city": "贺州",
+      "lat": 24.17,
+      "lng": 110.81,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%98%AD%E5%B9%B3%E8%8C%B6%E5%B1%B1%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：姑婆山旅游区、桂江生态旅游景区、黄姚古镇景区",
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 92061.64,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 25493.26,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 41648.34,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 76489.87,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "钟山百里水墨",
+      "city": "贺州",
+      "lat": 24.528,
+      "lng": 111.33,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%92%9F%E5%B1%B1%E7%99%BE%E9%87%8C%E6%B0%B4%E5%A2%A8%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：姑婆山旅游区、桂江生态旅游景区、黄姚古镇景区",
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 26225.84,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 72433.85,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 33594.95,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 26409.52,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "富川瑶族古村",
+      "city": "贺州",
+      "lat": 24.815,
+      "lng": 111.277,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%AF%8C%E5%B7%9D%E7%91%B6%E6%97%8F%E5%8F%A4%E6%9D%91%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：姑婆山旅游区、桂江生态旅游景区、黄姚古镇景区",
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 34895.26,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 98916.29,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 63671.78,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 55221.92,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "青秀山风景区",
+      "city": "南宁",
+      "lat": 22.7887,
+      "lng": 108.3953,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%9D%92%E7%A7%80%E5%B1%B1%E9%A3%8E%E6%99%AF%E5%8C%BA%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8D%97%E5%AE%81%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：龙虎山风景区、南宁市青秀山风景名胜旅游区、昆仑关旅游风景区",
+      "related_spots": [
+        {
+          "name": "龙虎山风景区",
+          "address": "广西壮族自治区南宁市隆安县",
+          "distance": 78056.01,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "南宁市青秀山风景名胜旅游区",
+          "address": "广西壮族自治区南宁市青秀区凤岭南路6-6号",
+          "distance": 852.66,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "昆仑关旅游风景区",
+          "address": "广西壮族自治区南宁市兴宁区X028",
+          "distance": 44950.25,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "广西龙门水都生态文化旅游景区",
+          "address": "广西壮族自治区南宁市西乡塘区新际路69号",
+          "distance": 19272.41,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "上林大龙湖",
+      "city": "南宁",
+      "lat": 23.431,
+      "lng": 108.605,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E4%B8%8A%E6%9E%97%E5%A4%A7%E9%BE%99%E6%B9%96%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8D%97%E5%AE%81%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：龙虎山风景区、南宁市青秀山风景名胜旅游区、昆仑关旅游风景区",
+      "related_spots": [
+        {
+          "name": "龙虎山风景区",
+          "address": "广西壮族自治区南宁市隆安县",
+          "distance": 110177.06,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "南宁市青秀山风景名胜旅游区",
+          "address": "广西壮族自治区南宁市青秀区凤岭南路6-6号",
+          "distance": 75041.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "昆仑关旅游风景区",
+          "address": "广西壮族自治区南宁市兴宁区X028",
+          "distance": 38614.28,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "广西龙门水都生态文化旅游景区",
+          "address": "广西壮族自治区南宁市西乡塘区新际路69号",
+          "distance": 69178.34,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "马山金伦洞",
+      "city": "南宁",
+      "lat": 23.729,
+      "lng": 108.238,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%A9%AC%E5%B1%B1%E9%87%91%E4%BC%A6%E6%B4%9E%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8D%97%E5%AE%81%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：龙虎山风景区、南宁市青秀山风景名胜旅游区、昆仑关旅游风景区",
+      "related_spots": [
+        {
+          "name": "龙虎山风景区",
+          "address": "广西壮族自治区南宁市隆安县",
+          "distance": 104085.49,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "南宁市青秀山风景名胜旅游区",
+          "address": "广西壮族自治区南宁市青秀区凤岭南路6-6号",
+          "distance": 105925.41,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "昆仑关旅游风景区",
+          "address": "广西壮族自治区南宁市兴宁区X028",
+          "distance": 84334.78,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "广西龙门水都生态文化旅游景区",
+          "address": "广西壮族自治区南宁市西乡塘区新际路69号",
+          "distance": 92194.72,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "崇左太平古城",
+      "city": "崇左",
+      "lat": 22.377,
+      "lng": 107.353,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%B4%87%E5%B7%A6%E5%A4%AA%E5%B9%B3%E5%8F%A4%E5%9F%8E%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%B4%87%E5%B7%A6%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：广西德天跨国瀑布景区、明仕田园风景区、峒那屿湾景区",
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 75560.92,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 56851.59,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 49203.97,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 36058.01,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "花山岩画",
+      "city": "崇左",
+      "lat": 22.14,
+      "lng": 107.072,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E8%8A%B1%E5%B1%B1%E5%B2%A9%E7%94%BB%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%B4%87%E5%B7%A6%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：广西德天跨国瀑布景区、明仕田园风景区、峒那屿湾景区",
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 80776.49,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 64527.9,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 64569.48,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 9019,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "德天跨国瀑布",
+      "city": "崇左",
+      "lat": 22.849,
+      "lng": 106.726,
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300m1200000rpb33D9F36_W_640_0_Q90.jpg"
+      ],
+      "spot_desc": "德天瀑布位于中越边境，是亚洲第一大跨国瀑布，瀑布宽120米，分三级跌落，气势磅礴。",
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 7828.1,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 26298.01,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 36304.45,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "友谊关景区",
+          "address": "广西壮族自治区崇左市凭祥市G322",
+          "distance": 97092.36,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "明仕田园",
+      "city": "崇左",
+      "lat": 22.85,
+      "lng": 107.1,
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300k1200000rnweaN442F_W_640_0_Q90.jpg"
+      ],
+      "spot_desc": "明仕田园是典型的喀斯特地貌田园风光，群峰竞秀，碧水绕村，被誉为小桂林。",
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 31481.28,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 23935.5,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 15360.29,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 70565.43,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "白浪滩",
+      "city": "防城港",
+      "lat": 21.58,
+      "lng": 108.25,
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300m1200000rxn2g8C7AE_W_640_0_Q90.jpg"
+      ],
+      "spot_desc": "白浪滩是防城港最著名的海滩，沙滩宽阔平缓，沙质细腻，是滨海休闲的绝佳去处。",
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 12523.66,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 17038.71,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 5579.77,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 11376.07,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "东兴口岸",
+      "city": "防城港",
+      "lat": 21.548,
+      "lng": 107.971,
+      "spot_images": [
+        "https://www.gxlvyouwang.com/uploads/allimg/20251225/1-251225230129522.jpg",
+        "https://inews.gtimg.com/om_bt/ObnRbzH9ZTWuiByUf7qZHIwaiNnLENxIBX_R2Mp8GkE_8AA/641",
+        "https://ak-d.tripcdn.com/images/1mi6412000t7k8lj74332_W_320_0_R5_Q30.jpg?proc=source/trip"
+      ],
+      "spot_desc": "East Xing Jingzu District offers golden beaches and wellness retreats. The area is known for its mild climate and cultural festivals. It's a popular spot for relaxation and health tourism.",
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 40010.66,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 44052.96,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 1223.63,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 33379.64,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "金滩",
+      "city": "防城港",
+      "lat": 21.52,
+      "lng": 107.87,
+      "spot_images": [
+        "http://www.shanwei.gov.cn/img/0/214/214646/905284.jpg",
+        "https://cdn.getyourguide.com/image/format=auto,fit=contain,gravity=auto,quality=60,width=400,height=900,dpr=1/tour_img/a64077dc6c8882ead10d0d0d1704664cc5d638037c3e748cd7048027fc976057.jpg",
+        "https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,width=400,height=265,dpr=2/tour_img/0f4680bb8d60f7ffbcc51ef0c4f7873a483b6e890faa1a7c0de26a6fe7a25e88.jpg"
+      ],
+      "spot_desc": "Golden Beach offers water sports, spa with mineral springs, and nearby attractions like Lincoln Park. The Ritz-Carlton Koh Samui provides luxurious spa treatments and fitness facilities. Nearby attractions include fishin",
+      "related_spots": [],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "簕山古渔村",
+      "city": "防城港",
+      "lat": 21.65,
+      "lng": 108.44,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E7%B0%95%E5%B1%B1%E5%8F%A4%E6%B8%94%E6%9D%91%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：西湾旅游景区、白浪滩景区、万尾金滩",
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 10366.88,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 18804.08,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 32374.79,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 50228.15,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "海洋文化公园",
+      "city": "防城港",
+      "lat": 21.685,
+      "lng": 108.365,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%B5%B7%E6%B4%8B%E6%96%87%E5%8C%96%E5%85%AC%E5%9B%AD%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：白浪滩景区、西湾旅游景区、万尾金滩",
+      "related_spots": [
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 16731.03,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 4204.62,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 27926.89,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 44055.1,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "南宁园博园",
+      "city": "南宁",
+      "lat": 22.6869,
+      "lng": 108.4812,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%8D%97%E5%AE%81%E5%9B%AD%E5%8D%9A%E5%9B%AD%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8D%97%E5%AE%81%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：龙虎山风景区、南宁市青秀山风景名胜旅游区、昆仑关旅游风景区",
+      "related_spots": [
+        {
+          "name": "龙虎山风景区",
+          "address": "广西壮族自治区南宁市隆安县",
+          "distance": 89841.68,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "南宁市青秀山风景名胜旅游区",
+          "address": "广西壮族自治区南宁市青秀区凤岭南路6-6号",
+          "distance": 14778.01,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "昆仑关旅游风景区",
+          "address": "广西壮族自治区南宁市兴宁区X028",
+          "distance": 49691.47,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "广西龙门水都生态文化旅游景区",
+          "address": "广西壮族自治区南宁市西乡塘区新际路69号",
+          "distance": 33461.68,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "北海银滩",
+      "city": "北海",
+      "lat": 21.4083,
+      "lng": 109.14,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%8C%97%E6%B5%B7%E9%93%B6%E6%BB%A9%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8C%97%E6%B5%B7%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：北海银滩国家旅游度假区、贝壳沙滩拾贝滩、冠头岭紫霞湾旅游景区",
+      "related_spots": [
+        {
+          "name": "北海银滩国家旅游度假区",
+          "address": "广西壮族自治区北海市银海区潮街",
+          "distance": 949.45,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "贝壳沙滩拾贝滩",
+          "address": "广西壮族自治区北海市海城区涠洲岛",
+          "distance": 40950.56,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "冠头岭紫霞湾旅游景区",
+          "address": "广西壮族自治区北海市海城区地角街道海景大道冠头岭国家森林公园内",
+          "distance": 10528.47,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "Weizhou Island",
+          "address": "广西壮族自治区北海市海城区涠洲镇",
+          "distance": 40794.46,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "涠洲岛",
+      "city": "北海",
+      "lat": 21.0288,
+      "lng": 109.1017,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%B6%A0%E6%B4%B2%E5%B2%9B%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8C%97%E6%B5%B7%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：北海银滩国家旅游度假区、贝壳沙滩拾贝滩、冠头岭紫霞湾旅游景区",
+      "related_spots": [
+        {
+          "name": "北海银滩国家旅游度假区",
+          "address": "广西壮族自治区北海市银海区潮街",
+          "distance": 42209.72,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "贝壳沙滩拾贝滩",
+          "address": "广西壮族自治区北海市海城区涠洲岛",
+          "distance": 4304.74,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "冠头岭紫霞湾旅游景区",
+          "address": "广西壮族自治区北海市海城区地角街道海景大道冠头岭国家森林公园内",
+          "distance": 48096.65,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "Weizhou Island",
+          "address": "广西壮族自治区北海市海城区涠洲镇",
+          "distance": 2140.55,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "钦州三娘湾",
+      "city": "钦州",
+      "lat": 21.6087,
+      "lng": 108.6134,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%92%A6%E5%B7%9E%E4%B8%89%E5%A8%98%E6%B9%BE%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%92%A6%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：巴布几内湾景区、大亚湾、万亩红树林景区",
+      "related_spots": [
+        {
+          "name": "巴布几内湾景区",
+          "address": "电城镇莲头村金贡马海洋馆西南方向140米",
+          "distance": 275494.77,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "大亚湾",
+          "address": "中国区域大亚湾绿道",
+          "distance": 638487.66,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万亩红树林景区",
+          "address": "海滨新区",
+          "distance": 251752.15,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "青澳湾",
+          "address": "深澳镇",
+          "distance": 900089.91,
+          "category": "旅游景点:海滩"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "防城港白龙半岛",
+      "city": "防城港",
+      "lat": 21.55,
+      "lng": 108.2,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%E7%99%BD%E9%BE%99%E5%8D%8A%E5%B2%9B%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：西湾旅游景区、西湾旅游景区-白鹭公园、白浪滩景区",
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 18631.22,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 23129.48,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 9668.72,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 5216.08,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "宁明花山岩画",
+      "city": "崇左",
+      "lat": 22.14,
+      "lng": 107.072,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%AE%81%E6%98%8E%E8%8A%B1%E5%B1%B1%E5%B2%A9%E7%94%BB%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%B4%87%E5%B7%A6%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：广西德天跨国瀑布景区、明仕田园风景区、峒那屿湾景区",
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 80776.49,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 64527.9,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 64569.48,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "友谊关景区",
+          "address": "广西壮族自治区崇左市凭祥市G322",
+          "distance": 41304.56,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "大新德天瀑布",
+      "city": "崇左",
+      "lat": 22.849,
+      "lng": 106.726,
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300m1200000rpb33D9F36_W_640_0_Q90.jpg"
+      ],
+      "spot_desc": "德天瀑布位于中越边境，是亚洲第一大跨国瀑布，瀑布宽120米，分三级跌落，气势磅礴。",
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 7828.1,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 26298.01,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 36304.45,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "友谊关景区",
+          "address": "广西壮族自治区崇左市凭祥市G322",
+          "distance": 97092.36,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "左江斜塔",
+      "city": "崇左",
+      "lat": 22.377,
+      "lng": 107.353,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%B7%A6%E6%B1%9F%E6%96%9C%E5%A1%94%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%B4%87%E5%B7%A6%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：广西德天跨国瀑布景区、明仕田园风景区、峒那屿湾景区",
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 75560.92,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 56851.59,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 49203.97,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 36058.01,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "巴马百魔洞",
+      "city": "河池",
+      "lat": 24.065,
+      "lng": 107.239,
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/1mf2h12000be4fpbd5CEC_W_640_0_Q90.jpg?proc=autoorient",
+        "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/0e/ac/36/baimo-cave.jpg?w=1200&h=-1&s=1",
+        "https://img.yijuhome.com.cn/20250928/1988751759041223.jpg"
+      ],
+      "spot_desc": "百魔洞是巴马最著名的溶洞景点，洞内钟乳石千姿百态，石笋林立，洞厅宏伟壮观。洞内富含负氧离子和地磁，被誉为\"天然氧吧\"和\"磁场养生圣地\"，是康养旅居的理想之地。游客可在洞内漫步感受自然的神奇魅力，体验独特的地磁养生效果。",
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 43456.55,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 29091.53,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 176370.29,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 102608.16,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "巴马长寿村",
+      "city": "河池",
+      "lat": 24.14,
+      "lng": 107.253,
+      "spot_images": [
+        "https://www.gxlvyouwang.com/uploads/allimg/20250806/1-250P6000045507.jpg",
+        "https://static.gxrb.com.cn/image/uploadpic/20250713/34f321dd4e3266715d994b7fd5171f36.png",
+        "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064322606780"
+      ],
+      "spot_desc": "长寿村即巴盘屯，是世界著名的长寿之乡。村内百岁老人众多，被誉为\"世界长寿之乡\"的典型代表。这里空气清新，水质优良，地磁强度适中，是养生康居的理想之地。游客可探访百岁老人，了解长寿秘诀，体验原生态的乡村生活。",
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 37172.59,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 23014.88,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 171402.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 95510.87,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "南丹白裤瑶寨",
+      "city": "河池",
+      "lat": 24.976,
+      "lng": 107.542,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%8D%97%E4%B8%B9%E7%99%BD%E8%A3%A4%E7%91%B6%E5%AF%A8%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%B2%B3%E6%B1%A0%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：三门海生态旅游区、百魔洞景区、棉花天坑旅游度假区",
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 81478.12,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 87866.76,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 127674.29,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 44635.42,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "盘阳河",
+      "city": "河池",
+      "lat": 24.1,
+      "lng": 107.2,
+      "spot_images": [
+        "https://www.gxlvyouwang.com/uploads/allimg/20250806/1-250P6000045507.jpg",
+        "https://imgs.tom.com/travel/202203/1552028316/CONTENTe016426849834b0b.jpg",
+        "https://imgs.tom.com/travel/202203/1552028316/CONTENT60095e8e2735df43.jpg"
+      ],
+      "spot_desc": "命河是巴马母亲河盘阳河的一段，因河道蜿蜒曲折，形似\"命\"字而得名。河水清澈见底，两岸青山翠绿，风光旖旎。命河沿岸负氧离子含量极高，是天然的养生走廊。游客可泛舟河上，欣赏两岸田园风光，感受巴马独特的山水意境。",
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 38174.23,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 23837.52,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 178176.48,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 102458.7,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "阳朔漓江",
+      "city": "桂林",
+      "lat": 24.7739,
+      "lng": 110.494,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%98%B3%E6%9C%94%E6%BC%93%E6%B1%9F%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 59476.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 84733.47,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 58547.47,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 42027.5,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "姑婆山",
+      "city": "贺州",
+      "lat": 24.52,
+      "lng": 111.47,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%A7%91%E5%A9%86%E5%B1%B1%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：姑婆山旅游区、桂江生态旅游景区、黄姚古镇景区",
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 15815.35,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 80270.5,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 40196.62,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 17205.57,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "龙脊梯田",
+      "city": "桂林",
+      "lat": 25.7244,
+      "lng": 110.0717,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%BE%99%E8%84%8A%E6%A2%AF%E7%94%B0%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 54735.34,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 52225.33,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 55559,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 73747.73,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "三江风雨桥",
+      "city": "柳州",
+      "lat": 25.781,
+      "lng": 109.605,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E4%B8%89%E6%B1%9F%E9%A3%8E%E9%9B%A8%E6%A1%A5%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%9F%B3%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：百里柳江旅游景区、程阳八寨景区、融安县石门仙湖旅游景区",
+      "related_spots": [
+        {
+          "name": "百里柳江旅游景区",
+          "address": "广西壮族自治区柳州市城中区东堤旅游码头",
+          "distance": 161392.65,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "程阳八寨景区",
+          "address": "广西壮族自治区柳州市三江侗族自治县林溪镇",
+          "distance": 13198.62,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "融安县石门仙湖旅游景区",
+          "address": "广西壮族自治区柳州市融安县大良镇",
+          "distance": 102313.97,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "双龙沟原始森林景区",
+          "address": "广西壮族自治区柳州市融水苗族自治县融水镇",
+          "distance": 83631.15,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "龙胜温泉",
+      "city": "桂林",
+      "lat": 25.796,
+      "lng": 110.011,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%BE%99%E8%83%9C%E6%B8%A9%E6%B3%89%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：桂林两江四湖景区、摩天岭太空城、象山景区",
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 64577.28,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 61207.46,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 65360.62,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 83692.45,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "嘉路滨海旅居基地",
+      "city": "防城港",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_images": [
+        "http://guangxi.china.com.cn/pic/2025-06/30/d4941b5a-98c4-4e89-aba8-4a52307cb5f6.png",
+        "https://static.linkolder.com/yanglaos/December2022/6PjlhSBQ9wwwT9hZLjdx.jpeg/c_600_400",
+        "https://s.anyang100.com/images/r/19397/w/22217316475640844342.jpg"
+      ],
+      "spot_desc": "Nearby attractions for Jialu Binhai Travel Base include health resorts, wellness centers, and recreational activities like beach and water sports. Popular options include the Jialu Kangyang Travel Residence and the Bo'ao",
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 22852,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 27344.59,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 13340.79,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 20384.27,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "东兴京族三岛",
+      "city": "防城港",
+      "lat": 21.5083,
+      "lng": 107.8833,
+      "spot_images": [
+        "https://www.gxlvyouwang.com/uploads/allimg/20251225/1-251225230129522.jpg",
+        "https://inews.gtimg.com/om_bt/ObnRbzH9ZTWuiByUf7qZHIwaiNnLENxIBX_R2Mp8GkE_8AA/641",
+        "https://ak-d.tripcdn.com/images/1mi6412000t7k8lj74332_W_320_0_R5_Q30.jpg?proc=source/trip"
+      ],
+      "spot_desc": "East Xing Jingzu District offers golden beaches and wellness retreats. The area is known for its mild climate and cultural festivals. It's a popular spot for relaxation and health tourism.",
+      "related_spots": [
+        {
+          "name": "都江堰旅游景区",
+          "address": "四川省成都市都江堰市公园路",
+          "distance": 1139338.99,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "响沙湾旅游景区",
+          "address": "内蒙古自治区鄂尔多斯市达拉特旗210国道西",
+          "distance": 2094740.71,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "那拉提旅游风景区",
+          "address": "新疆维吾尔自治区伊犁哈萨克自治州新源县218国道旁",
+          "distance": 3275520.63,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "北极村旅游风景区",
+          "address": "黑龙江省大兴安岭地区漠河市北极大街",
+          "distance": 3765720.24,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "name": "中越友谊大桥",
+      "city": "防城港",
+      "lat": 21.548,
+      "lng": 107.97,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E4%B8%AD%E8%B6%8A%E5%8F%8B%E8%B0%8A%E5%A4%A7%E6%A1%A5%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：西湾旅游景区、西湾旅游景区-白鹭公园、东兴国门景区",
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 40109.41,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 44150.1,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 1220.93,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 33483.12,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "防城港壮村",
+      "city": "防城港",
+      "lat": 21.7,
+      "lng": 108.3,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%E5%A3%AE%E6%9D%91%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：西湾旅游景区、西湾旅游景区-白鹭公园、白浪滩景区",
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 6473.93,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 7523.77,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 16683.82,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 24491.87,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "野人谷景区",
+      "city": "防城港",
+      "lat": 21.62,
+      "lng": 107.9,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%87%8E%E4%BA%BA%E8%B0%B7%E6%99%AF%E5%8C%BA%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：西湾旅游景区、西湾旅游景区-白鹭公园、白浪滩景区",
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 45693.97,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 49221.09,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 41453.33,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 28789.96,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "九龙潭漂流",
+      "city": "防城港",
+      "lat": 21.6,
+      "lng": 107.88,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E4%B9%9D%E9%BE%99%E6%BD%AD%E6%BC%82%E6%B5%81%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "周边精选：都江堰旅游景区、响沙湾旅游景区、那拉提旅游风景区",
+      "related_spots": [
+        {
+          "name": "都江堰旅游景区",
+          "address": "四川省成都市都江堰市公园路",
+          "distance": 1129695.46,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "响沙湾旅游景区",
+          "address": "内蒙古自治区鄂尔多斯市达拉特旗210国道西",
+          "distance": 2084599.98,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "那拉提旅游风景区",
+          "address": "新疆维吾尔自治区伊犁哈萨克自治州新源县218国道旁",
+          "distance": 3267152.53,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "北极村旅游风景区",
+          "address": "黑龙江省大兴安岭地区漠河市北极大街",
+          "distance": 3755975.66,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
+    },
+    {
+      "name": "北仑河口",
+      "city": "防城港",
+      "lat": 21.5,
+      "lng": 107.85,
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%8C%97%E4%BB%91%E6%B2%B3%E5%8F%A3%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "spot_desc": "",
+      "related_spots": [],
+      "image_source": "local_poster"
+    }
+  ]
+}

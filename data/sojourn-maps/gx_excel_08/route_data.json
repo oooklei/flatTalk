@@ -27,7 +27,37 @@
       "plan": "桂林象鼻山",
       "lat": 25.2736,
       "lng": 110.2923,
-      "spot_desc": "桂林市 · 1. 抵达桂林，专人接站，入住桂林璟象酒店；2. 健康建档与基础体检，适应广西气候；3. 下午游览象鼻山景区，开展滨江养老漫步；4. 晚上体验八段锦养生教学，夜游四湖静心养老"
+      "spot_desc": "桂林市 · 1. 抵达桂林，专人接站，入住桂林璟象酒店；2. 健康建档与基础体检，适应广西气候；3. 下午游览象鼻山景区，开展滨江养老漫步；4. 晚上体验八段锦养生教学，夜游四湖静心养老",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%A1%82%E6%9E%97%E8%B1%A1%E9%BC%BB%E5%B1%B1%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 1392.36,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 38647.55,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 731.86,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "���江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 19882.03,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp2",
@@ -37,7 +67,37 @@
       "plan": "阳朔漓江",
       "lat": 24.7739,
       "lng": 110.494,
-      "spot_desc": "桂林市→阳朔县 · 1. 8:30早餐后出发，乘车前往竹江码头（车程约1小时）；2. 乘坐漓江游船，开展百里画廊生态氧疗；3. 抵达阳朔后入住广悦华阳朔河畔度假酒店，午餐后午休；4. 下午游览遇龙河景区，开展田园养老漫步；5. 晚上体验瑶药"
+      "spot_desc": "桂林市→阳朔县 · 1. 8:30早餐后出发，乘车前往竹江码头（车程约1小时）；2. 乘坐漓江游船，开展百里画廊生态氧疗；3. 抵达阳朔后入住广悦华阳朔河畔度假酒店，午餐后午休；4. 下午游览遇龙河景区，开展田园养老漫步；5. 晚上体验瑶药",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%98%B3%E6%9C%94%E6%BC%93%E6%B1%9F%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E6%A1%82%E6%9E%97%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "桂林两江四湖景区",
+          "address": "广西壮族自治区桂林市秀峰区滨江路",
+          "distance": 59476.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "摩天岭太空城",
+          "address": "广西壮族自治区桂林市兴安县溶江镇雪山北侧",
+          "distance": 84733.47,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "象山景区",
+          "address": "广西壮族自治区桂林市象山区民主路1号",
+          "distance": 58547.47,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "漓江景区",
+          "address": "广西壮族自治区桂林市灵川县桂磨路",
+          "distance": 42027.5,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp3",
@@ -47,7 +107,37 @@
       "plan": "贺州温泉",
       "lat": 24.45,
       "lng": 111.52,
-      "spot_desc": "阳朔县 · 1. 8:30早餐后，晨练八段锦；2. 上午游览世外桃源景区，开展田园秘境养老；3. 午餐后午休；4. 下午游览西街，体验非遗文化研学；5. 晚上体验印象·刘三姐文化演出，文化润心"
+      "spot_desc": "阳朔县 · 1. 8:30早餐后，晨练八段锦；2. 上午游览世外桃源景区，开展田园秘境养老；3. 午餐后午休；4. 下午游览西街，体验非遗文化研学；5. 晚上体验印象·刘三姐文化演出，文化润心",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E8%B4%BA%E5%B7%9E%E6%B8%A9%E6%B3%89%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 78296.92,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 38641.69,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 8381.44,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 21098.08,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp4",
@@ -57,7 +147,37 @@
       "plan": "姑婆山",
       "lat": 24.52,
       "lng": 111.47,
-      "spot_desc": "阳朔县→贺州市 · 1. 8:30早餐后出发，乘车前往贺州市（车程约1.5小时）；2. 抵达后入住贺州西溪森林温泉度假村，午餐后午休；3. 下午开展森林温泉初疗，体验壮瑶药包温泉；4. 晚上体验温泉温补膳食，民俗篝火活动"
+      "spot_desc": "阳朔县→贺州市 · 1. 8:30早餐后出发，乘车前往贺州市（车程约1.5小时）；2. 抵达后入住贺州西溪森林温泉度假村，午餐后午休；3. 下午开展森林温泉初疗，体验壮瑶药包温泉；4. 晚上体验温泉温补膳食，民俗篝火活动",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%A7%91%E5%A9%86%E5%B1%B1%E6%A3%AE%E6%9E%97%E5%85%AC%E5%9B%AD%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E8%B4%BA%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "姑婆山旅游区",
+          "address": "广西壮族自治区贺州市平桂区黄田镇",
+          "distance": 15815.35,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "桂江生态旅游景区",
+          "address": "广西壮族自治区贺州市昭平县G355",
+          "distance": 80270.5,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "黄姚古镇景区",
+          "address": "广西壮族自治区贺州市昭平县黄姚镇",
+          "distance": 40196.62,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "紫云仙境景区",
+          "address": "广西壮族自治区贺州市平桂区鹅塘镇栗木村",
+          "distance": 17205.57,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     }
   ],
   "itinerary": [
@@ -107,5 +227,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路8_桂林_阳朔_贺州山水瑶泉康养旅居线",
   "route_id": "gx_excel_08",
-  "updated_at": "2026-08-05T21:01:58.681Z"
+  "updated_at": "2026-08-05T22:05:59.125Z",
+  "spot_images_source": "dashboard_local_kb"
 }

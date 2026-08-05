@@ -24,7 +24,39 @@
       "plan": "大本营出发",
       "lat": 21.5279,
       "lng": 108.1668,
-      "spot_desc": "东兴国门+中越友谊大桥平缓观光"
+      "spot_desc": "东兴国门+中越友谊大桥平缓观光",
+      "spot_images": [
+        "http://guangxi.china.com.cn/pic/2025-06/30/d4941b5a-98c4-4e89-aba8-4a52307cb5f6.png",
+        "https://static.linkolder.com/yanglaos/December2022/6PjlhSBQ9wwwT9hZLjdx.jpeg/c_600_400",
+        "https://s.anyang100.com/images/r/19397/w/22217316475640844342.jpg"
+      ],
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 22852,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 27344.59,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 13340.79,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 20384.27,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp2",
@@ -34,7 +66,39 @@
       "plan": "国门+界碑观光",
       "lat": 21.5479,
       "lng": 107.9722,
-      "spot_desc": "中越界碑打卡留念"
+      "spot_desc": "中越界碑打卡留念",
+      "spot_images": [
+        "https://www.gxlvyouwang.com/uploads/allimg/20251225/1-251225230129522.jpg",
+        "https://inews.gtimg.com/om_bt/ObnRbzH9ZTWuiByUf7qZHIwaiNnLENxIBX_R2Mp8GkE_8AA/641",
+        "https://ak-d.tripcdn.com/images/1mi6412000t7k8lj74332_W_320_0_R5_Q30.jpg?proc=source/trip"
+      ],
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 40010.66,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 44052.96,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 1223.63,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 33379.64,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp3",
@@ -44,7 +108,37 @@
       "plan": "边境打卡+手工体验",
       "lat": 21.549,
       "lng": 107.971,
-      "spot_desc": "京族服饰轻手工体验"
+      "spot_desc": "京族服饰轻手工体验",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E4%B8%AD%E8%B6%8A%E5%8F%8B%E8%B0%8A%E5%A4%A7%E6%A1%A5%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 40109.41,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 44150.1,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 1220.93,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 33483.12,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp4",
@@ -54,7 +148,39 @@
       "plan": "返回基地康养",
       "lat": 21.5279,
       "lng": 108.1668,
-      "spot_desc": "双人舒缓瑜伽+老年摄影交流"
+      "spot_desc": "双人舒缓瑜伽+老年摄影交流",
+      "spot_images": [
+        "http://guangxi.china.com.cn/pic/2025-06/30/d4941b5a-98c4-4e89-aba8-4a52307cb5f6.png",
+        "https://static.linkolder.com/yanglaos/December2022/6PjlhSBQ9wwwT9hZLjdx.jpeg/c_600_400",
+        "https://s.anyang100.com/images/r/19397/w/22217316475640844342.jpg"
+      ],
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 22852,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 27344.59,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 13340.79,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 20384.27,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
     }
   ],
   "price_label": "368元/人/天",
@@ -63,5 +189,6 @@
     "route_dash_fcg_2"
   ],
   "route_id": "fcg_route_002",
-  "updated_at": "2026-08-05T21:01:58.624Z"
+  "updated_at": "2026-08-05T22:05:59.074Z",
+  "spot_images_source": "dashboard_local_kb"
 }

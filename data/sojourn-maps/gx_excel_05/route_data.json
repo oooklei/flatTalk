@@ -23,7 +23,37 @@
       "plan": "南宁园博园",
       "lat": 22.6869,
       "lng": 108.4812,
-      "spot_desc": "南宁市 · 1. 抵达南宁，专人接站，入住南宁市悦年华颐养公寓；2. 适应气候环境，下午自由休息，开展健康建档与基础体检；3. 下午游览青秀山景区，漫步天然氧吧，呼吸清新空气；4. 晚上体验八段锦养生教学与适应性训练或夜游南湖公园，在慢节奏"
+      "spot_desc": "南宁市 · 1. 抵达南宁，专人接站，入住南宁市悦年华颐养公寓；2. 适应气候环境，下午自由休息，开展健康建档与基础体检；3. 下午游览青秀山景区，漫步天然氧吧，呼吸清新空气；4. 晚上体验八段锦养生教学与适应性训练或夜游南湖公园，在慢节奏",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%8D%97%E5%AE%81%E5%9B%AD%E5%8D%9A%E5%9B%AD%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8D%97%E5%AE%81%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "龙虎山风景区",
+          "address": "广西壮族自治区南宁市隆安县",
+          "distance": 89841.68,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "南宁市青秀山风景名胜旅游区",
+          "address": "广西壮族自治区南宁市青秀区凤岭南路6-6号",
+          "distance": 14778.01,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "昆仑关旅游风景区",
+          "address": "广西壮族自治区南宁市兴宁区X028",
+          "distance": 49691.47,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "广西龙门水都生态文化旅游景区",
+          "address": "广西壮族自治区南宁市西乡塘区新际路69号",
+          "distance": 33461.68,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp2",
@@ -33,7 +63,37 @@
       "plan": "北海银滩",
       "lat": 21.4083,
       "lng": 109.14,
-      "spot_desc": "南宁市 · 1. 8:30早餐后，晨练八段锦；2. 上午开展慢病管理健康讲座与一对一养老咨询；3. 午餐后午休1.5小时；4. 下午游览三街两巷历史文化街区，体验非遗手作，放松身心；5. 晚上体验瑶药足浴养生，自由休息"
+      "spot_desc": "南宁市 · 1. 8:30早餐后，晨练八段锦；2. 上午开展慢病管理健康讲座与一对一养老咨询；3. 午餐后午休1.5小时；4. 下午游览三街两巷历史文化街区，体验非遗手作，放松身心；5. 晚上体验瑶药足浴养生，自由休息",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%8C%97%E6%B5%B7%E9%93%B6%E6%BB%A9%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8C%97%E6%B5%B7%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "北海银滩国家旅游度假区",
+          "address": "广西壮族自治区北海市银海区潮街",
+          "distance": 949.45,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "贝壳沙滩拾贝滩",
+          "address": "广西壮族自治区北海市海城区涠洲岛",
+          "distance": 40950.56,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "冠头岭紫霞湾旅游景区",
+          "address": "广西壮族自治区北海市海城区地角街道海景大道冠头岭国家森林公园内",
+          "distance": 10528.47,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "Weizhou Island",
+          "address": "广西壮族自治区北海市海城区涠洲镇",
+          "distance": 40794.46,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp3",
@@ -43,7 +103,37 @@
       "plan": "涠洲岛",
       "lat": 21.0288,
       "lng": 109.1017,
-      "spot_desc": "南宁市→钦州市 · 1. 8:30早餐后出发，乘车前往钦州市（车程约1.5小时）；2. 抵达后入住康桥白鹭湾，午餐后午休1.5小时；3. 下午游览三娘湾景区，乘船观中华白海豚，体验渔家文化；4. 开展红树林养老漫步，呼吸高负氧离子空气；5."
+      "spot_desc": "南宁市→钦州市 · 1. 8:30早餐后出发，乘车前往钦州市（车程约1.5小时）；2. 抵达后入住康桥白鹭湾，午餐后午休1.5小时；3. 下午游览三娘湾景区，乘船观中华白海豚，体验渔家文化；4. 开展红树林养老漫步，呼吸高负氧离子空气；5.",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%B6%A0%E6%B4%B2%E5%B2%9B%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8C%97%E6%B5%B7%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "北海银滩国家旅游度假区",
+          "address": "广西壮族自治区北海市银海区潮街",
+          "distance": 42209.72,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "贝壳沙滩拾贝滩",
+          "address": "广西壮族自治区北海市海城区涠洲岛",
+          "distance": 4304.74,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "冠头岭紫霞湾旅游景区",
+          "address": "广西壮族自治区北海市海城区地角街道海景大道冠头岭国家森林公园内",
+          "distance": 48096.65,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "Weizhou Island",
+          "address": "广西壮族自治区北海市海城区涠洲镇",
+          "distance": 2140.55,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp4",
@@ -53,7 +143,37 @@
       "plan": "钦州三娘湾",
       "lat": 21.6087,
       "lng": 108.6134,
-      "spot_desc": "钦州市 · 1. 8:30早餐后，晨练太极；2. 上午游览钦州老街，体验坭兴陶非遗手作，在慢创作中放松身心；3. 午餐后午休1.5小时；4. 下午开展滨海养老漫游，沿钦州湾观光，体验养身茶品鉴；5. 晚上开展健养老生讲座，体验足部理疗，自由"
+      "spot_desc": "钦州市 · 1. 8:30早餐后，晨练太极；2. 上午游览钦州老街，体验坭兴陶非遗手作，在慢创作中放松身心；3. 午餐后午休1.5小时；4. 下午开展滨海养老漫游，沿钦州湾观光，体验养身茶品鉴；5. 晚上开展健养老生讲座，体验足部理疗，自由",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%92%A6%E5%B7%9E%E4%B8%89%E5%A8%98%E6%B9%BE%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%92%A6%E5%B7%9E%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "巴布几内湾景区",
+          "address": "电城镇莲头村金贡马海洋馆西南方向140米",
+          "distance": 275494.77,
+          "category": "旅游景点:其它旅游景点"
+        },
+        {
+          "name": "大亚湾",
+          "address": "中国区域大亚湾绿道",
+          "distance": 638487.66,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万亩红树林景区",
+          "address": "海滨新区",
+          "distance": 251752.15,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "青澳湾",
+          "address": "深澳镇",
+          "distance": 900089.91,
+          "category": "旅游景点:海滩"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp5",
@@ -63,7 +183,37 @@
       "plan": "防城港白龙半岛",
       "lat": 21.55,
       "lng": 108.2,
-      "spot_desc": "钦州市→防城港市 · 1. 8:30早餐后出发，乘车前往防城港市（车程约1小时）；2. 抵达后入住广旅广悦臻酒店分公司，午餐后午休1.5小时；3. 下午游览十万大山国家森林公园，开展森林养老徒步，体验负氧离子疗愈；4. 晚上体验中药熏蒸养老"
+      "spot_desc": "钦州市→防城港市 · 1. 8:30早餐后出发，乘车前往防城港市（车程约1小时）；2. 抵达后入住广旅广悦臻酒店分公司，午餐后午休1.5小时；3. 下午游览十万大山国家森林公园，开展森林养老徒步，体验负氧离子疗愈；4. 晚上体验中药熏蒸养老",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%E7%99%BD%E9%BE%99%E5%8D%8A%E5%B2%9B%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 18631.22,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 23129.48,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 9668.72,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 5216.08,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     }
   ],
   "itinerary": [
@@ -113,5 +263,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路5_南宁_北海_钦州_防城港滨海养老旅居线",
   "route_id": "gx_excel_05",
-  "updated_at": "2026-08-05T21:01:58.670Z"
+  "updated_at": "2026-08-05T22:05:59.114Z",
+  "spot_images_source": "dashboard_local_kb"
 }

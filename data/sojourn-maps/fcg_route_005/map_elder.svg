@@ -7,45 +7,45 @@
   <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/></filter>
   </defs>
   <rect x="0" y="0" width="620" height="58" rx="16" fill="url(#heroGrad)"/>
-  <text x="18" y="36" fill="#fff" font-size="29" font-weight="bold">芒街跨境体验线</text>
-  <text x="18" y="51" fill="rgba(255,255,255,0.75)" font-size="14">康养旅居 · 精品路线</text>
+  <text x="18" y="36" fill="#fff" font-size="92" font-weight="bold">芒街跨境体验线</text>
+  <text x="18" y="51" fill="rgba(255,255,255,0.75)" font-size="46">康养旅居 · 精品路线</text>
   <rect x="10" y="68" width="600" height="460" rx="12" fill="#F8F8F0" stroke="#DDD" stroke-width="0.5"/>
   <g class="mountains" opacity="0.55">
   <path d="M18,138 Q38,86 58,138 Q80,80 102,138 Q125,90 148,138" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
   <path d="M470,123 Q495,74 522,123 Q548,70 578,123" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
   <path d="M280,510 Q358,470 442,510 Q520,466 605,510" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
-  <text x="80" y="156" fill="#2E7D32" font-size="13" opacity="0.55" font-style="italic">山区</text>
+  <text x="80" y="156" fill="#2E7D32" font-size="42" opacity="0.55" font-style="italic">山区</text>
   </g>
   <g class="rivers">
   <path d="M45,413 Q170,321 300,380.8 T565,321" fill="none" stroke="url(#riverGrad)" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
-  <text x="220" y="334.79999999999995" fill="#1565C0" font-size="13" opacity="0.65">主要河流</text>
+  <text x="220" y="334.79999999999995" fill="#1565C0" font-size="42" opacity="0.65">主要河流</text>
   </g>
   <g class="route-paths" filter="url(#shadow)">
   <path d="M 513 432 L 348 142 L 107 454" fill="none" stroke="#FF7826" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
   <path d="M 107 454 L 513 432" fill="none" stroke="#1976D2" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
   </g>
   <g class="markers">
-  <g class="route-marker" style="cursor:pointer" data-type="base" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="大本营出发" data-lat="21.5279" data-lng="108.1668" data-spot-desc="东兴口岸出境→越南芒街" transform="translate(513,432)"><circle r="10" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">起</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">嘉路滨海旅居基地</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="arrival" data-day="Day1" data-name="东兴口岸" data-plan="出境通关" data-lat="21.5479" data-lng="107.9722" data-spot-desc="芒街教堂+特色街区平缓游览" transform="translate(348,142)"><circle r="10" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">起</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">东兴口岸</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day1" data-name="越南芒街" data-plan="教堂+街区+草本按摩" data-lat="21.5264" data-lng="107.6892" data-spot-desc="越南草本古法轻按摩+草药茶品鉴" transform="translate(107,454)"><circle r="8" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">景</text><text y="21" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">越南芒街</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="departure" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="通关返程+中医理疗" data-lat="21.5279" data-lng="108.1668" data-spot-desc="长者优先绿色通道专人协助通关" transform="translate(513,432)"><circle r="10" fill="#1976D2" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">返</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">嘉路滨海旅居基地</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="base" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="大本营出发" data-lat="21.5279" data-lng="108.1668" data-spot-desc="东兴口岸出境→越南芒街" data-spot-img="http://guangxi.china.com.cn/pic/2025-06/30/d4941b5a-98c4-4e89-aba8-4a52307cb5f6.png,https://static.linkolder.com/yanglaos/December2022/6PjlhSBQ9wwwT9hZLjdx.jpeg/c_600_400,https://s.anyang100.com/images/r/19397/w/22217316475640844342.jpg" transform="translate(513,432)"><circle class="hit-area" r="32" fill="transparent" pointer-events="all"/><circle r="18" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">起</text><text y="60" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">嘉路滨海旅居基地</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="arrival" data-day="Day1" data-name="东兴口岸" data-plan="出境通关" data-lat="21.5479" data-lng="107.9722" data-spot-desc="芒街教堂+特色街区平缓游览" data-spot-img="https://www.gxlvyouwang.com/uploads/allimg/20251225/1-251225230129522.jpg,https://inews.gtimg.com/om_bt/ObnRbzH9ZTWuiByUf7qZHIwaiNnLENxIBX_R2Mp8GkE_8AA/641,https://ak-d.tripcdn.com/images/1mi6412000t7k8lj74332_W_320_0_R5_Q30.jpg?proc=source/trip" transform="translate(348,142)"><circle class="hit-area" r="32" fill="transparent" pointer-events="all"/><circle r="18" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">起</text><text y="60" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">东兴口岸</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day1" data-name="越南芒街" data-plan="教堂+街区+草本按摩" data-lat="21.5264" data-lng="107.6892" data-spot-desc="越南草本古法轻按摩+草药茶品鉴" transform="translate(107,454)"><circle class="hit-area" r="29" fill="transparent" pointer-events="all"/><circle r="15" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">景</text><text y="57" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">越南芒街</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="departure" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="通关返程+中医理疗" data-lat="21.5279" data-lng="108.1668" data-spot-desc="长者优先绿色通道专人协助通关" data-spot-img="http://guangxi.china.com.cn/pic/2025-06/30/d4941b5a-98c4-4e89-aba8-4a52307cb5f6.png,https://static.linkolder.com/yanglaos/December2022/6PjlhSBQ9wwwT9hZLjdx.jpeg/c_600_400,https://s.anyang100.com/images/r/19397/w/22217316475640844342.jpg" transform="translate(513,432)"><circle class="hit-area" r="32" fill="transparent" pointer-events="all"/><circle r="18" fill="#1976D2" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">返</text><text y="60" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">嘉路滨海旅居基地</text></g>
   </g>
   <g class="legend" transform="translate(10, 535)">
   <rect width="600" height="28" rx="6" fill="rgba(255,255,255,0.92)" stroke="#ddd" stroke-width="0.5"/>
-  <circle cx="30" cy="14" r="6" fill="#4CAF50"/><text x="42" y="18" font-size="14" fill="#333">起点</text>
-  <circle cx="140" cy="14" r="6" fill="#FF7826"/><text x="152" y="18" font-size="14" fill="#333">途经</text>
-  <circle cx="250" cy="14" r="6" fill="#8E24AA"/><text x="262" y="18" font-size="14" fill="#333">康养</text>
-  <circle cx="360" cy="14" r="6" fill="#1976D2"/><text x="372" y="18" font-size="14" fill="#333">返程</text>
+  <circle cx="30" cy="14" r="6" fill="#4CAF50"/><text x="42" y="18" font-size="46" fill="#333">起点</text>
+  <circle cx="140" cy="14" r="6" fill="#FF7826"/><text x="152" y="18" font-size="46" fill="#333">途经</text>
+  <circle cx="250" cy="14" r="6" fill="#8E24AA"/><text x="262" y="18" font-size="46" fill="#333">康养</text>
+  <circle cx="360" cy="14" r="6" fill="#1976D2"/><text x="372" y="18" font-size="46" fill="#333">返程</text>
   </g>
   <g class="wellness-info" transform="translate(10, 570)">
   <rect width="600" height="70" rx="10" fill="#FFF8E1" stroke="#FFE0B2" stroke-width="0.8"/>
-  <text x="15" y="22" fill="#E65100" font-size="17" font-weight="bold">康养特色</text>
-  <text x="15" y="42" fill="#555" font-size="14">东兴口岸出境→越南芒街 · 芒街教堂+特色街区平缓游览 · 越南草本古法轻按摩+草药</text>
-  <text x="15" y="60" fill="#555" font-size="14">茶品鉴</text>
+  <text x="15" y="22" fill="#E65100" font-size="55" font-weight="bold">康养特色</text>
+  <text x="15" y="42" fill="#555" font-size="46">东兴口岸出境→越南芒街 · 芒街教堂+特色街区平缓游览 · 越南草本古法轻按摩+草药</text>
+  <text x="15" y="60" fill="#555" font-size="46">茶品鉴</text>
   </g>
   <g class="spot-list" transform="translate(10, 650)">
   <rect width="600" height="190" rx="10" fill="#FAFAFA" stroke="#EEE" stroke-width="0.5"/>
-  <text x="15" y="20" fill="#333" font-size="16" font-weight="bold">行程景点</text>
-  <g class="spot-item" data-name="越南芒街" data-day="Day1" data-spot-desc="越南草本古法轻按摩+草药茶品鉴"><circle cx="18" cy="39" r="3" fill="#FF7826"/><text x="28" y="42" fill="#333" font-size="14">越南芒街 · Day1 · 教堂+街区+草本按摩</text></g>
+  <text x="15" y="20" fill="#333" font-size="50" font-weight="bold">行程景点</text>
+  <g class="spot-item" data-name="越南芒街" data-day="Day1" data-spot-desc="越南草本古法轻按摩+草药茶品鉴"><circle cx="18" cy="39" r="3" fill="#FF7826"/><text x="28" y="42" fill="#333" font-size="46">越南芒街 · Day1 · 教堂+街区+草本按摩</text></g>
   </g>
   </svg>

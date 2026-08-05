@@ -3,22 +3,172 @@
   "route_name": "巴马5天4晚康养旅居",
   "version": "1.0",
   "generated_at": "2026-08-04T23:30:00.000Z",
-  "data_sources": { "map": "manual_svg", "spots": "tavily_search" },
+  "data_sources": {
+    "map": "manual_svg",
+    "spots": "tavily_search"
+  },
   "destination": "巴马",
   "days": 5,
   "summary": "巴马长寿之乡5天4晚深度康养，涵盖百魔洞磁疗、长寿村文化、命河奇观、百鸟岩水晶宫溶洞、赐福湖疗养",
-  "highlights": ["百魔洞负氧离子2-7万/cm³", "长寿村7位百岁老人", "命河'命'字河道奇观", "水晶宫全球最大卷曲石花", "赐福湖百岛长湖疗养"],
+  "highlights": [
+    "百魔洞负氧离子2-7万/cm³",
+    "长寿村7位百岁老人",
+    "命河'命'字河道奇观",
+    "水晶宫全球最大卷曲石花",
+    "赐福湖百岛长湖疗养"
+  ],
   "suitable_for": "60—75周岁无重大基础病活力长者",
   "waypoints": [
-    { "id": "wp1", "name": "巴马县城", "type": "arrival", "day": "Day1", "plan": "抵达巴马", "lat": 24.12, "lng": 107.25 },
-    { "id": "wp2", "name": "百魔洞", "type": "spot", "day": "Day1", "plan": "天下第一洞·负氧离子磁疗", "lat": 24.15, "lng": 107.05, "spot_desc": "被誉天下第一洞，负氧离子2-7万/cm³，天然磁疗区，盘阳河从洞下流过" },
-    { "id": "wp3", "name": "长寿村", "type": "wellness", "day": "Day3", "plan": "探访百岁老人·养生文化", "lat": 24.10, "lng": 107.15, "spot_desc": "巴盘屯，515人中有7位百岁老人，补粮习俗" },
-    { "id": "wp4", "name": "命河", "type": "spot", "day": "Day3", "plan": "命字河道奇观", "lat": 24.12, "lng": 107.10, "spot_desc": "河道俯瞰酷似草书命字，沿岸80余位百岁老人" },
-    { "id": "wp5", "name": "百鸟岩", "type": "spot", "day": "Day4", "plan": "乘船穿越三天三夜", "lat": 24.18, "lng": 107.00, "spot_desc": "地下河溶洞，三个天窗光影奇观，负氧离子5万/cm³" },
-    { "id": "wp6", "name": "水晶宫", "type": "spot", "day": "Day4", "plan": "溶洞天花板·鹅管群", "lat": 24.30, "lng": 106.95, "spot_desc": "AAAA级景区，全球最大非重力卷曲石花，恒温18℃" },
-    { "id": "wp7", "name": "赐福湖", "type": "wellness", "day": "Day4", "plan": "百岛长湖·游船疗养", "lat": 24.08, "lng": 107.30, "spot_desc": "3万亩湖面，100余小岛，温泉度假" },
-    { "id": "wp8", "name": "返程", "type": "departure", "day": "Day5", "plan": "盘阳河漂流·返程", "lat": 24.12, "lng": 107.25 }
+    {
+      "id": "wp1",
+      "name": "巴马县城",
+      "type": "arrival",
+      "day": "Day1",
+      "plan": "抵达巴马",
+      "lat": 24.12,
+      "lng": 107.25
+    },
+    {
+      "id": "wp2",
+      "name": "百魔洞",
+      "type": "spot",
+      "day": "Day1",
+      "plan": "天下第一洞·负氧离子磁疗",
+      "lat": 24.15,
+      "lng": 107.05,
+      "spot_desc": "被誉天下第一洞，负氧离子2-7万/cm³，天然磁疗区，盘阳河从洞下流过",
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/1mf2h12000be4fpbd5CEC_W_640_0_Q90.jpg?proc=autoorient",
+        "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/0e/ac/36/baimo-cave.jpg?w=1200&h=-1&s=1",
+        "https://img.yijuhome.com.cn/20250928/1988751759041223.jpg"
+      ],
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 43456.55,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 29091.53,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 176370.29,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 102608.16,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "id": "wp3",
+      "name": "长寿村",
+      "type": "wellness",
+      "day": "Day3",
+      "plan": "探访百岁老人·养生文化",
+      "lat": 24.1,
+      "lng": 107.15,
+      "spot_desc": "巴盘屯，515人中有7位百岁老人，补粮习俗",
+      "spot_images": [
+        "https://www.gxlvyouwang.com/uploads/allimg/20250806/1-250P6000045507.jpg",
+        "https://static.gxrb.com.cn/image/uploadpic/20250713/34f321dd4e3266715d994b7fd5171f36.png",
+        "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064322606780"
+      ],
+      "related_spots": [
+        {
+          "name": "三门海生态旅游区",
+          "address": "广西壮族自治区河池市凤山县X886凤山三门海",
+          "distance": 37172.59,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "百魔洞景区",
+          "address": "广西壮族自治区河池市巴马瑶族自治县甲篆镇",
+          "distance": 23014.88,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "棉花天坑旅游度假区",
+          "address": "广西壮族自治区河池市罗城仫佬族自治县四把镇棉花村深洞屯19号",
+          "distance": 171402.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "河池小三峡景区",
+          "address": "广西壮族自治区河池市金城江区六甲镇",
+          "distance": 95510.87,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
+    },
+    {
+      "id": "wp4",
+      "name": "命河",
+      "type": "spot",
+      "day": "Day3",
+      "plan": "命字河道奇观",
+      "lat": 24.12,
+      "lng": 107.1,
+      "spot_desc": "河道俯瞰酷似草书命字，沿岸80余位百岁老人"
+    },
+    {
+      "id": "wp5",
+      "name": "百鸟岩",
+      "type": "spot",
+      "day": "Day4",
+      "plan": "乘船穿越三天三夜",
+      "lat": 24.18,
+      "lng": 107,
+      "spot_desc": "地下河溶洞，三个天窗光影奇观，负氧离子5万/cm³"
+    },
+    {
+      "id": "wp6",
+      "name": "水晶宫",
+      "type": "spot",
+      "day": "Day4",
+      "plan": "溶洞天花板·鹅管群",
+      "lat": 24.3,
+      "lng": 106.95,
+      "spot_desc": "AAAA级景区，全球最大非重力卷曲石花，恒温18℃"
+    },
+    {
+      "id": "wp7",
+      "name": "赐福湖",
+      "type": "wellness",
+      "day": "Day4",
+      "plan": "百岛长湖·游船疗养",
+      "lat": 24.08,
+      "lng": 107.3,
+      "spot_desc": "3万亩湖面，100余小岛，温泉度假"
+    },
+    {
+      "id": "wp8",
+      "name": "返程",
+      "type": "departure",
+      "day": "Day5",
+      "plan": "盘阳河漂流·返程",
+      "lat": 24.12,
+      "lng": 107.25
+    }
   ],
   "polyline_path": [],
-  "tags": ["长寿之乡", "康养旅居", "负氧离子", "喀斯特"]
+  "tags": [
+    "长寿之乡",
+    "康养旅居",
+    "负氧离子",
+    "喀斯特"
+  ],
+  "spot_images_source": "dashboard_local_kb",
+  "updated_at": "2026-08-05T22:05:59.153Z"
 }

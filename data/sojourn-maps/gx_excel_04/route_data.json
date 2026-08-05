@@ -25,7 +25,37 @@
       "plan": "白浪滩",
       "lat": 21.58,
       "lng": 108.25,
-      "spot_desc": "全国各地 → 防城港市区 · 抵达防城港旅居基地，办理入住，基地内静养，健康建档，血压血糖基础监测，旅居说明会"
+      "spot_desc": "全国各地 → 防城港市区 · 抵达防城港旅居基地，办理入住，基地内静养，健康建档，血压血糖基础监测，旅居说明会",
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300m1200000rxn2g8C7AE_W_640_0_Q90.jpg"
+      ],
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 12523.66,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 17038.71,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 5579.77,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 11376.07,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp2",
@@ -35,7 +65,39 @@
       "plan": "东兴口岸",
       "lat": 21.548,
       "lng": 107.971,
-      "spot_desc": "防城港市区 → 白浪滩景区 · 上午：白浪滩滨海慢游，沙滩漫步，负氧离子呼吸疗愈；下午：基地午休，滨海康养讲座，海盐热敷理疗"
+      "spot_desc": "防城港市区 → 白浪滩景区 · 上午：白浪滩滨海慢游，沙滩漫步，负氧离子呼吸疗愈；下午：基地午休，滨海康养讲座，海盐热敷理疗",
+      "spot_images": [
+        "https://www.gxlvyouwang.com/uploads/allimg/20251225/1-251225230129522.jpg",
+        "https://inews.gtimg.com/om_bt/ObnRbzH9ZTWuiByUf7qZHIwaiNnLENxIBX_R2Mp8GkE_8AA/641",
+        "https://ak-d.tripcdn.com/images/1mi6412000t7k8lj74332_W_320_0_R5_Q30.jpg?proc=source/trip"
+      ],
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 40010.66,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "西湾旅游景区-白鹭公园",
+          "address": "广西壮族自治区防城港市港口区迎宾街",
+          "distance": 44052.96,
+          "category": "旅游景点:公园"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 1223.63,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 33379.64,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp3",
@@ -45,7 +107,14 @@
       "plan": "金滩",
       "lat": 21.52,
       "lng": 107.87,
-      "spot_desc": "防城港市区 → 簕山古渔村 · 上午：簕山古渔村深度慢逛，体验渔家文化，观海上日出；下午：基地午休，京族非遗文化分享会，渔歌学唱"
+      "spot_desc": "防城港市区 → 簕山古渔村 · 上午：簕山古渔村深度慢逛，体验渔家文化，观海上日出；下午：基地午休，京族非遗文化分享会，渔歌学唱",
+      "spot_images": [
+        "http://www.shanwei.gov.cn/img/0/214/214646/905284.jpg",
+        "https://cdn.getyourguide.com/image/format=auto,fit=contain,gravity=auto,quality=60,width=400,height=900,dpr=1/tour_img/a64077dc6c8882ead10d0d0d1704664cc5d638037c3e748cd7048027fc976057.jpg",
+        "https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,width=400,height=265,dpr=2/tour_img/0f4680bb8d60f7ffbcc51ef0c4f7873a483b6e890faa1a7c0de26a6fe7a25e88.jpg"
+      ],
+      "related_spots": [],
+      "image_source": "local_photo"
     },
     {
       "id": "wp4",
@@ -55,7 +124,37 @@
       "plan": "簕山古渔村",
       "lat": 21.65,
       "lng": 108.44,
-      "spot_desc": "防城港市区 → 防城区 → 十万大山森林公园 · 上午：十万大山森林公园森林浴，天然氧吧疗愈，徒步慢走；下午：防城区午休，温泉泡浴，瑶药特色药浴"
+      "spot_desc": "防城港市区 → 防城区 → 十万大山森林公园 · 上午：十万大山森林公园森林浴，天然氧吧疗愈，徒步慢走；下午：防城区午休，温泉泡浴，瑶药特色药浴",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E7%B0%95%E5%B1%B1%E5%8F%A4%E6%B8%94%E6%9D%91%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 10366.88,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 18804.08,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 32374.79,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 50228.15,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp5",
@@ -65,7 +164,37 @@
       "plan": "海洋文化公园",
       "lat": 21.685,
       "lng": 108.365,
-      "spot_desc": "防城港市区 → 东兴市 · 上午：东兴口岸参观，中越边关风情体验，跨境商品街慢逛；下午：东兴市午休，越南特色非遗体验，越南康养讲座"
+      "spot_desc": "防城港市区 → 东兴市 · 上午：东兴口岸参观，中越边关风情体验，跨境商品街慢逛；下午：东兴市午休，越南特色非遗体验，越南康养讲座",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E6%B5%B7%E6%B4%8B%E6%96%87%E5%8C%96%E5%85%AC%E5%9B%AD%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "白浪滩景区",
+          "address": "广西壮族自治区防城港市防城区环岛东路",
+          "distance": 16731.03,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "西湾旅游景区",
+          "address": "广西壮族自治区防城港市港口区北部湾大道西150米",
+          "distance": 4204.62,
+          "category": "旅游景点:省级景点"
+        },
+        {
+          "name": "万尾金滩",
+          "address": "广西壮族自治区防城港市东兴市东兴京岛风景名胜区",
+          "distance": 27926.89,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "东兴国门景区",
+          "address": "广西壮族自治区防城港市东兴市东兴镇新华路旁",
+          "distance": 44055.1,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_poster"
     }
   ],
   "itinerary": [
@@ -115,5 +244,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路4防城港全域",
   "route_id": "gx_excel_04",
-  "updated_at": "2026-08-05T21:01:58.666Z"
+  "updated_at": "2026-08-05T22:05:59.110Z",
+  "spot_images_source": "dashboard_local_kb"
 }

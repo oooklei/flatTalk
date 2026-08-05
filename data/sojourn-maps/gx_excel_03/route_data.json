@@ -25,7 +25,37 @@
       "plan": "青秀山风景区",
       "lat": 22.7887,
       "lng": 108.3953,
-      "spot_desc": "入驻适应 + 健康建档 + 首府康养初体验 · 接站入住→医护建档与基础体检→药膳午餐→青秀山风景区慢走（生态氧疗）→康养晚餐→夜游邕江慢行调息→AI 中医体测、智能睡眠监测"
+      "spot_desc": "入驻适应 + 健康建档 + 首府康养初体验 · 接站入住→医护建档与基础体检→药膳午餐→青秀山风景区慢走（生态氧疗）→康养晚餐→夜游邕江慢行调息→AI 中医体测、智能睡眠监测",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%9D%92%E7%A7%80%E5%B1%B1%E9%A3%8E%E6%99%AF%E5%8C%BA%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8D%97%E5%AE%81%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "龙虎山风景区",
+          "address": "广西壮族自治区南宁市隆安县",
+          "distance": 78056.01,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "南宁市青秀山风景名胜旅游区",
+          "address": "广西壮族自治区南宁市青秀区凤岭南路6-6号",
+          "distance": 852.66,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "昆仑关旅游风景区",
+          "address": "广西壮族自治区南宁市兴宁区X028",
+          "distance": 44950.25,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "广西龙门水都生态文化旅游景区",
+          "address": "广西壮族自治区南宁市西乡塘区新际路69号",
+          "distance": 19272.41,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp2",
@@ -35,7 +65,37 @@
       "plan": "上林大龙湖",
       "lat": 23.431,
       "lng": 108.605,
-      "spot_desc": "森林氧疗 + 大龙湖康养 + 脾胃调理 · 晨间八段锦→康养早餐→上林大龙湖沿岸慢游（高负氧环境静养）→长寿药膳午餐→上林森林康养基地体验→返程南宁基地→药膳晚餐 + 壮药足浴理疗"
+      "spot_desc": "森林氧疗 + 大龙湖康养 + 脾胃调理 · 晨间八段锦→康养早餐→上林大龙湖沿岸慢游（高负氧环境静养）→长寿药膳午餐→上林森林康养基地体验→返程南宁基地→药膳晚餐 + 壮药足浴理疗",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E4%B8%8A%E6%9E%97%E5%A4%A7%E9%BE%99%E6%B9%96%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8D%97%E5%AE%81%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "龙虎山风景区",
+          "address": "广西壮族自治区南宁市隆安县",
+          "distance": 110177.06,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "南宁市青秀山风景名胜旅游区",
+          "address": "广西壮族自治区南宁市青秀区凤岭南路6-6号",
+          "distance": 75041.13,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "昆仑关旅游风景区",
+          "address": "广西壮族自治区南宁市兴宁区X028",
+          "distance": 38614.28,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "广西龙门水都生态文化旅游景区",
+          "address": "广西壮族自治区南宁市西乡塘区新际路69号",
+          "distance": 69178.34,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp3",
@@ -45,7 +105,37 @@
       "plan": "马山金伦洞",
       "lat": 23.729,
       "lng": 108.238,
-      "spot_desc": "弄拉康养 + 民俗体验 + 气血调理 · 晨间太极晨练→康养早餐→马山弄拉自然保护区慢游→长寿药膳午餐→壮乡民俗体验→返程南宁基地→药膳晚餐 + 壮药泡浴"
+      "spot_desc": "弄拉康养 + 民俗体验 + 气血调理 · 晨间太极晨练→康养早餐→马山弄拉自然保护区慢游→长寿药膳午餐→壮乡民俗体验→返程南宁基地→药膳晚餐 + 壮药泡浴",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E9%A9%AC%E5%B1%B1%E9%87%91%E4%BC%A6%E6%B4%9E%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%8D%97%E5%AE%81%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "龙虎山风景区",
+          "address": "广西壮族自治区南宁市隆安县",
+          "distance": 104085.49,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "南宁市青秀山风景名胜旅游区",
+          "address": "广西壮族自治区南宁市青秀区凤岭南路6-6号",
+          "distance": 105925.41,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "昆仑关旅游风景区",
+          "address": "广西壮族自治区南宁市兴宁区X028",
+          "distance": 84334.78,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "广西龙门水都生态文化旅游景区",
+          "address": "广西壮族自治区南宁市西乡塘区新际路69号",
+          "distance": 92194.72,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp4",
@@ -55,7 +145,37 @@
       "plan": "崇左太平古城",
       "lat": 22.377,
       "lng": 107.353,
-      "spot_desc": "乐养城康养 + 民俗养心 + 固本培元 · 康养早餐 + 健康复盘→中国（南宁）乐养城康养体验→长寿药膳午餐→扶绥生态慢游→返程崇左基地→分区温泉理疗→自由静养"
+      "spot_desc": "乐养城康养 + 民俗养心 + 固本培元 · 康养早餐 + 健康复盘→中国（南宁）乐养城康养体验→长寿药膳午餐→扶绥生态慢游→返程崇左基地→分区温泉理疗→自由静养",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E5%B4%87%E5%B7%A6%E5%A4%AA%E5%B9%B3%E5%8F%A4%E5%9F%8E%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%B4%87%E5%B7%A6%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 75560.92,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 56851.59,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 49203.97,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 36058.01,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp5",
@@ -65,7 +185,37 @@
       "plan": "花山岩画",
       "lat": 22.14,
       "lng": 107.072,
-      "spot_desc": "德天瀑布康养 + 边关风情 + 经络舒缓 · 康养早餐→德天瀑布沿岸慢游（高负氧环境静养）→长寿药膳午餐→边关风情体验→返程崇左基地→药膳晚餐 + 壮药足浴理疗"
+      "spot_desc": "德天瀑布康养 + 边关风情 + 经络舒缓 · 康养早餐→德天瀑布沿岸慢游（高负氧环境静养）→长寿药膳午餐→边关风情体验→返程崇左基地→药膳晚餐 + 壮药足浴理疗",
+      "spot_images": [
+        "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E8%8A%B1%E5%B1%B1%E5%B2%A9%E7%94%BB%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E5%B4%87%E5%B7%A6%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"
+      ],
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 80776.49,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 64527.9,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 64569.48,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 9019,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_poster"
     },
     {
       "id": "wp6",
@@ -75,7 +225,37 @@
       "plan": "德天跨国瀑布",
       "lat": 22.849,
       "lng": 106.726,
-      "spot_desc": "红色康养 + 森林疗愈 + 康养知识学习 · 康养早餐 + 养生科普→龙州起义纪念馆红色文化体验→弄岗国家级自然保护区森林徒步（天然氧吧深度疗愈）→原生态午餐→康养研学 + 专业深度理疗→收官温补晚餐"
+      "spot_desc": "红色康养 + 森林疗愈 + 康养知识学习 · 康养早餐 + 养生科普→龙州起义纪念馆红色文化体验→弄岗国家级自然保护区森林徒步（天然氧吧深度疗愈）→原生态午餐→康养研学 + 专业深度理疗→收官温补晚餐",
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300m1200000rpb33D9F36_W_640_0_Q90.jpg"
+      ],
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 7828.1,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 26298.01,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 36304.45,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "友谊关景区",
+          "address": "广西壮族自治区崇左市凭祥市G322",
+          "distance": 97092.36,
+          "category": "旅游景点:风景名胜"
+        }
+      ],
+      "image_source": "local_photo"
     },
     {
       "id": "wp7",
@@ -85,7 +265,37 @@
       "plan": "明仕田园",
       "lat": 22.85,
       "lng": 107.1,
-      "spot_desc": "康养复盘 + 居家养生指导 + 返程 · 药膳早餐→健康数据复盘 + 居家养生指导→结业午餐 + 退房→专属接驳返程"
+      "spot_desc": "康养复盘 + 居家养生指导 + 返程 · 药膳早餐→健康数据复盘 + 居家养生指导→结业午餐 + 退房→专属接驳返程",
+      "spot_images": [
+        "https://dimg04.c-ctrip.com/images/300k1200000rnweaN442F_W_640_0_Q90.jpg"
+      ],
+      "related_spots": [
+        {
+          "name": "广西德天跨国瀑布景区",
+          "address": "广西壮族自治区崇左市大新县沿边公路",
+          "distance": 31481.28,
+          "category": "旅游景点:国家级景点"
+        },
+        {
+          "name": "明仕田园风景区",
+          "address": "广西壮族自治区崇左市大新县x532",
+          "distance": 23935.5,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "峒那屿湾景区",
+          "address": "广西壮族自治区崇左市大新县大新黑水河国家湿地公园",
+          "distance": 15360.29,
+          "category": "旅游景点:风景名胜"
+        },
+        {
+          "name": "宁明花山岩画景区",
+          "address": "广西壮族自治区崇左市宁明县花山路1号",
+          "distance": 70565.43,
+          "category": "旅游景点:国家级景点"
+        }
+      ],
+      "image_source": "local_photo"
     }
   ],
   "itinerary": [
@@ -135,5 +345,6 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路3南宁崇左全域",
   "route_id": "gx_excel_03",
-  "updated_at": "2026-08-05T21:01:58.661Z"
+  "updated_at": "2026-08-05T22:05:59.103Z",
+  "spot_images_source": "dashboard_local_kb"
 }

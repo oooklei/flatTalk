@@ -1,0 +1,56 @@
+<svg viewBox="0 0 620 850" xmlns="http://www.w3.org/2000/svg" data-route-id="bama_5d4n" data-version="elder" data-route-name="巴马5天4晚康养旅居" data-center-lat="24.2000" data-center-lng="107.1000" style="width:100%;max-width:620px;background:linear-gradient(180deg,#F5F0E8 0%,#E8F4E8 100%);border-radius:16px;font-family:'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+  <linearGradient id="boundaryGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E8F5E9" stop-opacity="0.95"/><stop offset="100%" stop-color="#C8E6C9" stop-opacity="0.8"/></linearGradient>
+  <linearGradient id="riverGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#64B5F6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1976D2" stop-opacity="0.5"/></linearGradient>
+  <linearGradient id="hillGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#81C784" stop-opacity="0.5"/><stop offset="100%" stop-color="#388E3C" stop-opacity="0.3"/></linearGradient>
+  <linearGradient id="heroGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF7826"/><stop offset="100%" stop-color="#E65100"/></linearGradient>
+  <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/></filter>
+  </defs>
+  <rect x="0" y="0" width="620" height="58" rx="16" fill="url(#heroGrad)"/>
+  <text x="18" y="36" fill="#fff" font-size="92" font-weight="bold">巴马5天4晚康养旅居</text>
+  <text x="18" y="51" fill="rgba(255,255,255,0.75)" font-size="46">康养旅居 · 精品路线</text>
+  <rect x="10" y="68" width="600" height="460" rx="12" fill="#F8F8F0" stroke="#DDD" stroke-width="0.5"/>
+  <g class="mountains" opacity="0.55">
+  <path d="M18,138 Q38,86 58,138 Q80,80 102,138 Q125,90 148,138" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
+  <path d="M470,123 Q495,74 522,123 Q548,70 578,123" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
+  <path d="M280,510 Q358,470 442,510 Q520,466 605,510" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
+  <text x="80" y="156" fill="#2E7D32" font-size="42" opacity="0.55" font-style="italic">山区</text>
+  </g>
+  <g class="rivers">
+  <path d="M45,413 Q170,321 300,380.8 T565,321" fill="none" stroke="url(#riverGrad)" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+  <text x="220" y="334.79999999999995" fill="#1565C0" font-size="42" opacity="0.65">主要河流</text>
+  </g>
+  <g class="route-paths" filter="url(#shadow)">
+  <path d="M 513 423 L 242 376 L 378 454 L 310 423 L 175 329 L 107 142" fill="none" stroke="#FF7826" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+  </g>
+  <g class="markers">
+  <g class="route-marker" style="cursor:pointer" data-type="arrival" data-day="Day1" data-name="巴马县城" data-plan="抵达巴马" data-lat="24.12" data-lng="107.25" data-spot-desc="抵达巴马" transform="translate(513,423)"><circle class="hit-area" r="32" fill="transparent" pointer-events="all"/><circle r="18" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">起</text><text y="60" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">巴马县城</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day1" data-name="百魔洞" data-plan="天下第一洞·负氧离子磁疗" data-lat="24.15" data-lng="107.05" data-spot-desc="被誉天下第一洞，负氧离子2-7万/cm³，天然磁疗区，盘阳河从洞下流过" data-spot-img="https://dimg04.c-ctrip.com/images/1mf2h12000be4fpbd5CEC_W_640_0_Q90.jpg?proc=autoorient,https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/0e/ac/36/baimo-cave.jpg?w=1200&amp;h=-1&amp;s=1,https://img.yijuhome.com.cn/20250928/1988751759041223.jpg" transform="translate(242,376)"><circle class="hit-area" r="29" fill="transparent" pointer-events="all"/><circle r="15" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">景</text><text y="57" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">百魔洞</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="wellness" data-day="Day3" data-name="长寿村" data-plan="探访百岁老人·养生文化" data-lat="24.1" data-lng="107.15" data-spot-desc="巴盘屯，515人中有7位百岁老人，补粮习俗" data-spot-img="https://www.gxlvyouwang.com/uploads/allimg/20250806/1-250P6000045507.jpg,https://static.gxrb.com.cn/image/uploadpic/20250713/34f321dd4e3266715d994b7fd5171f36.png,https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064322606780" transform="translate(378,454)"><circle class="hit-area" r="29" fill="transparent" pointer-events="all"/><circle r="15" fill="#8E24AA" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">养</text><text y="57" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">长寿村</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day3" data-name="命河" data-plan="命字河道奇观" data-lat="24.12" data-lng="107.1" data-spot-desc="河道俯瞰酷似草书命字，沿岸80余位百岁老人" transform="translate(310,423)"><circle class="hit-area" r="29" fill="transparent" pointer-events="all"/><circle r="15" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">景</text><text y="57" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">命河</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day4" data-name="百鸟岩" data-plan="乘船穿越三天三夜" data-lat="24.18" data-lng="107" data-spot-desc="地下河溶洞，三个天窗光影奇观，负氧离子5万/cm³" transform="translate(175,329)"><circle class="hit-area" r="29" fill="transparent" pointer-events="all"/><circle r="15" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">景</text><text y="57" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">百鸟岩</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day4" data-name="水晶宫" data-plan="溶洞天花板·鹅管群" data-lat="24.3" data-lng="106.95" data-spot-desc="AAAA级景区，全球最大非重力卷曲石花，恒温18℃" transform="translate(107,142)"><circle class="hit-area" r="29" fill="transparent" pointer-events="all"/><circle r="15" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">景</text><text y="57" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">水晶宫</text></g>
+  </g>
+  <g class="legend" transform="translate(10, 535)">
+  <rect width="600" height="28" rx="6" fill="rgba(255,255,255,0.92)" stroke="#ddd" stroke-width="0.5"/>
+  <circle cx="30" cy="14" r="6" fill="#4CAF50"/><text x="42" y="18" font-size="46" fill="#333">起点</text>
+  <circle cx="140" cy="14" r="6" fill="#FF7826"/><text x="152" y="18" font-size="46" fill="#333">途经</text>
+  <circle cx="250" cy="14" r="6" fill="#8E24AA"/><text x="262" y="18" font-size="46" fill="#333">康养</text>
+  <circle cx="360" cy="14" r="6" fill="#1976D2"/><text x="372" y="18" font-size="46" fill="#333">返程</text>
+  </g>
+  <g class="wellness-info" transform="translate(10, 570)">
+  <rect width="600" height="70" rx="10" fill="#FFF8E1" stroke="#FFE0B2" stroke-width="0.8"/>
+  <text x="15" y="22" fill="#E65100" font-size="55" font-weight="bold">康养特色</text>
+  <text x="15" y="42" fill="#555" font-size="46">被誉天下第一洞，负氧离子2-7万/cm³，天然磁疗区，盘阳河从洞下流过 · 巴盘屯，</text>
+  <text x="15" y="60" fill="#555" font-size="46">515人中有7位百岁老人，补粮习俗 · 河道俯瞰酷似草书命字，沿岸80余位百岁老人</text>
+  </g>
+  <g class="spot-list" transform="translate(10, 650)">
+  <rect width="600" height="190" rx="10" fill="#FAFAFA" stroke="#EEE" stroke-width="0.5"/>
+  <text x="15" y="20" fill="#333" font-size="50" font-weight="bold">行程景点</text>
+  <g class="spot-item" data-name="百魔洞" data-day="Day1" data-spot-desc="被誉天下第一洞，负氧离子2-7万/cm³，天然磁疗区，盘阳河从洞下流过" data-spot-img="https://dimg04.c-ctrip.com/images/1mf2h12000be4fpbd5CEC_W_640_0_Q90.jpg?proc=autoorient,https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/0e/ac/36/baimo-cave.jpg?w=1200&amp;h=-1&amp;s=1,https://img.yijuhome.com.cn/20250928/1988751759041223.jpg"><circle cx="18" cy="39" r="3" fill="#FF7826"/><text x="28" y="42" fill="#333" font-size="46">百魔洞 · Day1 · 天下第一洞·负氧离子磁疗</text></g>
+  <g class="spot-item" data-name="长寿村" data-day="Day3" data-spot-desc="巴盘屯，515人中有7位百岁老人，补粮习俗" data-spot-img="https://www.gxlvyouwang.com/uploads/allimg/20250806/1-250P6000045507.jpg,https://static.gxrb.com.cn/image/uploadpic/20250713/34f321dd4e3266715d994b7fd5171f36.png,https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064322606780"><circle cx="18" cy="57" r="3" fill="#FF7826"/><text x="28" y="60" fill="#333" font-size="46">长寿村 · Day3 · 探访百岁老人·养生文化</text></g>
+  <g class="spot-item" data-name="命河" data-day="Day3" data-spot-desc="河道俯瞰酷似草书命字，沿岸80余位百岁老人"><circle cx="18" cy="75" r="3" fill="#FF7826"/><text x="28" y="78" fill="#333" font-size="46">命河 · Day3 · 命字河道奇观</text></g>
+  <g class="spot-item" data-name="百鸟岩" data-day="Day4" data-spot-desc="地下河溶洞，三个天窗光影奇观，负氧离子5万/cm³"><circle cx="18" cy="93" r="3" fill="#FF7826"/><text x="28" y="96" fill="#333" font-size="46">百鸟岩 · Day4 · 乘船穿越三天三夜</text></g>
+  <g class="spot-item" data-name="水晶宫" data-day="Day4" data-spot-desc="AAAA级景区，全球最大非重力卷曲石花，恒温18℃"><circle cx="18" cy="111" r="3" fill="#FF7826"/><text x="28" y="114" fill="#333" font-size="46">水晶宫 · Day4 · 溶洞天花板·鹅管群</text></g>
+  </g>
+  </svg>

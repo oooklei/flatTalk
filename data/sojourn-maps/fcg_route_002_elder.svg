@@ -7,45 +7,45 @@
   <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/></filter>
   </defs>
   <rect x="0" y="0" width="620" height="58" rx="16" fill="url(#heroGrad)"/>
-  <text x="18" y="36" fill="#fff" font-size="29" font-weight="bold">银发爱情边境线</text>
-  <text x="18" y="51" fill="rgba(255,255,255,0.75)" font-size="14">康养旅居 · 精品路线</text>
+  <text x="18" y="36" fill="#fff" font-size="92" font-weight="bold">银发爱情边境线</text>
+  <text x="18" y="51" fill="rgba(255,255,255,0.75)" font-size="46">康养旅居 · 精品路线</text>
   <rect x="10" y="68" width="600" height="460" rx="12" fill="#F8F8F0" stroke="#DDD" stroke-width="0.5"/>
   <g class="mountains" opacity="0.55">
   <path d="M18,138 Q38,86 58,138 Q80,80 102,138 Q125,90 148,138" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
   <path d="M470,123 Q495,74 522,123 Q548,70 578,123" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
   <path d="M280,510 Q358,470 442,510 Q520,466 605,510" fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>
-  <text x="80" y="156" fill="#2E7D32" font-size="13" opacity="0.55" font-style="italic">山区</text>
+  <text x="80" y="156" fill="#2E7D32" font-size="42" opacity="0.55" font-style="italic">山区</text>
   </g>
   <g class="rivers">
   <path d="M45,413 Q170,321 300,380.8 T565,321" fill="none" stroke="url(#riverGrad)" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
-  <text x="220" y="334.79999999999995" fill="#1565C0" font-size="13" opacity="0.65">主要河流</text>
+  <text x="220" y="334.79999999999995" fill="#1565C0" font-size="42" opacity="0.65">主要河流</text>
   </g>
   <g class="route-paths" filter="url(#shadow)">
   <path d="M 513 454 L 111 176 L 105 125" fill="none" stroke="#FF7826" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
   <path d="M 105 125 L 513 454" fill="none" stroke="#1976D2" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
   </g>
   <g class="markers">
-  <g class="route-marker" style="cursor:pointer" data-type="base" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="大本营出发" data-lat="21.5279" data-lng="108.1668" data-spot-desc="东兴国门+中越友谊大桥平缓观光" transform="translate(513,454)"><circle r="10" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">起</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">嘉路滨海旅居基地</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day1" data-name="东兴口岸" data-plan="国门+界碑观光" data-lat="21.5479" data-lng="107.9722" data-spot-desc="中越界碑打卡留念" transform="translate(111,176)"><circle r="8" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">景</text><text y="21" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">东兴口岸</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day1" data-name="中越友谊大桥" data-plan="边境打卡+手工体验" data-lat="21.549" data-lng="107.971" data-spot-desc="京族服饰轻手工体验" transform="translate(105,125)"><circle r="8" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">景</text><text y="21" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">中越友谊大桥</text></g>
-  <g class="route-marker" style="cursor:pointer" data-type="base" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="返回基地康养" data-lat="21.5279" data-lng="108.1668" data-spot-desc="双人舒缓瑜伽+老年摄影交流" transform="translate(513,454)"><circle r="10" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="5" fill="#fff" font-size="13" font-weight="bold">起</text><text y="23" text-anchor="middle" font-size="13" fill="#000" font-family="sans-serif">嘉路滨海旅居基地</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="base" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="大本营出发" data-lat="21.5279" data-lng="108.1668" data-spot-desc="东兴国门+中越友谊大桥平缓观光" data-spot-img="http://guangxi.china.com.cn/pic/2025-06/30/d4941b5a-98c4-4e89-aba8-4a52307cb5f6.png,https://static.linkolder.com/yanglaos/December2022/6PjlhSBQ9wwwT9hZLjdx.jpeg/c_600_400,https://s.anyang100.com/images/r/19397/w/22217316475640844342.jpg" transform="translate(513,454)"><circle class="hit-area" r="32" fill="transparent" pointer-events="all"/><circle r="18" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">起</text><text y="60" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">嘉路滨海旅居基地</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day1" data-name="东兴口岸" data-plan="国门+界碑观光" data-lat="21.5479" data-lng="107.9722" data-spot-desc="中越界碑打卡留念" data-spot-img="https://www.gxlvyouwang.com/uploads/allimg/20251225/1-251225230129522.jpg,https://inews.gtimg.com/om_bt/ObnRbzH9ZTWuiByUf7qZHIwaiNnLENxIBX_R2Mp8GkE_8AA/641,https://ak-d.tripcdn.com/images/1mi6412000t7k8lj74332_W_320_0_R5_Q30.jpg?proc=source/trip" transform="translate(111,176)"><circle class="hit-area" r="29" fill="transparent" pointer-events="all"/><circle r="15" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">景</text><text y="57" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">东兴口岸</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="spot" data-day="Day1" data-name="中越友谊大桥" data-plan="边境打卡+手工体验" data-lat="21.549" data-lng="107.971" data-spot-desc="京族服饰轻手工体验" data-spot-img="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E4%B8%AD%E8%B6%8A%E5%8F%8B%E8%B0%8A%E5%A4%A7%E6%A1%A5%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E" transform="translate(105,125)"><circle class="hit-area" r="29" fill="transparent" pointer-events="all"/><circle r="15" fill="#FF7826" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">景</text><text y="57" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">中越友谊大桥</text></g>
+  <g class="route-marker" style="cursor:pointer" data-type="base" data-day="Day1" data-name="嘉路滨海旅居基地" data-plan="返回基地康养" data-lat="21.5279" data-lng="108.1668" data-spot-desc="双人舒缓瑜伽+老年摄影交流" data-spot-img="http://guangxi.china.com.cn/pic/2025-06/30/d4941b5a-98c4-4e89-aba8-4a52307cb5f6.png,https://static.linkolder.com/yanglaos/December2022/6PjlhSBQ9wwwT9hZLjdx.jpeg/c_600_400,https://s.anyang100.com/images/r/19397/w/22217316475640844342.jpg" transform="translate(513,454)"><circle class="hit-area" r="32" fill="transparent" pointer-events="all"/><circle r="18" fill="#4CAF50" stroke="#fff" stroke-width="2"/><text text-anchor="middle" dy="15" fill="#fff" font-size="42" font-weight="bold">起</text><text y="60" text-anchor="middle" font-size="42" fill="#000" font-family="sans-serif">嘉路滨海旅居基地</text></g>
   </g>
   <g class="legend" transform="translate(10, 535)">
   <rect width="600" height="28" rx="6" fill="rgba(255,255,255,0.92)" stroke="#ddd" stroke-width="0.5"/>
-  <circle cx="30" cy="14" r="6" fill="#4CAF50"/><text x="42" y="18" font-size="14" fill="#333">起点</text>
-  <circle cx="140" cy="14" r="6" fill="#FF7826"/><text x="152" y="18" font-size="14" fill="#333">途经</text>
-  <circle cx="250" cy="14" r="6" fill="#8E24AA"/><text x="262" y="18" font-size="14" fill="#333">康养</text>
-  <circle cx="360" cy="14" r="6" fill="#1976D2"/><text x="372" y="18" font-size="14" fill="#333">返程</text>
+  <circle cx="30" cy="14" r="6" fill="#4CAF50"/><text x="42" y="18" font-size="46" fill="#333">起点</text>
+  <circle cx="140" cy="14" r="6" fill="#FF7826"/><text x="152" y="18" font-size="46" fill="#333">途经</text>
+  <circle cx="250" cy="14" r="6" fill="#8E24AA"/><text x="262" y="18" font-size="46" fill="#333">康养</text>
+  <circle cx="360" cy="14" r="6" fill="#1976D2"/><text x="372" y="18" font-size="46" fill="#333">返程</text>
   </g>
   <g class="wellness-info" transform="translate(10, 570)">
   <rect width="600" height="70" rx="10" fill="#FFF8E1" stroke="#FFE0B2" stroke-width="0.8"/>
-  <text x="15" y="22" fill="#E65100" font-size="17" font-weight="bold">康养特色</text>
-  <text x="15" y="42" fill="#555" font-size="14">东兴国门+中越友谊大桥平缓观光 · 中越界碑打卡留念 · 京族服饰轻手工体验</text>
+  <text x="15" y="22" fill="#E65100" font-size="55" font-weight="bold">康养特色</text>
+  <text x="15" y="42" fill="#555" font-size="46">东兴国门+中越友谊大桥平缓观光 · 中越界碑打卡留念 · 京族服饰轻手工体验</text>
   </g>
   <g class="spot-list" transform="translate(10, 650)">
   <rect width="600" height="190" rx="10" fill="#FAFAFA" stroke="#EEE" stroke-width="0.5"/>
-  <text x="15" y="20" fill="#333" font-size="16" font-weight="bold">行程景点</text>
-  <g class="spot-item" data-name="东兴口岸" data-day="Day1" data-spot-desc="中越界碑打卡留念"><circle cx="18" cy="39" r="3" fill="#FF7826"/><text x="28" y="42" fill="#333" font-size="14">东兴口岸 · Day1 · 国门+界碑观光</text></g>
-  <g class="spot-item" data-name="中越友谊大桥" data-day="Day1" data-spot-desc="京族服饰轻手工体验"><circle cx="18" cy="57" r="3" fill="#FF7826"/><text x="28" y="60" fill="#333" font-size="14">中越友谊大桥 · Day1 · 边境打卡+手工体验</text></g>
+  <text x="15" y="20" fill="#333" font-size="50" font-weight="bold">行程景点</text>
+  <g class="spot-item" data-name="东兴口岸" data-day="Day1" data-spot-desc="中越界碑打卡留念" data-spot-img="https://www.gxlvyouwang.com/uploads/allimg/20251225/1-251225230129522.jpg,https://inews.gtimg.com/om_bt/ObnRbzH9ZTWuiByUf7qZHIwaiNnLENxIBX_R2Mp8GkE_8AA/641,https://ak-d.tripcdn.com/images/1mi6412000t7k8lj74332_W_320_0_R5_Q30.jpg?proc=source/trip"><circle cx="18" cy="39" r="3" fill="#FF7826"/><text x="28" y="42" fill="#333" font-size="46">东兴口岸 · Day1 · 国门+界碑观光</text></g>
+  <g class="spot-item" data-name="中越友谊大桥" data-day="Day1" data-spot-desc="京族服饰轻手工体验" data-spot-img="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231FA97E%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230E7C86%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%22320%22%20y%3D%22165%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-size%3D%2242%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%20font-weight%3D%22700%22%3E%E4%B8%AD%E8%B6%8A%E5%8F%8B%E8%B0%8A%E5%A4%A7%E6%A1%A5%3C%2Ftext%3E%3Ctext%20x%3D%22320%22%20y%3D%22220%22%20text-anchor%3D%22middle%22%20fill%3D%22rgba(255%2C255%2C255%2C.9)%22%20font-size%3D%2222%22%20font-family%3D%22Microsoft%20YaHei%2Csans-serif%22%3E%E9%98%B2%E5%9F%8E%E6%B8%AF%20%C2%B7%20%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E5%BA%93%3C%2Ftext%3E%3C%2Fsvg%3E"><circle cx="18" cy="57" r="3" fill="#FF7826"/><text x="28" y="60" fill="#333" font-size="46">中越友谊大桥 · Day1 · 边境打卡+手工体验</text></g>
   </g>
   </svg>
