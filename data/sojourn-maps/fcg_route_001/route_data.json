@@ -1,20 +1,67 @@
 {
-  "route_id": "fcg_route_001",
-  "route_name": "防城港京族滨海文化线",
-  "version": "1.0",
-  "generated_at": "2026-08-04T23:30:00.000Z",
-  "data_sources": { "map": "manual_svg", "spots": "tavily_search" },
+  "route_name": "京族滨海文化线",
   "destination": "防城港",
   "days": 1,
-  "summary": "非遗滨海康养主题，主打京族非遗文化+滨海负氧离子疗养",
-  "highlights": ["京族独弦琴非遗传承人现场教学", "金滩滨海慢走+浅滩渔耕轻体验", "京族特色长寿午餐", "基地艾灸/拔罐理疗"],
-  "suitable_for": "60—75周岁无重大基础病活力长者",
-  "waypoints": [
-    { "id": "wp1", "name": "嘉路滨海旅居基地", "type": "base", "day": "Day1", "plan": "大本营出发", "lat": 21.5279, "lng": 108.1668 },
-    { "id": "wp2", "name": "东兴京族三岛", "type": "spot", "day": "Day1", "plan": "京族非遗体验+独弦琴", "lat": 21.5083, "lng": 107.8833, "spot_desc": "京族独弦琴非遗传承人现场教学，哈节民俗" },
-    { "id": "wp3", "name": "金滩", "type": "spot", "day": "Day1", "plan": "滨海慢走+渔耕体验", "lat": 21.495, "lng": 107.87, "spot_desc": "京族滨海沙滩，浅滩渔耕轻体验，负氧离子疗养" },
-    { "id": "wp4", "name": "嘉路滨海旅居基地", "type": "departure", "day": "Day1", "plan": "返回基地康养休整", "lat": 21.5279, "lng": 108.1668 }
+  "summary": "非遗滨海康养主题，主打京族非遗文化+滨海负氧离子疗养，适配热爱民俗、偏好平缓休闲的自理长者。",
+  "highlights": [
+    "京族独弦琴非遗传承人现场教学",
+    "金滩滨海慢走+浅滩渔耕轻体验",
+    "京族特色长寿午餐（沙虫瘦肉汤、清蒸海鱼）",
+    "基地艾灸/拔罐理疗"
   ],
-  "polyline_path": [],
-  "tags": ["非遗文化", "滨海康养", "负氧离子"]
+  "suitable_for": "60—75周岁无重大基础病活力长者",
+  "tags": [
+    "非遗文化",
+    "滨海康养",
+    "负氧离子"
+  ],
+  "waypoints": [
+    {
+      "id": "wp1",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "大本营出发",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "京族独弦琴非遗传承人现场教学"
+    },
+    {
+      "id": "wp2",
+      "name": "东兴京族三岛",
+      "type": "spot",
+      "day": "Day1",
+      "plan": "京族非遗体验+独弦琴",
+      "lat": 21.5083,
+      "lng": 107.8833,
+      "spot_desc": "金滩滨海慢走+浅滩渔耕轻体验"
+    },
+    {
+      "id": "wp3",
+      "name": "金滩",
+      "type": "spot",
+      "day": "Day1",
+      "plan": "滨海慢走+渔耕体验",
+      "lat": 21.495,
+      "lng": 107.87,
+      "spot_desc": "京族特色长寿午餐（沙虫瘦肉汤、清蒸海鱼）"
+    },
+    {
+      "id": "wp4",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "返回基地康养休整",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "基地艾灸/拔罐理疗"
+    }
+  ],
+  "price_label": "398元/人/天",
+  "source": "fangchenggang-routes",
+  "aliases": [
+    "route_dash_fcg_1"
+  ],
+  "route_id": "fcg_route_001",
+  "updated_at": "2026-08-05T20:41:34.393Z"
 }

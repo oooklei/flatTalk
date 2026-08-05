@@ -1,0 +1,154 @@
+[
+  {
+    "route_id": "bama_5d4n",
+    "route_name": "巴马5天4晚康养旅居",
+    "destination": "巴马",
+    "status": "published",
+    "product_type": "wellness",
+    "updated_at": "2026-08-05T20:41:35.113Z"
+  },
+  {
+    "route_id": "fcg_route_001",
+    "route_name": "京族滨海文化线",
+    "destination": "防城港",
+    "status": "published",
+    "product_type": "coastal",
+    "updated_at": "2026-08-05T20:41:34.460Z"
+  },
+  {
+    "route_id": "fcg_route_002",
+    "route_name": "银发爱情边境线",
+    "destination": "防城港",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.461Z"
+  },
+  {
+    "route_id": "fcg_route_003",
+    "route_name": "壮村民俗康养线",
+    "destination": "防城港",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.461Z"
+  },
+  {
+    "route_id": "fcg_route_004",
+    "route_name": "森林轻氧休闲线",
+    "destination": "防城港",
+    "status": "published",
+    "product_type": "ecology",
+    "updated_at": "2026-08-05T20:41:34.463Z"
+  },
+  {
+    "route_id": "fcg_route_005",
+    "route_name": "芒街跨境体验线",
+    "destination": "防城港",
+    "status": "published",
+    "product_type": "coastal",
+    "updated_at": "2026-08-05T20:41:34.463Z"
+  },
+  {
+    "route_id": "gx_excel_01",
+    "route_name": "桂林市区 → 永福县 → 阳朔县 → 恭城瑶族自治县 → 荔浦市",
+    "destination": "桂林",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.421Z"
+  },
+  {
+    "route_id": "gx_excel_02",
+    "route_name": "贺州市区 → 昭平县 → 钟山县 → 富川瑶族自治县 → 平桂区 → 八步区",
+    "destination": "贺州",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.428Z"
+  },
+  {
+    "route_id": "gx_excel_03",
+    "route_name": "南宁市区 → 上林县 → 马山县 → 崇左市区 → 扶绥县 → 天等县 → 大新",
+    "destination": "南宁",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.434Z"
+  },
+  {
+    "route_id": "gx_excel_04",
+    "route_name": "防城港市区 → 防城区 → 东兴市",
+    "destination": "防城港",
+    "status": "published",
+    "product_type": "coastal",
+    "updated_at": "2026-08-05T20:41:34.441Z"
+  },
+  {
+    "route_id": "gx_excel_05",
+    "route_name": "南宁-北海-钦州-防城港滨海养老旅居线",
+    "destination": "南宁",
+    "status": "published",
+    "product_type": "coastal",
+    "updated_at": "2026-08-05T20:41:34.445Z"
+  },
+  {
+    "route_id": "gx_excel_06",
+    "route_name": "南宁-宁明-大新-崇左边关壮瑶养老旅居线",
+    "destination": "南宁",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.449Z"
+  },
+  {
+    "route_id": "gx_excel_08",
+    "route_name": "桂林-阳朔-贺州山水瑶泉康养旅居线",
+    "destination": "桂林",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.453Z"
+  },
+  {
+    "route_id": "gx_excel_09",
+    "route_name": "桂林-阳朔-三江-龙胜梯田温泉侗瑶养老旅居线",
+    "destination": "桂林",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.456Z"
+  },
+  {
+    "route_id": "gx_excel_10",
+    "route_name": "柳州-金秀-荔浦-平乐山水温泉长寿养老旅居线",
+    "destination": "柳州",
+    "status": "published",
+    "product_type": "culture",
+    "updated_at": "2026-08-05T20:41:34.459Z"
+  },
+  {
+    "route_id": "jtd_2070305000000000240",
+    "route_name": "七洞乡线路产品",
+    "destination": "七洞乡",
+    "status": "published",
+    "product_type": "wellness",
+    "updated_at": "2026-08-05T20:41:35.121Z"
+  },
+  {
+    "route_id": "jtd_2070305000000000266",
+    "route_name": "0724测试旅居路线",
+    "destination": "巴马",
+    "status": "published",
+    "product_type": "wellness",
+    "updated_at": "2026-08-05T20:41:35.117Z"
+  },
+  {
+    "route_id": "jtd_2070305000000000271",
+    "route_name": "0730测试旅居路线5天4日游",
+    "destination": "七洞乡",
+    "status": "published",
+    "product_type": "wellness",
+    "updated_at": "2026-08-05T20:41:35.111Z"
+  },
+  {
+    "route_id": "jtd_mock_bama_001",
+    "route_name": "巴马5天4晚康养旅居",
+    "destination": "巴马",
+    "status": "draft",
+    "product_type": "wellness",
+    "updated_at": "2026-08-05T20:41:35.122Z"
+  }
+]

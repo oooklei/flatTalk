@@ -1,0 +1,49 @@
+{
+  "route_name": "七洞乡线路产品",
+  "destination": "七洞乡",
+  "days": 4,
+  "summary": "金跳动产品 七洞乡线路产品",
+  "highlights": [],
+  "waypoints": [
+    {
+      "id": "wp1",
+      "name": "七洞乡政府",
+      "lat": 23.6817,
+      "lng": 109.0512,
+      "type": "arrival",
+      "day": "Day1",
+      "plan": "抵达办理入住"
+    },
+    {
+      "id": "wp2",
+      "name": "七洞乡康养基地",
+      "lat": 23.6852,
+      "lng": 109.0491,
+      "type": "wellness",
+      "day": "Day2",
+      "plan": "康养体验"
+    },
+    {
+      "id": "wp3",
+      "name": "七洞乡生态园",
+      "lat": 23.6781,
+      "lng": 109.0568,
+      "type": "spot",
+      "day": "Day3",
+      "plan": "生态游憩"
+    },
+    {
+      "id": "wp4",
+      "name": "七洞乡政府",
+      "lat": 23.6817,
+      "lng": 109.0512,
+      "type": "departure",
+      "day": "Day3",
+      "plan": "返程"
+    }
+  ],
+  "source": "jintiaodong",
+  "jtd_product_id": "2070305000000000240",
+  "route_id": "jtd_2070305000000000240",
+  "updated_at": "2026-08-05T20:41:35.118Z"
+}

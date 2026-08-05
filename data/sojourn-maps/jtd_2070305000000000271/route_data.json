@@ -1,0 +1,58 @@
+{
+  "route_name": "0730测试旅居路线5天4日游",
+  "destination": "七洞乡",
+  "days": 5,
+  "summary": "金跳动产品 0730测试旅居路线5天4日游",
+  "highlights": [],
+  "waypoints": [
+    {
+      "id": "wp1",
+      "name": "七洞乡抵达点",
+      "lat": 23.6817,
+      "lng": 109.0512,
+      "type": "arrival",
+      "day": "Day1",
+      "plan": "抵达入住"
+    },
+    {
+      "id": "wp2",
+      "name": "七洞乡Day2体验点",
+      "lat": 23.7197,
+      "lng": 109.0388,
+      "type": "spot",
+      "day": "Day2",
+      "plan": "康养体验"
+    },
+    {
+      "id": "wp3",
+      "name": "七洞乡Day3体验点",
+      "lat": 23.7052,
+      "lng": 109.0836,
+      "type": "spot",
+      "day": "Day3",
+      "plan": "康养体验"
+    },
+    {
+      "id": "wp4",
+      "name": "七洞乡Day4体验点",
+      "lat": 23.6582,
+      "lng": 109.0836,
+      "type": "spot",
+      "day": "Day4",
+      "plan": "康养体验"
+    },
+    {
+      "id": "wp5",
+      "name": "七洞乡返程点",
+      "lat": 23.6817,
+      "lng": 109.0512,
+      "type": "departure",
+      "day": "Day5",
+      "plan": "返程"
+    }
+  ],
+  "source": "jintiaodong",
+  "jtd_product_id": "2070305000000000271",
+  "route_id": "jtd_2070305000000000271",
+  "updated_at": "2026-08-05T20:41:35.109Z"
+}

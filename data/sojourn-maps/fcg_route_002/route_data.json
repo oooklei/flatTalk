@@ -1,0 +1,67 @@
+{
+  "route_name": "银发爱情边境线",
+  "destination": "防城港",
+  "days": 1,
+  "summary": "边境风情康养主题，适配夫妻结伴、喜爱边境人文的活力长者。",
+  "highlights": [
+    "东兴国门+中越友谊大桥平缓观光",
+    "中越界碑打卡留念",
+    "京族服饰轻手工体验",
+    "双人舒缓瑜伽+老年摄影交流"
+  ],
+  "suitable_for": "60—75周岁自理老年夫妻、结伴旅居长者",
+  "tags": [
+    "边境风情",
+    "夫妻康养",
+    "人文观光"
+  ],
+  "waypoints": [
+    {
+      "id": "wp1",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "大本营出发",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "东兴国门+中越友谊大桥平缓观光"
+    },
+    {
+      "id": "wp2",
+      "name": "东兴口岸",
+      "type": "spot",
+      "day": "Day1",
+      "plan": "国门+界碑观光",
+      "lat": 21.5479,
+      "lng": 107.9722,
+      "spot_desc": "中越界碑打卡留念"
+    },
+    {
+      "id": "wp3",
+      "name": "中越友谊大桥",
+      "type": "spot",
+      "day": "Day1",
+      "plan": "边境打卡+手工体验",
+      "lat": 21.549,
+      "lng": 107.971,
+      "spot_desc": "京族服饰轻手工体验"
+    },
+    {
+      "id": "wp4",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "返回基地康养",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "双人舒缓瑜伽+老年摄影交流"
+    }
+  ],
+  "price_label": "368元/人/天",
+  "source": "fangchenggang-routes",
+  "aliases": [
+    "route_dash_fcg_2"
+  ],
+  "route_id": "fcg_route_002",
+  "updated_at": "2026-08-05T20:41:34.398Z"
+}

@@ -1,9 +1,20 @@
 {
   "route_id": "fcg_route_001",
   "status": "published",
-  "destination": ["防城港", "东兴"],
-  "keywords": ["三日游", "滨海", "京族", "金滩", "非遗", "滨海文化"],
+  "destination": [
+    "防城港",
+    "东兴"
+  ],
+  "keywords": [
+    "京族滨海文化线",
+    "非遗文化",
+    "滨海康养",
+    "负氧离子"
+  ],
   "product_type": "coastal",
-  "title": "防城港京族滨海文化线",
-  "updated_at": "2026-08-06T04:30:00.000Z"
+  "title": "京族滨海文化线",
+  "updated_at": "2026-08-05T20:41:34.460Z",
+  "aliases": [
+    "route_dash_fcg_1"
+  ]
 }

@@ -1,0 +1,67 @@
+{
+  "route_name": "壮村民俗康养线",
+  "destination": "防城港",
+  "days": 1,
+  "summary": "壮乡田园康养，主打壮瑶药膳、田园负氧休闲，适合喜爱乡村、有骨关节、脾胃调理需求长者。",
+  "highlights": [
+    "壮锦编织+竹竿舞轻互动体验",
+    "田园漫步+无公害果蔬轻采摘",
+    "壮乡五色糯米饭非遗技艺",
+    "壮药熏蒸理疗舒缓关节"
+  ],
+  "suitable_for": "60—78周岁自理长者",
+  "tags": [
+    "壮乡民俗",
+    "田园康养",
+    "药膳调理"
+  ],
+  "waypoints": [
+    {
+      "id": "wp1",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "大本营出发",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "壮锦编织+竹竿舞轻互动体验"
+    },
+    {
+      "id": "wp2",
+      "name": "上思壮乡民俗村",
+      "type": "spot",
+      "day": "Day1",
+      "plan": "壮锦编织+竹竿舞",
+      "lat": 22.1556,
+      "lng": 107.9822,
+      "spot_desc": "田园漫步+无公害果蔬轻采摘"
+    },
+    {
+      "id": "wp3",
+      "name": "上思田园",
+      "type": "wellness",
+      "day": "Day1",
+      "plan": "田园漫步+果蔬采摘",
+      "lat": 22.16,
+      "lng": 107.975,
+      "spot_desc": "壮乡五色糯米饭非遗技艺"
+    },
+    {
+      "id": "wp4",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "返回壮药理疗",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "壮药熏蒸理疗舒缓关节"
+    }
+  ],
+  "price_label": "388元/人/天",
+  "source": "fangchenggang-routes",
+  "aliases": [
+    "route_dash_fcg_3"
+  ],
+  "route_id": "fcg_route_003",
+  "updated_at": "2026-08-05T20:41:34.403Z"
+}

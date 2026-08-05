@@ -1,0 +1,67 @@
+{
+  "route_name": "芒街跨境体验线",
+  "destination": "防城港",
+  "days": 1,
+  "summary": "中越跨境人文康养，适配自理能力强、持有有效出入境证件的长者。",
+  "highlights": [
+    "东兴口岸出境→越南芒街",
+    "芒街教堂+特色街区平缓游览",
+    "越南草本古法轻按摩+草药茶品鉴",
+    "长者优先绿色通道专人协助通关"
+  ],
+  "suitable_for": "60—75周岁，持有有效护照签证、无严重基础病活力长者",
+  "tags": [
+    "跨境体验",
+    "越南人文",
+    "草本康养"
+  ],
+  "waypoints": [
+    {
+      "id": "wp1",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "大本营出发",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "东兴口岸出境→越南芒街"
+    },
+    {
+      "id": "wp2",
+      "name": "东兴口岸",
+      "type": "arrival",
+      "day": "Day1",
+      "plan": "出境通关",
+      "lat": 21.5479,
+      "lng": 107.9722,
+      "spot_desc": "芒街教堂+特色街区平缓游览"
+    },
+    {
+      "id": "wp3",
+      "name": "越南芒街",
+      "type": "spot",
+      "day": "Day1",
+      "plan": "教堂+街区+草本按摩",
+      "lat": 21.5264,
+      "lng": 107.6892,
+      "spot_desc": "越南草本古法轻按摩+草药茶品鉴"
+    },
+    {
+      "id": "wp4",
+      "name": "嘉路滨海旅居基地",
+      "type": "departure",
+      "day": "Day1",
+      "plan": "通关返程+中医理疗",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "长者优先绿色通道专人协助通关"
+    }
+  ],
+  "price_label": "598元/人/天",
+  "source": "fangchenggang-routes",
+  "aliases": [
+    "route_dash_fcg_5"
+  ],
+  "route_id": "fcg_route_005",
+  "updated_at": "2026-08-05T20:41:34.410Z"
+}

@@ -47,13 +47,32 @@ export function matchPublishedPackages(utterance, { baseDir } = {}) {
   for (const p of pkgs) {
     let score = 0;
     const dests = Array.isArray(p.destination) ? p.destination : [p.destination].filter(Boolean);
+    let destHit = false;
     for (const d of dests) {
       const dn = stripAdmin(d);
-      if (dn && (textNorm.includes(dn) || dn.includes(textNorm))) score += 10;
+      if (!dn) continue;
+      // 只认「话语包含目的地」，避免长话语被短地名反向包含误伤
+      if (textNorm.includes(dn)) destHit = true;
     }
+    if (destHit) score += 8;
+
+    const title = String(p.title || '');
+    if (title && (text.includes(title) || title.split(/\s|→|->|－|-|—/).filter((s) => s.length >= 2).some((seg) => text.includes(seg.trim())))) {
+      // 标题整句或标题分段命中
+      if (text.includes(title)) score += 20;
+      else score += 6;
+    }
+
     for (const kw of p.keywords || []) {
-      if (kw && text.includes(kw)) score += 3;
+      if (!kw) continue;
+      if (text.includes(kw)) score += Math.min(12, 2 + String(kw).length); // 更长短语权重更高
     }
+
+    // 别名命中
+    for (const a of p.aliases || []) {
+      if (a && text.includes(a)) score += 5;
+    }
+
     if (score <= 0) continue;
     const updated = Date.parse(p.updated_at || 0) || 0;
     scored.push({

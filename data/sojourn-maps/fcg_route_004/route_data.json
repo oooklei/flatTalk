@@ -1,0 +1,67 @@
+{
+  "route_name": "森林轻氧休闲线",
+  "destination": "防城港",
+  "days": 1,
+  "summary": "十万大山森林负氧离子疗愈，适配高血压、呼吸道、睡眠亚健康长者。",
+  "highlights": [
+    "十万大山高负氧森林步道慢走",
+    "林间冥想+免费吸氧点位",
+    "森林草本科普+轻茶疗体验",
+    "中医师针对性慢病舒缓调理"
+  ],
+  "suitable_for": "60—78周岁自理长者",
+  "tags": [
+    "森林疗愈",
+    "负氧离子",
+    "慢病调理"
+  ],
+  "waypoints": [
+    {
+      "id": "wp1",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "大本营出发",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "十万大山高负氧森林步道慢走"
+    },
+    {
+      "id": "wp2",
+      "name": "十万大山森林公园",
+      "type": "wellness",
+      "day": "Day1",
+      "plan": "森林步道+林间冥想",
+      "lat": 21.85,
+      "lng": 107.9,
+      "spot_desc": "林间冥想+免费吸氧点位"
+    },
+    {
+      "id": "wp3",
+      "name": "十万大山茶疗区",
+      "type": "spot",
+      "day": "Day1",
+      "plan": "草本科普+茶疗体验",
+      "lat": 21.855,
+      "lng": 107.905,
+      "spot_desc": "森林草本科普+轻茶疗体验"
+    },
+    {
+      "id": "wp4",
+      "name": "嘉路滨海旅居基地",
+      "type": "base",
+      "day": "Day1",
+      "plan": "返回中医调理",
+      "lat": 21.5279,
+      "lng": 108.1668,
+      "spot_desc": "中医师针对性慢病舒缓调理"
+    }
+  ],
+  "price_label": "428元/人/天",
+  "source": "fangchenggang-routes",
+  "aliases": [
+    "route_dash_fcg_4"
+  ],
+  "route_id": "fcg_route_004",
+  "updated_at": "2026-08-05T20:41:34.407Z"
+}
