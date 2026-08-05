@@ -1,0 +1,92 @@
+<!-- 地图SVG制作工坊：注入到 admin 页面 #view 容器中 -->
+<div class="ms-workshop">
+  <!-- 顶部操作栏：线路选择 + 版本切换 + 主操作按钮 + 状态指示 -->
+  <div class="ms-toolbar">
+    <div class="ms-toolbar-left">
+      <label class="ms-inline">
+        <span>线路</span>
+        <select id="ms-route-select"><option value="">请选择线路…</option></select>
+      </label>
+      <div class="ms-version-toggle" id="ms-version-toggle">
+        <button type="button" data-version="standard" class="active">普通版</button>
+        <button type="button" data-version="elder">适老版</button>
+      </div>
+    </div>
+    <div class="ms-toolbar-right">
+      <button type="button" class="btn primary" id="ms-btn-generate">一键生成</button>
+      <button type="button" class="btn" id="ms-btn-save">保存</button>
+      <button type="button" class="btn" id="ms-btn-publish">发布</button>
+      <label class="ms-inline">
+        <span>关键词</span>
+        <input type="text" id="ms-publish-keywords" placeholder="三日游,滨海" style="width:120px">
+      </label>
+      <label class="ms-inline">
+        <span>类型</span>
+        <select id="ms-publish-product-type">
+          <option value="wellness">wellness</option>
+          <option value="coastal">coastal</option>
+          <option value="culture">culture</option>
+          <option value="ecology">ecology</option>
+        </select>
+      </label>
+      <span class="ms-spinner" id="ms-spinner" style="display:none"></span>
+      <span class="ms-status" id="ms-status"></span>
+    </div>
+  </div>
+
+  <!-- 主区域：左右分栏 -->
+  <div class="ms-main">
+    <!-- 左侧（60%）：SVG 预览画布 + 数据源状态面板 -->
+    <div class="ms-canvas-wrap" id="ms-canvas-wrap">
+      <div class="ms-canvas" id="ms-canvas">
+        <div class="ms-empty">选择线路并点击「一键生成」开始制作地图</div>
+      </div>
+      <div class="ms-stats" id="ms-stats"></div>
+    </div>
+
+    <!-- 右侧（40%）：标点列表 + 选中标点编辑表单 -->
+    <div class="ms-panel">
+      <!-- 标点列表 -->
+      <div class="ms-card">
+        <h4>标点列表</h4>
+        <div class="ms-marker-list" id="ms-marker-list"></div>
+      </div>
+
+      <!-- 选中标点详情编辑 -->
+      <div class="ms-card">
+        <h4>选中标点</h4>
+        <div class="ms-empty ms-empty-sm" id="ms-marker-edit-empty">点击画布或列表中的标点进行编辑</div>
+        <div class="ms-marker-form" id="ms-marker-form" style="display:none">
+          <div class="ms-field">
+            <label>名称</label>
+            <input type="text" id="ms-mk-name" placeholder="标点名称">
+          </div>
+          <div class="ms-field">
+            <label>描述</label>
+            <input type="text" id="ms-mk-desc" placeholder="一句话描述">
+          </div>
+          <div class="ms-field">
+            <label>类型</label>
+            <select id="ms-mk-type">
+              <option value="base">基（基地）</option>
+              <option value="arrival">抵（到达）</option>
+              <option value="spot">景（景点）</option>
+              <option value="wellness">养（康养）</option>
+              <option value="departure">返（返程）</option>
+            </select>
+          </div>
+          <div class="ms-field">
+            <label>行程说明</label>
+            <textarea id="ms-mk-plan" rows="2" placeholder="行程安排"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部：已保存的资源包列表 -->
+  <div class="ms-saved-wrap">
+    <h3 class="section-title">已保存的地图 <button type="button" class="btn sm" id="ms-saved-refresh">刷新</button></h3>
+    <div class="ms-saved-list" id="ms-saved-list"></div>
+  </div>
+</div>
