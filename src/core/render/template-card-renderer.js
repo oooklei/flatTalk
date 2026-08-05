@@ -3,6 +3,7 @@ import path from 'node:path';
 import { renderCard, renderTemplate } from '../../template-card/index.js';
 import { injectBridge } from './bridge-injector.js';
 import { renderCompactFollowups } from '../compact-followups/renderer.js';
+import { normalizeActionDisplayItem } from '../actions/action-labels.js';
 
 const COMMON_HTML = path.join(process.cwd(), 'src', 'skills', 'common', 'templates', 'html', 'common');
 const ANSWER_HTML = path.join(COMMON_HTML, 'answer.html');
@@ -249,7 +250,7 @@ function formatActionLabels(actions) {
   }
 
   return actions
-    .map((action) => action?.label || action?.action_key || action?.key || '')
+    .map((action) => normalizeActionDisplayItem(action)?.label || '')
     .filter(Boolean)
     .join(' / ');
 }
@@ -260,9 +261,27 @@ function formatFollowupLabels(followups) {
   }
 
   return followups
-    .map((followup) => followup?.label || followup?.user_prompt || followup?.prompt || '')
+    .map((followup) => normalizeActionDisplayItem(followup)?.label || '')
     .filter(Boolean)
     .join(' / ');
+}
+
+function extractEmbeddedCss(pageHtml = '') {
+  const headMatch = String(pageHtml || '').match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+  if (!headMatch) return '';
+  const blocks = headMatch[1].match(/<style\b[^>]*>[\s\S]*?<\/style>/gi) || [];
+  return blocks
+    .map((block) => block
+      .replace(/^<style\b[^>]*>/i, '')
+      .replace(/<\/style>$/i, '')
+      .trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
+function scopeCssVarsForInline(css = '') {
+  // 内联进 mobile 气泡时，把模板 :root 变量挂到回退容器上，避免被宿主 :root 冲掉、也避免嵌套 <style> 解析失败
+  return String(css || '').replace(/(^|})\s*:root\s*\{/g, '$1\n.gxy-html-fallback {');
 }
 
 function buildHtmlFallback(pageHtml) {
@@ -272,30 +291,58 @@ function buildHtmlFallback(pageHtml) {
   const bridgedHtml = injectBridge(pageHtml, { map_key: mapKey });
   const injected = bridgedHtml.replace(/<\/body>/i, `${autoHeightScript}</body>`);
   const finalHtml = injected.includes(autoHeightScript) ? injected : bridgedHtml + autoHeightScript;
+
+  // 地图/走线卡必须 iframe 隔离，保证模板 CSS 变量与 SVG 交互不被宿主页冲掉
+  const htmlWithoutAutoHeight = finalHtml.replace(autoHeightScript, '');
+  const needsIframe = htmlWithoutAutoHeight.includes('data-map-mode')
+    || /class=["'][^"']*\broute-card\b/i.test(htmlWithoutAutoHeight)
+    || /class=["'][^"']*\bsvg-map-section\b/i.test(htmlWithoutAutoHeight)
+    || /id=["']svgMapContainer["']/i.test(htmlWithoutAutoHeight)
+    || /<script[^>]+src=["']https?:\/\/[^"']*map/i.test(htmlWithoutAutoHeight);
+
+  if (needsIframe) {
+    return [
+      '<article class="gxy-html-fallback" data-renderer="template-card-renderer">',
+      '<style>',
+      '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:visible;}',
+      '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:240px;max-height:1500px;border:0;border-radius:14px;background:#fff;overflow:auto;box-shadow:0 2px 10px rgba(61,58,54,0.06);}',
+      '</style>',
+      `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups" srcdoc="${escapeAttribute(finalHtml)}"></iframe>`,
+      '</article>',
+    ].join('');
+  }
+
+  // 无 script 的纯展示卡片：直接内联渲染（避免 iframe srcdoc 白屏问题）
+  const bodyMatch = finalHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  const bodyContent = bodyMatch ? bodyMatch[1].replace(autoHeightScript, '') : finalHtml;
+  const headCss = scopeCssVarsForInline(extractEmbeddedCss(finalHtml));
+
   return [
     '<article class="gxy-html-fallback" data-renderer="template-card-renderer">',
     '<style>',
-    '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:visible;}',
-    '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:200px;max-height:1500px;border:0;border-radius:10px;background:#fff;overflow:auto;}',
+    '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:visible;color:#3D3A36;}',
+    '.gxy-html-fallback .tc-card,.gxy-html-fallback .route-card,.gxy-html-fallback .ai-result-card{display:block;width:100%;border-radius:14px;background:#fff;overflow:hidden;}',
+    headCss,
     '</style>',
-    // 注意：allow-popups 让卡片内的 tel: 链接能唤起系统拨号器；切勿加 allow-top-navigation（会让卡片导航走整个 App）
-    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups" srcdoc="${escapeAttribute(finalHtml)}"></iframe>`,
+    bodyContent,
     '</article>',
   ].join('');
 }
 
-function sanitizeModelValue(value) {
+const HTML_SAFE_KEYS = new Set(['static_svg', 'compact_followups', 'rendered_html']);
+function sanitizeModelValue(value, parentKey = '') {
   if (Array.isArray(value)) {
-    return value.map((item) => sanitizeModelValue(item));
+    return value.map((item) => sanitizeModelValue(item, parentKey));
   }
 
   if (value && typeof value === 'object') {
     return Object.fromEntries(
-      Object.entries(value).map(([key, child]) => [key, sanitizeModelValue(child)]),
+      Object.entries(value).map(([key, child]) => [key, sanitizeModelValue(child, key)]),
     );
   }
 
   if (typeof value === 'string') {
+    if (HTML_SAFE_KEYS.has(parentKey)) return value;
     return sanitizeText(value);
   }
 

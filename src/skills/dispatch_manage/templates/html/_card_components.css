@@ -1,6 +1,15 @@
 /* dispatch_manage 派单组件样式 —— 忠实复刻 v4 原型供应商派单页 DOM，配色改用蓝色令牌 */
-.supplier-order-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px;max-width:420px;margin:0 auto;}
-.supplier-order-card h3{margin:0 0 10px;font-size:15px;color:var(--ink);}
+:root, .gxy-html-fallback {
+  --ink: #3D3A36;
+  --muted: #8A8278;
+  --line: #E4E0D8;
+  --primary: #3A6B8C;
+  --primary-dark: #1E4A66;
+  --danger: #E5484D;
+  --grad: linear-gradient(135deg, #3A6B8C 0%, #1E4A66 100%);
+}
+.supplier-order-card{background:#fff;border:1px solid var(--line,#E4E0D8);border-radius:14px;padding:12px 13px;max-width:420px;margin:0 auto;color:var(--ink,#3D3A36);}
+.supplier-order-card h3{margin:0 0 10px;font-size:15px;color:var(--ink,#3D3A36);}
 .supplier-order-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line);}
 .supplier-order-row:last-child{border-bottom:none;}
 .supplier-order-label{color:var(--muted);}
@@ -19,3 +28,14 @@
 .transfer-item-name{font-size:14px;font-weight:700;color:var(--ink);}
 .transfer-item-meta{font-size:12px;color:var(--muted);margin-top:3px;}
 .order-submit{width:100%;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;background:var(--grad);color:#fff;}
+
+/* —— 接单确认卡（新增业务场景，复用蓝色令牌） —— */
+.accept-banner{display:flex;align-items:center;gap:10px;background:var(--grad);color:#fff;padding:14px;border-radius:12px;}
+.accept-banner .ico{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none;}
+.accept-banner .t{font-size:15px;font-weight:700;}
+.accept-banner .s{font-size:12px;opacity:.9;}
+.accept-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line);}
+.accept-row:last-child{border-bottom:none;}
+.accept-row .k{color:var(--muted);}
+.accept-row .v{font-weight:600;text-align:right;max-width:64%;}
+.accept-eta{margin-top:10px;padding:10px;border-radius:10px;background:#EEF4FE;border:1px solid var(--line);font-size:13px;color:var(--primary-dark);text-align:center;font-weight:600;}

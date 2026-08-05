@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>民族文化线路模板</title>
+  <style>
+/**
+ * 桂颐智养 · 旅居产品卡共享主题
+ * 对齐 mobile VI：暖纸底、品牌橙、深墨字；hero 使用硬编码色兜底，避免 CSS 变量丢失时白字淹没。
+ */
+:root {
+  --gx-ink: #3D3A36;
+  --gx-ink-soft: #6B6660;
+  --gx-muted: #8A8278;
+  --gx-line: #E4E0D8;
+  --gx-paper: #FAF8F5;
+  --gx-card: #FFFFFF;
+  --gx-orange: #E8843C;
+  --gx-orange-deep: #D06E2A;
+  --gx-orange-soft: #FDF6F0;
+  --gx-green: #3D6B4D;
+  --gx-green-soft: #E8F2EC;
+  --primary: #E8843C;
+  --primary-gradient: linear-gradient(135deg, #E8843C 0%, #F0B487 100%);
+  --bg: #FAF8F5;
+  --bg-white: #FFFFFF;
+  --ink: #3D3A36;
+  --ink-light: #6B6660;
+  --muted: #8A8278;
+  --border: #E4E0D8;
+  --divider: #EFEBE4;
+  --primary-light: #FDF6F0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 10px;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  background: transparent;
+  color: var(--ink, #3D3A36);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.route-card {
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--bg-white, #fff);
+  border: 1px solid var(--border, #E4E0D8);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(61, 58, 54, 0.07);
+}
+
+/* Hero：硬编码渐变兜底 + 变量增强 */
+.hero {
+  position: relative;
+  padding: 18px 16px 16px;
+  background: #E8843C;
+  background: linear-gradient(145deg, #E8843C 0%, #F0B487 72%, #F5CDAE 100%);
+  background: var(--primary-gradient, linear-gradient(145deg, #E8843C 0%, #F0B487 100%));
+  color: #FFFFFF;
+  color: #fff;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 18px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.18));
+  pointer-events: none;
+}
+.route-card[data-theme="coastal"] .hero {
+  background: linear-gradient(145deg, #2A7F9E 0%, #5BA3BC 55%, #9BCFDF 100%);
+}
+.route-card[data-theme="culture"] .hero {
+  background: linear-gradient(145deg, #8E4F3E 0%, #C4896A 60%, #E2B799 100%);
+}
+.route-card[data-theme="ecology"] .hero {
+  background: linear-gradient(145deg, #3D6B4D 0%, #6B9B7A 55%, #A0C4AB 100%);
+}
+.route-card[data-theme="wellness"] .hero {
+  background: linear-gradient(145deg, #D06E2A 0%, #E8843C 45%, #F0B487 100%);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 750;
+  color: #FFFFFF;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.price-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-weight: 700;
+  font-size: 12px;
+  vertical-align: middle;
+  color: #fff;
+}
+
+.svg-map-section {
+  position: relative;
+  border-top: 1px solid var(--divider, #EFEBE4);
+  background: #fff;
+}
+.svg-map-section h2 {
+  padding: 14px 14px 8px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #3D3A36);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.svg-map-section h2 .hint {
+  font-size: 11px;
+  color: #D06E2A;
+  background: #FDF6F0;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.svg-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #FAF8F5 0%, #FFFFFF 40%);
+}
+.svg-container svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.route-marker { cursor: pointer; transition: opacity 0.15s; }
+.route-marker:hover { opacity: 0.82; }
+
+.spot-popup {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #E4E0D8;
+  box-shadow: 0 10px 28px rgba(61, 58, 54, 0.16);
+  padding: 14px;
+  max-width: 220px;
+  z-index: 20;
+}
+.spot-popup.show { display: block; animation: popIn 0.2s ease-out; }
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+.spot-popup .close-btn {
+  position: absolute; top: 8px; right: 8px;
+  width: 24px; height: 24px; border: none; border-radius: 50%;
+  background: #F0EDE7; color: #6B6660; font-size: 16px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1;
+}
+.spot-popup .close-btn:hover { background: #E4E0D8; }
+.spot-popup .spot-gallery { position: relative; margin-bottom: 10px; }
+.spot-popup .spot-img {
+  width: 100%; height: 120px; object-fit: cover; border-radius: 10px; display: block;
+}
+.spot-popup .gallery-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; border: none; border-radius: 50%;
+  background: rgba(0,0,0,0.42); color: #fff; font-size: 14px; cursor: pointer; z-index: 1;
+}
+.spot-popup .gallery-btn:hover { background: rgba(0,0,0,0.62); }
+.spot-popup .gallery-prev { left: 4px; }
+.spot-popup .gallery-next { right: 4px; }
+.spot-popup .gallery-counter {
+  position: absolute; bottom: 6px; right: 6px;
+  background: rgba(0,0,0,0.5); color: #fff; font-size: 11px;
+  padding: 2px 6px; border-radius: 999px;
+}
+.spot-popup .spot-name {
+  font-size: 15px; font-weight: 750; color: #3D3A36; margin-bottom: 6px; line-height: 1.3;
+}
+.spot-popup .day-tag {
+  display: inline-block; font-size: 11px; color: #D06E2A; background: #FDF6F0;
+  padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; font-weight: 650;
+}
+.spot-popup .spot-plan { font-size: 13px; color: #6B6660; margin-bottom: 6px; line-height: 1.5; }
+.spot-popup .spot-desc { font-size: 12px; color: #8A8278; line-height: 1.5; }
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 14px 4px;
+  background: #fff;
+}
+.metric {
+  border: 1px solid #EFEBE4;
+  border-radius: 12px;
+  padding: 10px 11px;
+  background: linear-gradient(180deg, #FFFCFA 0%, #FAF8F5 100%);
+}
+.metric span {
+  display: block;
+  color: #8A8278;
+  font-size: 11px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.metric strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #3D3A36;
+  word-break: break-word;
+  font-weight: 700;
+}
+
+.highlights, .itinerary, .health {
+  padding: 12px 14px;
+  border-top: 1px solid #EFEBE4;
+  background: #fff;
+}
+.highlights h2, .itinerary h2, .health h2, .svg-map-section h2 {
+  color: #3D3A36;
+}
+.highlights h2, .itinerary h2, .health h2 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 750;
+}
+.highlights .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.highlights .chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #FDF6F0;
+  color: #A85420;
+  border: 1px solid #FAE6D5;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.itinerary .timeline { display: grid; gap: 8px; }
+.itinerary .day-item {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+.itinerary .day-item b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #FDF6F0, #FAE6D5);
+  color: #A85420;
+  font-size: 12px;
+  font-weight: 750;
+}
+.itinerary .day-item p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #6B6660;
+}
+.itinerary .day-item .wp-name {
+  display: block;
+  font-size: 12px;
+  color: #D06E2A;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.health .notice {
+  margin: 0;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: #E8F2EC;
+  color: #3D6B4D;
+  border: 1px solid #C5DBC9;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid #EFEBE4;
+  background: #FFFCFA;
+}
+.action {
+  border: 0;
+  border-radius: 999px;
+  background: #E8843C;
+  background: linear-gradient(135deg, #E8843C, #D06E2A);
+  color: #fff;
+  padding: 10px 10px;
+  font-size: 13px;
+  font-weight: 750;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(208, 110, 42, 0.28);
+}
+.action:active { transform: scale(0.97); }
+.action.outline {
+  background: #fff;
+  color: #D06E2A;
+  border: 1.5px solid #E8843C;
+  box-shadow: none;
+}
+
+  </style>
+</head>
+<body data-layout="vertical" data-map-mode="static_svg">
+  <article class="route-card" data-theme="culture">
+    <header class="hero">
+      <div class="eyebrow">{{season}} · {{budgetLevel}}</div>
+      <h1>{{routeTitle}}</h1>
+      <p class="subtitle">{{#priceLabel}}<span class="price-tag">{{priceLabel}}</span> {{/priceLabel}}{{summary}}</p>
+    </header>
+    <section class="svg-map-section">
+      <h2>📍 走线路线 {{#hasSpots}}<span class="hint">悬停景点查看详情</span>{{/hasSpots}}</h2>
+      <div class="svg-container" id="svgMapContainer"></div>
+      <div class="spot-popup" id="spotPopup">
+        <button class="close-btn" onclick="hidePopup()">&times;</button>
+        <div id="popupContent"></div>
+      </div>
+    </section>
+    <section class="summary-grid">
+      <div class="metric"><span>目的地</span><strong>{{destination}}</strong></div>
+      <div class="metric"><span>天数</span><strong>{{days}}</strong></div>
+      <div class="metric"><span>适合人群</span><strong>{{suitable}}</strong></div>
+      <div class="metric"><span>预订状态</span><strong>{{bookingStatus}}</strong></div>
+    </section>
+    <section class="highlights">
+      <h2>行程亮点</h2>
+      <div class="chips">{{#highlights}}<span class="chip">{{.}}</span>{{/highlights}}</div>
+    </section>
+    <section class="itinerary">
+      <h2>建议行程</h2>
+      <div class="timeline">{{#itinerary}}<div class="day-item"><b>{{day}}</b><p>{{#wp_name}}<span class="wp-name">{{wp_name}}</span>{{/wp_name}}{{plan}}</p></div>{{/itinerary}}</div>
+    </section>
+    <section class="health">
+      <h2>健康与接驳</h2>
+      <p class="notice">{{healthNotice}}</p>
+    </section>
+    <div class="actions">
+      <button class="action" data-action="travel_route.compare_destinations" data-params='{"destination":"{{destination}}"}'>对比目的地</button>
+      <button class="action" data-action="travel_route.check_availability" data-params='{"destination":"{{destination}}"}'>检查可订</button>
+      <button class="action outline" data-action="travel_route.calculate_budget" data-params='{}'>测算预算</button>
+      <button class="action outline" data-action="travel_route.check_weather_risk" data-params='{"destination":"{{destination}}"}'>天气风险</button>
+    </div>
+    {{{compact_followups}}}
+  </article>
+  <script type="text/html" id="staticSvgData">{{{static_svg}}}</script>
+  <script>
+    var STATIC_SVG = (document.getElementById('staticSvgData') || {}).textContent || '';
+    var hideTimer = null;
+    function showPopup(marker) {
+      cancelHide();
+      var name = marker.getAttribute('data-name') || '';
+      var day = marker.getAttribute('data-day') || '';
+      var plan = marker.getAttribute('data-plan') || '';
+      var desc = marker.getAttribute('data-spot-desc') || '';
+      var imgRaw = marker.getAttribute('data-spot-img') || '';
+      var imgs = imgRaw ? imgRaw.split(',').map(function(u){return u.replace(/&amp;/g,'&').trim();}).filter(function(u){return u;}) : [];
+      var html = '';
+      if (imgs.length > 0) {
+        var showNav = imgs.length > 1;
+        html += '<div class="spot-gallery" id="spotGallery">';
+        html += '<img class="spot-img" id="spotGalleryImg" src="' + imgs[0] + '" alt="' + name + '" onerror="this.style.display=\'none\'" />';
+        if (showNav) { html += '<button class="gallery-btn gallery-prev" onclick="gallerySlide(-1)" style="display:flex">&#10094;</button>'; html += '<button class="gallery-btn gallery-next" onclick="gallerySlide(1)" style="display:flex">&#10095;</button>'; html += '<span class="gallery-counter" id="galleryCounter">1/' + imgs.length + '</span>'; }
+        html += '</div>';
+        window.__spotImgs = imgs; window.__spotImgIdx = 0;
+      }
+      if (name) html += '<div class="spot-name">' + name + '</div>';
+      if (day) html += '<span class="day-tag">' + day + '</span>';
+      if (plan) html += '<div class="spot-plan">' + plan + '</div>';
+      if (desc) html += '<div class="spot-desc">' + desc + '</div>';
+      document.getElementById('popupContent').innerHTML = html;
+      document.getElementById('spotPopup').classList.add('show');
+    }
+    function gallerySlide(dir) {
+      var imgs = window.__spotImgs; if (!imgs || imgs.length <= 1) return;
+      window.__spotImgIdx = (window.__spotImgIdx + dir + imgs.length) % imgs.length;
+      var imgEl = document.getElementById('spotGalleryImg'); if (imgEl) imgEl.src = imgs[window.__spotImgIdx];
+      var counter = document.getElementById('galleryCounter'); if (counter) counter.textContent = (window.__spotImgIdx + 1) + '/' + imgs.length;
+    }
+    function hidePopup() { cancelHide(); var popup = document.getElementById('spotPopup'); if (popup) popup.classList.remove('show'); }
+    function scheduleHide() { cancelHide(); hideTimer = setTimeout(function() { var popup = document.getElementById('spotPopup'); if (popup) popup.classList.remove('show'); }, 3000); }
+    function cancelHide() { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }
+    (function() {
+      var container = document.getElementById('svgMapContainer');
+      if (container && STATIC_SVG && STATIC_SVG.indexOf('<svg') !== -1) container.innerHTML = STATIC_SVG;
+      var popup = document.getElementById('spotPopup');
+      if (!container || !popup) return;
+      var markers = container.querySelectorAll('.route-marker');
+      markers.forEach(function(marker) {
+        marker.style.cursor = 'pointer';
+        marker.addEventListener('mouseenter', function() { showPopup(marker); });
+        marker.addEventListener('mouseleave', function() { scheduleHide(); });
+        marker.addEventListener('touchstart', function(e) { e.preventDefault(); showPopup(marker); scheduleHide(); }, { passive: false });
+      });
+      popup.addEventListener('mouseenter', cancelHide);
+      popup.addEventListener('mouseleave', scheduleHide);
+      document.querySelectorAll('[data-action]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var actionKey = this.getAttribute('data-action');
+          var params = {}; try { params = JSON.parse(this.getAttribute('data-params') || '{}'); } catch (e) {}
+          var userPrompt = this.getAttribute('data-prompt') || this.textContent.trim();
+          window.parent.postMessage({ type: 'gxy_card_action', action_key: actionKey, skill_key: 'travel_route', user_prompt: userPrompt, params: params }, '*');
+        });
+      });
+    })();
+  </script>
+<script type="application/json">
+{
+  "routeTitle": "三江侗族文化4天3晚深度游",
+  "routeType": "route_culture",
+  "destination": "三江",
+  "season": "春秋适宜",
+  "budgetLevel": "经济型",
+  "priceLabel": "¥1680起",
+  "days": "4天3晚",
+  "suitable": "文化爱好者、家庭亲子",
+  "bookingStatus": "可预订",
+  "summary": "深入三江侗族自治县，体验风雨桥、鼓楼、侗族大歌、百家宴等非遗文化。",
+  "highlights": ["程阳风雨桥百年侗寨", "侗族大歌世界非物质文化遗产", "百家宴长桌宴美食体验", "侗族刺绣手作工坊"],
+  "itinerary": [
+    {"day": "D1", "wp_name": "三江县城", "plan": "抵达三江，游览侗族博物馆"},
+    {"day": "D2", "wp_name": "程阳八寨", "plan": "风雨桥观光，侗族大歌表演"},
+    {"day": "D3", "wp_name": "冠洞村", "plan": "百家宴体验，刺绣手作"}
+  ],
+  "healthNotice": "山区早晚温差大，建议携带外套。侗寨石板路湿滑，穿防滑鞋。",
+  "static_svg": ""
+}
+</script>
+</body>
+</html>

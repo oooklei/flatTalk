@@ -1,6 +1,16 @@
 /* find_service 对话卡片组件样式 —— 忠实复刻 v4 原型卡片 DOM 结构与元素，配色改用令牌 */
+:root, .gxy-html-fallback {
+  --ink: #3D3A36;
+  --muted: #8A8278;
+  --line: #E4E0D8;
+  --primary: #2A9B6C;
+  --primary-dark: #1E7A54;
+  --warn: #C47D16;
+  --danger: #E5484D;
+  --grad: linear-gradient(135deg, #2A9B6C 0%, #1E7A54 100%);
+}
 /* 1) 意图识别卡 */
-.ai-result-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin:0 auto;max-width:420px;}
+.ai-result-card{background:#fff;border:1px solid var(--line,#E4E0D8);border-radius:14px;padding:12px 13px;margin:0 auto;max-width:420px;color:var(--ink,#3D3A36);}
 .ai-result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .ai-result-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;}
 .ai-result-badge.service{background:#E6F7F0;color:#16855f;}
@@ -103,3 +113,32 @@
 .ticket-value{color:var(--ink);font-weight:600;}
 .status-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;background:#FFF1E6;color:#E0833A;}
 .status-badge.done{background:#E6F7F0;color:#16855f;}
+
+/* —— 服务追溯卡 / 服务口碑卡（新增业务场景，复用令牌） —— */
+.trace-meta{margin-top:4px;}
+.trace-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line);}
+.trace-row:last-child{border-bottom:none;}
+.trace-row .k{color:var(--muted);}
+.trace-row .v{font-weight:600;text-align:right;}
+.trace-list{position:relative;margin-top:6px;padding-left:18px;}
+.trace-list::before{content:"";position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--line);}
+.trace-item{position:relative;padding:7px 0;}
+.trace-item::before{content:"";position:absolute;left:-16px;top:11px;width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px #E6F7F0;}
+.trace-item.bad::before{background:var(--danger);box-shadow:0 0 0 3px #FDECEC;}
+.trace-item .t{font-size:11px;color:var(--muted);}
+.trace-item .n{font-size:13px;font-weight:600;color:var(--ink);}
+.trace-item .d{font-size:12px;color:var(--muted);}
+.trace-item .d.ok{color:var(--primary);}
+.review-summary{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
+.review-summary .score{font-size:26px;font-weight:800;color:var(--primary);}
+.review-summary .level{font-size:13px;color:var(--muted);}
+.review-dims{display:flex;flex-direction:column;gap:6px;margin:6px 0 4px;}
+.review-dim{display:flex;align-items:center;gap:8px;font-size:12px;}
+.review-dim .dn{width:104px;color:var(--muted);flex:none;}
+.review-dim .bar{flex:1;height:6px;border-radius:999px;background:var(--line);overflow:hidden;}
+.review-dim .bar>span{display:block;height:100%;background:var(--grad);}
+.review-dim .dv{width:44px;text-align:right;font-weight:600;color:var(--ink);}
+.review-item{padding:8px 0;border-top:1px dashed var(--line);font-size:13px;}
+.review-item .who{font-weight:600;color:var(--ink);}
+.review-item .txt{color:var(--muted);margin-top:2px;line-height:1.5;}
+.review-complaint{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:999px;background:#FFF1E6;color:#E0833A;font-size:12px;}
