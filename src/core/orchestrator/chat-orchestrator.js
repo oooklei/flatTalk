@@ -420,7 +420,23 @@ export function createChatOrchestrator(options = {}) {
         let routeType = '';
         let publishHit = null;
         if (skillKey === 'travel_route' && acceptedScene) {
-          const hits = matchPublishedPackages(sceneInput.text);
+          const forcedRouteId = String(request.context?.publish_route_id || request.context?.route_id || '').trim();
+          let hits = matchPublishedPackages(sceneInput.text);
+          if (forcedRouteId) {
+            const forced = hits.find((h) => h.route_id === forcedRouteId)
+              || matchPublishedPackages(forcedRouteId).find((h) => h.route_id === forcedRouteId);
+            // 点选锁定：直接用该包，必要时构造最小 hit
+            if (forced) {
+              hits = [forced];
+            } else {
+              hits = [{
+                route_id: forcedRouteId,
+                score: 999,
+                meta: { route_id: forcedRouteId, title: forcedRouteId, product_type: 'wellness' },
+                product_template_id: 'route_wellness',
+              }];
+            }
+          }
           const top = hits[0];
           const second = hits[1];
           if (top && (!second || top.score > second.score)) {
@@ -432,15 +448,50 @@ export function createChatOrchestrator(options = {}) {
               score: top.score,
               product_type: top.meta?.product_type,
             };
-          } else if (top && second && top.score === second.score) {
-            // multi-hit tie: leave routeType from inferRouteType; stash candidates for later UI if needed
-            businessData.publish_ambiguous = hits.slice(0, 3).map((h) => ({
+          } else if (top && second && top.score === second.score && !forcedRouteId) {
+            // 第二刀同分：回传选线选项，避免静默落到错包
+            const routeOptions = hits.slice(0, 3).map((h) => ({
+              scene_key: 'travel_route',
+              skill_key: 'travel_route',
               route_id: h.route_id,
-              title: h.meta?.title,
-              score: h.score,
+              icon: '🧳',
+              label: h.meta?.title || h.route_id,
+              desc: (h.meta?.destination || []).join('·') || h.product_template_id || '',
+              confidence: h.score,
             }));
-            routeType = inferRouteType(sceneInput.text);
-            console.log('[publish-miss-ambiguous]', JSON.stringify(businessData.publish_ambiguous));
+            mark('publish_ambiguous', '线路包消歧', { options: routeOptions.map((o) => o.route_id) });
+            const ambAnswer = '找到多条相近旅居线路，请选择您想看的一条：';
+            const ambEnvelope = buildEnvelope({
+              request_id: request.request_id,
+              conversation_id: request.conversation_id,
+              turn_id: request.turn_id,
+              skill_key: 'travel_route',
+              agent_key: 'travel_route',
+              intent: 'travel_route.publish_ambiguous',
+              template_id: 'answer',
+              template_key: 'answer',
+              answer_text: ambAnswer,
+              data: { publish_ambiguous: routeOptions },
+              actions: [],
+              followup_suggestions: [],
+              evidence: [],
+              route: {
+                source: 'flatTalk.publish_index',
+                scene_key: 'travel_route',
+                decision: 'ambiguous',
+                confidence: 0,
+                routed: false,
+                intent_context: intentContext,
+              },
+            });
+            return {
+              ...ambEnvelope,
+              ambiguity_options: routeOptions,
+              answer: ambAnswer,
+              context_snapshot: buildSnapshot(ambEnvelope),
+              stages,
+              debug: { publish_ambiguous: true, option_count: routeOptions.length },
+            };
           } else {
             routeType = inferRouteType(sceneInput.text);
             console.log('[publish-miss]', sceneInput.text?.slice?.(0, 80) || '');

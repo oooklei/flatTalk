@@ -11,7 +11,51 @@ const STORAGE_DEBUG_MODE = "gxy_debug_mode";
 const STORAGE_FLOATING_SPEAK = "gxy_mobile_floating_speak_position";
 const MAX_HISTORY = 30;
 const INPUT_HISTORY_LIMIT = 40;
-const VOICE_SUBMIT_COMMANDS = ["OK", "ok"].sort((a, b) => b.length - a.length);
+const BACKEND_SYNC_BASE_DELAY_MS = 5000;
+const BACKEND_SYNC_MAX_BACKOFF_MS = 60000;
+const BACKEND_SYNC_MAX_MESSAGES = 20;
+const BACKEND_SYNC_MAX_TEXT = 800;
+const VOICE_SUBMIT_COMMANDS = [
+  "请发散再补充",
+  "发散再补充",
+  "请提交",
+  "帮我提交",
+  "确认提交",
+  "提交一下",
+  "提交吧",
+  "请发送",
+  "帮我发送",
+  "发送一下",
+  "发送吧",
+  "请发出去",
+  "发出去",
+  "发出",
+  "发送",
+  "提交",
+  "结束输入",
+  "结束了",
+  "结束",
+  "好了",
+  "好啦",
+  "可以了",
+  "说完了",
+  "我说完了",
+  "就这样",
+  "就这些",
+  "完成了",
+  "完成",
+  "确认",
+  "确定",
+  "开始发送",
+  "开始提交",
+  "开始吧",
+  "开始",
+  "OK",
+  "Ok",
+  "ok",
+  "O了",
+  "o了"
+].sort((a, b) => b.length - a.length);
 function isLocalSecureException(hostname = location.hostname) {
   if (["localhost", "127.0.0.1", "::1"].includes(hostname)) return true;
   const isPrivateIP = /^(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})$/.test(hostname);
@@ -51,11 +95,90 @@ function decodeFollowup(value = "") {
   }
 }
 
-const ACTION_LABELS_ZH = {};
+const ACTION_LABELS_ZH = {
+  "meal_plan.generate_weekly_plan": "生成一周计划",
+  "meal_plan.adjust_for_condition": "按健康状况调整",
+  "meal_plan.daily_diet": "今日三餐",
+  "meal_plan.check_risk": "检查饮食风险",
+  "meal_plan.shopping_list": "生成采购清单",
+  "travel_route.compare_destinations": "对比目的地",
+  "travel_route.check_availability": "查可订状态",
+  "travel_route.calculate_budget": "测算旅居预算",
+  "travel_route.check_weather_risk": "查看天气风险",
+  "travel_route.check_accessibility": "查看适老设施",
+  "travel_route.check_policy_subsidy": "查询政策补贴",
+  "travel_route.explain_safety": "查看安全提示",
+  "travel_route.replan": "重新规划路线",
+  "travel_route.request_manual_review": "人工确认",
+  "travel_route.book": "立即预定",
+  "travel_route.book_now": "预定旅居",
+  "travel_route.view": "查看路线",
+  "health_risk_warning.refresh_signals": "重新读取信号",
+  "health_risk_warning.view_rule_detail": "查看规则命中",
+  "health_risk_warning.request_manual_review": "请求人工复核",
+  "health_risk_warning.fill_elder_info": "补充老人信息",
+  "health_risk_warning.fill_remote_info": "补充远程体检",
+  "health_risk_warning.view_warning": "查看预警",
+  "health_risk_warning.view_report": "查看总评",
+  "health_risk_warning.view_advice": "查看调理建议",
+  "find_service.recommend": "智能推荐",
+  "find_service.catalog": "全部服务",
+  "find_service.list_workers": "找护理人员",
+  "find_service.list_orgs": "看养老机构",
+  "find_service.detail_service": "查看服务详情",
+  "find_service.detail_order": "查看服务订单",
+  "dispatch_manage.list": "派单列表",
+  "dispatch_manage.work_order": "查看工单",
+  "dispatch_manage.status": "查看进度",
+  "nearby_resource.all": "全部资源",
+  "nearby_resource.medical": "只看医疗",
+  "nearby_resource.food": "周边餐馆",
+  "nearby_resource.leisure": "好玩的地方",
+  "nearby_resource.navigate": "导航",
+  "nearby_resource.favorite": "收藏",
+  "nearby_resource.unfavorite": "取消收藏",
+  "sos.call_120": "立即拨打120",
+  "sos.notify_family": "通知家属"
+};
+
+function isRawActionKeyText(value = "") {
+  return /^[a-z][a-z0-9_]*\.[a-z0-9_.-]+$/i.test(String(value || "").trim());
+}
+
+function inferActionLabel(actionKey = "") {
+  const suffix = String(actionKey || "").split(".").filter(Boolean).pop() || "";
+  if (!suffix) return "继续处理";
+  if (/adjust|condition|chronic/i.test(suffix)) return "按健康状况调整";
+  if (/weekly|generate.*plan|plan/i.test(suffix)) return "生成计划";
+  if (/daily|diet|meal/i.test(suffix)) return "查看饮食建议";
+  if (/risk|warning/i.test(suffix)) return "查看风险提示";
+  if (/refresh|reload/i.test(suffix)) return "重新读取";
+  if (/detail|view|explain/i.test(suffix)) return "查看详情";
+  if (/list|catalog|all/i.test(suffix)) return "查看列表";
+  if (/status|progress/i.test(suffix)) return "查看进度";
+  if (/recommend/i.test(suffix)) return "智能推荐";
+  if (/compare/i.test(suffix)) return "对比查看";
+  if (/availability|available/i.test(suffix)) return "查可订状态";
+  if (/budget|price|cost/i.test(suffix)) return "测算预算";
+  if (/navigate|map/i.test(suffix)) return "导航";
+  if (/book|order/i.test(suffix)) return "预定/下单";
+  if (/manual|review/i.test(suffix)) return "人工确认";
+  return "继续处理";
+}
 
 function localizeActionItem(item = {}) {
-  const label = ACTION_LABELS_ZH[item.action_key || item.actionKey || ""];
-  return label ? { ...item, label } : item;
+  if (!item || typeof item !== "object") return item;
+  const actionKey = String(item.action_key || item.actionKey || item.key || "").trim();
+  const rawLabel = visibleActionText(item.label || item.text || item.title || item.name || "");
+  const label = ACTION_LABELS_ZH[actionKey] || (!isRawActionKeyText(rawLabel) && rawLabel) || inferActionLabel(actionKey);
+  const rawPrompt = visibleActionText(item.user_prompt || item.prompt || "");
+  const userPrompt = rawPrompt && !isRawActionKeyText(rawPrompt) ? rawPrompt : label;
+  return {
+    ...item,
+    ...(actionKey ? { action_key: actionKey } : {}),
+    label,
+    user_prompt: userPrompt
+  };
 }
 
 function readAuth() {
@@ -131,6 +254,44 @@ function fallbackCleanText(value = "") {
     if (pattern.test(text)) return fallback;
   }
   return cleanDisplayText(text);
+}
+
+function serializeConversationForSync(conversation = {}, auth = {}) {
+  const messages = Array.isArray(conversation.messages) ? conversation.messages : [];
+  const compactMessages = messages
+    .slice(-BACKEND_SYNC_MAX_MESSAGES)
+    .map(serializeMessageForSync)
+    .filter((message) => message.content || message.type);
+  return {
+    id: conversation.id,
+    title: compactText(conversation.title || conversation.latestQuestion || "新对话", 80),
+    messages: compactMessages,
+    status: compactText(conversation.status || "", 24),
+    favorite: Boolean(conversation.favorite),
+    latestQuestion: compactText(conversation.latestQuestion || "", BACKEND_SYNC_MAX_TEXT),
+    latestAnswer: compactText(conversation.latestAnswer || "", BACKEND_SYNC_MAX_TEXT),
+    created: conversation.created || conversation.createdAt || null,
+    updatedAt: conversation.updatedAt || null,
+    roleKey: auth?.roleKey || "",
+    userToken: auth?.userToken || "",
+    presetKey: auth?.presetKey || "",
+  };
+}
+
+function serializeMessageForSync(message = {}) {
+  const content = message.type === "image"
+    ? `[图片] ${message.fileName || message.status || "图片输入"}`
+    : message.content || "";
+  const meta = message.meta || {};
+  return {
+    role: message.role === "user" ? "user" : "ai",
+    type: message.type || "text",
+    content: compactText(content, BACKEND_SYNC_MAX_TEXT),
+    markdown: Boolean(message.markdown),
+    agent_key: message.agent_key || meta.agent_key || meta.skill_key || "",
+    template_id: meta.template_id || "",
+    at: message.at || null,
+  };
 }
 
 function scrubVisibleMojibake(root = screen) {
@@ -425,18 +586,16 @@ function debugTraceLabel(step = "") {
 }
 
 function parseVoiceSubmitCommand(text = "") {
-  const normalized = String(text || "").replace(/[，€！?.!?锛?]/g, " ").replace(/\s+/g, " ").trim();
+  const raw = String(text || "").trim();
+  if (!raw) return { shouldSubmit: false, text: "" };
+  const normalized = raw.replace(/[，。！？；、,.!?;：:\s]+$/g, "").trim();
   for (const command of VOICE_SUBMIT_COMMANDS) {
-    const lower = command.toLowerCase();
-    const current = normalized.toLowerCase();
-    if (current === lower) return { shouldSubmit: true, text: "" };
-    if (current.endsWith(` ${lower}`) || current.endsWith(lower)) {
-      const index = current.lastIndexOf(lower);
-      const before = normalized.slice(0, index).trim();
-      return { shouldSubmit: before.length > 0, text: before };
-    }
+    if (normalized === command) return { shouldSubmit: true, text: "" };
+    if (!normalized.endsWith(command)) continue;
+    const stripped = normalized.slice(0, -command.length).replace(/[，。！？；、,.!?;：:\s]+$/g, "").trim();
+    if (stripped) return { shouldSubmit: true, text: stripped };
   }
-  return { shouldSubmit: false, text: normalized };
+  return { shouldSubmit: false, text: raw };
 }
 
 async function fetchJson(url, options) {
@@ -596,6 +755,12 @@ class MobileApp {
       debugEnabled: localStorage.getItem(STORAGE_DEBUG_MODE) === "true"
     };
     this.currentSpeechUtterance = null;
+    this._syncTimeout = null;
+    this._syncInFlight = false;
+    this._syncDirty = false;
+    this._syncFailureCount = 0;
+    this._syncDisabledUntil = 0;
+    this._lastSyncSignature = "";
     // 安全处理：清除 URL 上的敏感参数
     this._sanitizeUrl();
   }
@@ -835,6 +1000,13 @@ class MobileApp {
     });
     const payload = await fetchJson(`/api/mobile-bootstrap?${params}`);
     this.state.bootstrap = payload;
+    // 从 bootstrap profile 提取 elder_id，与真实用户数据结构对齐
+    const elders = payload?.profile?.elders;
+    if (Array.isArray(elders) && elders.length > 0 && elders[0]?.elder_id) {
+      this.auth.elderId = elders[0].elder_id;
+    } else if (this.auth.elderScope && this.auth.elderScope.startsWith('elder_')) {
+      this.auth.elderId = this.auth.elderScope;
+    }
     return payload;
   }
 
@@ -1575,9 +1747,12 @@ class MobileApp {
 
   _scheduleBackendSync() {
     if (this._syncTimeout) clearTimeout(this._syncTimeout);
+    const now = Date.now();
+    const waitForBackoff = Math.max(0, (this._syncDisabledUntil || 0) - now);
+    const delay = Math.max(BACKEND_SYNC_BASE_DELAY_MS, waitForBackoff);
     this._syncTimeout = setTimeout(() => {
       this._syncToBackend(false);
-    }, 5000);
+    }, delay);
   }
 
   // 同步到后端。
@@ -1586,31 +1761,64 @@ class MobileApp {
       clearTimeout(this._syncTimeout);
       this._syncTimeout = null;
     }
-    const conversations = this.state.conversations.slice(0, MAX_HISTORY);
+    if (this._syncInFlight) {
+      this._syncDirty = true;
+      return;
+    }
+    const now = Date.now();
+    if (!immediate && this._syncDisabledUntil && now < this._syncDisabledUntil) {
+      this._scheduleBackendSync();
+      return;
+    }
+    if (!this._syncedSignatures) this._syncedSignatures = {};
+    // 增量同步：只提交自上次成功同步以来发生变化的会话，避免每次都提交全部历史导致
+    // 请求体过大被服务端重置连接（net::ERR_CONNECTION_RESET）。
+    const all = this.state.conversations
+      .slice(0, MAX_HISTORY)
+      .map((c) => ({ c, payload: serializeConversationForSync(c, this.auth) }));
+    let changed = all.filter((x) => this._syncedSignatures[x.c.id] !== JSON.stringify(x.payload));
+    if (changed.length === 0) return;
+    // 体积封顶：即便一次变化较多，也只发送累计体积可控的部分（~1MB 上限，远低于服务端 2MB 限制），
+    // 其余会话留待后续同步逐步补齐。
+    let total = 0;
+    const selected = [];
+    for (const x of changed) {
+      const s = JSON.stringify(x.payload).length;
+      if (selected.length > 0 && total + s > 1000000) break;
+      selected.push(x);
+      total += s;
+    }
+    changed = selected;
+    const conversations = changed.map((x) => x.payload);
+    const payload = { conversations };
+    const signature = JSON.stringify(payload);
+    if (!immediate && signature === this._lastSyncSignature) return;
+    this._syncInFlight = true;
     try {
       const res = await fetch("/api/conversation/sync-batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversations: conversations.map((c) => ({
-            id: c.id,
-            title: c.title,
-            messages: c.messages,
-            status: c.status,
-            favorite: c.favorite,
-            latestQuestion: c.latestQuestion,
-            latestAnswer: c.latestAnswer,
-            created: c.created,
-            roleKey: this.auth?.roleKey || "",
-            userToken: this.auth?.userToken || "",
-            presetKey: this.auth?.presetKey || "",
-          })),
-        }),
+        body: signature,
         keepalive: immediate,
       });
       if (!res.ok) throw new Error(`sync failed: ${res.status}`);
+      this._lastSyncSignature = signature;
+      changed.forEach((x) => { this._syncedSignatures[x.c.id] = JSON.stringify(x.payload); });
+      this._syncFailureCount = 0;
+      this._syncDisabledUntil = 0;
     } catch (e) {
-      console.warn("[Mobile][ConversationHistory] 同步失败:", e.message);
+      this._syncFailureCount += 1;
+      const backoff = Math.min(BACKEND_SYNC_MAX_BACKOFF_MS, BACKEND_SYNC_BASE_DELAY_MS * (2 ** Math.min(this._syncFailureCount - 1, 4)));
+      this._syncDisabledUntil = Date.now() + backoff;
+      if (this._syncFailureCount === 1 || this._syncFailureCount % 3 === 0) {
+        console.warn("[Mobile][ConversationHistory] 后台同步失败，稍后自动重试:", e.message);
+      }
+    } finally {
+      this._syncInFlight = false;
+      if (this._syncDirty) {
+        this._syncDirty = false;
+        this._scheduleBackendSync();
+      }
     }
   }
 
@@ -1733,6 +1941,8 @@ class MobileApp {
       if (html) last.innerHTML = html;
       else last.innerHTML = options.markdown ? renderMarkdown(safeText) : escapeHtml(safeText);
       scrubVisibleMojibake(last);
+      // 标签页自动初始化：检测 .tab + .tab-panel 并绑定点击切换
+      this._initTabs(last);
     }
     const conversation = this.currentConversation();
     if (!conversation) return;
@@ -1747,6 +1957,24 @@ class MobileApp {
     conversation.status = options.error ? "答复异常" : "已答复";
     conversation.updatedAt = Date.now();
     this.persistHistory();
+  }
+
+  _initTabs(container) {
+    const tabs = container.querySelectorAll(".tab");
+    const panels = container.querySelectorAll(".tab-panel");
+    if (!tabs.length || !panels.length) return;
+    tabs.forEach((t) => t.classList.remove("active"));
+    panels.forEach((p) => p.classList.remove("active"));
+    tabs[0].classList.add("active");
+    if (panels[0]) panels[0].classList.add("active");
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+        tab.classList.add("active");
+        if (panels[i]) panels[i].classList.add("active");
+      });
+    });
   }
 
   conversationContext(limit = 10) {
@@ -1850,6 +2078,7 @@ class MobileApp {
         roleKey: this.auth.roleKey,
         channel: "mobile",
         userToken: this.auth.token,
+        elder_id: this.auth.elderId || this.auth.elderScope || "",
         elderScope: this.auth.elderScope,
         terminal: this.auth.terminal,
         authLevel: this.auth.authLevel,
@@ -2045,7 +2274,7 @@ class MobileApp {
   }
 
   renderAssistantActions(result = {}) {
-    const actions = Array.isArray(result.actions) ? result.actions : [];
+    const actions = Array.isArray(result.actions) ? result.actions.map(localizeActionItem) : [];
     return actions.filter((item) => item?.label && item.action_key && isSupportedMobileAction(item)).slice(0, 6);
   }
 
@@ -2061,7 +2290,7 @@ class MobileApp {
         skill_key: item.skill_key || result.skill_key || "common",
         source_template_id: item.source_template_id || result.template_id || "",
         next_template_id: item.next_template_id || result.template_id || "",
-      })}">${escapeHtml(item.label || item.action_key || "\u6267\u884c")}</button>
+      })}">${escapeHtml(item.label || "\u6267\u884c")}</button>
     `).join("");
     last.insertAdjacentHTML("beforeend", `<div class="mobile-action-bar">${buttons}</div>`);
     last.querySelectorAll("[data-mobile-action]").forEach((button) => {
@@ -2079,7 +2308,7 @@ class MobileApp {
     const oldBar = last.querySelector(".ambiguity-options-bar");
     if (oldBar) oldBar.remove();
     const buttonsHtml = options.map((opt) =>
-      `<button type="button" class="ambiguity-option-btn" data-scene="${escapeHtml(opt.scene_key || "")}" data-label="${escapeHtml(opt.label || "")}" ` +
+      `<button type="button" class="ambiguity-option-btn" data-scene="${escapeHtml(opt.scene_key || opt.skill_key || "")}" data-label="${escapeHtml(opt.label || "")}" data-route-id="${escapeHtml(opt.route_id || "")}" ` +
       `style="display:block;width:100%;padding:14px;margin:6px 0;border:1.5px solid #e0e0e0;border-radius:12px;` +
       `background:#fff;cursor:pointer;text-align:left;font-size:15px;color:#333;transition:all 0.2s;">` +
       `<span style="font-size:20px;margin-right:8px;">${escapeHtml(opt.icon || "")}</span>` +
@@ -2103,9 +2332,12 @@ class MobileApp {
       btn.addEventListener("click", () => {
         const label = btn.getAttribute("data-label");
         const scene = btn.getAttribute("data-scene");
+        const routeId = btn.getAttribute("data-route-id");
+        const context = { ambiguity_pick: true, ambiguity_scene_key: scene };
+        if (routeId) context.publish_route_id = routeId;
         this.sendMessage(label, {
-          skill_key: scene,
-          context: { ambiguity_pick: true, ambiguity_scene_key: scene },
+          skill_key: scene || (routeId ? "travel_route" : ""),
+          context,
         });
       });
     });
@@ -2114,11 +2346,12 @@ class MobileApp {
 
   async handleAssistantAction(action = {}, button = null) {
     if (!action?.action_key) return;
+    action = localizeActionItem(action);
     if (isSosPhoneAction(action) && this.handleSosPhoneAction(action)) return;
     if (this.state.sending) return;
     this.state.sending = true;
     const conversation = this.currentConversation();
-    const originalText = button?.textContent || action.label || action.action_key;
+    const originalText = button?.textContent || action.label || "\u6267\u884c";
     const sendButton = screen.querySelector(".mobile-send-button");
     sendButton?.setAttribute("disabled", "disabled");
     try {
@@ -2126,20 +2359,21 @@ class MobileApp {
         button.disabled = true;
         button.textContent = "\u5904\u7406\u4e2d...";
       }
-      this.addBubble("user", action.label || action.action_key);
+      this.addBubble("user", action.label || "\u6267\u884c");
       this.addBubble("ai", "\u5904\u7406\u4e2d...", { pending: true });
       const payload = await fetchJson("/api/chat/action", {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
           ...action,
-          user_prompt: action.user_prompt || action.label || action.action_key,
+          user_prompt: action.user_prompt || action.label || "继续",
           execute_action: true,
           reenter_chat: false,
           conversation_id: conversation?.id || "",
           roleKey: this.auth.roleKey,
           channel: "mobile",
           userToken: this.auth.token,
+          elder_id: this.auth.elderId || this.auth.elderScope || "",
           elderScope: this.auth.elderScope,
           terminal: this.auth.terminal,
           authLevel: this.auth.authLevel,
@@ -2149,6 +2383,13 @@ class MobileApp {
           location: this.state.location || null,
         }),
       });
+
+      // 预订跳转：服务端返回 redirect 类型，前端打开金跳动 H5 页面
+      if (payload.result_type === 'redirect' && payload.redirect_url) {
+        this.handleBookingRedirect(payload);
+        return;
+      }
+
       this.handleRemoteResult(payload);
     } catch (err) {
       this.updateLastAiBubble(`\u64cd\u4f5c\u6267\u884c\u5f02\u5e38\uff1a${err.message}`, { error: true });
@@ -2163,6 +2404,32 @@ class MobileApp {
     }
   }
 
+  handleBookingRedirect(payload) {
+    const redirectUrl = payload.redirect_url || '';
+    const redirectUrls = payload.redirect_urls || {};
+    if (!redirectUrl) return;
+
+    // 在聊天气泡中显示跳转提示
+    const productName = payload.params?.destination || '旅居产品';
+    this.updateLastAiBubble(`正在为您打开${productName}预订页面，请在新页面确认入住日期、人数和最终价格后完成下单。`);
+
+    // 移动端：新窗口打开 H5 预订页面（移动浏览器会自动唤起 App 或打开新标签页）
+    // 桌面端：新标签页打开
+    window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+
+    // 在操作区域追加一个"重新打开预订页面"按钮，防止弹窗被拦截
+    const actionContainer = document.querySelector('.mobile-action-row');
+    if (actionContainer) {
+      const reopenBtn = document.createElement('button');
+      reopenBtn.className = 'mobile-action-btn mobile-action-btn-primary';
+      reopenBtn.textContent = '重新打开预订页面';
+      reopenBtn.addEventListener('click', () => {
+        window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+      });
+      actionContainer.appendChild(reopenBtn);
+    }
+  }
+
   renderFollowupSuggestions(result = {}) {
     const suggestions = Array.isArray(result.followup_suggestions)
       ? result.followup_suggestions
@@ -2170,6 +2437,7 @@ class MobileApp {
       ? result.data.followup_suggestions
       : [];
     return suggestions
+      .map(localizeActionItem)
       .filter((item) => item?.label && item.user_prompt)
       .slice(0, 6);
   }
@@ -2205,6 +2473,7 @@ class MobileApp {
             label: visibleActionText(item?.label || item?.text || item?.title || item?.name),
             action_key: visibleActionText(item?.action_key || item?.key),
           }))
+          .map(localizeActionItem)
           .filter((item) => item.label && item.action_key)
       : [];
     if (!items.length) return;
@@ -2370,6 +2639,7 @@ class MobileApp {
       }
       this.addBubble("user", prompt);
       this.addBubble("ai", "\u5904\u7406\u4e2d...", { pending: true });
+      const conversationHistory = this.conversationContext();
       const payload = await fetchJson("/api/chat/followup", {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -2381,6 +2651,7 @@ class MobileApp {
           reenter_chat: !canExecuteAction,
           followup_source: canExecuteAction ? "action_button" : "followup",
           conversation_id: conversation?.id || "",
+          conversationHistory,
           roleKey: this.auth.roleKey,
           channel: "mobile",
           userToken: this.auth.token,
