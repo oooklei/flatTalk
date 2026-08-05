@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "crosstalk": [
+    { "id": "ct-01", "message": "查看桂林夕阳红养老服务中心本月的服务质量评估报告", "expect_scene": "service_quality_eval", "not_scene": "travel_route" },
+    { "id": "ct-02", "message": "老人最近血压偏高有什么风险", "expect_scene": "health_risk_warning", "not_scene": "travel_route" },
+    { "id": "ct-03", "message": "帮我找一下附近的上门护理服务", "expect_scene": "find_service", "not_scene": "travel_route" },
+    { "id": "ct-04", "message": "想去防城港滨海三日游旅居", "expect_scene": "travel_route", "not_scene": "find_service" },
+    { "id": "ct-05", "message": "巴马康养旅居线路怎么安排", "expect_scene": "travel_route", "not_scene": "health_risk_warning" },
+    { "id": "ct-06", "message": "机构护理员被投诉了怎么整改", "expect_scene": "service_quality_eval", "not_scene": "travel_route" }
+  ],
+  "ambiguity_labels": [
+    { "id": "am-01", "label": "旅居规划", "skill_key": "travel_route" },
+    { "id": "am-02", "label": "健康预警", "skill_key": "health_risk_warning" },
+    { "id": "am-03", "label": "养老服务", "skill_key": "find_service" },
+    { "id": "am-04", "label": "服务质量", "skill_key": "service_quality_eval" }
+  ],
+  "publish_match": [
+    {
+      "id": "pm-01",
+      "message": "防城港三日游滨海",
+      "fixtures": [
+        {
+          "route_id": "fixture_fcg_coastal",
+          "status": "published",
+          "destination": ["防城港"],
+          "keywords": ["三日游", "滨海"],
+          "product_type": "coastal",
+          "title": "防城港滨海三日游",
+          "updated_at": "2026-08-01T00:00:00.000Z"
+        },
+        {
+          "route_id": "fixture_draft_only",
+          "status": "draft",
+          "destination": ["防城港"],
+          "keywords": ["三日游"],
+          "product_type": "coastal",
+          "title": "草稿勿命中",
+          "updated_at": "2026-08-05T00:00:00.000Z"
+        }
+      ],
+      "expect_route_id": "fixture_fcg_coastal"
+    }
+  ]
+}
