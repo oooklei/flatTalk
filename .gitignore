@@ -50,3 +50,4 @@ temp/
 
 # 原型文件 - 严禁删除
 proto/
+.worktrees/
