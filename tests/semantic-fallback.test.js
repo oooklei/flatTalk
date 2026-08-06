@@ -8,6 +8,9 @@ test('附近有什么商店 → category 购 + rules_fallback', () => {
   assert.equal(s.source, SEMANTIC_SOURCES.RULES_FALLBACK);
   assert.ok(s.core_need.includes('商店') || s.core_need.includes('附近'));
   assert.equal(s.adapted.category, '购');
+  assert.equal(s.adapted.destination, null);
+  assert.equal(s.confidence, 0.45);
+  assert.ok(s.slots.concept_words.includes('附近'));
   assert.ok(s.slots.concept_words.length > 0);
 });
 
