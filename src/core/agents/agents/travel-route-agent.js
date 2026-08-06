@@ -32,7 +32,7 @@ const elderTravelTerms = [
   '血压', '糖尿病', '心脏', '医疗', '医院', '安全',
   '适合老人', '长者玩法',
 ];
-const bookingTerms = ['预订', '预约', '下单', '报名', '可订', '余量', '入住', '付款'];
+const bookingTerms = ['预订', '预约', '下单', '报名', '可订', '余量', '订立', '付款'];
 
 const boundaryTerms = [
   '膳食', '饮食', '吃什么', '食谱',
@@ -52,8 +52,91 @@ const boundaryMap = {
   '急救': 'health_risk_warning', '120': 'health_risk_warning',
 };
 
+/**
+ * Optional FlyAI KB enrich before/when building route card data.
+ * On failure returns null so sojourn-maps / JTD path stays unchanged.
+ *
+ * @param {{ query?: string, linked_route_id?: string, data?: object }} args
+ * @returns {Promise<object|null>} patch fields for template data, or null
+ */
+export async function tryEnrichRouteCardWithFlyai({ query, linked_route_id, data = {} } = {}) {
+  try {
+    const [
+      { createFlyaiKnowledgeBridge },
+      { createFlyaiKbStore },
+      { createFlyaiClient },
+      { buildMapOrderedStreamEvents },
+    ] = await Promise.all([
+      import('../../../services/flyai/flyai-knowledge-bridge.js'),
+      import('../../../services/flyai/flyai-kb-store.js'),
+      import('../../../services/flyai/flyai-client.js'),
+      import('../../../services/flyai/build-stream-events.js'),
+    ]);
+
+    let threshold = Number(process.env.FLYAI_KB_HIT_THRESHOLD || 0.72);
+    try {
+      const { loadEnv } = await import('../../../config/env.js');
+      const env = loadEnv();
+      if (Number.isFinite(env?.flyaiKbHitThreshold)) {
+        threshold = env.flyaiKbHitThreshold;
+      }
+    } catch {
+      // keep process.env / default
+    }
+
+    const bridge = createFlyaiKnowledgeBridge({
+      store: createFlyaiKbStore(),
+      client: createFlyaiClient(),
+      threshold,
+    });
+
+    const resolved = await bridge.resolve({
+      query: query || '',
+      linked_route_id: linked_route_id || undefined,
+    });
+
+    if (!resolved?.ok || !resolved.doc) return null;
+
+    const doc = { ...resolved.doc, from_cache: resolved.from_cache };
+    const stream_events = buildMapOrderedStreamEvents(doc);
+    const patch = { stream_events };
+
+    if (Array.isArray(doc.waypoints) && doc.waypoints.length) {
+      patch.waypoints = doc.waypoints;
+    }
+    if (Array.isArray(doc.highlights) && doc.highlights.length) {
+      patch.highlights = doc.highlights;
+    }
+    if (Array.isArray(doc.products) && doc.products.length) {
+      patch.products = doc.products;
+    }
+    if (doc.title && !data?.routeTitle) {
+      patch.flyai_title = doc.title;
+    }
+
+    return patch;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Merge FlyAI patch into route card template data (no-op if patch null).
+ * @param {object} data
+ * @param {object|null} patch
+ */
+export function applyFlyaiRoutePatch(data = {}, patch = null) {
+  if (!patch || typeof patch !== 'object') return data;
+  const next = { ...data };
+  if (patch.waypoints) next.waypoints = patch.waypoints;
+  if (patch.highlights) next.highlights = patch.highlights;
+  if (patch.products) next.products = patch.products;
+  if (patch.stream_events) next.stream_events = patch.stream_events;
+  return next;
+}
+
 export function createTravelRouteAgent() {
-  return createBaseAgent({
+  const agent = createBaseAgent({
     key: 'travel_route', name: '旅居助手', actionPrefix: 'travel_route',
     evidenceGroups: [
       { group: 'travel_topic', weight: 3, terms: travelTopicTerms },
@@ -64,4 +147,9 @@ export function createTravelRouteAgent() {
     ],
     boundaryTerms, boundaryMap, threshold: 6,
   });
+
+  /** Optional hook: enrich route template data with FlyAI KB + stream_events */
+  agent.enrichWithFlyaiKb = tryEnrichRouteCardWithFlyai;
+
+  return agent;
 }

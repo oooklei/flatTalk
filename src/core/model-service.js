@@ -107,7 +107,7 @@ export async function fillTemplateSlots({
     return fillDietCard({ message, business_data });
   }
   if (selectedTemplateId === 'route_svg' || ['route_wellness', 'route_coastal', 'route_culture', 'route_ecology'].includes(selectedTemplateId)) {
-    return fillRouteCardLegacy({ message, business_data, selectedTemplateId });
+    return await fillRouteCardLegacy({ message, business_data, selectedTemplateId });
   }
   if (selectedTemplateId === 'sojourn_base') {
     return fillSojournBase({ message, business_data });
@@ -2432,7 +2432,7 @@ function fillTravelMedicalCard({ message, business_data }) {
   });
 }
 
-function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
+async function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
   const routes = Array.isArray(business_data?.routes) ? business_data.routes : [];
   const forcedRouteId = String(
     business_data?.route_id || business_data?.publish_match?.route_id || ''
@@ -2534,7 +2534,7 @@ function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
     related_spots: Array.isArray(wp?.related_spots) ? wp.related_spots : [],
   })));
 
-  return sanitizeModelResult({
+  const result = sanitizeModelResult({
     template_id: routeType || 'route_svg',
     answer_text: answerText,
     answer: answerText,
@@ -2587,6 +2587,26 @@ function fillRouteCardLegacy({ message, business_data, selectedTemplateId }) {
     ],
     template_fit_notes: [],
   });
+
+  // Optional FlyAI KB: merge waypoints/highlights/products + map-ordered stream_events.
+  // Failure keeps sojourn-maps / JTD path unchanged.
+  try {
+    const { tryEnrichRouteCardWithFlyai, applyFlyaiRoutePatch } = await import(
+      './agents/agents/travel-route-agent.js'
+    );
+    const patch = await tryEnrichRouteCardWithFlyai({
+      query: message,
+      linked_route_id: resolvedRouteId || undefined,
+      data: result.data,
+    });
+    if (patch) {
+      result.data = applyFlyaiRoutePatch(result.data, patch);
+    }
+  } catch {
+    // keep existing card data
+  }
+
+  return result;
 }
 
 function selectTravelRoute(message, routes) {
