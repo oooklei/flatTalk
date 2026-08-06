@@ -31,11 +31,11 @@ export function createFlyaiClient({
   function parseStdout(stdout) {
     const cut = stdout.search(/\nAssertion failed/);
     const t = (cut >= 0 ? stdout.slice(0, cut) : stdout).trim();
-    if (!t.startsWith('{')) return { ok: false, error: 'not_json', raw: t.slice(0, 500) };
+    if (!t.startsWith('{')) return { ok: false, data: null, error: 'not_json', raw: t.slice(0, 500) };
     try {
       return { ok: true, data: JSON.parse(t) };
     } catch (e) {
-      return { ok: false, error: e.message, raw: t.slice(0, 500) };
+      return { ok: false, data: null, error: e.message, raw: t.slice(0, 500) };
     }
   }
 

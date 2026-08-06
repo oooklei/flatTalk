@@ -25,7 +25,36 @@ test('parseStdout returns not_json for non-JSON stdout', async () => {
   });
   const r = await client.keywordSearch('test');
   assert.equal(r.ok, false);
+  assert.equal(r.data, null);
   assert.equal(r.error, 'not_json');
+});
+
+test('keywordSearch strips Windows Assertion failed noise after JSON', async () => {
+  const payload = { data: { itemList: [{ info: { title: '百鸟岩景区' } }] }, status: 'ok' };
+  const client = createFlyaiClient({
+    runner: async () => ({
+      stdout: `${JSON.stringify(payload)}\nAssertion failed: false`,
+      stderr: '',
+      code: 0,
+    }),
+  });
+  const r = await client.keywordSearch('我想去巴马旅游');
+  assert.equal(r.ok, true);
+  assert.equal(r.data.itemList[0].info.title, '百鸟岩景区');
+});
+
+test('aiSearch unwraps markdown string from data envelope', async () => {
+  const markdown = '### **[巴马水晶宫](https://x)**\n- **亮点**：溶洞';
+  const client = createFlyaiClient({
+    runner: async () => ({
+      stdout: JSON.stringify({ data: markdown, status: 'ok' }),
+      stderr: '',
+      code: 0,
+    }),
+  });
+  const r = await client.aiSearch('我想去巴马旅游');
+  assert.equal(r.ok, true);
+  assert.equal(r.data, markdown);
 });
 
 test('searchPoi passes keyword and cityName args', async () => {
