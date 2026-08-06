@@ -625,6 +625,142 @@ async function fetchJson(url, options) {
   return body || {};
 }
 
+function isFtSseEnabled() {
+  try {
+    return localStorage.getItem("ft_sse") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function forwardMapPointToCardFrames(payload) {
+  const frames = document.querySelectorAll("iframe.gxy-template-card-frame");
+  if (!frames.length) return;
+  const message = { type: "highlight_waypoint", ...(payload && typeof payload === "object" ? payload : {}) };
+  frames.forEach((frame) => {
+    try {
+      frame.contentWindow?.postMessage(message, "*");
+    } catch {
+      /* ignore cross-frame errors */
+    }
+  });
+}
+
+/** Simple SSE line parser: returns final envelope; side-effects on map_point. */
+async function parseChatSseResponse(res) {
+  const reader = res.body?.getReader?.();
+  if (!reader) {
+    const text = await res.text();
+    throw new Error(`SSE 响应无可读流（HTTP ${res.status}）：${String(text || "").slice(0, 80)}`);
+  }
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let eventName = "";
+  let dataLines = [];
+  let envelope = null;
+
+  const flushEvent = () => {
+    if (!eventName && dataLines.length === 0) return;
+    const raw = dataLines.join("\n");
+    let payload = null;
+    try {
+      payload = raw ? JSON.parse(raw) : null;
+    } catch {
+      payload = raw;
+    }
+    if (eventName === "map_point") {
+      console.debug("[ft_sse] map_point", payload);
+      forwardMapPointToCardFrames(payload);
+    } else if (eventName === "envelope") {
+      envelope = payload;
+    }
+    eventName = "";
+    dataLines = [];
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      if (line === "") {
+        flushEvent();
+        continue;
+      }
+      if (line.startsWith("event:")) {
+        eventName = line.slice(6).trim();
+      } else if (line.startsWith("data:")) {
+        dataLines.push(line.slice(5).trimStart());
+      }
+    }
+  }
+  if (buffer.trim()) {
+    const leftover = buffer.split(/\r?\n/);
+    for (const line of leftover) {
+      if (line === "") {
+        flushEvent();
+        continue;
+      }
+      if (line.startsWith("event:")) eventName = line.slice(6).trim();
+      else if (line.startsWith("data:")) dataLines.push(line.slice(5).trimStart());
+    }
+  }
+  flushEvent();
+
+  if (!envelope) {
+    throw new Error("SSE 流未收到 envelope 事件");
+  }
+  if (!res.ok && !envelope?.ok) {
+    const err = new Error(envelope?.message || envelope?.error || `HTTP ${res.status}`);
+    err.status = res.status;
+    err.code = envelope?.error || "";
+    throw err;
+  }
+  return envelope;
+}
+
+/** Chat message fetch: opt-in SSE when localStorage.ft_sse === '1'. */
+async function fetchChatMessage(url, options) {
+  if (!isFtSseEnabled()) {
+    return fetchJson(url, options);
+  }
+  const streamUrl = url.includes("?") ? `${url}&stream=1` : `${url}?stream=1`;
+  const headers = {
+    ...(options?.headers || {}),
+    Accept: "text/event-stream",
+  };
+  let res;
+  try {
+    res = await fetch(streamUrl, { ...options, headers });
+  } catch (err) {
+    const reason = err?.message || "network_error";
+    throw new Error(`本地服务接口不可达或请求被中断：${reason}`);
+  }
+  const contentType = String(res.headers.get("content-type") || "");
+  if (!contentType.includes("text/event-stream")) {
+    const text = await res.text();
+    let body = null;
+    if (text) {
+      try {
+        body = JSON.parse(text);
+      } catch {
+        const preview = text.slice(0, 120).replace(/\s+/g, " ");
+        throw new Error(`接口返回非 JSON（HTTP ${res.status}）：${preview || "空响应"}`);
+      }
+    }
+    if (!res.ok && !body?.ok) {
+      const err = new Error(body?.message || body?.error || `HTTP ${res.status}`);
+      err.status = res.status;
+      err.code = body?.error || "";
+      throw err;
+    }
+    return body || {};
+  }
+  return parseChatSseResponse(res);
+}
+
 function imageFileToDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -2093,7 +2229,7 @@ class MobileApp {
       if (sendOptions.context && typeof sendOptions.context === "object") {
         payload.context = { ...sendOptions.context };
       }
-      const body = await fetchJson("/api/chat/message", {
+      const body = await fetchChatMessage("/api/chat/message", {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify(payload)

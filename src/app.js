@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import zlib from 'node:zlib';
 
 import { requireAuth } from './server/auth-middleware.js';
+import { wantsChatSse, writeChatSse } from './server/sse-chat.js';
 import { handleAdminApi, serveAdminStatic } from './admin/index.js';
 import { handleExtGateway } from './admin/integrations.js';
 import { verifyOpenApiKey } from './admin/openapi.js';
@@ -523,6 +524,9 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
 
     await sessionStore.appendTurn(conversationId, { turn_id: turnId, user_message: message, envelope });
     chatState.logger?.write?.({ type: 'chat_turn', ...summarizeEnvelope(envelope, startedAt) });
+    if (wantsChatSse(req)) {
+      return writeChatSse(res, envelope);
+    }
     return json(res, 200, envelope);
   } finally {
     chatState?.running?.delete(runningKey);
