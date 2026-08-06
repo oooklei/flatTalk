@@ -32,7 +32,7 @@ import { decideTransition, TRANSITION_TYPE } from '../scene-router/scene-transit
 import { resolveAmbiguity } from '../scene-router/ambiguity-resolver.js';
 import { logSceneDecision } from '../scene-router/decision-log.js';
 import { buildSnapshot } from '../../core/conversation/context-snapshot.js';
-import { understandAndAdapt } from '../semantic/index.js';
+import { understandAndAdapt, emptySemantic, SEMANTIC_SOURCES } from '../semantic/index.js';
 import { createSupervisor } from '../agents/supervisor.js';
 import { mockElders, getMockUserByToken } from '../../services/interface-data/mock-collaboration.js';
 
@@ -79,24 +79,15 @@ export function createChatOrchestrator(options = {}) {
       const traceKind = request.action ? 'action' : 'chat';
       try {
         const sceneInput = normalizeRequest(request);
-        const semanticOpts = {};
-        if (options.semanticLlmCall) semanticOpts.llmCall = options.semanticLlmCall;
-        if (options.semanticTimeoutMs != null) semanticOpts.timeoutMs = options.semanticTimeoutMs;
-        const semantic = await understandAndAdapt(sceneInput, semanticOpts);
-        mark('semantic', '语义enrichment', {
-          source: semantic.source,
-          category: semantic.adapted?.category || '',
-          destination: semantic.adapted?.destination || '',
-          ms: semantic.latency_ms,
-        });
-        sceneInput.semantic = semantic;
-        request.semantic = semantic;
         mark('intent', '意图识别', { text_len: sceneInput.text.length });
         const intentContext = await loadIntentContext(sceneInput, options);
         mark('intent', '意图识别完成', { intent_type: intentContext?.intent_type, confidence: intentContext?.confidence });
 
         // ★ SOS 紧急短路：检测到 SOS/P0 意图时跳过场景评分，直接路由到应急流程
         if (intentContext?.intent_type === 'SOS' || intentContext?.urgency_level === 'P0') {
+          const semantic = emptySemantic(SEMANTIC_SOURCES.SKIPPED_ACTION);
+          sceneInput.semantic = semantic;
+          request.semantic = semantic;
           mark('sos_bypass', 'SOS紧急短路', { keywords: intentContext?.keyword_match });
           const sosSkillKey = 'find_service';
           const sosTemplateId = 'service_emergency';
@@ -182,6 +173,19 @@ export function createChatOrchestrator(options = {}) {
             debug: { sos_bypass: true, sos_keywords: intentContext?.keyword_match || [] },
           };
         }
+
+        const semanticOpts = {};
+        if (options.semanticLlmCall) semanticOpts.llmCall = options.semanticLlmCall;
+        if (options.semanticTimeoutMs != null) semanticOpts.timeoutMs = options.semanticTimeoutMs;
+        const semantic = await understandAndAdapt(sceneInput, semanticOpts);
+        mark('semantic', '语义enrichment', {
+          source: semantic.source,
+          category: semantic.adapted?.category || '',
+          destination: semantic.adapted?.destination || '',
+          ms: semantic.latency_ms,
+        });
+        sceneInput.semantic = semantic;
+        request.semantic = semantic;
 
         // ★ 轻量追问短路：followup 按钮触发且 skill_key 已知时，跳过意图/场景/知识检索，
         //    直接走 模板解析→业务数据→本地模板填充→渲染，避免完整 16 步流水线

@@ -6,6 +6,7 @@ import { createChatOrchestrator } from '../src/core/orchestrator/chat-orchestrat
 test('chat orchestrator runs the main meal plan chain with injected services', async () => {
   const calls = { data: 0, rag: 0, model: 0 };
   const orchestrator = createChatOrchestrator({
+    semanticLlmCall: async () => ({ ok: false }),
     dataService: {
       tableData: {
         getMealPlanTables: async ({ elder_id }) => {
