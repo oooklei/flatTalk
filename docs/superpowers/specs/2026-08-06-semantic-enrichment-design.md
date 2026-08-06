@@ -1,8 +1,10 @@
 # LLM 理解 → 语义适配（编排前置 enrichment）设计
 
 **日期：** 2026-08-06  
-**状态：** 已评审（brainstorm 方案 1）  
+**状态：** 已落地  
 **对标：** `flatTalk-dashboard` 三阶段 NLU 的前两段（理解 + 语义适配）；**不**照搬意图匹配 / 会话临时查询 / 接口摆渡整包。
+
+**实现说明：** Tasks 1–5 已合入 `feat/semantic-enrichment`：`src/core/semantic/`（schema / adapter / fallback / understand）、`chat-orchestrator` 编排挂载、`context-snapshot` 摘要字段，以及可配置超时 `FLATTALK_SEMANTIC_TIMEOUT_MS`（见 `.env.example`）。
 
 ## 1. 问题与目标
 
@@ -110,10 +112,12 @@ loadIntentContext / scene-router / fillTemplateSlots / render …
 
 ## 7. 测试与验收
 
-1. 自由文本「附近有什么商店」→ 存在 `core_need`，`adapted.category` 为购（或等价映射）
-2. 点击追问按钮 → enrichment 跳过，无额外 LLM 调用
-3. 模拟 LLM 失败 → 对话仍返回，`source=rules_fallback`
-4. 回归：既有场景路由与模板渲染在未消费 semantic 时行为不变
+1. 自由文本「附近有什么商店」→ 存在 `core_need`，`adapted.category` 为购（或等价映射） — **已通过**（`semantic-fallback.test.js`、`semantic-understand.test.js`、orchestrator hook）
+2. 点击追问按钮 → enrichment 跳过，无额外 LLM 调用 — **已通过**（`shouldSkipEnrichment` + `semantic-orchestrator-hook.test.js`，`source=skipped_action`）
+3. 模拟 LLM 失败 → 对话仍返回，`source=rules_fallback` — **已通过**（`semantic-understand.test.js`、`semantic-fallback.test.js`）
+4. 回归：既有场景路由与模板渲染在未消费 semantic 时行为不变 — **已通过**（semantic 全套件 29 用例 + `city-extractor.test.js` 回归；`nearby-map-template-js.test.js` 本分支未包含，未跑）
+
+**2026-08-06 回归：** `node --test tests/semantic-*.test.js tests/city-extractor.test.js` → 29 pass / 0 fail。
 
 ## 8. 实现提示（供 writing-plans）
 
