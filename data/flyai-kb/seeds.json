@@ -1,0 +1,198 @@
+{
+  "version": 1,
+  "seeds": [
+    {
+      "linked_route_id": "bama_5d4n",
+      "destination": "巴马",
+      "city_name": "河池",
+      "keywords": [
+        "巴马",
+        "康养",
+        "长寿"
+      ],
+      "query": "我想去巴马旅游"
+    },
+    {
+      "linked_route_id": "fcg_route_001",
+      "destination": "防城港",
+      "city_name": "防城港",
+      "keywords": [
+        "防城港",
+        "滨海"
+      ],
+      "query": "我想去防城港旅游"
+    },
+    {
+      "linked_route_id": "fcg_route_002",
+      "destination": "防城港",
+      "city_name": "防城港",
+      "keywords": [
+        "防城港",
+        "文化"
+      ],
+      "query": "我想去防城港旅游"
+    },
+    {
+      "linked_route_id": "fcg_route_003",
+      "destination": "防城港",
+      "city_name": "防城港",
+      "keywords": [
+        "防城港",
+        "文化"
+      ],
+      "query": "我想去防城港旅游"
+    },
+    {
+      "linked_route_id": "fcg_route_004",
+      "destination": "防城港",
+      "city_name": "防城港",
+      "keywords": [
+        "防城港",
+        "生态"
+      ],
+      "query": "我想去防城港旅游"
+    },
+    {
+      "linked_route_id": "fcg_route_005",
+      "destination": "防城港",
+      "city_name": "防城港",
+      "keywords": [
+        "防城港",
+        "滨海"
+      ],
+      "query": "我想去防城港旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_01",
+      "destination": "桂林",
+      "city_name": "桂林",
+      "keywords": [
+        "桂林",
+        "文化"
+      ],
+      "query": "我想去桂林旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_02",
+      "destination": "贺州",
+      "city_name": "贺州",
+      "keywords": [
+        "贺州",
+        "文化"
+      ],
+      "query": "我想去贺州旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_03",
+      "destination": "南宁",
+      "city_name": "南宁",
+      "keywords": [
+        "南宁",
+        "文化"
+      ],
+      "query": "我想去南宁旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_04",
+      "destination": "防城港",
+      "city_name": "防城港",
+      "keywords": [
+        "防城港",
+        "滨海"
+      ],
+      "query": "我想去防城港旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_05",
+      "destination": "南宁",
+      "city_name": "南宁",
+      "keywords": [
+        "南宁",
+        "滨海"
+      ],
+      "query": "我想去南宁旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_06",
+      "destination": "南宁",
+      "city_name": "南宁",
+      "keywords": [
+        "南宁",
+        "文化"
+      ],
+      "query": "我想去南宁旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_08",
+      "destination": "桂林",
+      "city_name": "桂林",
+      "keywords": [
+        "桂林",
+        "文化"
+      ],
+      "query": "我想去桂林旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_09",
+      "destination": "桂林",
+      "city_name": "桂林",
+      "keywords": [
+        "桂林",
+        "文化"
+      ],
+      "query": "我想去桂林旅游"
+    },
+    {
+      "linked_route_id": "gx_excel_10",
+      "destination": "柳州",
+      "city_name": "柳州",
+      "keywords": [
+        "柳州",
+        "文化"
+      ],
+      "query": "我想去柳州旅游"
+    },
+    {
+      "linked_route_id": "jtd_2070305000000000240",
+      "destination": "七洞乡",
+      "city_name": "七洞乡",
+      "keywords": [
+        "七洞乡",
+        "康养"
+      ],
+      "query": "我想去七洞乡旅游"
+    },
+    {
+      "linked_route_id": "jtd_2070305000000000266",
+      "destination": "巴马",
+      "city_name": "河池",
+      "keywords": [
+        "巴马",
+        "康养",
+        "长寿"
+      ],
+      "query": "我想去巴马旅游"
+    },
+    {
+      "linked_route_id": "jtd_2070305000000000271",
+      "destination": "七洞乡",
+      "city_name": "七洞乡",
+      "keywords": [
+        "七洞乡",
+        "康养"
+      ],
+      "query": "我想去七洞乡旅游"
+    },
+    {
+      "linked_route_id": "jtd_mock_bama_001",
+      "destination": "巴马",
+      "city_name": "河池",
+      "keywords": [
+        "巴马",
+        "康养",
+        "长寿"
+      ],
+      "query": "我想去巴马旅游"
+    }
+  ]
+}

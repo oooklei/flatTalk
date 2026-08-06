@@ -48,6 +48,10 @@ tmp/
 temp/
 *.tmp
 
+# FlyAI KB raw snapshots (keep normalized docs + seeds)
+data/flyai-kb/raw/**
+data/flyai-kb/*.raw.json
+
 # 原型文件 - 严禁删除
 proto/
 .worktrees/
