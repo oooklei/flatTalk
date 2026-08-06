@@ -1,4 +1,5 @@
 import { createBaseAgent } from '../base-agent.js';
+import { isJialuNearbyOnlyUtterance } from '../../scene-router/place-brand-intent.js';
 
 // 与 scene-router/rules/travel-route.js evidence_groups 对齐
 const travelTopicTerms = [
@@ -6,9 +7,10 @@ const travelTopicTerms = [
   '广西', '百色', '南宁', '桂林', '北海', '巴马', '防城港', '钦州', '崇左',
   'winter care', 'travel route', 'route plan',
   // 防城港旅居试点线路场景词
-  '防城港旅居', '旅居养老', '京族', '芒街', '东兴', '十万大山', '嘉路', '嘉路康旅', '嘉路滨海',
+  '防城港旅居', '旅居养老', '京族', '芒街', '东兴', '十万大山', '嘉路康旅', '嘉路滨海',
   '银发爱情', '跨境', '非遗', '长寿', '药膳', '大本营', '康养基地', '旅居机构', '适老化旅居',
   '森林轻氧', '壮村民俗', '滨海文化', '边境风情',
+  // 裸「嘉路」归周边助手，不在此抬分
 ];
 const routePlanSignalTerms = [
   '旅行路线', '旅游路线', '旅居路线', '康养路线', '旅行线路', '旅游线路', '旅居线路', '康养线路',
@@ -25,11 +27,11 @@ const travelIntentTerms = [
   '推荐', '规划', '安排', '生成', '制定', '对比', '查询', '查看', '预订', '报名',
   '怎么去', '适合去哪', '住哪里', '玩几天', '预算', '交通', '接驳', '天气', '无障碍',
   '线路详情', '线路介绍', '价格', '多少钱', '费用', '优惠', '套餐', '适合谁', '适配人群',
-  '时间安排', '一日行程', '资源嵌入', '药膳', '康养', '跨境',
+  '时间安排', '一日行程', '资源嵌入', '药膳', '跨境',
 ];
 const elderTravelTerms = [
   '老人', '长者', '老年人', '爸妈', '父母', '家属', '慢病', '康复', '轮椅', '陪护',
-  '血压', '糖尿病', '心脏', '医疗', '医院', '安全',
+  '安全',
   '适合老人', '长者玩法',
 ];
 const bookingTerms = ['预订', '预约', '下单', '报名', '可订', '余量', '订立', '付款'];
@@ -39,6 +41,7 @@ const boundaryTerms = [
   '护工', '机构', '养老院',
   '周边', '附近',
   '派单', '工单',
+  '服务质量', '质量评估', '服务评价', '满意度', '投诉', '整改', '评分', '督导',
   // 急症移交词
   '胸痛', '昏迷', '呼吸困难', '中风', '抽搐', '大出血', '急救', '120',
 ];
@@ -47,6 +50,9 @@ const boundaryMap = {
   '护工': 'find_service', '机构': 'find_service', '养老院': 'find_service',
   '周边': 'nearby_resource', '附近': 'nearby_resource',
   '派单': 'dispatch_manage', '工单': 'dispatch_manage',
+  '服务质量': 'service_quality_eval', '质量评估': 'service_quality_eval', '服务评价': 'service_quality_eval',
+  '满意度': 'service_quality_eval', '投诉': 'service_quality_eval', '整改': 'service_quality_eval',
+  '评分': 'service_quality_eval', '督导': 'service_quality_eval',
   '胸痛': 'health_risk_warning', '昏迷': 'health_risk_warning', '呼吸困难': 'health_risk_warning',
   '中风': 'health_risk_warning', '抽搐': 'health_risk_warning', '大出血': 'health_risk_warning',
   '急救': 'health_risk_warning', '120': 'health_risk_warning',
@@ -147,9 +153,20 @@ export function createTravelRouteAgent() {
     ],
     boundaryTerms, boundaryMap, threshold: 6,
   });
-
   /** Optional hook: enrich route template data with FlyAI KB + stream_events */
   agent.enrichWithFlyaiKb = tryEnrichRouteCardWithFlyai;
 
+  const baseCanHandle = agent.canHandle.bind(agent);
+  const baseMatchScore = agent.matchScore.bind(agent);
+  agent.matchScore = (message) => {
+    if (isJialuNearbyOnlyUtterance(message)) return 0;
+    return baseMatchScore(message);
+  };
+  agent.canHandle = (message, context = {}) => {
+    if (isJialuNearbyOnlyUtterance(message)) {
+      return { suggest: 'nearby_resource', reason: 'jialu_place_brand' };
+    }
+    return baseCanHandle(message, context);
+  };
   return agent;
 }

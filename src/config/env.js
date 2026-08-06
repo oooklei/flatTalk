@@ -25,8 +25,8 @@ export function loadEnv() {
     knowledgeSpace: process.env.FLATTALK_KB_SPACE || "23",
     knowledgeAgentId: process.env.FLATTALK_KB_AGENT_ID || "373",
     knowledgeCollections: process.env.FLATTALK_KB_COLLECTIONS || "",
-    knowledgeMealPlanCollections: process.env.FLATTALK_KB_MEAL_PLAN_COLLECTIONS || "膳食知识库",
-    knowledgeDefaultCollections: process.env.FLATTALK_KB_DEFAULT_COLLECTIONS || "广西养老办事指引知识库,广西养老政策知识库",
+    knowledgeMealPlanCollections: process.env.FLATTALK_KB_MEAL_PLAN_COLLECTIONS || "膳食知识库,meal_plan_business_kb,meal_plan_dialogue_kb",
+    knowledgeDefaultCollections: process.env.FLATTALK_KB_DEFAULT_COLLECTIONS || "广西养老办事指引知识库,广西养老政策知识库,guixiaoyang_policy_kb,guixiaoyang_dialogue_kb",
     modelMode: process.env.FLATTALK_MODEL_MODE || "admin",
     modelRegistryPath: process.env.FLATTALK_MODEL_REGISTRY_PATH || "",
     modelId: process.env.FLATTALK_MODEL_ID || "",
@@ -36,5 +36,6 @@ export function loadEnv() {
     flyaiApiKey: process.env.FLYAI_API_KEY || "",
     flyaiKbHitThreshold: Number(process.env.FLYAI_KB_HIT_THRESHOLD || 0.72),
     flyaiCliTimeoutMs: Number(process.env.FLYAI_CLI_TIMEOUT_MS || 120000),
+    asrEndpoint: process.env.ASR_ENDPOINT || "",
   };
 }
