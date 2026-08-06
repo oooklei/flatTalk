@@ -138,8 +138,53 @@ function loadImportedKnowledge(root) {
 }
 
 /**
+ * 从 data/flyai-kb/*.json 加载 FlyAI 旅居线路文档（跳过 raw/ 与 seeds.json）
+ */
+function loadFlyaiKbDocuments(root) {
+  const dir = path.join(root, 'data', 'flyai-kb');
+  const out = [];
+  if (!fs.existsSync(dir)) return out;
+
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return out;
+  }
+
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    const name = entry.name;
+    if (!name.endsWith('.json') || name === 'seeds.json') continue;
+
+    const sourcePath = path.join(dir, name);
+    try {
+      const doc = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+      const linked_route_id = doc?.linked_route_id;
+      if (!linked_route_id) continue;
+      out.push({
+        document_id: `flyai-${linked_route_id}`,
+        skill_key: 'travel_route',
+        title: doc.title || linked_route_id,
+        source_path: sourcePath,
+        text: doc.text || '',
+        meta: {
+          source: 'flyai',
+          linked_route_id,
+          waypoints: doc.waypoints || [],
+        },
+      });
+    } catch {
+      // 单文件损坏时跳过，不阻断启动
+    }
+  }
+
+  return out;
+}
+
+/**
  * 构建种子文档集合
- * 优先级：DEFAULT_DOCUMENTS > 本地知识文档 > 导入的知识
+ * 优先级：DEFAULT_DOCUMENTS > 本地知识文档 > 导入的知识 > FlyAI KB
  */
 function buildSeedDocuments(root) {
   const docs = [
@@ -147,6 +192,7 @@ function buildSeedDocuments(root) {
     ...COMMON_POLICY_DOCUMENTS,
     ...loadLocalKnowledgeDocuments(root),
     ...loadImportedKnowledge(root),
+    ...loadFlyaiKbDocuments(root),
   ];
   
   return docs;
