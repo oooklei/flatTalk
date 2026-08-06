@@ -39,3 +39,14 @@ test('adaptParams category_hint 购', () => {
   });
   assert.equal(adapted.category, '购');
 });
+
+test('adaptParams 商店概念不映射 destination', () => {
+  const adapted = adaptParams({
+    place_candidates: [],
+    scenic_candidates: [],
+    concept_words: ['商店'],
+    category_hint: '购',
+  });
+  assert.equal(adapted.destination, null);
+  assert.equal(adapted.category, '购');
+});

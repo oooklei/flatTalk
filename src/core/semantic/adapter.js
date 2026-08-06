@@ -98,7 +98,7 @@ export function normalizePlace(raw) {
   for (const [alias, std] of Object.entries(PLACE_ALIASES)) {
     if (kw.includes(alias)) return std;
   }
-  return kw;
+  return null;
 }
 
 export function normalizeScenic(raw) {
@@ -108,7 +108,7 @@ export function normalizeScenic(raw) {
   for (const [alias, std] of Object.entries(SCENIC_ALIASES)) {
     if (kw.includes(alias)) return std;
   }
-  return kw;
+  return null;
 }
 
 export function normalizeCategory(raw) {
