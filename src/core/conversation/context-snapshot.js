@@ -16,6 +16,10 @@ export function buildSnapshot(turnResult) {
     template_id: turnResult.template_id || '',
     turn_id: turnResult.turn_id || '',
     timestamp: Date.now(),
+    semantic_source: turnResult.semantic?.source || '',
+    semantic_core_need: turnResult.semantic?.core_need || '',
+    semantic_category: turnResult.semantic?.adapted?.category || '',
+    semantic_destination: turnResult.semantic?.adapted?.destination || '',
   };
 }
 

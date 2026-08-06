@@ -32,6 +32,7 @@ import { decideTransition, TRANSITION_TYPE } from '../scene-router/scene-transit
 import { resolveAmbiguity } from '../scene-router/ambiguity-resolver.js';
 import { logSceneDecision } from '../scene-router/decision-log.js';
 import { buildSnapshot } from '../../core/conversation/context-snapshot.js';
+import { understandAndAdapt } from '../semantic/index.js';
 import { createSupervisor } from '../agents/supervisor.js';
 import { mockElders, getMockUserByToken } from '../../services/interface-data/mock-collaboration.js';
 
@@ -78,6 +79,18 @@ export function createChatOrchestrator(options = {}) {
       const traceKind = request.action ? 'action' : 'chat';
       try {
         const sceneInput = normalizeRequest(request);
+        const semanticOpts = {};
+        if (options.semanticLlmCall) semanticOpts.llmCall = options.semanticLlmCall;
+        if (options.semanticTimeoutMs != null) semanticOpts.timeoutMs = options.semanticTimeoutMs;
+        const semantic = await understandAndAdapt(sceneInput, semanticOpts);
+        mark('semantic', '语义enrichment', {
+          source: semantic.source,
+          category: semantic.adapted?.category || '',
+          destination: semantic.adapted?.destination || '',
+          ms: semantic.latency_ms,
+        });
+        sceneInput.semantic = semantic;
+        request.semantic = semantic;
         mark('intent', '意图识别', { text_len: sceneInput.text.length });
         const intentContext = await loadIntentContext(sceneInput, options);
         mark('intent', '意图识别完成', { intent_type: intentContext?.intent_type, confidence: intentContext?.confidence });
@@ -164,7 +177,7 @@ export function createChatOrchestrator(options = {}) {
             card: sosRenderResult.card,
             rendered_html: sosRenderResult.rendered_html,
             html_fallback: sosRenderResult.html_fallback,
-            context_snapshot: buildSnapshot(sosEnvelope),
+            context_snapshot: buildSnapshot({ ...sosEnvelope, semantic: request.semantic || sceneInput.semantic }),
             stages,
             debug: { sos_bypass: true, sos_keywords: intentContext?.keyword_match || [] },
           };
@@ -353,7 +366,7 @@ export function createChatOrchestrator(options = {}) {
               ...ambEnvelope,
               ambiguity_options: acceptedScene.ambiguity_options,
               answer: ambAnswer,
-              context_snapshot: buildSnapshot(ambEnvelope),
+              context_snapshot: buildSnapshot({ ...ambEnvelope, semantic: request.semantic || sceneInput.semantic }),
               stages,
               debug: { ambiguity: true, option_count: acceptedScene.ambiguity_options.length },
             };
@@ -497,7 +510,7 @@ export function createChatOrchestrator(options = {}) {
               ...ambEnvelope,
               ambiguity_options: routeOptions,
               answer: ambAnswer,
-              context_snapshot: buildSnapshot(ambEnvelope),
+              context_snapshot: buildSnapshot({ ...ambEnvelope, semantic: request.semantic || sceneInput.semantic }),
               stages,
               debug: { publish_ambiguous: true, option_count: routeOptions.length },
             };
@@ -669,7 +682,7 @@ export function createChatOrchestrator(options = {}) {
 
         return {
           ...envelope,
-          context_snapshot: buildSnapshot(envelope),
+          context_snapshot: buildSnapshot({ ...envelope, semantic: request.semantic || sceneInput.semantic }),
           answer: envelope.answer_text,
           llm: renderResult.llm,
           card: renderResult.card,
