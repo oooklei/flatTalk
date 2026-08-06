@@ -164,6 +164,16 @@ export function adaptParams(slots = {}) {
     result.category = normalizeCategory(slots.category_hint);
   }
 
+  if (!result.category && slots.concept_words?.length) {
+    for (const concept of slots.concept_words) {
+      const cat = normalizeCategory(concept);
+      if (cat) {
+        result.category = cat;
+        break;
+      }
+    }
+  }
+
   if (!result.destination && slots.concept_words?.length) {
     for (const concept of slots.concept_words) {
       const norm = normalizePlace(concept);

@@ -290,6 +290,7 @@ export function createChatOrchestrator(options = {}) {
             card: fRenderResult.card,
             rendered_html: fRenderResult.rendered_html,
             html_fallback: fRenderResult.html_fallback,
+            context_snapshot: buildSnapshot({ ...fEnvelope, semantic: request.semantic || sceneInput.semantic }),
             debug: { followup_bypass: true, skill_key: fSkillKey, template_id: fTemplateIdFinal },
           };
         }
