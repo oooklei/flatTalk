@@ -9,6 +9,17 @@ test('shouldSkipEnrichment：action / followup 跳过', () => {
   assert.equal(shouldSkipEnrichment({ message: '附近有什么商店' }), false);
 });
 
+test('shouldSkipEnrichment：reenter_chat 不跳过', () => {
+  assert.equal(
+    shouldSkipEnrichment({ message: '附近有什么商店', context: { followup_source: 'followup', reenter_chat: true } }),
+    false,
+  );
+});
+
+test('shouldSkipEnrichment：action_button 无 reenter_chat 跳过', () => {
+  assert.equal(shouldSkipEnrichment({ message: 'x', context: { followup_source: 'action_button' } }), true);
+});
+
 test('understandAndAdapt：skip 不调 llmCall', async () => {
   let called = 0;
   const s = await understandAndAdapt(
@@ -50,4 +61,12 @@ test('understandAndAdapt：LLM 失败走 rules_fallback', async () => {
   );
   assert.equal(s.source, SEMANTIC_SOURCES.RULES_FALLBACK);
   assert.equal(s.adapted.category, '购');
+});
+
+test('understandAndAdapt：非对象 JSON 走 fallback', async () => {
+  const s = await understandAndAdapt(
+    { message: '附近有什么商店' },
+    { llmCall: async () => ({ ok: true, content: '"foo"' }) },
+  );
+  assert.equal(s.source, SEMANTIC_SOURCES.RULES_FALLBACK);
 });

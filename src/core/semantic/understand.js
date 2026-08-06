@@ -9,8 +9,8 @@ const DEFAULT_TIMEOUT_MS = Number(process.env.FLATTALK_SEMANTIC_TIMEOUT_MS || 12
 
 export function shouldSkipEnrichment(request = {}) {
   if (request.action) return true;
-  const followup = request.context?.followup_source;
-  if (followup && followup !== 'reenter_chat') return true;
+  if (request.context?.action_key && request.context?.reenter_chat !== true) return true;
+  if (request.context?.followup_source && request.context?.reenter_chat !== true) return true;
   const text = String(request.message || request.text || '').trim();
   if (!text) return true;
   return false;
@@ -24,7 +24,9 @@ function parseUnderstandJson(content) {
   if (!content) return null;
   try {
     const clean = String(content).replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-    return JSON.parse(clean);
+    const parsed = JSON.parse(clean);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    return parsed;
   } catch {
     return null;
   }
