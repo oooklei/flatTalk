@@ -33,5 +33,8 @@ export function loadEnv() {
     openaiBaseUrl: process.env.FLATTALK_OPENAI_BASE_URL || "",
     openaiApiKey: process.env.FLATTALK_OPENAI_API_KEY || "",
     openaiModel: process.env.FLATTALK_OPENAI_MODEL || "",
+    flyaiApiKey: process.env.FLYAI_API_KEY || "",
+    flyaiKbHitThreshold: Number(process.env.FLYAI_KB_HIT_THRESHOLD || 0.72),
+    flyaiCliTimeoutMs: Number(process.env.FLYAI_CLI_TIMEOUT_MS || 120000),
   };
 }
