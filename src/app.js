@@ -6,15 +6,16 @@ import zlib from 'node:zlib';
 import { requireAuth } from './server/auth-middleware.js';
 import { wantsChatSse, writeChatSse } from './server/sse-chat.js';
 import { handleAdminApi, serveAdminStatic } from './admin/index.js';
-import { handleExtGateway } from './admin/integrations.js';
+import { handleExtGateway, loadIntegrations } from './admin/integrations.js';
 import { verifyOpenApiKey } from './admin/openapi.js';
 import { getEmbedByToken, readAccess } from './admin/access.js';
 import { handleDebugApi } from './api/debug.js';
 import { buildEnvelope } from './contracts/envelope.js';
-import { dispatchAction } from './core/actions/action-dispatcher.js';
+import { dispatchAction, templateIdFromAction } from './core/actions/action-dispatcher.js';
 import { createSmartFallbackHandler } from './core/fallback/smart-fallback-handler.js';
 import { createContextManager } from './core/conversation/context-manager.js';
 import { createSessionStore } from './core/conversation/session-store.js';
+import { injectSnapshot } from './core/conversation/context-snapshot.js';
 import { classifyIntent } from './core/intent-classifier/index.js';
 import { createTemplateCardModelService } from './core/model-runtime/template-card-llm-service.js';
 import { pickChatModel, publicModelName } from './core/model-runtime/model-registry.js';
@@ -122,15 +123,18 @@ export function createApp(env = { runtimeMode: 'local' }) {
       }
 
       if (req.method === 'POST' && url.pathname === '/api/chat/message') {
-        return handleChat(req, res, { dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler });
+        return handleChat(req, res, { dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler })
+          .catch((err) => { if (!res.headersSent) json(res, 500, { ok: false, error: err.message || 'internal_error' }); });
       }
 
       if (req.method === 'POST' && url.pathname === '/api/chat/followup') {
-        return handleChat(req, res, { followup: true, dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler });
+        return handleChat(req, res, { followup: true, dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler })
+          .catch((err) => { if (!res.headersSent) json(res, 500, { ok: false, error: err.message || 'internal_error' }); });
       }
 
       if (req.method === 'POST' && url.pathname === '/api/chat/action') {
-        return handleChatAction(req, res, { dataService, modelService, logger, chatState, weatherService });
+        return handleChatAction(req, res, { dataService, modelService, logger, chatState, weatherService })
+          .catch((err) => { if (!res.headersSent) json(res, 500, { ok: false, error: err.message || 'internal_error' }); });
       }
 
       if (req.method === 'GET' && url.pathname === '/api/chat/running') {
@@ -146,7 +150,11 @@ export function createApp(env = { runtimeMode: 'local' }) {
       }
 
       if (req.method === 'POST' && url.pathname === '/api/input/voice') {
-        return handleVoiceInput(req, res, { asrEndpoint: env.asrEndpoint, json, readJson });
+        return handleVoiceInput(req, res, { asrEndpoint: env.asrEndpoint, json, readJson, integrations: loadIntegrations() });
+      }
+
+      if (req.method === 'POST' && url.pathname === '/api/input/ocr/normalize') {
+        return handleOcrNormalize(req, res, { json, readJson, integrations: loadIntegrations() });
       }
 
       if (req.method === 'POST' && url.pathname === '/api/open/v1/chat/completions') {
@@ -170,6 +178,15 @@ export function createApp(env = { runtimeMode: 'local' }) {
 
       if (req.method === 'GET' && url.pathname === '/api/open/v1/map/search-nearby') {
         return handleMapSearchNearby(req, res, url);
+      }
+
+      if (req.method === 'GET' && url.pathname === '/api/map/route-planning') {
+        return handleMapRoutePlanning(req, res, url);
+      }
+
+      // 周边静态瓦片缓存代理（配额耗尽时回落磁盘缓存/占位图）
+      if (req.method === 'GET' && url.pathname === '/api/map/static') {
+        return handleMapStaticCached(req, res, url);
       }
 
       if (req.method === 'GET' && url.pathname === '/api/travel/geocode') {
@@ -269,6 +286,42 @@ export function createApp(env = { runtimeMode: 'local' }) {
         return void handleAdminApi(req, res, url);
       }
 
+      // 景点实拍照片静态服务
+      if (req.method === 'GET' && url.pathname.startsWith('/spot-images/')) {
+        const segs = decodeURIComponent(url.pathname.slice('/spot-images/'.length));
+        const filePath = path.join(process.cwd(), 'data', 'spot-images', segs);
+        // 防止路径遍历
+        const resolvedPath = path.resolve(filePath);
+        const allowedBase = path.resolve(path.join(process.cwd(), 'data', 'spot-images'));
+        if (!resolvedPath.startsWith(allowedBase) || !fs.existsSync(resolvedPath)) {
+          return json(res, 404, { ok: false, error: 'spot_image_not_found' });
+        }
+        const ext = path.extname(resolvedPath).toLowerCase();
+        const mimeMap = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.gif': 'image/gif' };
+        return serveFile(res, path.relative(process.cwd(), resolvedPath), mimeMap[ext] || 'application/octet-stream', req);
+      }
+
+      // 对外提供预制作 SVG 地图文件
+      if (url.pathname.startsWith('/api/sojourn-map/')) {
+        const fs = await import('node:fs');
+        const path = await import('node:path');
+        const segs = url.pathname.slice('/api/sojourn-map/'.length).split('/').filter(Boolean);
+        if (segs.length >= 2) {
+          const filePath = path.join(process.cwd(), 'data', 'sojourn-maps', `${segs[0]}_${segs[1].replace(/\.[^.]+$/, '')}.svg`);
+          if (fs.existsSync(filePath)) {
+            res.writeHead(200, { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'public, max-age=3600' });
+            return res.end(fs.readFileSync(filePath));
+          }
+        }
+        if (segs[0] === 'index.json') {
+          const indexPath = path.join(process.cwd(), 'data', 'sojourn-maps', 'index.json');
+          if (fs.existsSync(indexPath)) {
+            return json(res, 200, JSON.parse(fs.readFileSync(indexPath, 'utf8')));
+          }
+        }
+        return json(res, 404, { ok: false, error: 'map_not_found' });
+      }
+
       if (url.pathname.startsWith('/admin')) {
         return void serveAdminStatic(req, res, url);
       }
@@ -287,7 +340,7 @@ function buildDataServiceOptions(env) {
     },
     interfaceData: {
       tagSystem: {
-        baseUrl: env.tagSystemBaseUrl || 'http://192.168.1.160:8010',
+        baseUrl: env.tagSystemBaseUrl || 'http://10.21.202.9:8010',
         pgUrl: env.tagSystemPgUrl || env.pgUrl || '',
         token: env.tagSystemToken || '',
       },
@@ -370,15 +423,158 @@ function handleMobileBootstrap(req, res, url) {
   return json(res, 200, { ok: true, ...bootstrap });
 }
 
-async function handleVoiceInput(req, res, { asrEndpoint, json, readJson }) {
+/**
+ * 解析 ASR 集成配置（从管理页面「第三方 API」读取）
+ * 支持火山引擎(volc_asr)和腾讯云(tencent_asr)两个 provider
+ * 优先级：integrations.json 中 status=active 的条目 > 环境变量 ASR_ENDPOINT
+ */
+function resolveAsrConfig({ integrations, asrEndpoint }) {
+  const items = integrations?.items || [];
+
+  // 1. 优先查找 status=active 的 ASR 集成（volc_asr 或 tencent_asr）
+  const asrItem = items.find((it) =>
+    (it.key === 'volc_asr' || it.key === 'tencent_asr') && it.status === 'active',
+  );
+
+  if (asrItem) {
+    // 从集成配置解析 base_url 和 secret
+    let baseUrl = asrItem.base_url || '';
+    let secret = asrItem.config?.api_key || '';
+
+    // fallback 到环境变量
+    if (!baseUrl) {
+      for (const ek of asrItem.env_keys || []) {
+        if (/BASE_URL|ENDPOINT|WS_URL/i.test(ek) && process.env[ek]) {
+          baseUrl = process.env[ek];
+          break;
+        }
+      }
+    }
+    if (!secret) {
+      for (const ek of asrItem.env_keys || []) {
+        if (/KEY|TOKEN|SECRET|PASSWORD/i.test(ek) && process.env[ek]) {
+          secret = process.env[ek];
+          break;
+        }
+      }
+    }
+
+    if (asrItem.key === 'tencent_asr') {
+      return {
+        provider: 'tencent',
+        endpoint: baseUrl || 'http://10.21.202.9:8020',
+        auth_type: asrItem.auth_type || 'none',
+        secret,
+        app_id: asrItem.config?.app_id || process.env.TENCENT_ASR_APP_ID || '',
+      };
+    }
+
+    // volc_asr：支持 HTTP 文件上传端点（sauc-api /asr/file）
+    return {
+      provider: 'volc',
+      endpoint: baseUrl || asrEndpoint || '',
+      auth_type: asrItem.auth_type || 'bearer',
+      secret,
+      app_id: asrItem.config?.app_id || process.env.VOLCENGINE_APP_ID || '',
+    };
+  }
+
+  // 2. fallback：环境变量 ASR_ENDPOINT（兼容旧部署）
+  if (asrEndpoint) {
+    return { provider: 'generic', endpoint: asrEndpoint, auth_type: 'none', secret: '' };
+  }
+
+  return null;
+}
+
+/**
+ * 调用腾讯云 ASR（tencent-asr 容器，POST /api/v1/asr/sentence）
+ * 请求体：{ request_id, source_type:"base64", audio_base64, audio_format, language_engine, user_audio_key }
+ * 响应体：{ status:"ok", transcript_text, confidence, ... }
+ */
+async function callTencentAsr(audioBuffer, config) {
+  const base64Audio = audioBuffer.toString('base64');
+  const requestId = `flattalk_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const body = JSON.stringify({
+    request_id: requestId,
+    source_type: 'base64',
+    audio_base64: base64Audio,
+    audio_format: 'wav',
+    language_engine: '16k_zh',
+    user_audio_key: requestId,
+  });
+
+  const headers = { 'Content-Type': 'application/json' };
+  if (config.auth_type === 'bearer' && config.secret) {
+    headers.authorization = `Bearer ${config.secret}`;
+  } else if (config.auth_type === 'header' && config.secret) {
+    headers['x-client-key'] = config.secret;
+  }
+
+  const resp = await fetch(`${config.endpoint}/api/v1/asr/sentence`, {
+    method: 'POST',
+    headers,
+    body,
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    throw new Error(`腾讯ASR HTTP ${resp.status}: ${errText.slice(0, 200)}`);
+  }
+
+  const result = await resp.json().catch(() => ({}));
+  // 兼容多种响应字段
+  const text = result.transcript_text || result.transcriptText || result.text || result.result?.text || '';
+  const confidence = result.confidence ?? null;
+  return { text, confidence, raw: result };
+}
+
+/**
+ * 调用火山引擎 ASR 文件上传端点（sauc-api /asr/file）
+ * 支持 multipart/form-data 文件上传
+ */
+async function callVolcAsr(audioBuffer, config) {
+  // sauc-api 的 /asr/file 端点接收文件上传
+  const boundary = `----flattalk${Date.now()}`;
+  const formData = Buffer.concat([
+    Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="audio"; filename="voice.wav"\r\nContent-Type: audio/wav\r\n\r\n`),
+    audioBuffer,
+    Buffer.from(`\r\n--${boundary}--\r\n`),
+  ]);
+
+  const headers = { 'Content-Type': `multipart/form-data; boundary=${boundary}` };
+  if (config.auth_type === 'bearer' && config.secret) {
+    headers.authorization = `Bearer ${config.secret}`;
+  }
+
+  const resp = await fetch(`${config.endpoint}/asr/file`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    throw new Error(`火山ASR HTTP ${resp.status}: ${errText.slice(0, 200)}`);
+  }
+
+  const result = await resp.json().catch(() => ({}));
+  const text = result.text || result.result || result.transcript || result.data?.text || '';
+  return { text, confidence: null, raw: result };
+}
+
+async function handleVoiceInput(req, res, { asrEndpoint, json, readJson, integrations }) {
   const body = await readJson(req);
   const audioBase64 = body.audioBase64 || '';
 
   if (!audioBase64) {
     return json(res, 200, { ok: true, input: { voiceOk: false, warning: '未收到有效录音数据' } });
   }
-  if (!asrEndpoint) {
-    return json(res, 200, { ok: true, input: { voiceOk: false, warning: '语音识别服务未配置（ASR_ENDPOINT 缺失）' } });
+
+  // 从管理页面集成配置解析 ASR 服务（支持火山/腾讯），fallback 到环境变量
+  const asrConfig = resolveAsrConfig({ integrations, asrEndpoint });
+  if (!asrConfig) {
+    return json(res, 200, { ok: true, input: { voiceOk: false, warning: '语音识别服务未配置（管理页面「第三方API」中未启用 volc_asr 或 tencent_asr，且 ASR_ENDPOINT 环境变量缺失）' } });
   }
 
   // 从 data URL 中提取纯 base64 音频数据
@@ -386,30 +582,166 @@ async function handleVoiceInput(req, res, { asrEndpoint, json, readJson }) {
   const audioBuffer = Buffer.from(base64Data, 'base64');
 
   try {
-    const asrResponse = await fetch(asrEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'audio/wav' },
-      body: audioBuffer,
-    });
+    let asrResult;
 
-    if (!asrResponse.ok) {
-      const errText = await asrResponse.text().catch(() => '');
-      console.error('[ASR] 服务返回错误:', asrResponse.status, errText);
-      return json(res, 200, { ok: true, input: { voiceOk: false, warning: `语音识别服务异常（HTTP ${asrResponse.status}）` } });
+    if (asrConfig.provider === 'tencent') {
+      asrResult = await callTencentAsr(audioBuffer, asrConfig);
+    } else if (asrConfig.provider === 'volc') {
+      asrResult = await callVolcAsr(audioBuffer, asrConfig);
+    } else {
+      // generic：旧的直接 POST audio/wav 方式（兼容旧部署）
+      const headers = { 'Content-Type': 'audio/wav' };
+      if (asrConfig.secret) headers.authorization = `Bearer ${asrConfig.secret}`;
+      const asrResponse = await fetch(asrConfig.endpoint, {
+        method: 'POST',
+        headers,
+        body: audioBuffer,
+      });
+      if (!asrResponse.ok) {
+        const errText = await asrResponse.text().catch(() => '');
+        console.error('[ASR] 服务返回错误:', asrResponse.status, errText);
+        return json(res, 200, { ok: true, input: { voiceOk: false, warning: `语音识别服务异常（HTTP ${asrResponse.status}）` } });
+      }
+      const raw = await asrResponse.json().catch(() => ({}));
+      const text = raw.text || raw.result || raw.transcript || raw.data?.text || raw.data?.result || '';
+      asrResult = { text, confidence: null, raw };
     }
 
-    const asrResult = await asrResponse.json().catch(() => ({}));
-    // 兼容多种 ASR 响应字段
-    const text = asrResult.text || asrResult.result || asrResult.transcript
-      || asrResult.data?.text || asrResult.data?.result || '';
-
-    if (text) {
-      return json(res, 200, { ok: true, input: { voiceOk: true, text } });
+    if (asrResult.text) {
+      const input = { voiceOk: true, text: asrResult.text };
+      if (asrResult.confidence != null) input.confidence = asrResult.confidence;
+      return json(res, 200, { ok: true, input });
     }
     return json(res, 200, { ok: true, input: { voiceOk: false, warning: '语音未识别出有效文字，请靠近麦克风再试' } });
   } catch (err) {
-    console.error('[ASR] 请求失败:', err.message);
+    console.error(`[ASR] ${asrConfig.provider} 请求失败:`, err.message);
     return json(res, 200, { ok: true, input: { voiceOk: false, warning: `语音识别服务连接失败：${err.message}` } });
+  }
+}
+
+/**
+ * 解析 OCR 集成配置（从管理页面「第三方 API」读取）
+ * 优先级：integrations.json 中 status=active 的 ocr 条目 > 环境变量 OCR_ENDPOINT
+ */
+function resolveOcrConfig({ integrations }) {
+  const items = integrations?.items || [];
+  const ocrItem = items.find((it) => it.key === 'ocr' && it.status === 'active');
+
+  if (ocrItem) {
+    let baseUrl = ocrItem.base_url || '';
+    let secret = ocrItem.config?.api_key || '';
+
+    if (!baseUrl) {
+      for (const ek of ocrItem.env_keys || []) {
+        if (/ENDPOINT|BASE_URL|URL/i.test(ek) && process.env[ek]) {
+          baseUrl = process.env[ek];
+          break;
+        }
+      }
+    }
+    if (!secret) {
+      for (const ek of ocrItem.env_keys || []) {
+        if (/KEY|TOKEN|SECRET/i.test(ek) && process.env[ek]) {
+          secret = process.env[ek];
+          break;
+        }
+      }
+    }
+
+    return {
+      endpoint: baseUrl || process.env.OCR_ENDPOINT || '',
+      path: ocrItem.test_path || '/ocr/general',
+      auth_type: ocrItem.auth_type || 'none',
+      secret,
+    };
+  }
+
+  // fallback：环境变量
+  if (process.env.OCR_ENDPOINT) {
+    return { endpoint: process.env.OCR_ENDPOINT, path: '/ocr/general', auth_type: 'none', secret: '' };
+  }
+
+  return null;
+}
+
+/**
+ * 处理图片 OCR 识别请求
+ * 前端发送 imageBase64，后端调用 OCR 服务，返回识别文字
+ */
+async function handleOcrNormalize(req, res, { json, readJson, integrations }) {
+  const body = await readJson(req);
+  const imageBase64 = body.imageBase64 || '';
+
+  if (!imageBase64) {
+    return json(res, 200, { ok: true, input: { ocrOk: false, warning: '未收到有效图片数据' } });
+  }
+
+  const ocrConfig = resolveOcrConfig({ integrations });
+  if (!ocrConfig || !ocrConfig.endpoint) {
+    return json(res, 200, { ok: true, input: { ocrOk: false, warning: 'OCR 服务未配置（管理页面「第三方API」中未启用 ocr 条目，且 OCR_ENDPOINT 环境变量缺失）' } });
+  }
+
+  // 从 data URL 中提取纯 base64 数据
+  const base64Data = imageBase64.replace(/^data:image\/[^;]+;base64,/, '');
+
+  try {
+    const ocrUrl = `${ocrConfig.endpoint.replace(/\/$/, '')}${ocrConfig.path}`;
+    const headers = { 'Content-Type': 'application/json' };
+    if (ocrConfig.auth_type === 'bearer' && ocrConfig.secret) {
+      headers.authorization = `Bearer ${ocrConfig.secret}`;
+    } else if (ocrConfig.auth_type === 'header' && ocrConfig.secret) {
+      headers['x-api-key'] = ocrConfig.secret;
+    }
+
+    const ocrResponse = await fetch(ocrUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ image_base64: base64Data }),
+    });
+
+    if (!ocrResponse.ok) {
+      const errText = await ocrResponse.text().catch(() => '');
+      console.error('[OCR] 服务返回错误:', ocrResponse.status, errText);
+      return json(res, 200, { ok: true, input: { ocrOk: false, warning: `OCR 服务异常（HTTP ${ocrResponse.status}）` } });
+    }
+
+    const result = await ocrResponse.json().catch(() => ({}));
+
+    // MixOCR 响应格式：{ code:0, data:{...}, msg } 或 { code:-3, msg:"失败" }
+    if (result.code !== 0 && result.code !== '0') {
+      const msg = result.msg || result.message || 'OCR 识别失败';
+      return json(res, 200, { ok: true, input: { ocrOk: false, warning: msg } });
+    }
+
+    // 兼容多种响应字段：data.text / data.results / data.words_result / data.lines
+    const d = result.data || result;
+    let text = '';
+    if (typeof d === 'string') {
+      text = d;
+    } else if (Array.isArray(d)) {
+      // 数组：每项可能是 {text} 或纯字符串
+      text = d.map((item) => (typeof item === 'string' ? item : item.text || item.content || '')).join('\n');
+    } else if (d) {
+      text = d.text || d.full_text || d.result || d.content || '';
+      if (!text && d.words_result) {
+        text = (Array.isArray(d.words_result) ? d.words_result : []).map((w) => w.words || w.text || '').join('');
+      }
+      if (!text && d.lines) {
+        text = d.lines.map((l) => l.text || l.content || '').join('\n');
+      }
+      if (!text && d.blocks) {
+        text = d.blocks.map((b) => b.text || b.content || '').join('\n');
+      }
+    }
+
+    text = (text || '').trim();
+    if (text) {
+      return json(res, 200, { ok: true, input: { ocrOk: true, text, formattedText: text } });
+    }
+    return json(res, 200, { ok: true, input: { ocrOk: false, warning: 'OCR 未识别出有效文字，请上传更清晰的图片' } });
+  } catch (err) {
+    console.error('[OCR] 请求失败:', err.message);
+    return json(res, 200, { ok: true, input: { ocrOk: false, warning: `OCR 服务连接失败：${err.message}` } });
   }
 }
 
@@ -493,12 +825,14 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
       request_id: body.request_id,
       conversation_id: conversationId,
       turn_id: turnId,
-      skill_key: (reenterChat || !followup) ? '' : body.skill_key || body.skillKey,
-      template_id: body.template_id || body.templateId || body.params?.template_id || body.next_template_id || '',
+      skill_key: reenterChat ? '' : (body.skill_key || body.skillKey || (body.action_key || body.actionKey || '').split('.')[0] || ''),
+      template_id: body.template_id || body.templateId || body.params?.template_id || body.next_template_id
+        || (reenterChat ? '' : templateIdFromAction(body.action_key || body.actionKey || '', body.params || {})),
       intent: body.intent || '',
       message,
+      history: Array.isArray(body.conversationHistory) ? body.conversationHistory : [],
       role: body.role || body.roleKey || 'elder_family',
-      elder_id: body.elder_id,
+      elder_id: body.elder_id || (body.elderScope && body.elderScope.startsWith('elder_') ? body.elderScope : '') || '',
       context: {
         active_agent: reenterChat ? '' : (previous?.envelope?.agent_key || previous?.envelope?.skill_key || ''),
         last_template: previous?.envelope?.template_id || '',
@@ -506,19 +840,16 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
         action_key: reenterChat ? '' : (body.action_key || body.actionKey || ''),
         action_params: reenterChat ? {} : (body.params || {}),
         reenter_chat: reenterChat,
-        location: body.location || null,
         unsupported_action_key: body.unsupported_action_key || body.unsupportedActionKey || '',
         previous_turn_id: previous?.turn_id || '',
         ...(followup ? {
           previous_scene: previous?.envelope?.skill_key,
           followup_source: body.followup_source || body.source || '',
         } : {}),
-        // ★ ContextSnapshot 注入：从上一轮 envelope 提取上下文快照
-        ...(previous?.envelope?.context_snapshot ? {
-          previous_scene: previous.envelope.context_snapshot.scene,
-          previous_template: previous.envelope.context_snapshot.template_id,
-          previous_intent: previous.envelope.context_snapshot.intent,
-        } : {}),
+        // ★ ContextSnapshot / ActiveEntity 注入
+        ...injectSnapshot({}, previous?.envelope?.context_snapshot),
+        // 定位必须在 snapshot 之后写入，避免被覆盖；前端 console 有 GPS ≠ 后端一定收到
+        location: body.location || body.context?.location || null,
       },
     }, { dataService, modelService, weatherService, contextManager, smartFallbackHandler });
 
@@ -564,12 +895,10 @@ async function handleChatAction(req, res, { dataService, modelService, logger, c
         previous_scene: previous?.envelope?.skill_key,
         previous_turn_id: previous?.turn_id,
         previous_template_id: previous?.envelope?.template_id,
-        // ★ ContextSnapshot 注入：从上一轮 envelope 提取上下文快照
-        ...(previous?.envelope?.context_snapshot ? {
-          previous_scene: previous.envelope.context_snapshot.scene,
-          previous_template: previous.envelope.context_snapshot.template_id,
-          previous_intent: previous.envelope.context_snapshot.intent,
-        } : {}),
+        // ★ ContextSnapshot / ActiveEntity 注入
+        ...injectSnapshot({}, previous?.envelope?.context_snapshot),
+        // 定位必须在 snapshot 之后写入，避免被覆盖
+        location: body.location || body.context?.location || null,
       },
     }, {
       runSkill: (request) => runLocalSkill({
@@ -640,7 +969,7 @@ async function handleOpenApiChat(req, res, deps) {
     skill_key: body.skill_key || body.skillKey,
     message: text,
     role: body.role || body.roleKey,
-    elder_id: body.elder_id,
+    elder_id: body.elder_id || (body.elderScope && body.elderScope.startsWith('elder_') ? body.elderScope : '') || '',
     context: body.context,
   }, deps);
 
@@ -669,7 +998,7 @@ async function runSkillForOpenApi(body, { dataService, modelService, weatherServ
     skill_key: body.skill_key || body.skillKey,
     message: body.message || '',
     role: body.role || 'elder_family',
-    elder_id: body.elder_id,
+    elder_id: body.elder_id || (body.elderScope && body.elderScope.startsWith('elder_') ? body.elderScope : '') || '',
     context: body.context || {},
   }, { dataService, modelService, weatherService });
 }
@@ -844,24 +1173,42 @@ async function handleGxyAssistant(req, res, url, { json }) {
   }
   // 修复 URL 编码问题：将空格替换回 + 号（Base64 标准字符）
   cipherText = cipherText.replace(/ /g, '+');
-  
+
   // 获取主机配置
   const { loadEnv } = await import('./config/env.js');
   const env = loadEnv();
-  const host = req.headers.host?.split(':')[0] || env.host;
-  
+
+  // ★ 解析用户实际访问的地址和端口（支持反向代理）
+  //   优先级：X-Forwarded-Host > req.headers.host > env.host
+  //   Nginx 配置 proxy_set_header X-Forwarded-Host $http_host; 即可透传客户端真实地址
+  const xForwardedHost = req.headers['x-forwarded-host'] || '';
+  const xForwardedProto = req.headers['x-forwarded-proto'] || '';
+  const xForwardedPort = req.headers['x-forwarded-port'] || '';
+  const rawHost = xForwardedHost || req.headers.host || '';
+  const host = rawHost.split(':')[0] || env.host;
+  const reqPort = rawHost.split(':')[1] || xForwardedPort || String(env.port);
+
+  // ★ 协议判定优先级：X-Forwarded-Proto > req.socket.encrypted > 端口推断
+  //   Nginx 配置 proxy_set_header X-Forwarded-Proto $scheme; 即可透传真实协议
+  const sslPorts = [String(env.sslPort), '5444', '5445', '443'];
+  const useHttps = xForwardedProto === 'https'
+    || req.socket?.encrypted === true
+    || sslPorts.includes(reqPort);
+
   const { processExternalSsoRequest } = await import('./server/external-aes-sso.js');
   const result = processExternalSsoRequest(cipherText, {
     host,
     port: env.port,
     sslPort: env.sslPort,
+    useHttps,
+    reqPort,
   });
-  
+
   if (!result.ok) {
     const status = result.error === 'internal_error' ? 500 : 400;
     return json(res, status, result);
   }
-  
+
   // 返回 JSON（不再 302 重定向）
   return json(res, 200, result);
 }
@@ -892,23 +1239,31 @@ function readJson(req) {
   return new Promise((resolve, reject) => {
     let raw = '';
     let size = 0;
+    let rejected = false;
     req.on('data', (chunk) => {
+      if (rejected) return;
       size += chunk.length;
       if (size > MAX_BODY_SIZE) {
+        rejected = true;
         reject(new Error('request_body_too_large'));
-        req.destroy();
         return;
       }
       raw += chunk;
     });
     req.on('end', () => {
+      if (rejected) return;
       try {
         resolve(raw ? JSON.parse(raw) : {});
       } catch (error) {
-        reject(error);
+        // 容错：坏 JSON（非法转义等）resolve 空对象，避免 unhandledRejection 导致请求无响应
+        resolve({});
       }
     });
-    req.on('error', reject);
+    req.on('error', (err) => {
+      if (rejected) return;
+      rejected = true;
+      reject(err);
+    });
   });
 }
 
@@ -967,6 +1322,29 @@ function makeId(prefix) {
 
 // ========== 腾讯地图接口处理函数 ==========
 
+async function handleMapStaticCached(req, res, url) {
+  try {
+    const { getStaticMapImage } = await import('./services/map/static-map-cache.js');
+    const result = await getStaticMapImage({
+      lat: url.searchParams.get('lat'),
+      lng: url.searchParams.get('lng'),
+      zoom: url.searchParams.get('zoom'),
+      size: url.searchParams.get('size'),
+      markers: url.searchParams.get('markers'),
+      label: url.searchParams.get('label'),
+    });
+    res.writeHead(result.status || 200, {
+      'content-type': result.contentType || 'image/png',
+      'cache-control': result.source === 'placeholder' ? 'no-store' : 'public, max-age=86400',
+      'x-map-static-source': result.source || 'unknown',
+      ...(result.reason ? { 'x-map-static-reason': String(result.reason).slice(0, 160) } : {}),
+    });
+    return res.end(result.body);
+  } catch (e) {
+    return json(res, 500, { ok: false, error: e.message || 'static_map_failed' });
+  }
+}
+
 async function handleMapGeocode(req, res, url) {
   const address = url.searchParams.get('address');
   if (!address) {
@@ -990,6 +1368,46 @@ async function handleMapGeocode(req, res, url) {
     });
   } catch (e) {
     return json(res, 500, { ok: false, error: e.message });
+  }
+}
+
+/**
+ * 腾讯地图路线规划代理（驾车）
+ */
+async function handleMapRoutePlanning(req, res, url) {
+  const from = url.searchParams.get('from');
+  const to = url.searchParams.get('to');
+  const via = url.searchParams.get('via') || '';
+  const policy = parseInt(url.searchParams.get('policy')) || 1;
+
+  if (!from || !to) {
+    return json(res, 400, { ok: false, error: '缺少 from 或 to 参数' });
+  }
+
+  try {
+    const tencentMap = new TencentMapAdapter();
+    const result = await tencentMap.routePlanning(from, to, via, policy);
+    return json(res, 200, { ok: true, ...result, source: 'tencent_map' });
+  } catch (e) {
+    // 配额耗尽（status=121）或接口异常时，降级为直线连线
+    const fromParts = from.split(',').map(Number);
+    const toParts = to.split(',').map(Number);
+    const viaParts = via ? via.split(';').filter(Boolean).map(p => p.split(',').map(Number)) : [];
+    const polyline = [];
+    if (fromParts.length === 2) polyline.push({ lat: fromParts[0], lng: fromParts[1] });
+    for (const vp of viaParts) {
+      if (vp.length === 2) polyline.push({ lat: vp[0], lng: vp[1] });
+    }
+    if (toParts.length === 2) polyline.push({ lat: toParts[0], lng: toParts[1] });
+    return json(res, 200, {
+      ok: true,
+      degraded: true,
+      message: e.message || '配额限制，使用直线连线',
+      distance: 0,
+      duration: 0,
+      polyline,
+      source: 'fallback_straight_line',
+    });
   }
 }
 

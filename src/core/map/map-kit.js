@@ -13,10 +13,10 @@
  *   // → 返回可直接展开进模板 data 的字段：map_key, centerLat, waypoints_json, ...
  */
 
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { matchPublishedPackages } from '../scene-router/publish-index.js';
+import { getActiveWsPair, signWsRequest } from '../../services/map/tencent-key-pool.js';
 
 // 腾讯地图 JS API Key
 const DEFAULT_MAP_JS_KEY = 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
@@ -112,6 +112,15 @@ export function buildRouteMapData({ destination, waypoints = [], spots = [], rou
 
   // ★ 优先使用预制作资源包（0 次 API 调用）
   let pkg = findPrebuiltPackage(routeId, version);
+  // 包目的地与话语/目标城冲突时丢弃（例：请求北海却命中七洞乡预制作 SVG）
+  if (pkg?.svg && packageConflictsWithDestination(pkg, destination, utterance)) {
+    console.warn('[map-kit] drop prebuilt package due to destination mismatch', {
+      routeId: routeId || pkg.routeId,
+      destination,
+      pkgDest: pkg.routeData?.destination,
+    });
+    pkg = null;
+  }
   // Prefer published index when utterance or destination available
   if ((!pkg || !pkg.svg) && (utterance || destination)) {
     const hits = matchPublishedPackages(utterance || destination);
@@ -119,7 +128,7 @@ export function buildRouteMapData({ destination, waypoints = [], spots = [], rou
       const unique = !hits[1] || hits[0].score > hits[1].score;
       if (unique) {
         const hitPkg = findPrebuiltPackage(hits[0].route_id, version);
-        if (hitPkg?.svg) {
+        if (hitPkg?.svg && !packageConflictsWithDestination(hitPkg, destination, utterance)) {
           pkg = { ...hitPkg, routeId: hits[0].route_id, publish: hits[0] };
         }
       } else {
@@ -141,6 +150,7 @@ export function buildRouteMapData({ destination, waypoints = [], spots = [], rou
   // then existing findPrebuiltPackageByDestination fallback (unpublished scan)
   if (!pkg || !pkg.svg) {
     pkg = findPrebuiltPackageByDestination(destination, version) || pkg;
+    if (pkg?.svg && packageConflictsWithDestination(pkg, destination, utterance)) pkg = null;
     if (pkg?.svg) console.log('[publish-fallback]', 'unpublished_destination_scan', destination);
   }
   if (pkg && pkg.svg) {
@@ -290,8 +300,9 @@ export function buildRoutePlanningUrl(waypoints = []) {
 
 /** 构建静态图 URL（降级用） */
 export function buildStaticMapUrl(center, markers = [], options = {}) {
-  const wsKey = process.env.TENCENT_MAP_KEY || '';
-  const sk = process.env.TENCENT_MAP_SK || '';
+  const active = getActiveWsPair();
+  const wsKey = active?.key || process.env.TENCENT_MAP_KEY || '';
+  const sk = active?.sk || process.env.TENCENT_MAP_SK || '';
   if (!wsKey) return '';
 
   const params = {
@@ -305,22 +316,30 @@ export function buildStaticMapUrl(center, markers = [], options = {}) {
     .map((m) => `${Number(m.lat)},${Number(m.lng)}`);
   if (points.length) params.markers = ['color:blue', 'size:mid', ...points].join('|');
 
-  const signParams = { ...params, key: wsKey };
-  const sortedQuery = Object.keys(signParams).sort()
-    .map((k) => `${k}=${signParams[k]}`).join('&');
   const encodedQuery = Object.keys(params).sort()
     .map((k) => `${k}=${encodeURIComponent(params[k])}`).join('&');
   let url = `https://apis.map.qq.com/ws/staticmap/v2?${encodedQuery}&key=${encodeURIComponent(wsKey)}`;
-  if (sk) {
-    const sig = crypto.createHash('md5').update(`/ws/staticmap/v2?${sortedQuery}${sk}`, 'utf8').digest('hex');
-    url += '&sig=' + sig;
-  }
+  const sig = signWsRequest('/ws/staticmap/v2', params, { key: wsKey, sk });
+  if (sig) url += '&sig=' + sig;
   return url;
 }
 
 /**
  * 查找预制作资源包（优先子目录，兼容旧版扁平结构）
  */
+function packageConflictsWithDestination(pkg, destination = '', utterance = '') {
+  if (!pkg) return false;
+  const want = `${destination || ''} ${utterance || ''}`;
+  const pkgBlob = `${pkg.routeData?.destination || ''} ${(pkg.routeData?.waypoints || []).map((w) => w.name).join(' ')} ${pkg.routeId || ''}`;
+  if (!want.trim() || !pkgBlob.trim()) return false;
+  // 请求北海却包全是七洞/来宾
+  if (/北海|银滩|涠洲/.test(want) && /七洞|来宾/.test(pkgBlob) && !/北海|银滩|涠洲/.test(pkgBlob)) return true;
+  if (/七洞|来宾/.test(want) && /北海|银滩|涠洲/.test(pkgBlob) && !/七洞|来宾/.test(pkgBlob)) return true;
+  if (/巴马|百魔洞/.test(want) && /(北海|防城港|七洞)/.test(pkgBlob) && !/巴马|百魔洞/.test(pkgBlob)) return true;
+  if (/防城港|东兴|嘉路/.test(want) && /巴马|七洞|北海/.test(pkgBlob) && !/防城港|东兴|嘉路|白浪滩/.test(pkgBlob)) return true;
+  return false;
+}
+
 function findPrebuiltPackage(routeId, version = 'standard') {
   if (!routeId) return null;
   const baseDir = path.join(process.cwd(), 'data', 'sojourn-maps');

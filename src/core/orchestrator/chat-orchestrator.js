@@ -1309,9 +1309,15 @@ async function loadBusinessData({ sceneDecision, request, dataService }) {
     const facilities = getJialuFacilities({ type: '', maxDistance: 0, limit: 0 });
     const requestLocation = request.context?.location || request.location;
     const isDefaultLocation = !requestLocation || requestLocation.source === 'default';
-    const center = (requestLocation && typeof requestLocation.lat === 'number' && !isDefaultLocation)
-      ? { lat: requestLocation.lat, lng: requestLocation.lng, name: requestLocation.city ? requestLocation.city + '·您的位置' : '您的位置' }
-      : getJialuCenter();
+    // 消息点名嘉路/防城港等本地数据区时，不以远端 GPS 覆盖中心，
+    // 否则会出现「您的位置在南宁 + 嘉路配套按 15km 过滤 → 全 0 + 空地图」
+    const namedLocalCenter = /嘉路|防城港|东兴|港口区|江山镇/.test(String(userMessage || ''));
+    const center = (namedLocalCenter)
+      ? getJialuCenter()
+      : ((requestLocation && typeof requestLocation.lat === 'number' && !isDefaultLocation)
+        ? { lat: requestLocation.lat, lng: requestLocation.lng, name: requestLocation.city ? requestLocation.city + '·您的位置' : '您的位置' }
+        : getJialuCenter());
+    const resolvedDefaultLocation = namedLocalCenter ? false : isDefaultLocation;
 
     // ★ 三层富化：静态数据 + 腾讯地图补充 + Tavily 富化
     let enrichedFacilities = facilities;
@@ -1327,7 +1333,7 @@ async function loadBusinessData({ sceneDecision, request, dataService }) {
     return {
       jialu_facilities: enrichedFacilities,
       jialu_center: center,
-      _is_default_location: isDefaultLocation,
+      _is_default_location: resolvedDefaultLocation,
       _enrich_stats: enrichStats,
     };
   }
@@ -1414,11 +1420,8 @@ async function searchPoisForCity(cityName, category, cityCoord) {
   const keywords = INTENT_KEYWORDS[category] || ['医院', '诊所'];
   const style = CAT_STYLES[category] || CAT_STYLES.wellness;
 
-  // 腾讯地图 POI 搜索（按城市区域）
-  const adapter = new TencentMapAdapter({
-    key: process.env.TENCENT_MAP_KEY || '',
-    sk: process.env.TENCENT_MAP_SK || '',
-  });
+  // 腾讯地图 POI 搜索（按城市区域；走 WebService Key 池，主 Key 配额满自动切备用）
+  const adapter = new TencentMapAdapter({});
 
   const radius = 10000; // 10km
   let allPois = [];

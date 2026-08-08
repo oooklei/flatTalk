@@ -165,62 +165,74 @@ body {
   width: 100%;
   height: auto;
 }
-.route-marker { cursor: pointer; transition: opacity 0.15s; pointer-events: auto; }
-.route-marker:hover { opacity: 0.82; }
-.route-marker .hit-area { pointer-events: all; }
-.spot-item { cursor: pointer; }
 
-.spot-popup {
-  display: none;
-  position: absolute;
-  top: 10px;
-  right: 10px;
+/* ===== 景点图鉴：横向滚动图片列表（纯 CSS，无 JS） ===== */
+.spot-gallery-section {
+  border-top: 1px solid #EFEBE4;
   background: #fff;
-  border-radius: 14px;
-  border: 1px solid #E4E0D8;
-  box-shadow: 0 10px 28px rgba(61, 58, 54, 0.16);
-  padding: 14px;
-  max-width: 220px;
-  z-index: 20;
+  padding: 12px 0 14px;
 }
-.spot-popup.show { display: block; animation: popIn 0.2s ease-out; }
-@keyframes popIn {
-  from { opacity: 0; transform: scale(0.94); }
-  to { opacity: 1; transform: scale(1); }
+.spot-gallery-section h2 {
+  padding: 0 14px 8px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 750;
+  color: #3D3A36;
 }
-.spot-popup .close-btn {
-  position: absolute; top: 8px; right: 8px;
-  width: 24px; height: 24px; border: none; border-radius: 50%;
-  background: #F0EDE7; color: #6B6660; font-size: 16px; line-height: 1;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1;
+.spot-gallery-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding: 0 14px 4px;
+  scrollbar-width: thin;
 }
-.spot-popup .close-btn:hover { background: #E4E0D8; }
-.spot-popup .spot-gallery { position: relative; margin-bottom: 10px; }
-.spot-popup .spot-img {
-  width: 100%; height: 120px; object-fit: cover; border-radius: 10px; display: block;
+.spot-card {
+  flex: 0 0 160px;
+  scroll-snap-align: start;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #EFEBE4;
+  background: #FFFCFA;
 }
-.spot-popup .gallery-btn {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 26px; height: 26px; border: none; border-radius: 50%;
-  background: rgba(0,0,0,0.42); color: #fff; font-size: 14px; cursor: pointer; z-index: 1;
+.spot-card img {
+  display: block;
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  background: #F5F2EE;
 }
-.spot-popup .gallery-btn:hover { background: rgba(0,0,0,0.62); }
-.spot-popup .gallery-prev { left: 4px; }
-.spot-popup .gallery-next { right: 4px; }
-.spot-popup .gallery-counter {
-  position: absolute; bottom: 6px; right: 6px;
-  background: rgba(0,0,0,0.5); color: #fff; font-size: 11px;
-  padding: 2px 6px; border-radius: 999px;
+.spot-card .spot-info {
+  padding: 8px 10px 10px;
 }
-.spot-popup .spot-name {
-  font-size: 15px; font-weight: 750; color: #3D3A36; margin-bottom: 6px; line-height: 1.3;
+.spot-card .spot-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3D3A36;
+  line-height: 1.3;
+  margin: 0 0 4px;
 }
-.spot-popup .day-tag {
-  display: inline-block; font-size: 11px; color: #D06E2A; background: #FDF6F0;
-  padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; font-weight: 650;
+.spot-card .spot-card-day {
+  display: inline-block;
+  font-size: 10px;
+  color: #D06E2A;
+  background: #FDF6F0;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-weight: 650;
+  margin-bottom: 5px;
 }
-.spot-popup .spot-plan { font-size: 13px; color: #6B6660; margin-bottom: 6px; line-height: 1.5; }
-.spot-popup .spot-desc { font-size: 12px; color: #8A8278; line-height: 1.5; }
+.spot-card .spot-card-desc {
+  font-size: 11px;
+  color: #8A8278;
+  line-height: 1.45;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 .summary-grid {
   display: grid;
@@ -278,7 +290,7 @@ body {
 .itinerary .timeline { display: grid; gap: 8px; }
 .itinerary .day-item {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
+  grid-template-columns: 72px minmax(0, 1fr);
   gap: 8px;
   align-items: start;
 }
@@ -287,11 +299,21 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 28px;
+  padding: 4px 6px;
   border-radius: 9px;
   background: linear-gradient(135deg, #FDF6F0, #FAE6D5);
   color: #A85420;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 750;
+  text-align: center;
+  line-height: 1.25;
+}
+.itinerary .day-item .day-body { min-width: 0; }
+.itinerary .day-item .day-theme {
+  font-size: 12px;
+  color: #5B6B64;
+  font-weight: 650;
+  margin: 0 0 6px;
 }
 .itinerary .day-item p {
   margin: 0;
@@ -300,11 +322,64 @@ body {
   color: #6B6660;
 }
 .itinerary .day-item .wp-name {
-  display: block;
-  font-size: 12px;
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #FDF6F0;
   color: #D06E2A;
+  font-size: 11px;
   font-weight: 700;
-  margin-bottom: 2px;
+}
+.itinerary .day-item .day-stay {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #8A8278;
+}
+.itinerary .slot-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #F0E8DE;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #FFFCFA;
+}
+.itinerary .slot-row {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 0;
+  border-top: 1px solid #F0E8DE;
+}
+.itinerary .slot-row:first-child { border-top: 0; }
+.itinerary .slot-time {
+  padding: 9px 8px;
+  background: #FDF6F0;
+  color: #D06E2A;
+  font-size: 11px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+  border-right: 1px solid #F0E8DE;
+}
+.itinerary .slot-body {
+  padding: 9px 10px;
+  min-width: 0;
+}
+.itinerary .slot-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3D3A36;
+  word-break: break-word;
+}
+.itinerary .slot-note {
+  margin: 3px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #8A8278;
 }
 
 .health .notice {
@@ -349,8 +424,8 @@ body {
 
   </style>
 </head>
-<body data-layout="vertical" data-static-svg="1">
-  <article class="route-card" data-theme="wellness">
+<body data-layout="vertical">
+  <article class="route-card" data-theme="{{routeTheme|wellness}}">
     <!-- Hero 标题栏 -->
     <header class="hero">
       <div class="eyebrow">{{season}} · {{budgetLevel}}</div>
@@ -358,18 +433,32 @@ body {
       <p class="subtitle">{{#priceLabel}}<span class="price-tag">{{priceLabel}}</span> {{/priceLabel}}{{summary}}</p>
     </header>
 
-    <!-- SVG 地图区（核心） -->
+    <!-- SVG 走线图：直接内联 {{{static_svg}}}（主模板无 staticSvgData + JS，不可依赖脚本注入） -->
     <section class="svg-map-section">
-      <h2>📍 走线路线 <span class="hint">点击端点查看详情</span></h2>
+      <h2>📍 走线路线</h2>
       <div class="svg-container" id="svgMapContainer">
-        <!-- SVG 通过 JS 注入 -->
-      </div>
-      <!-- 景点浮窗（动态显示） -->
-      <div class="spot-popup" id="spotPopup">
-        <button class="close-btn" onclick="hidePopup()">&times;</button>
-        <div id="popupContent"></div>
+        {{{static_svg}}}
       </div>
     </section>
+
+    {{#hasSpotCards}}
+    <!-- 景点图鉴：横向滚动卡片（纯 CSS，无 JS） -->
+    <section class="spot-gallery-section">
+      <h2>📸 景点图鉴</h2>
+      <div class="spot-gallery-scroll">
+        {{#spot_cards}}
+        <div class="spot-card">
+          {{#has_image}}<img src="{{first_image}}" alt="{{name}}" referrerpolicy="no-referrer" loading="lazy" />{{/has_image}}
+          <div class="spot-info">
+            <p class="spot-card-name">{{name}}</p>
+            {{#day}}<span class="spot-card-day">{{day}}</span>{{/day}}
+            {{#desc}}<p class="spot-card-desc">{{desc}}</p>{{/desc}}
+          </div>
+        </div>
+        {{/spot_cards}}
+      </div>
+    </section>
+    {{/hasSpotCards}}
 
     <!-- 概览指标 -->
     <section class="summary-grid">
@@ -387,14 +476,33 @@ body {
       </div>
     </section>
 
-    <!-- 行程 -->
+    <!-- 行程：按时段结构化排布，禁止整日长串 -->
     <section class="itinerary">
       <h2>建议行程</h2>
       <div class="timeline">
         {{#itinerary}}
         <div class="day-item">
           <b>{{day}}</b>
-          <p>{{#wp_name}}<span class="wp-name">{{wp_name}}</span>{{/wp_name}}{{plan}}</p>
+          <div class="day-body">
+            {{#has_theme}}<div class="day-theme">{{theme}}</div>{{/has_theme}}
+            {{#has_slots}}
+            <div class="slot-list">
+              {{#slots}}
+              <div class="slot-row">
+                <div class="slot-time">{{time}}</div>
+                <div class="slot-body">
+                  <p class="slot-text">{{text}}</p>
+                  {{#has_note}}<p class="slot-note">{{note}}</p>{{/has_note}}
+                </div>
+              </div>
+              {{/slots}}
+            </div>
+            {{/has_slots}}
+            {{^has_slots}}
+            <p>{{#wp_name}}<span class="wp-name">{{wp_name}}</span>{{/wp_name}}{{plan}}</p>
+            {{/has_slots}}
+            {{#has_accommodation}}<div class="day-stay">住宿：{{accommodation}}</div>{{/has_accommodation}}
+          </div>
         </div>
         {{/itinerary}}
       </div>
@@ -406,276 +514,7 @@ body {
       <p class="notice">{{healthNotice}}</p>
     </section>
 
-    <!-- 操作按钮 -->
-    <div class="actions">
-      <button class="action" data-action="travel_route.compare_destinations" data-params='{"destination":"{{destination}}"}'>对比目的地</button>
-      <button class="action" data-action="travel_route.check_availability" data-params='{"destination":"{{destination}}"}'>检查可订</button>
-      <button class="action outline" data-action="travel_route.calculate_budget" data-params='{}'>测算预算</button>
-      <button class="action outline" data-action="travel_route.check_weather_risk" data-params='{"destination":"{{destination}}"}'>天气风险</button>
-    </div>
-
     {{{compact_followups}}}
   </article>
-
-  <script type="text/html" id="staticSvgData">{{{static_svg}}}</script>
-  <script type="application/json" id="waypointSpotsData">{{{waypoint_spots_json}}}</script>
-  <script>
-    // 从 script[type=text/html] 读取 SVG（避免多行/含引号的 SVG 破坏 JS 字符串字面量）
-    var STATIC_SVG = (document.getElementById('staticSvgData') || {}).textContent || '';
-    var hideTimer = null;
-    var activeMarker = null;
-
-    function parseWaypointSpots() {
-      try {
-        var raw = (document.getElementById('waypointSpotsData') || {}).textContent || '[]';
-        raw = String(raw).trim();
-        if (!raw || raw === '{{{waypoint_spots_json}}}' || raw === 'null') return [];
-        var parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (e) { return []; }
-    }
-
-    function pickImgs(list) {
-      if (!Array.isArray(list) || !list.length) return '';
-      return list.map(function(img) {
-        if (typeof img === 'string') return img;
-        return (img && (img.url || img.src)) || '';
-      }).filter(Boolean).join(',');
-    }
-
-    function hydrateMarkersFromMeta(container, metaList) {
-      if (!metaList || !metaList.length) return;
-      var byName = {};
-      metaList.forEach(function(wp) {
-        var n = String(wp.name || '').trim();
-        if (n) byName[n] = wp;
-      });
-      container.querySelectorAll('.route-marker, .spot-item').forEach(function(el) {
-        var name = (el.getAttribute('data-name') || '').trim();
-        var wp = byName[name];
-        if (!wp) return;
-        if (!el.getAttribute('data-spot-img') && (wp.spot_images || []).length) {
-          el.setAttribute('data-spot-img', pickImgs(wp.spot_images));
-        }
-        if (!el.getAttribute('data-spot-desc') && wp.spot_desc) {
-          el.setAttribute('data-spot-desc', wp.spot_desc);
-        }
-        if (!el.getAttribute('data-plan') && wp.plan) {
-          el.setAttribute('data-plan', wp.plan);
-        }
-        if (!el.getAttribute('data-day') && wp.day) {
-          el.setAttribute('data-day', wp.day);
-        }
-        if (!el.getAttribute('data-related-spots') && (wp.related_spots || []).length) {
-          try { el.setAttribute('data-related-spots', JSON.stringify(wp.related_spots.slice(0, 4))); } catch (e) {}
-        }
-      });
-    }
-
-    /** 补热区；仅把过小旧字号轻抬到默认约 10，不做整图暴增 */
-    function enhanceSvgForCard(root) {
-      if (!root) return;
-      var svg = root.querySelector('svg');
-      if (!svg) return;
-      var vb = (svg.getAttribute('viewBox') || '0 0 620 850').split(/[\s,]+/).map(Number);
-      var map = { x: 10, y: 68, w: 600, h: 460 };
-      root.querySelectorAll('text').forEach(function(t) {
-        var fs = parseFloat(t.getAttribute('font-size') || '0');
-        if (!(fs > 0)) return;
-        // 已按新策略生成的包（约 8–20）不要再放大
-        if (fs >= 8 && fs <= 22) return;
-        // 暴增版旧包（>24）压回合理区间
-        if (fs > 22) {
-          var role = t.getAttribute('data-role') || '';
-          if (role === 'hero_title') t.setAttribute('font-size', '18');
-          else if (role === 'marker_name') t.setAttribute('font-size', '11');
-          else t.setAttribute('font-size', '10');
-          return;
-        }
-        // 过小旧包抬到默认 10
-        if (fs < 8) t.setAttribute('font-size', '10');
-      });
-      // 贴边端点名称再收一档（仅旧包无 data-role 时）
-      root.querySelectorAll('.route-marker').forEach(function(g) {
-        var tr = g.getAttribute('transform') || '';
-        var m = tr.match(/translate\(([-0-9.]+)\s*,\s*([-0-9.]+)\)/);
-        var nameText = g.querySelector('text[data-role="marker_name"]') || g.querySelectorAll('text')[1];
-        if (m && nameText) {
-          var x = parseFloat(m[1]), y = parseFloat(m[2]);
-          var edge = Math.min(x - map.x, map.x + map.w - x, y - map.y, map.y + map.h - y);
-          var fs = parseFloat(nameText.getAttribute('font-size') || '10');
-          if (edge < 40 && fs > 10) nameText.setAttribute('font-size', String(Math.max(8, Math.round(fs * 0.85))));
-        }
-        if (g.querySelector('circle.hit-area')) return;
-        var vis = g.querySelector('circle:not(.hit-area)');
-        var r = vis ? parseFloat(vis.getAttribute('r') || '7') : 7;
-        var hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        hit.setAttribute('class', 'hit-area');
-        hit.setAttribute('r', String(Math.max(20, r + 12)));
-        hit.setAttribute('fill', 'transparent');
-        hit.setAttribute('pointer-events', 'all');
-        g.insertBefore(hit, g.firstChild);
-      });
-    }
-
-    function showPopup(marker) {
-      cancelHide();
-      activeMarker = marker;
-      var name = marker.getAttribute('data-name') || '';
-      var day = marker.getAttribute('data-day') || '';
-      var plan = marker.getAttribute('data-plan') || '';
-      var desc = marker.getAttribute('data-spot-desc') || '';
-      var imgRaw = marker.getAttribute('data-spot-img') || '';
-      var imgs = imgRaw ? imgRaw.split(',').map(function(u){return u.replace(/&amp;/g,'&').trim();}).filter(function(u){return u;}) : [];
-
-      var html = '';
-      if (imgs.length > 0) {
-        var showNav = imgs.length > 1;
-        html += '<div class="spot-gallery" id="spotGallery">';
-        html += '<img class="spot-img" id="spotGalleryImg" src="' + imgs[0] + '" alt="' + name +
-          '" referrerpolicy="no-referrer" loading="lazy" onerror="this.parentNode.style.display=\'none\'" />';
-        if (showNav) {
-          html += '<button class="gallery-btn gallery-prev" onclick="gallerySlide(-1)" style="display:flex">&#10094;</button>';
-          html += '<button class="gallery-btn gallery-next" onclick="gallerySlide(1)" style="display:flex">&#10095;</button>';
-          html += '<span class="gallery-counter" id="galleryCounter">1/' + imgs.length + '</span>';
-        }
-        html += '</div>';
-        window.__spotImgs = imgs;
-        window.__spotImgIdx = 0;
-      }
-      if (name) html += '<div class="spot-name">' + name + '</div>';
-      if (day) html += '<span class="day-tag">' + day + '</span>';
-      if (plan) html += '<div class="spot-plan">' + plan + '</div>';
-      if (desc) html += '<div class="spot-desc">' + desc + '</div>';
-      var relatedRaw = marker.getAttribute('data-related-spots') || '';
-      if (relatedRaw) {
-        try {
-          var related = JSON.parse(relatedRaw);
-          if (Array.isArray(related) && related.length) {
-            html += '<div class="spot-desc" style="margin-top:8px;border-top:1px solid #eee;padding-top:8px;"><b>周边景点</b><br/>'
-              + related.map(function(r){ return (r && r.name) ? ('· ' + r.name) : ''; }).filter(Boolean).join('<br/>')
-              + '</div>';
-          }
-        } catch (e) {}
-      }
-      if (!name && !plan && !desc && !imgs.length) {
-        html += '<div class="spot-desc">暂无该端点详情</div>';
-      }
-      document.getElementById('popupContent').innerHTML = html;
-      document.getElementById('spotPopup').classList.add('show');
-    }
-
-    function gallerySlide(dir) {
-      var imgs = window.__spotImgs;
-      if (!imgs || imgs.length <= 1) return;
-      window.__spotImgIdx = (window.__spotImgIdx + dir + imgs.length) % imgs.length;
-      var imgEl = document.getElementById('spotGalleryImg');
-      if (imgEl) {
-        imgEl.style.display = '';
-        imgEl.src = imgs[window.__spotImgIdx];
-        if (imgEl.parentNode) imgEl.parentNode.style.display = '';
-      }
-      var counter = document.getElementById('galleryCounter');
-      if (counter) counter.textContent = (window.__spotImgIdx + 1) + '/' + imgs.length;
-    }
-
-    function hidePopup() {
-      cancelHide();
-      activeMarker = null;
-      var popup = document.getElementById('spotPopup');
-      if (popup) popup.classList.remove('show');
-    }
-
-    function scheduleHide() {
-      cancelHide();
-      hideTimer = setTimeout(function() {
-        var popup = document.getElementById('spotPopup');
-        if (popup) popup.classList.remove('show');
-        activeMarker = null;
-      }, 4500);
-    }
-
-    function cancelHide() {
-      if (hideTimer) {
-        clearTimeout(hideTimer);
-        hideTimer = null;
-      }
-    }
-
-    function bindMarker(el) {
-      el.style.cursor = 'pointer';
-      el.addEventListener('mouseenter', function() { showPopup(el); });
-      el.addEventListener('mouseleave', function() { scheduleHide(); });
-      el.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        showPopup(el);
-        scheduleHide();
-      });
-      el.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        showPopup(el);
-        scheduleHide();
-      }, { passive: false });
-    }
-
-    (function() {
-      var container = document.getElementById('svgMapContainer');
-      if (container && STATIC_SVG && STATIC_SVG.indexOf('<svg') !== -1) {
-        container.innerHTML = STATIC_SVG;
-      }
-
-      var popup = document.getElementById('spotPopup');
-      if (!container || !popup) return;
-
-      enhanceSvgForCard(container);
-      hydrateMarkersFromMeta(container, parseWaypointSpots());
-
-      container.querySelectorAll('.route-marker, .spot-item, .marker[data-name]').forEach(bindMarker);
-
-      popup.addEventListener('mouseenter', cancelHide);
-      popup.addEventListener('mouseleave', scheduleHide);
-      popup.addEventListener('click', cancelHide);
-
-      document.addEventListener('click', function(e) {
-        if (!popup.classList.contains('show')) return;
-        if (popup.contains(e.target)) return;
-        if (activeMarker && activeMarker.contains(e.target)) return;
-        hidePopup();
-      });
-
-      document.querySelectorAll('[data-action]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var actionKey = this.getAttribute('data-action');
-          var params = {};
-          try { params = JSON.parse(this.getAttribute('data-params') || '{}'); } catch (e) {}
-          var userPrompt = this.getAttribute('data-prompt') || this.textContent.trim();
-          window.parent.postMessage({
-            type: 'gxy_card_action',
-            action_key: actionKey,
-            skill_key: 'travel_route',
-            user_prompt: userPrompt,
-            params: params
-          }, '*');
-        });
-      });
-    })();
-  </script>
-  <script type="application/json">
-  {
-    "template_id": "route_svg",
-    "product_domain": "sojourn_route",
-    "routeTitle": "旅居走线卡片",
-    "destination": "广西",
-    "season": "四季皆宜",
-    "budgetLevel": "经济舒适",
-    "days": "5天4晚",
-    "suitable": "活力长者",
-    "bookingStatus": "可预订",
-    "summary": "精选旅居走线，涵盖康养、文化、生态等主题。",
-    "healthNotice": "出行前请关注目的地天气和身体状况。",
-    "static_svg": ""
-  }
-  </script>
 </body>
 </html>
