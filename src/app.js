@@ -31,6 +31,16 @@ import {
   getMockUserByToken,
 } from './services/interface-data/mock-collaboration.js';
 import { TABLE_SCHEMAS } from './services/table-data/schemas.js';
+import {
+  LIS_GATE_ENABLED,
+  LIS_BASE_URL,
+  isLisGateEnabled,
+  getLisBaseUrl,
+} from './core/lis/lis-gate-hook.js';
+import { createLisClient } from './core/lis/lis-client.js';
+
+// Re-export LIS gate env helpers for operators / diagnostics
+export { LIS_GATE_ENABLED, LIS_BASE_URL, isLisGateEnabled, getLisBaseUrl };
 
 const DEV_PRESETS = getDevSsoPresets();
 const CLIENT_DEV_PRESETS = DEV_PRESETS.slice(0, 8);
@@ -821,6 +831,8 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
   });
 
   try {
+    const lisGateOn = isLisGateEnabled();
+    const session = lisGateOn ? await sessionStore.getOrCreate(conversationId) : null;
     const envelope = await runLocalSkill({
       request_id: body.request_id,
       conversation_id: conversationId,
@@ -851,7 +863,18 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
         // 定位必须在 snapshot 之后写入，避免被覆盖；前端 console 有 GPS ≠ 后端一定收到
         location: body.location || body.context?.location || null,
       },
-    }, { dataService, modelService, weatherService, contextManager, smartFallbackHandler });
+    }, {
+      dataService,
+      modelService,
+      weatherService,
+      contextManager,
+      smartFallbackHandler,
+      ...(lisGateOn ? {
+        sessionStore,
+        session,
+        lisClient: createLisClient({ baseUrl: getLisBaseUrl() }),
+      } : {}),
+    });
 
     await sessionStore.appendTurn(conversationId, { turn_id: turnId, user_message: message, envelope });
     chatState.logger?.write?.({ type: 'chat_turn', ...summarizeEnvelope(envelope, startedAt) });

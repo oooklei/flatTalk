@@ -35,6 +35,13 @@ import { buildSnapshot } from '../../core/conversation/context-snapshot.js';
 import { understandAndAdapt, emptySemantic, SEMANTIC_SOURCES } from '../semantic/index.js';
 import { createSupervisor } from '../agents/supervisor.js';
 import { mockElders, getMockUserByToken } from '../../services/interface-data/mock-collaboration.js';
+import {
+  isLisGateEnabled,
+  getLisBaseUrl,
+  tryLisGate,
+  loadCatalogEntries,
+} from '../lis/lis-gate-hook.js';
+import { createLisClient } from '../lis/lis-client.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(moduleDir, '../../..');
@@ -317,7 +324,64 @@ export function createChatOrchestrator(options = {}) {
         let skillKey;
         let acceptedScene;
 
-        if (actionLockedSkillKey) {
+        // ★ LIS Gatekeeper Ticket（默认关闭；LIS_GATE_ENABLED=1 时在 identifyScene 之前介入）
+        let lisGateResult = null;
+        if (isLisGateEnabled()) {
+          try {
+            const sessionStore = options.sessionStore || null;
+            const session = options.session
+              || (sessionStore && request.conversation_id
+                ? await sessionStore.getOrCreate(request.conversation_id)
+                : { conversation_id: request.conversation_id || '', turns: [], global_context: {} });
+            const lisClient = options.lisClient || createLisClient({ baseUrl: getLisBaseUrl() });
+            const catalogEntries = options.catalogEntries || loadCatalogEntries();
+            const snapshot = request.context?.context_snapshot
+              || {
+                scene: request.context?.previous_scene || request.context?.active_agent || '',
+                intent: request.context?.previous_intent || '',
+                template_id: request.context?.previous_template || request.context?.last_template || '',
+              };
+            lisGateResult = await tryLisGate({
+              request,
+              session,
+              catalogEntries,
+              lisClient,
+              snapshot,
+            });
+            if (sessionStore && session?.conversation_id) {
+              try { await sessionStore.save(session); } catch { /* ticket persist best-effort */ }
+            }
+            mark('lis_gate', 'LIS门控', {
+              handled: Boolean(lisGateResult?.handled),
+              mode: lisGateResult?.mode || '',
+              skill_key: lisGateResult?.skill_key || '',
+            });
+          } catch (err) {
+            lisGateResult = { handled: false };
+            mark('lis_gate', 'LIS门控异常回退', { error: err?.message || String(err) });
+          }
+        }
+
+        if (lisGateResult?.handled && lisGateResult.skill_key) {
+          skillKey = lisGateResult.skill_key;
+          if (lisGateResult.template_id) {
+            request.template_id = lisGateResult.template_id;
+          }
+          acceptedScene = {
+            scene_key: skillKey,
+            decision: 'accept',
+            confidence: Number(lisGateResult.intent?.confidence) || 1,
+            routed: true,
+            source: `lis_${String(lisGateResult.mode || 'gate').toLowerCase()}`,
+            intent: lisGateResult.intent?.intent_id || '',
+          };
+          sceneDecision = acceptedScene;
+          mark('scene_route', 'LIS门控锁定场景', {
+            scene_key: skillKey,
+            mode: lisGateResult.mode,
+            template_id: lisGateResult.template_id || '',
+          });
+        } else if (actionLockedSkillKey) {
           // action_button 路径：直接锁定场景，不走路由
           skillKey = actionLockedSkillKey;
           acceptedScene = {
