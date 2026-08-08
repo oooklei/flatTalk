@@ -1,0 +1,126 @@
+{
+  "catalog_version": "0.1.0",
+  "updated_at": "2026-08-08T00:00:00Z",
+  "intents": [
+    {
+      "intent_id": "nearby_resource.all",
+      "intent_desc": "查询周边康养生活圈综合配套",
+      "examples": ["附近有什么", "周边配套"],
+      "domain": "nearby_resource",
+      "tags": ["poi"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_map_overview"
+      },
+      "enabled": true,
+      "match_hints": { "keywords": ["附近", "周边", "生活圈"] }
+    },
+    {
+      "intent_id": "nearby_resource.food",
+      "intent_desc": "查询周边餐饮餐馆美食",
+      "examples": ["附近有什么好吃的", "周边餐厅"],
+      "domain": "nearby_resource",
+      "tags": ["poi", "food"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_food_card"
+      },
+      "enabled": true,
+      "match_hints": { "keywords": ["吃", "餐厅", "美食"] }
+    },
+    {
+      "intent_id": "travel_route_plan",
+      "intent_desc": "规划或推荐旅居旅游线路",
+      "examples": ["防城港三日游", "推荐巴马旅居线路"],
+      "domain": "travel_route",
+      "tags": ["travel"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "route_svg"
+      },
+      "enabled": true,
+      "match_hints": { "keywords": ["线路", "旅居", "行程"] }
+    },
+    {
+      "intent_id": "travel_route_weather_risk",
+      "intent_desc": "查询旅居目的地天气与出行风险",
+      "examples": ["明天天气怎么样", "线路天气风险"],
+      "domain": "travel_route",
+      "tags": ["travel", "weather"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "travel_weather_risk_card"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "meal_plan_advice",
+      "intent_desc": "膳食饮食建议与控糖食谱",
+      "examples": ["给我做个食谱", "糖尿病饮食建议"],
+      "domain": "meal_plan",
+      "tags": ["meal"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "diet_card"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "health_risk_warning.assess",
+      "intent_desc": "健康风险评估舌诊面诊体质",
+      "examples": ["看看健康风险", "舌诊结果"],
+      "domain": "health_risk_warning",
+      "tags": ["health"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "health_warning_card"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "find_service_discover",
+      "intent_desc": "发现推荐家政护工等服务",
+      "examples": ["找个护工", "附近家政服务"],
+      "domain": "find_service",
+      "tags": ["service"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_recommend"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "dispatch_list",
+      "intent_desc": "查看派单列表与工单",
+      "examples": ["我的派单", "工单列表"],
+      "domain": "dispatch_manage",
+      "tags": ["dispatch"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "dispatch_list"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "elder_policy_consult",
+      "intent_desc": "养老政策补贴适老化咨询",
+      "examples": ["有什么养老补贴", "适老化政策"],
+      "domain": "common",
+      "tags": ["policy"],
+      "entry": {
+        "kind": "template",
+        "skill_key": "common",
+        "template_id": "policy_card"
+      },
+      "enabled": true
+    }
+  ]
+}
