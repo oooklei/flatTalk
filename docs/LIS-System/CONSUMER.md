@@ -4,18 +4,79 @@
 
 | 系统 | 职责 |
 |------|------|
-| **LIS-System** | 自然语言 → `IntentSupply`；澄清问句；**不执行**业务 |
-| **flatTalk** | Catalog 注册、Matcher、执行 Intent 包、LLM 自由问答 |
+| **LIS-System** | 自然语言 → `IntentSupply`；澄清问句；签发/解读 `routing_ticket`；越界裁决；**不执行**业务 |
+| **flatTalk** | Catalog 注册、Matcher、执行 Intent 包、LLM 自由问答；**SessionStore 为唯一上下文真相源** |
 
 阈值：`0.5`（与 LIS `decision.threshold` 一致）。
 
-## 决策消费
+---
+
+## Gatekeeper Ticket 路由门控
+
+启用 Gatekeeper Ticket 后（`LIS_GATE_ENABLED=1`），flatTalk 在 scene-router 之前经 **ContextProjector + routing-gate** 选择三条路径之一：
+
+| 模式 | 何时 | LIS 调用 |
+|------|------|----------|
+| **SORT** | 无票 / 票 TTL 过期 / `reenter_chat` / 跨 domain 点选后 / 有效票但对话轮次 &lt; 3 | `POST /v1/sort` |
+| **BOUNDARY** | 票有效 + 自由文本 + `DialogueView.turns.length ≥ 3` | `POST /v1/boundary` |
+| **SKILL_LOCK** | 票有效 + `action_key` 或 `followup_source`（域内按钮/追问） | **不经 LIS** |
+
+### boundary 响应 → flatTalk 行为
+
+| `status` | flatTalk |
+|----------|----------|
+| `STAY` | 留在当前 domain；可附域内 `intents[]` 执行 |
+| `ESCAPE` | 作废票 → `POST /v1/sort` |
+| `LLM_FALLBACK` | 转 LLM 自由问答；**作废票** |
+
+### 决策消费（sort / clarify，与 V1 一致）
 
 | `decision.status` | flatTalk 行为 |
 |-------------------|---------------|
-| `MATCH_OK` | 取 `role=primary`（及可组合 `secondary`）→ Catalog.entry 执行 |
+| `MATCH_OK` | 取 `role=primary`（及可组合 `secondary`）→ Catalog.entry 执行；**签发票**存会话 |
 | `NEED_CLARIFY` | 展示 `clarify`；用户答复后调 LIS `/v1/clarify` mode=resolve |
-| `LLM_FALLBACK_HINT` | **转 LLM 自由问答**（不再二次澄清） |
+| `LLM_FALLBACK_HINT` | **转 LLM 自由问答**（不再二次澄清）；**作废票** |
+
+---
+
+## 上下文投影（flatTalk → LIS）
+
+flatTalk **不**把原始 SessionStore 直接传给 LIS，而是经 **ContextProjector** 投影为两个契约对象：
+
+| 对象 | 说明 |
+|------|------|
+| **DialogueView** | 最近 N 轮对话（role / text / intent_id / decision_status / source 等）；boundary 调用时 **硬约束 `turns.length ≥ 3`** |
+| **BizHints** | 业务附载：**全量、不脱敏**（user、geo、scene、entity_lock、semantic、catalog 白名单等） |
+
+- `/v1/sort`：必带 `utterance`；有历史时建议附 `dialogue` + `biz_hints`。
+- `/v1/boundary`：必带 `utterance` + `routing_ticket` + `dialogue`(≥3) + `biz_hints`。
+- 实现：`src/core/lis/context-projector.js`（`projectDialogueView` / `projectBizHints`）。
+
+---
+
+## routing_ticket 存取
+
+| 项 | 约定 |
+|----|------|
+| **存储位置** | `session.global_context.routing_ticket` |
+| **签发** | sort `MATCH_OK` 或 clarify resolve 成功 |
+| **保留** | boundary `STAY` |
+| **作废** | TTL 过期、`reenter_chat`、boundary `ESCAPE` / `LLM_FALLBACK`、`LLM_FALLBACK_HINT` |
+
+票由 LIS 签发，flatTalk 存取；LIS 无状态，不持久化会话。
+
+---
+
+## 环境变量
+
+| 变量 | 含义 | 默认 |
+|------|------|------|
+| `LIS_GATE_ENABLED` | 设为 `1` 启用 Gatekeeper Ticket 门控 | 关闭 |
+| `LIS_BASE_URL` | LIS 服务根 URL | `http://127.0.0.1:8100` |
+
+接入点：`POST /api/chat/message`，在 `identifyScene` / scene-router 之前（`src/core/lis/lis-gate-hook.js`）。
+
+---
 
 ## Matcher 规则
 
@@ -35,13 +96,6 @@
 
 Schema：`intent-catalog.schema.json`。
 
-## 建议接入点
-
-1. `POST /api/chat/message` 在 scene-router 之前（或逐步替换）：调用 LIS `/v1/sort`。  
-2. 传入 `catalog_intent_ids` = 当前启用 Intent 列表。  
-3. 按上表状态机分支；`MATCH_OK` 时用 `entry.skill_key` + `template_id` 走现有 fill/render。  
-4. 配置：`LIS_BASE_URL=http://127.0.0.1:8100`。
-
 ## 示例 Catalog 条目
 
 ```json
@@ -59,3 +113,14 @@ Schema：`intent-catalog.schema.json`。
   "enabled": true
 }
 ```
+
+---
+
+## 设计文档
+
+Gatekeeper Ticket 完整架构见 LIS-System 设计 spec（**注意**：本目录 `../LIS-System/...` 相对链接在 flatTalk 独立仓库中可能无法解析）：
+
+- **设计 spec**：`D:\GuiCare\LIS-System\docs\superpowers\specs\2026-08-08-lis-flattalk-gatekeeper-ticket-design.md`
+- **实现计划**：`D:\GuiCare\LIS-System\docs\superpowers\plans\2026-08-08-lis-flattalk-gatekeeper-ticket.md`
+
+Monorepo 根目录下相对路径：`LIS-System/docs/superpowers/specs/2026-08-08-lis-flattalk-gatekeeper-ticket-design.md`。
