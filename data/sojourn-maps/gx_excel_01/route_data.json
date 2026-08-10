@@ -345,6 +345,9 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路1桂林全域",
   "route_id": "gx_excel_01",
-  "updated_at": "2026-08-05T22:13:28.037Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:57.837Z",
+  "spot_images_source": "dashboard_local_kb",
+  "boundary_source": "datav_local",
+  "boundary_name": "桂林市",
+  "boundary_polygon_count": 1
 }

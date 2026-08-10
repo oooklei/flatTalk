@@ -42,11 +42,43 @@ function extractDefaultData(html) {
   try { return JSON.parse(m[1]); } catch { return {}; }
 }
 
-// 读取与 html 同名的 .manifest.json（可选），用于覆盖布局 / 必填字段 / 描述
+// 读取与 html 同名的 .manifest.json —— 用于覆盖布局 / 必填字段 / 描述。
+//
+// manifest 不是"可选装饰"：intent_id、required、match 都靠它，
+// 缺失或损坏会让模板以裸 base 名进入库，required 为空、match 为空，
+// 于是"能渲染但字段全空"，问题被推迟到用户面前才暴露。
+// 因此这里显式抛错，而不是静默返回 {}。
+//
+// 允许通过 TEMPLATE_MANIFEST_STRICT=0 关闭（仅用于临时排查），
+// 默认严格。
+const MANIFEST_STRICT = process.env.TEMPLATE_MANIFEST_STRICT !== '0';
+
 function readManifest(dir, base) {
-  const file = readFileSafe(path.join(dir, base + '.manifest.json'));
-  if (!file) return {};
-  try { return JSON.parse(file); } catch { return {}; }
+  const p = path.join(dir, `${base}.manifest.json`);
+  const file = readFileSafe(p);
+  if (!file) {
+    // preview 目录与 *.preview.html 是渲染产物，不是可投放模板，
+    // 它们本就没有 manifest（实测 17 个全在 templates/preview/ 下），
+    // 对其报错属误报。
+    const isPreview =
+      base.endsWith('.preview')
+      || base === 'index'
+      || /[\\/]preview$/.test(dir);
+    if (MANIFEST_STRICT && !isPreview) {
+      throw new Error(
+        `模板缺少 manifest: ${p}\n`
+        + '  每个可投放模板必须有同名 .manifest.json（含 id/name/intent_id/required）。\n'
+        + '  临时排查可设 TEMPLATE_MANIFEST_STRICT=0。',
+      );
+    }
+    return {};
+  }
+  try {
+    return JSON.parse(file);
+  } catch (e) {
+    // JSON 损坏比缺失更危险：静默 {} 会让模板看起来正常注册
+    throw new Error(`模板 manifest 解析失败: ${p}\n  ${e.message}`);
+  }
 }
 
 export function discoverTemplates(dir) {

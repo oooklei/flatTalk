@@ -1,7 +1,15 @@
 {
   "id": "health_risk_rule_card",
-  "title": "风险规则命中卡",
-  "layout": "health_risk_rule_card",
-  "match": "风险规则 命中 研判 判定 等级",
-  "required": ["rules"]
+  "name": "风险规则命中",
+  "description": "风险规则命中卡：本地规则库命中研判与等级判定",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.rule_detail",
+  "required": [
+    "rules"
+  ],
+  "optional_fields": [],
+  "match": "展示风险规则命中与判定明细，非信号明细、非综合报告",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
 }

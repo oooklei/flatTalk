@@ -22,7 +22,7 @@ html, body {
   flex: none; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
   background: var(--primary-weak); color: var(--primary);
 }
-.nb-badge.open { background: #E3F6EF; color: #1E8E6A; }
+.nb-badge.open { background: #E8F2EC; color: #6B9B7A; }
 .nb-badge.closed { background: #F1F3F5; color: var(--muted); }
 
 /* 筛选胶囊（用户触点是点击本地筛选，client_only） */
@@ -45,7 +45,7 @@ html, body {
 
 /* 地图容器与图例 */
 .nb-map { position: relative; width: 100%; height: clamp(240px, 50vh, 440px); border-radius: var(--radius-sm);
-  border: 1px solid var(--border); overflow: hidden; background: #EAF1F3; }
+  border: 1px solid var(--border); overflow: hidden; background: #F0EDE7; }
 .nb-map > div { position: absolute; inset: 0; }
 .nb-legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 10px; font-size: 12px; color: var(--ink-2); }
 .nb-leg { display: inline-flex; align-items: center; gap: 5px; }

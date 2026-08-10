@@ -3,6 +3,14 @@
   "description": "个性化精选横向卡，含封面图/标签/价格/服务商信息",
   "layout": "vertical",
   "match": "猜你喜欢、精选、旅居路线、个性化推荐、为您精选",
-  "required": ["name", "price", "unit", "provider_name"],
-  "followup_actions": ["选这个", "看更多推荐"]
+  "required": [
+    "name",
+    "price",
+    "unit",
+    "provider_name"
+  ],
+  "followup_actions": [],
+  "intent_id": "find_service_guess_like",
+  "product_domain": "find_service",
+  "name": "个性化精选横向卡，含封面图/标签/价格/服务商信"
 }

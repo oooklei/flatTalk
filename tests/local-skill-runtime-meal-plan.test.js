@@ -16,6 +16,7 @@ test('runs meal_plan template-card flow from skill templates directory', async (
 
   assert.equal(result.schema, 'gxy.envelope.v1');
   assert.equal(result.skill_key, 'meal_plan');
+  assert.equal(result.agent_key, 'meal_plan');
   assert.equal(result.template_id, 'diet_card');
   assert.equal(result.llm.template_id, 'diet_card');
   assert.equal(result.card.templateId, 'diet_card');

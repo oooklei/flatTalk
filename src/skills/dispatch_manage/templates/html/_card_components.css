@@ -38,4 +38,5 @@
 .accept-row:last-child{border-bottom:none;}
 .accept-row .k{color:var(--muted);}
 .accept-row .v{font-weight:600;text-align:right;max-width:64%;}
-.accept-eta{margin-top:10px;padding:10px;border-radius:10px;background:#EEF4FE;border:1px solid var(--line);font-size:13px;color:var(--primary-dark);text-align:center;font-weight:600;}
+.accept-eta{margin-top:10px;padding:10px;border-radius:10px;background:#E8F0F5;border:1px solid var(--line);font-size:13px;color:var(--primary-dark);text-align:center;font-weight:600;}
+.foot{padding:10px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:right;background:#fff;}

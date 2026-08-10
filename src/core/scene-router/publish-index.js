@@ -16,6 +16,7 @@ function stripAdmin(s) {
 const CITY_HINTS = [
   '防城港', '东兴', '北海', '钦州', '南宁', '巴马', '桂林', '阳朔', '永福', '恭城', '荔浦',
   '崇左', '大新', '宁明', '百色', '河池', '柳州', '梧州', '玉林', '贺州', '来宾', '贵港', '涠洲',
+  '七洞', '七洞乡',
 ];
 
 /** 品牌/乡镇 → 归属城市（话语无城市名时也能做 destination 亲和） */
@@ -29,8 +30,9 @@ const PLACE_ALIASES = {
   簕山: ['防城港'],
   京族三岛: ['防城港', '东兴'],
   芒街: ['防城港', '东兴'],
-  七洞: ['桂林'],
-  七洞乡: ['桂林'],
+  // 七洞乡 = 来宾市兴宾区，不是北海，也不是桂林
+  七洞: ['来宾', '七洞乡'],
+  七洞乡: ['来宾', '七洞乡'],
   百魔洞: ['巴马'],
   赐福湖: ['巴马'],
   银滩: ['北海'],
@@ -198,7 +200,7 @@ export function matchPublishedPackages(utterance, { baseDir } = {}) {
       score,
       updated,
       meta: p,
-      product_template_id: PRODUCT_TYPE_TO_ROUTE_TEMPLATE[p.product_type] || 'route_wellness',
+      product_template_id: PRODUCT_TYPE_TO_ROUTE_TEMPLATE[p.product_type] || '',
     });
   }
   scored.sort((a, b) => (b.score - a.score) || (b.updated - a.updated));
@@ -218,6 +220,6 @@ export function getPublishedPackageById(routeId, { baseDir } = {}) {
     route_id: found.route_id,
     score: 999,
     meta: found,
-    product_template_id: PRODUCT_TYPE_TO_ROUTE_TEMPLATE[found.product_type] || 'route_wellness',
+    product_template_id: PRODUCT_TYPE_TO_ROUTE_TEMPLATE[found.product_type] || '',
   };
 }

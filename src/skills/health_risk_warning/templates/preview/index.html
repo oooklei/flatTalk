@@ -1,56 +1,53 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-Cn">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>健康风险预警模板预览</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>健康风险预警 · 模板预览总览</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-    background: #f5f7fa;
-    padding: 24px;
-  }
-  h1 {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 16px;
-  }
-  .nav {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-  .nav a {
-    display: inline-block;
-    padding: 8px 16px;
-    background: #4a90d9;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: background 0.2s;
-  }
-  .nav a:hover { background: #3a7fc4; }
-  .nav a.active { background: #2d7ec4; }
-  .preview-frame {
-    width: 100%;
-    height: 80vh;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background: #fff;
-  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+    background:#FAF8F5;color:#3D3A36;padding:16px;line-height:1.6}
+  .wrap{max-width:640px;margin:0 auto}
+  h1{font-size:20px;color:#D06E2A;margin-bottom:4px}
+  .sub{color:#8A8278;font-size:13px;margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  a.card{display:block;padding:12px 14px;background:#fff;border:1px solid #E4E0D8;border-radius:10px;
+    text-decoration:none;color:#3D3A36;font-size:14px;font-weight:700;box-shadow:0 2px 8px rgba(62,56,50,.06);
+    transition:transform .12s,border-color .12s}
+  a.card:hover{transform:translateY(-1px);border-color:#E8843C}
+  a.card .en{display:block;margin-top:3px;font-size:11px;font-weight:600;color:#A8A09A}
+  .foot{margin-top:18px;color:#A8A09A;font-size:11px;text-align:center}
+  .agent-btn{display:block;margin:0 0 16px;padding:14px 18px;border-radius:10px;
+    background:linear-gradient(135deg,#E8843C,#D06E2A);color:#fff;font-size:15px;font-weight:700;
+    text-align:center;text-decoration:none;box-shadow:0 4px 12px rgba(232,132,60,.25)}
+  .agent-btn:hover{opacity:.92}
+  @media(max-width:420px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<h1>🏥 健康风险预警技能模板预览</h1>
-<div class="nav">
-  <a href="health_report_card.preview.html">健康报告卡片</a>
-  <a href="risk_assessment_card.preview.html">风险评估卡片</a>
-  <a href="risk_warning_card.preview.html">风险预警卡片</a>
-  <a href="dietary_regimen_card.preview.html">膳食调养卡片</a>
+<div class="wrap">
+  <h1>🏥 健康风险预警 · 模板预览总览</h1>
+  <p class="sub">暖橙端 · 共 15 张卡 · 点击查看单文件预览</p>
+  <a class="agent-btn" href="../html/chatbot.html">🤖 打开智能体对话原型（AI 交互演示）</a>
+  <div class="grid">
+    <a class="card" href="health_warning_card.preview.html">健康风险预警<span class="en">health_warning_card</span></a>
+    <a class="card" href="health_risk_signal_card.preview.html">健康风险信号<span class="en">health_risk_signal_card</span></a>
+    <a class="card" href="health_risk_rule_card.preview.html">风险规则命中<span class="en">health_risk_rule_card</span></a>
+    <a class="card" href="risk_warning_card.preview.html">中医风险预警<span class="en">risk_warning_card</span></a>
+    <a class="card" href="risk_assessment_card.preview.html">综合风险评估<span class="en">risk_assessment_card</span></a>
+    <a class="card" href="risk_level_card.preview.html">风险等级判定<span class="en">risk_level_card</span></a>
+    <a class="card" href="health_report_card.preview.html">健康评估报告<span class="en">health_report_card</span></a>
+    <a class="card" href="care_advice_card.preview.html">照护建议<span class="en">care_advice_card</span></a>
+    <a class="card" href="dietary_regimen_card.preview.html">膳食调养<span class="en">dietary_regimen_card</span></a>
+    <a class="card" href="constitution_card.preview.html">体质辨识<span class="en">constitution_card</span></a>
+    <a class="card" href="tcm_syndrome_card.preview.html">中医证候<span class="en">tcm_syndrome_card</span></a>
+    <a class="card" href="tongue_diagnosis_card.preview.html">舌诊详情<span class="en">tongue_diagnosis_card</span></a>
+    <a class="card" href="face_observation_card.preview.html">面诊详情<span class="en">face_observation_card</span></a>
+    <a class="card" href="elder_duplicate_confirm_card.preview.html">老人信息去重确认<span class="en">elder_duplicate_confirm_card</span></a>
+    <a class="card" href="help_card.preview.html">帮助说明<span class="en">help_card</span></a>
+  </div>
+  <p class="foot">所有预览均为单文件静态 HTML · 安卓 / iOS 浏览器原生支持</p>
 </div>
-<iframe class="preview-frame" src="health_report_card.preview.html"></iframe>
 </body>
 </html>

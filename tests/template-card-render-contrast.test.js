@@ -30,8 +30,9 @@ test('route product cards render via iframe with intact hero CSS vars', () => {
 
   const html = result.rendered_html || '';
   assert.match(html, /gxy-template-card-frame/, 'route card should use iframe isolation');
-  assert.match(html, /srcdoc="/, 'iframe srcdoc present');
-  // srcdoc 里应保留硬编码 hero 色，避免白字淹没
+  assert.match(html, /gxy-card-html-source/, 'card HTML carried via textarea (mobile-safe)');
+  assert.equal(/srcdoc\s*=/.test(html), false, 'avoid long srcdoc attribute');
+  // textarea 源码里应保留硬编码 hero 色，避免白字淹没
   assert.match(html, /background:\s*#E8843C|background:\s*linear-gradient\(145deg,\s*#2A7F9E/);
   assert.doesNotMatch(html, /overflow:hidden;\}<style>/, 'must not nest raw <style> tags inside CSS');
 });
@@ -46,7 +47,7 @@ test('inline non-map cards unwrap nested style tags and scope vars', () => {
   // Use answer template path indirectly by calling through a tiny private behavior:
   // re-import build via rendering a common answer if available; otherwise assert extract via coastal with map forced iframe already covered.
   // Here we simulate by ensuring renderer export path for answer exists.
-  const commonDir = path.join(process.cwd(), 'src/skills/common/templates/html/common');
+  const commonDir = path.join(process.cwd(), 'src/skills/common/templates/html');
   const result = renderTemplateCardResult({
     templateDir: commonDir,
     modelResult: {

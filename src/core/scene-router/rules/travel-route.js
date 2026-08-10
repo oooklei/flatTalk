@@ -9,9 +9,10 @@ const travelTopicTerms = [
   '风雨桥', '鼓楼', '侗族', '瑶族', '壮族', '苗族',
   'winter care', 'travel route', 'route plan',
   // 防城港旅居试点线路相关场景词
-  '防城港旅居', '旅居养老', '京族', '芒街', '十万大山', '嘉路', '嘉路康旅', '嘉路滨海',
+  '防城港旅居', '旅居养老', '京族', '芒街', '十万大山', '嘉路康旅', '嘉路滨海',
   '银发爱情', '跨境', '非遗', '长寿', '药膳', '大本营', '康养基地', '旅居机构', '适老化旅居',
   '森林轻氧', '壮村民俗', '滨海文化', '边境风情',
+  // 注意：裸「嘉路」「嘉路康养中心」归 nearby，不在此抬旅居分
   // 产品主题词（康养/滨海/文化/生态）
   '海边', '海滩', '海岛', '度假', '海鲜', '沙滩', '滨海',
   '民族文化', '古镇', '民俗', '百家宴', '大歌', '手作',
@@ -36,7 +37,8 @@ const travelIntentTerms = [
   '怎么去', '适合去哪', '住哪里', '玩几天', '预算', '交通', '接驳', '天气', '无障碍',
   // 防城港线路意图词
   '线路详情', '线路介绍', '价格', '多少钱', '费用', '优惠', '套餐', '适合谁', '适配人群',
-  '时间安排', '一日行程', '资源嵌入', '药膳', '康养', '跨境',
+  '时间安排', '一日行程', '资源嵌入', '药膳', '跨境',
+  // 「康养」单独出现不抬 travel_intent（避免「嘉路康养中心」误进旅居）
 ];
 
 const elderTravelTerms = [
@@ -101,7 +103,7 @@ export const travelRouteRuleSet = {
     { group: 'meal_plan', penalty: 4, terms: ['膳食', '饮食', '早餐', '午餐', '晚餐', '菜谱', '控糖餐', '低盐'] },
     { group: 'dispatch_manage', penalty: 4, terms: ['派单', '工单', '调度', '处理进度', '客服'] },
     { group: 'acute_health_risk', penalty: 3.5, terms: ['胸痛', '昏迷', '呼吸困难', '中风', '急救', '120'] },
-    { group: 'nearby_resource', penalty: 4, terms: ['地图', '周边', '附近', '打点', '分布', '配套', '资源', '大屏', '15公里', '展示地图', '地图展示', '周边资源', '周边配套', '餐馆', '餐厅', '医疗', '医院', '嘉路康养中心', '嘉路周边', '生活圈'] },
+    { group: 'nearby_resource', penalty: 6, terms: ['地图', '周边', '附近', '打点', '分布', '配套', '资源', '大屏', '15公里', '展示地图', '地图展示', '周边资源', '周边配套', '餐馆', '餐厅', '医疗', '医院', '嘉路康养中心', '嘉路周边', '生活圈', '了解嘉路', '嘉路是什么', '嘉路康养'] },
     { group: 'service_quality_eval', penalty: 8, terms: ['服务质量', '质量评估', '服务评价', '满意度', '投诉', '整改', '评分', '督导', '质量报告'] },
     { group: 'health_risk_warning', penalty: 6, terms: ['血压', '血糖', '风险评估', '健康预警', '体质', '舌诊', '慢病风险', '预警报告', '心率异常', '血氧异常'] },
     { group: 'find_service', penalty: 5, terms: ['上门护理', '护工', '找服务', '养老机构', '服务目录', '下单服务', '预约护工'] },
@@ -128,7 +130,8 @@ export const travelRouteRuleSet = {
 // ============================================================
 
 const ROUTE_TYPE_KEYWORDS = {
-  route_wellness: ['康养', '旅居', '长寿', '养生', '负氧离子', '地磁', '温泉', '疗养', '百魔洞', '长寿村', '水晶宫', '赐福湖', '巴马', '慢病', '康复'],
+  // 不含过宽词「康养/旅居」——否则「查看旅居产品详情」会静默落到 wellness/巴马
+  route_wellness: ['长寿', '养生', '负氧离子', '地磁', '温泉', '疗养', '百魔洞', '长寿村', '水晶宫', '赐福湖', '巴马', '慢病', '康复'],
   route_coastal:  ['滨海', '海滩', '海岛', '度假', '海鲜', '沙滩', '海边', '银滩', '白浪滩', '涠洲岛', '京族', '边境', '口岸', '防城港', '北海', '东兴'],
   route_culture:  ['民族文化', '古镇', '非遗', '民俗', '侗族', '瑶族', '壮族', '苗族', '风雨桥', '鼓楼', '百家宴', '大歌', '手作', '三江', '龙胜', '靖西', '花山'],
   route_ecology:  ['生态', '山水', '喀斯特', '溶洞', '瀑布', '梯田', '森林', '湿地', '漂流', '徒步', '摄影', '德天', '明仕', '崇左', '桂林'],
@@ -144,7 +147,7 @@ export function inferRouteType(input) {
     ? input
     : [input?.text, input?.utterance, input?.message, input?.query].filter(Boolean).join(' ');
 
-  let bestType = 'route_wellness'; // 兜底
+  let bestType = '';
   let bestScore = 0;
   for (const [type, terms] of Object.entries(ROUTE_TYPE_KEYWORDS)) {
     const score = terms.filter((t) => includesTerm(text, t)).length;
@@ -153,7 +156,8 @@ export function inferRouteType(input) {
       bestType = type;
     }
   }
-  return bestType;
+  // 无关键词命中时禁止默认 route_wellness（否则泛化追问会静默落到巴马康养模板）
+  return bestScore > 0 ? bestType : '';
 }
 
 function has(input, terms) {

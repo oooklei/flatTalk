@@ -55,14 +55,35 @@ export function scoreRuleSet(input, ruleSet, thresholds = DEFAULT_THRESHOLDS) {
   const positive = positiveEvidence.score + roleBoost.score + contextBoost.score;
   const conflict = conflicts.score;
   const threshold = Number(ruleSet.threshold ?? 1) || 1;
-  const confidence = clamp((positive - conflict) / threshold);
+  let confidence = clamp((positive - conflict) / threshold);
+  if (confidence >= 1 && conflicts.evidence.some((item) => item.group === 'acute_health_risk')) {
+    confidence = 0.99;
+  }
   const decision = decide(confidence, mergedThresholds);
 
-  // 优先使用请求中携带的 intent（如 followup 按钮），否则调用 infer_intent
+  // 意图来源优先级：
+  //   1. 请求携带（followup 按钮 / LIS 门控回填）—— 正常路径
+  //   2. ruleSet.infer_intent —— **仅降级路径**（LIS 熔断/不可达/LLM_FALLBACK）
+  //   3. 场景默认意图
+  //
+  // 意图识别的权威源已统一为 LIS：它做扁平全局向量+规则比较，
+  // 而 scene-router 的 infer_intent 是「先选技能、再在技能内选意图」的两级
+  // 关键词匹配，各技能词表互不比较，跨技能关键词冲突会被长期隐藏
+  // （实测 '工单详情' 同时登记在 service_quality_eval.complaint 与
+  // dispatch_detail 名下，仅靠文件求值顺序才没出错）。
+  //
+  // 但不能直接删掉 infer_intent：LIS 熔断或不可达时 identifyScene 仍会被调用，
+  // 实测有 78 个意图只能由它产出，全删会让这些请求统一退化成场景默认意图
+  // （如所有派单细分问法都渲染成 dispatch_list）。因此保留为降级兜底。
+  //
+  // 本函数保留的**技能级执行契约**（actions_allowed / required_data /
+  // required_knowledge / followup_policy）与意图识别无关，始终由规则集提供。
   const requestIntent = input?.intent || input?.intent_context?.intent;
-  const intent = requestIntent
-    ? requestIntent
-    : (typeof ruleSet.infer_intent === 'function' ? ruleSet.infer_intent(input) : ruleSet.default_intent);
+  let intent = requestIntent;
+  if (!intent && typeof ruleSet.infer_intent === 'function') {
+    intent = ruleSet.infer_intent(input);
+  }
+  intent = intent || ruleSet.default_intent;
 
   return {
     scene_key: ruleSet.scene_key,

@@ -38,6 +38,7 @@ import {
   getLisBaseUrl,
 } from './core/lis/lis-gate-hook.js';
 import { createLisClient } from './core/lis/lis-client.js';
+import { lisBreaker } from './core/lis/lis-breaker.js';
 
 // Re-export LIS gate env helpers for operators / diagnostics
 export { LIS_GATE_ENABLED, LIS_BASE_URL, isLisGateEnabled, getLisBaseUrl };
@@ -394,6 +395,23 @@ function buildHealth(env) {
       agentId: process.env.FLATTALK_KB_AGENT_ID || '373',
       model: { name: env.modelMode || 'mock', model: env.openaiModel || 'mock' },
     },
+    lis: buildLisHealth(),
+  };
+}
+
+/**
+ * LIS 门控健康快照。
+ * 熔断若静默开启会很难排查（表现只是"意图识别忽然不准了"），
+ * 所以把状态暴露到 /api/health。
+ */
+function buildLisHealth() {
+  const enabled = isLisGateEnabled();
+  if (!enabled) return { gate_enabled: false };
+  return {
+    gate_enabled: true,
+    base_url: getLisBaseUrl(),
+    timeout_ms: Number(process.env.LIS_TIMEOUT_MS || 2000),
+    breaker: lisBreaker.state(),
   };
 }
 
@@ -838,8 +856,11 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
       conversation_id: conversationId,
       turn_id: turnId,
       skill_key: reenterChat ? '' : (body.skill_key || body.skillKey || (body.action_key || body.actionKey || '').split('.')[0] || ''),
-      template_id: body.template_id || body.templateId || body.params?.template_id || body.next_template_id
-        || (reenterChat ? '' : templateIdFromAction(body.action_key || body.actionKey || '', body.params || {})),
+      // next_template_id 不能压过 action_key 推导：移动端追问常把「当前卡」误填为
+      // next_template_id（见 mobile appendFollowupSuggestions），点「生成一周计划」
+      // 会带着 diet_card 进来，若优先 next 则永远出一日三餐而非 weekly_plan。
+      template_id: body.template_id || body.templateId || body.params?.template_id
+        || (reenterChat ? '' : (templateIdFromAction(body.action_key || body.actionKey || '', body.params || {}) || body.next_template_id)),
       intent: body.intent || '',
       message,
       history: Array.isArray(body.conversationHistory) ? body.conversationHistory : [],
@@ -1035,15 +1056,37 @@ async function handleIntentClassify(req, res) {
   return json(res, 200, { ok: true, intent_context });
 }
 
-function handleIntentHealth(res, env) {
+/**
+ * 意图链路健康。
+ *
+ * 注意：`classifier` / `route` 原先硬编码为 'rules' 与不含 LIS 的链路，
+ * 在 LIS 门控启用后会误导排障（看起来根本没接 LIS）。现按实际配置输出。
+ */
+async function handleIntentHealth(res, env) {
   const model = pickChatModel({ registryPath: env.modelRegistryPath, modelId: env.modelId });
+  const lis = buildLisHealth();
+  const gateOn = lis.gate_enabled === true;
+
+  // 门控开启时实际探一次 LIS，否则"配置看起来对但服务没起"查不出来
+  if (gateOn) {
+    try {
+      lis.probe = await createLisClient({ baseUrl: getLisBaseUrl() }).probe();
+    } catch (err) {
+      lis.probe = { reachable: false, error: String(err?.message || err) };
+    }
+  }
+
   return json(res, 200, {
     ok: true,
-    classifier: 'rules',
-    route: 'intent-classifier -> scene-router -> local-skill-runtime',
+    // LIS 门控开启时它才是第一道分拣，scene-router 退为降级通路
+    classifier: gateOn ? 'lis-gate' : 'rules',
+    route: gateOn
+      ? 'lis-gate -> matcher -> local-skill-runtime (fallback: scene-router)'
+      : 'intent-classifier -> scene-router -> local-skill-runtime',
     model_mode: env.modelMode || process.env.FLATTALK_MODEL_MODE || 'admin',
     default_model: model ? publicModelName(model) : '',
     has_default_model: Boolean(model),
+    lis,
   });
 }
 
@@ -1356,11 +1399,15 @@ async function handleMapStaticCached(req, res, url) {
       markers: url.searchParams.get('markers'),
       label: url.searchParams.get('label'),
     });
+    // Node HTTP 响应头仅允许 Latin-1；腾讯错误文案常含中文，需编码后再写入
+    const reasonHeader = result.reason
+      ? encodeURIComponent(String(result.reason).slice(0, 120))
+      : '';
     res.writeHead(result.status || 200, {
       'content-type': result.contentType || 'image/png',
       'cache-control': result.source === 'placeholder' ? 'no-store' : 'public, max-age=86400',
       'x-map-static-source': result.source || 'unknown',
-      ...(result.reason ? { 'x-map-static-reason': String(result.reason).slice(0, 160) } : {}),
+      ...(reasonHeader ? { 'x-map-static-reason': reasonHeader } : {}),
     });
     return res.end(result.body);
   } catch (e) {

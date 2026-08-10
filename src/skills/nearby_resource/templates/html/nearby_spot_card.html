@@ -4,8 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>嘉路康养生活圈 · 景区</title>
-  <link rel="stylesheet" href="./_design_tokens.css" />
-  <link rel="stylesheet" href="./_base.css" />
+  <link rel="stylesheet" href="_design_tokens.css">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    :root{--primary:#E8843C;--primary-weak:#FDF6F0;--accent:#E8843C;--accent-weak:#FAE6D5;--card:#fff;--card-2:#FDF6F0;--bg:#FAF8F5;--ink:#3D3A36;--ink-2:#6B6660;--muted:#8A8278;--border:#E4E0D8;--line:#E4E0D8;--wellness:#E5484D;--radius:16px;--radius-sm:12px;--shadow:0 4px 18px rgba(62,56,50,.08);--shadow-sm:0 2px 8px rgba(62,56,50,.08);--tap:44px;}
+  </style>
   <style>
     .nb-row-desc { font-size: 12px; color: var(--ink-2); margin-top: 6px; line-height: 1.5; padding: 6px 8px; background: rgba(0,0,0,.02); border-radius: 6px; }
     .nb-row-imgs { display: flex; gap: 6px; margin-top: 6px; }
@@ -21,7 +24,7 @@
           <h2 class="nb-title">🏖️ 游 · 滨海景区</h2>
           <p class="nb-sub">{{centerName}} 周边 {{radiusKm}}km · 共 {{total}} 个景区</p>
         </div>
-        <span class="nb-badge" style="background:#E3F6EF;color:#1E8E6A">适老友好</span>
+        <span class="nb-badge" style="background:#E8F2EC;color:#6B9B7A">适老友好</span>
       </div>
       <div class="nb-list">
         {{#markers}}
@@ -53,15 +56,5 @@
       {{{compact_followups}}}
     </section>
   </div>
-  <script type="application/json">
-  {
-    "centerName": "嘉路康养中心", "radiusKm": 15, "total": 3,
-    "markers": [
-      { "poi_id": "p1", "name": "西湾滨海景区", "address": "西湾大道", "distance_text": "2.5", "cat": "spot", "color": "#2BAE8E", "emoji": "🏖️", "biz_status": "开放中", "open_time": "全天", "tags": ["海景", "日落", "栈道"], "tags_text": "海景·日落·栈道" },
-      { "poi_id": "p2", "name": "怪石滩景区", "address": "江山半岛", "distance_text": "4.1", "cat": "spot", "color": "#2BAE8E", "emoji": "🏖️", "biz_status": "开放中", "open_time": "全天", "tags": ["礁石", "赶海"], "tags_text": "礁石·赶海" },
-      { "poi_id": "p3", "name": "白浪滩", "address": "北仑河口", "distance_text": "6.3", "cat": "spot", "color": "#2BAE8E", "emoji": "🏖️", "biz_status": "开放中", "open_time": "全天", "tags": ["沙滩", "平缓"], "tags_text": "沙滩·平缓" }
-    ]
-  }
-  </script>
 </body>
 </html>

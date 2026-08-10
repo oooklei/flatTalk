@@ -1,3 +1,5 @@
+import { normalizeActionDisplayItem } from '../core/actions/action-labels.js';
+
 export function buildEnvelope(input = {}) {
   return {
     schema: input.schema || 'gxy.envelope.v1',
@@ -8,14 +10,15 @@ export function buildEnvelope(input = {}) {
     skill_key: input.skill_key || 'common',
     agent_key: input.agent_key || input.skill_key || '',
     agent_switched: input.agent_switched || input.route_extras?.agent_switched || false,
+    agent_from: input.agent_from || input.route_extras?.agent_from || null,
     intent: input.intent || 'common.chat',
     template_id: input.template_id || 'common.answer.v1',
     template_key: input.template_key || input.template_id || 'common.answer.v1',
     render_mode: input.render_mode || 'frontend_template',
     answer_text: input.answer_text || '',
     data: isPlainObject(input.data) ? input.data : {},
-    actions: Array.isArray(input.actions) ? input.actions : [],
-    followup_suggestions: Array.isArray(input.followup_suggestions) ? input.followup_suggestions : [],
+    actions: Array.isArray(input.actions) ? input.actions.map(normalizeActionDisplayItem) : [],
+    followup_suggestions: Array.isArray(input.followup_suggestions) ? input.followup_suggestions.map(normalizeActionDisplayItem) : [],
     evidence: Array.isArray(input.evidence) ? input.evidence : [],
     route: input.route || { source: 'flatTalk', confidence: 0 },
     error: input.error || null,

@@ -166,6 +166,31 @@
     "route_dash_fcg_1"
   ],
   "route_id": "fcg_route_001",
-  "updated_at": "2026-08-05T22:13:28.013Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:57.643Z",
+  "spot_images_source": "dashboard_local_kb",
+  "itinerary": [
+    {
+      "day": "D1",
+      "wp_name": "嘉路滨海旅居基地",
+      "plan": "大本营出发"
+    },
+    {
+      "day": "D1",
+      "wp_name": "东兴京族三岛",
+      "plan": "京族非遗体验+独弦琴"
+    },
+    {
+      "day": "D1",
+      "wp_name": "金滩",
+      "plan": "滨海慢走+渔耕体验"
+    },
+    {
+      "day": "D1",
+      "wp_name": "嘉路滨海旅居基地",
+      "plan": "返回基地康养休整"
+    }
+  ],
+  "boundary_source": "datav_local",
+  "boundary_name": "防城港市",
+  "boundary_polygon_count": 1
 }

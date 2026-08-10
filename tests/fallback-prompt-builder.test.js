@@ -36,6 +36,23 @@ test('buildFallbackActionPrompt: label/description 注入', () => {
   assert.ok(prompt.includes('测算住宿、交通'), '应包含 description');
 });
 
+test('buildFallbackActionPrompt: raw action_key is localized before prompt injection', () => {
+  const action = {
+    action_key: 'meal_plan.adjust_for_condition',
+    label: 'meal_plan.adjust_for_condition',
+    target: 'bff',
+    description: 'adjust meal plan',
+    endpoint: '/mock',
+    params_schema: {},
+    param_sources: {},
+  };
+  const prompt = buildFallbackActionPrompt(action, {}, [action]);
+
+  assert.ok(prompt.includes('\u6309\u5065\u5eb7\u72b6\u51b5\u8c03\u6574'));
+  assert.equal(prompt.includes('\u6309\u94ae\u6807\u7b7e\uff1ameal_plan.adjust_for_condition'), false);
+  assert.equal(prompt.includes('- meal_plan.adjust_for_condition'), false);
+});
+
 test('buildFallbackActionPrompt: 上下文摘要注入（目的地防城港）', () => {
   const map = loadActionResourceMap();
   const action = map.actions.find((a) => a.action_key === 'travel_route.calculate_budget');

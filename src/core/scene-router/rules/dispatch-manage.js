@@ -5,7 +5,8 @@ const dispatchTopicTerms = [
   '我的单', '转交', '供应商处理', '一票否决',
 ];
 const dispatchIntentTerms = [
-  '查看', '处理', '接', '催', '查询', '列表', '详情', '进度', '状态', '改约', '更新',
+  // 不用裸「详情」：避免「舌诊详情」等跨域短语被 supervisor/scene-router 抢到派单
+  '查看', '处理', '接', '催', '查询', '列表', '派单详情', '工单详情', '进度', '状态', '改约', '更新',
   '我的', '看一下', '不接', '拒接',
 ];
 const dispatchStatusTerms = [
@@ -19,7 +20,7 @@ export const dispatchManageRuleSet = {
   scene_key: 'dispatch_manage',
   default_intent: 'dispatch_list',
   threshold: 5,
-  template_candidates: ['dispatch_list', 'dispatch_detail', 'work_order', 'dispatch_status', 'fallback'],
+  template_candidates: ['dispatch_list', 'dispatch_detail', 'work_order', 'dispatch_status', 'dispatch_accept', 'fallback'],
   required_data: ['dm_dispatch_order', 'fs_service_order', 'fs_worker'],
   required_knowledge: ['dispatch_manage'],
   actions_allowed: [
@@ -27,6 +28,7 @@ export const dispatchManageRuleSet = {
     'dispatch_manage.work_order',
     'dispatch_manage.status',
     'dispatch_manage.detail',
+    'dispatch_manage.accept',
   ],
   followup_policy: 'dispatch_manage.default',
   evidence_groups: [

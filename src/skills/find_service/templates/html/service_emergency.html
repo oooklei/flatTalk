@@ -18,8 +18,8 @@
     .sos-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 16px; border-radius: 10px; font-size: 16px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: transform .12s; }
     .sos-btn:active { transform: scale(.97); }
     .sos-btn-call { background: #E5484D; color: #fff; }
-    .sos-btn-family { background: #0E7C86; color: #fff; }
-    .sos-btn-safe { background: #f0f5f6; color: #0E7C86; border: 1px solid #cfe3e5; }
+    .sos-btn-family { background: #E8843C; color: #fff; }
+    .sos-btn-safe { background: #f0f5f6; color: #E8843C; border: 1px solid #cfe3e5; }
     .sos-note { font-size: 12px; color: #9AA7B2; margin-top: 12px; text-align: center; }
   </style>
 </head>
@@ -35,7 +35,7 @@
       <div class="emergency-actions">
         <a class="sos-btn sos-btn-call" href="tel:120">📞 立即拨打 120</a>
         <a class="sos-btn sos-btn-family" href="tel:{{emergency_phone}}">👪 通知家属（{{emergency_name}}）</a>
-        <button class="sos-btn sos-btn-safe" onclick="this.innerText='✓ 已标记安全';this.style.background='#e8f5e9';this.style.color='#2e7d32'">✓ 我已安全</button>
+        <button class="sos-btn sos-btn-safe action-btn" data-action-key="find_service.sos_mark_safe" data-action-type="dispatch" data-skill-key="find_service" data-user-prompt="我已经安全了，取消紧急求助">✓ 我已安全</button>
       </div>
       <p class="sos-note">点击按钮直接拨号。如无法说话，保持电话畅通，120可定位。</p>
     </div>

@@ -25,7 +25,7 @@ export class TencentMapAdapter {
     // 显式传入 key 时不走池；否则从 Key 池取当前可用主 Key
     const active = (!config.key) ? getActiveWsPair() : null;
     this.key = config.key || active?.key || process.env.TENCENT_MAP_KEY || '';
-    this.sk = config.sk != null ? config.sk : (active?.sk ?? process.env.TENCENT_MAP_SK || '');
+    this.sk = config.sk != null ? config.sk : ((active?.sk ?? process.env.TENCENT_MAP_SK) || '');
     this.keyId = config.keyId || active?.id || (this.key ? 'primary' : '');
     this.baseUrl = 'https://apis.map.qq.com/ws';
     this.timeout = config.timeout || DEFAULT_TIMEOUT;

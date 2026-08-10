@@ -146,6 +146,11 @@ export async function requireAuth(req, res, url, options = {}) {
   // 4. 解密校验令牌
   const payload = decryptSessionToken(token);
   if (!payload) {
+    // 生产模式严格拒绝无效令牌；本地/测试模式放行（兼容 dev preset 等明文令牌）
+    if (!strict) {
+      req.auth = buildDevAuth();
+      return true;
+    }
     respond(res, 403, { ok: false, error: 'invalid_token', message: '认证令牌无效' });
     return false;
   }

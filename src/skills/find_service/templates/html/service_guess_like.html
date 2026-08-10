@@ -9,17 +9,29 @@
 </head>
 <body>
   <!-- 语义：个性化精选（旅居路线/优质服务）。横向卡片：封面图+标签+名称+简介+价格+服务商。选这个由追问按钮体现。 -->
-  <article class="guess-like-card" data-layout="vertical" style="width:100%">
-    <div class="gl-image" style="background:{{image_bg}}">
-      <span>{{icon}}</span>
-      <div class="gl-tag">{{tag}}</div>
-    </div>
-    <div class="gl-info">
-      <div class="gl-name">{{name}}</div>
-      <div class="gl-summary">{{summary}}</div>
-      <div class="gl-price">¥{{price}}<span class="unit">/{{unit}}</span></div>
-      <div class="gl-provider">🏢 {{provider_name}}</div>
-    </div>
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <span class="eyebrow">猜你喜欢</span>
+      <h1>为您精选</h1>
+      <p class="subtitle">结合健康档案与偏好的适老推荐</p>
+    </header>
+
+    <section class="nb-section">
+      <article class="guess-like-card" style="width:100%;max-width:100%;flex:none">
+        <div class="gl-image" style="background:{{image_bg}}">
+          <span>{{icon}}</span>
+          <div class="gl-tag">{{tag}}</div>
+        </div>
+        <div class="gl-info">
+          <div class="gl-name">{{name}}</div>
+          <div class="gl-summary">{{summary}}</div>
+          <div class="gl-price">¥{{price}}<span class="unit">/{{unit}}</span></div>
+          <div class="gl-provider">🏢 {{provider_name}}</div>
+        </div>
+      </article>
+    </section>
+
+    <div class="foot">AI 找服务 · 猜你喜欢 · 桂小养</div>
   </article>
 
   <script type="application/json">

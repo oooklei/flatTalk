@@ -5,7 +5,12 @@ import { injectBridge } from './bridge-injector.js';
 import { renderCompactFollowups } from '../compact-followups/renderer.js';
 import { normalizeActionDisplayItem } from '../actions/action-labels.js';
 
-const COMMON_HTML = path.join(process.cwd(), 'src', 'skills', 'common', 'templates', 'html', 'common');
+// common 技能的公共模板（answer / fallback_error 等）。
+// 原路径多套了一层 html/common/，与"模板平铺在 templates/html/ 单层"的
+// 规范不一致：admin 靠递归 walk 才能看到它们，而这里靠硬编码，
+// 两处一旦不同步就会出现"admin 能看到、渲染找不到"的断链。
+// 已扁平化到 templates/html/，并由 scripts/check-template-layout.mjs 守卫。
+const COMMON_HTML = path.join(process.cwd(), 'src', 'skills', 'common', 'templates', 'html');
 const ANSWER_HTML = path.join(COMMON_HTML, 'answer.html');
 const ERROR_HTML = path.join(COMMON_HTML, 'fallback_error.html');
 
@@ -103,8 +108,35 @@ function buildRenderData(llmJson, compactFollowupsHtml = '') {
   };
 }
 
+/**
+ * 单餐模板 → 应保留的餐次名。
+ *
+ * diet_breakfast_card / diet_lunch_card / diet_dinner_card 与 diet_card 共用
+ * 同一套 meals 结构和填充逻辑（单餐卡没有专用 fill 分支），
+ * 若上游给了三餐数据就会全部渲染出来 ——「早餐吃什么」却看到午餐晚餐。
+ * 这里按模板裁剪，保证单餐卡只出对应那一餐。
+ */
+const SINGLE_MEAL_TEMPLATES = {
+  diet_breakfast_card: '早餐',
+  diet_lunch_card: '午餐',
+  diet_dinner_card: '晚餐',
+};
+
+function filterSingleMeal(templateId, data) {
+  const wanted = SINGLE_MEAL_TEMPLATES[templateId];
+  if (!wanted || !data || typeof data !== 'object') return data;
+  const meals = data.meals;
+  if (!Array.isArray(meals) || meals.length <= 1) return data;
+
+  const kept = meals.filter((m) => String(m?.mealName || m?.name || '').includes(wanted));
+  // 匹配不到就保留原样，不要把卡片弄空
+  if (!kept.length) return data;
+  return { ...data, meals: kept };
+}
+
 function normalizeTemplateData(templateId, rawData) {
-  const data = templateId === 'weekly_plan' ? normalizeWeeklyPlanData(rawData) : rawData;
+  const scoped = filterSingleMeal(templateId, rawData);
+  const data = templateId === 'weekly_plan' ? normalizeWeeklyPlanData(scoped) : scoped;
   if (OPTIONAL_RELATED_TEMPLATE_IDS.has(templateId) || Array.isArray(data.related)) {
     return normalizeRelatedData(data);
   }
@@ -153,9 +185,17 @@ function hasVisibleText(value) {
 
 function toDisplayText(value) {
   if (value && typeof value === 'object') {
-    return String(value.text ?? value.value ?? value.name ?? value.label ?? '');
+    const picked = value.text ?? value.value ?? value.name ?? value.label
+      ?? value.detected ?? value.current ?? value.standard ?? value.summary
+      ?? value.desc ?? value.meaning;
+    if (picked != null && typeof picked !== 'object') return String(picked);
+    if (picked && typeof picked === 'object') {
+      return String(picked.text ?? picked.value ?? picked.detected ?? '');
+    }
+    return '';
   }
-  return String(value ?? '');
+  const s = String(value ?? '');
+  return s === '[object Object]' ? '' : s;
 }
 
 function normalizeWeeklyPlanData(data) {
@@ -280,49 +320,96 @@ function extractEmbeddedCss(pageHtml = '') {
 }
 
 function scopeCssVarsForInline(css = '') {
-  // 内联进 mobile 气泡时，把模板 :root 变量挂到回退容器上，避免被宿主 :root 冲掉、也避免嵌套 <style> 解析失败
-  return String(css || '').replace(/(^|})\s*:root\s*\{/g, '$1\n.gxy-html-fallback {');
+  // 内联进 mobile 气泡时，把模板 :root / body 挂到回退容器上：
+  // 片段渲染没有真正的 body，否则会出现「暖纸底/墨色正文」丢失的白板纯文字。
+  return String(css || '')
+    .replace(/(^|})\s*:root\s*\{/g, '$1\n.gxy-html-fallback {')
+    .replace(/(^|})\s*body\s*\{/g, '$1\n.gxy-html-fallback {');
 }
 
-function buildHtmlFallback(pageHtml) {
+/** 去掉相对路径 stylesheet：srcdoc/blob+base 下会变成 /_design_tokens.css → 404；CSS 应由 collectCss 已进 <style> */
+function stripRelativeStylesheets(html = '') {
+  return String(html || '').replace(/<link\b[^>]*rel=["']stylesheet["'][^>]*>/gi, (tag) => {
+    const href = (tag.match(/href=["']([^"']+)["']/i) || [])[1] || '';
+    if (!href || /^(https?:|data:|\/\/|\/)/i.test(href)) return tag;
+    return `<!-- stripped-relative-css ${href.replace(/[^\w.\-./]/g, '')} -->`;
+  });
+}
+
+/**
+ * 是否必须用 iframe 隔离渲染。
+ * 注意：renderCard / injectBridge 会把 card-bridge.js 打进页面，其中含 map.qq.com / TMap.Map；
+ * 判定前必须剥掉已注入的 bridge，否则膳食/政策等纯展示卡会被误判进 iframe → 手机端白屏。
+ */
+export function cardNeedsIframeIsolation(html = '') {
+  const h = String(html || '')
+    .replace(/<script\b[^>]*\bid=["']card-bridge-script["'][^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<script\b[^>]*\bid=["']map-kit-bridge["'][^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<script\b[^>]*>\s*window\.__MAP_KEY__\s*=[\s\S]*?<\/script>/gi, '');
+  // 注意：nearby_map_* / route_svg 等模板已改为纯静态 HTML（无 script、无 TMap），
+  // 不再需要 iframe 隔离。仅当 HTML 中真正包含可执行地图 JS 时才隔离。
+  return h.includes('data-map-mode')
+    || /data-layout=["']map["']/i.test(h)
+    || /id=["']mapCanvas["']/i.test(h)
+    || /class=["'][^"']*\bnb-map\b/i.test(h)
+    || /<script[^>]+src=["']https?:\/\/[^"']*map/i.test(h)
+    || /map\.qq\.com\/api\/gljs/i.test(h)
+    || /new\s+TMap\.Map\b/.test(h);
+}
+
+function escapeTextareaContent(html = '') {
+  // textarea 文本节点里只需避开结束标签；其余保持原样供 blob 还原
+  return String(html || '').replace(/<\/textarea/gi, '&lt;/textarea');
+}
+
+export function buildHtmlFallback(pageHtml) {
   // 注入自适配高度脚本：iframe 加载后按内容高度撑开，避免高卡片（如 7 天膳食）被固定高度裁切
   const autoHeightScript = `<script>(function(){try{var h=document.documentElement.scrollHeight||document.body.scrollHeight;var f=window.frameElement;if(f&&h){f.style.height=Math.min(h,1500)+'px';}}catch(e){}})();<\/script>`;
   const mapKey = process.env.TENCENT_MAP_JS_KEY || 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
-  const bridgedHtml = injectBridge(pageHtml, { map_key: mapKey });
+  const strippedPage = stripRelativeStylesheets(pageHtml);
+  // ★ 先判定再 injectBridge，避免 bridge 脚本污染地图信号
+  const needsIframe = cardNeedsIframeIsolation(strippedPage);
+  const bridgedHtml = injectBridge(strippedPage, { map_key: mapKey });
   const injected = bridgedHtml.replace(/<\/body>/i, `${autoHeightScript}</body>`);
-  const finalHtml = injected.includes(autoHeightScript) ? injected : bridgedHtml + autoHeightScript;
-
-  // 地图/走线卡必须 iframe 隔离，保证模板 CSS 变量与 SVG 交互不被宿主页冲掉
-  const htmlWithoutAutoHeight = finalHtml.replace(autoHeightScript, '');
-  const needsIframe = htmlWithoutAutoHeight.includes('data-map-mode')
-    || htmlWithoutAutoHeight.includes('data-static-svg')
-    || /class=["'][^"']*\broute-card\b/i.test(htmlWithoutAutoHeight)
-    || /class=["'][^"']*\bsvg-map-section\b/i.test(htmlWithoutAutoHeight)
-    || /id=["']svgMapContainer["']/i.test(htmlWithoutAutoHeight)
-    || /<script[^>]+src=["']https?:\/\/[^"']*map/i.test(htmlWithoutAutoHeight);
+  const finalHtml = stripRelativeStylesheets(injected.includes(autoHeightScript) ? injected : bridgedHtml + autoHeightScript);
 
   if (needsIframe) {
+    // 手机浏览器对超长 srcdoc 属性常截断 → 空白卡；改用 textarea 承载源码，由 mobile.js 转 blob
     return [
       '<article class="gxy-html-fallback" data-renderer="template-card-renderer">',
       '<style>',
       '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:visible;}',
-      '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:240px;max-height:1500px;border:0;border-radius:14px;background:#fff;overflow:auto;box-shadow:0 2px 10px rgba(61,58,54,0.06);}',
+      '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:520px;max-height:1500px;border:0;border-radius:14px;background:#fff;overflow:auto;box-shadow:0 2px 10px rgba(61,58,54,0.06);}',
+      '.gxy-card-html-source{display:none !important;}',
       '</style>',
-      `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups" srcdoc="${escapeAttribute(finalHtml)}"></iframe>`,
+      `<textarea class="gxy-card-html-source" hidden aria-hidden="true">${escapeTextareaContent(finalHtml)}</textarea>`,
+      '<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>',
       '</article>',
     ].join('');
   }
 
   // 无 script 的纯展示卡片：直接内联渲染（避免 iframe srcdoc 白屏问题）
-  const bodyMatch = finalHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  // route_svg 主模板已直接 {{{static_svg}}} 进 #svgMapContainer。
+  // 预注入 staticSvgData：兼容 route_coastal 等仍用 <script type="text/html" id="staticSvgData">
+  // 的副本；sanitizeHtmlCard 剥掉 script 前把 SVG 拷进容器，避免走线图空白。
+  let preInjected = finalHtml;
+  const svgDataMatch = preInjected.match(/<script[^>]*\bid=["']staticSvgData["'][^>]*>([\s\S]*?)<\/script>/i);
+  if (svgDataMatch && svgDataMatch[1].trim()) {
+    const svgContent = svgDataMatch[1].trim();
+    preInjected = preInjected.replace(
+      /(<div[^>]*\bid=["']svgMapContainer["'][^>]*>)([\s\S]*?)(<\/div>)/i,
+      (m, open, _inner, close) => `${open}\n        ${svgContent}\n      ${close}`,
+    );
+  }
+  const bodyMatch = preInjected.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   const bodyContent = bodyMatch ? bodyMatch[1].replace(autoHeightScript, '') : finalHtml;
   const headCss = scopeCssVarsForInline(extractEmbeddedCss(finalHtml));
 
   return [
     '<article class="gxy-html-fallback" data-renderer="template-card-renderer">',
     '<style>',
-    '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:visible;color:#3D3A36;}',
-    '.gxy-html-fallback .tc-card,.gxy-html-fallback .route-card,.gxy-html-fallback .ai-result-card{display:block;width:100%;border-radius:14px;background:#fff;overflow:hidden;}',
+    '.gxy-html-fallback{padding:0;background:#FAF8F5;border:0;width:100%;max-width:100%;overflow:visible;color:#3D3A36;font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;}',
+    '.gxy-html-fallback .tc-card,.gxy-html-fallback .nb-card,.gxy-html-fallback .route-card,.gxy-html-fallback .ai-result-card,.gxy-html-fallback .thinking-card,.gxy-html-fallback .guess-like-card{display:block;width:100%;max-width:420px;margin:0 auto;border-radius:14px;background:#fff;overflow:hidden;color:#3D3A36;}',
     headCss,
     '</style>',
     bodyContent,
@@ -330,7 +417,23 @@ function buildHtmlFallback(pageHtml) {
   ].join('');
 }
 
-const HTML_SAFE_KEYS = new Set(['static_svg', 'compact_followups', 'rendered_html', 'waypoint_spots_json']);
+const HTML_SAFE_KEYS = new Set([
+  'static_svg',
+  'compact_followups',
+  'rendered_html',
+  'waypoint_spots_json',
+  // 周边/地图卡脚本内联 JSON，禁止 sanitizeText 剥标签导致 JS 语法错误 → 地图空白
+  'markers_json',
+  'center_json',
+  'static_map_url',
+  'static_map_url_json',
+  'wellnessItems_json',
+  'picks_json',
+  'routeStops_json',
+  'walkItems_json',
+  'action_params',
+  'nav_params',
+]);
 function sanitizeModelValue(value, parentKey = '') {
   if (Array.isArray(value)) {
     return value.map((item) => sanitizeModelValue(item, parentKey));

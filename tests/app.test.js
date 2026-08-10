@@ -278,6 +278,47 @@ test('followup reenter chat can still route by prompt text', async () => {
   }
 });
 
+test('diet_card followup generate_weekly_plan must not stay on diet_card when next_template_id is stale', async () => {
+  const { baseUrl, close } = await startTestServer();
+  try {
+    await fetch(`${baseUrl}/api/chat/message`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        conversation_id: 'conv_follow_weekly_stale_1',
+        message: '推荐今日膳食',
+        role: 'elder_family',
+      }),
+    });
+    // 复现移动端曾把当前卡塞进 next_template_id 的路径
+    const response = await fetch(`${baseUrl}/api/chat/followup`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        conversation_id: 'conv_follow_weekly_stale_1',
+        message: '请基于这份膳食建议生成一周三餐计划',
+        user_prompt: '请基于这份膳食建议生成一周三餐计划',
+        skill_key: 'meal_plan',
+        action_key: 'meal_plan.generate_weekly_plan',
+        execute_action: true,
+        reenter_chat: false,
+        followup_source: 'action_button',
+        next_template_id: 'diet_card',
+        source_template_id: 'diet_card',
+        role: 'elder_family',
+      }),
+    });
+    const envelope = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(envelope.ok, true);
+    assert.equal(envelope.skill_key, 'meal_plan');
+    assert.equal(envelope.template_id, 'weekly_plan');
+  } finally {
+    await close();
+  }
+});
+
 test('conversation history sync list delete and harvest endpoints persist payloads', async () => {
   const { baseUrl, close } = await startTestServer();
   try {
@@ -533,6 +574,40 @@ test('backend exposes action, OpenAPI, interface status, and skill template endp
   }
 });
 
+test('travel route availability button returns availability card instead of route card', async () => {
+  const { baseUrl, close } = await startTestServer();
+  try {
+    const response = await fetch(`${baseUrl}/api/chat/action`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        action_key: 'travel_route.check_availability',
+        skill_key: 'travel_route',
+        conversation_id: 'conv_travel_availability_action',
+        params: {
+          product_id: 'jtd_mock_beihai_001',
+          sku_id: 'sku_beihai_4d',
+          destination: '北海',
+          check_in: '2026-08-10',
+          check_out: '2026-08-13',
+          people_count: 2,
+        },
+      }),
+    });
+    const action = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(action.ok, true);
+    assert.equal(action.result_type, 'skill_run');
+    assert.equal(action.envelope.template_id, 'travel_availability_card');
+    assert.equal(action.envelope.card.templateId, 'travel_availability_card');
+    assert.notEqual(action.envelope.template_id, 'route_card');
+    assert.equal(action.envelope.data.availabilitySourceStatus, 'mock_vendor_data');
+  } finally {
+    await close();
+  }
+});
+
 test('backend exposes intent classify and health endpoints', async () => {
   const { baseUrl, close } = await startTestServer();
   try {
@@ -550,7 +625,10 @@ test('backend exposes intent classify and health endpoints', async () => {
     const health = await healthResponse.json();
     assert.equal(healthResponse.status, 200);
     assert.equal(health.ok, true);
-    assert.equal(health.classifier, 'rules');
+    // classifier 随 LIS_GATE_ENABLED 变化：门控开启时 LIS 才是第一道分拣。
+    // 不硬编码 'rules'，否则本地开着门控跑测试就假红。
+    const expected = health.lis?.gate_enabled ? 'lis-gate' : 'rules';
+    assert.equal(health.classifier, expected);
   } finally {
     await close();
   }

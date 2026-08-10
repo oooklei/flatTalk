@@ -2,8 +2,12 @@
   "route_name": "七洞乡线路产品",
   "destination": "七洞乡",
   "days": 4,
-  "summary": "金跳动产品 七洞乡线路产品",
-  "highlights": [],
+  "summary": "七洞乡线路产品",
+  "highlights": [
+    "七洞乡政府·抵达办理入住",
+    "七洞乡康养基地·康养体验",
+    "七洞乡生态园·生态游憩"
+  ],
   "waypoints": [
     {
       "id": "wp1",
@@ -45,6 +49,31 @@
   "source": "jintiaodong",
   "jtd_product_id": "2070305000000000240",
   "route_id": "jtd_2070305000000000240",
-  "updated_at": "2026-08-05T22:13:28.091Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:58.146Z",
+  "spot_images_source": "dashboard_local_kb",
+  "itinerary": [
+    {
+      "day": "D1",
+      "wp_name": "七洞乡政府",
+      "plan": "抵达办理入住"
+    },
+    {
+      "day": "D2",
+      "wp_name": "七洞乡康养基地",
+      "plan": "康养体验"
+    },
+    {
+      "day": "D3",
+      "wp_name": "七洞乡生态园",
+      "plan": "生态游憩"
+    },
+    {
+      "day": "D3",
+      "wp_name": "七洞乡政府",
+      "plan": "返程"
+    }
+  ],
+  "boundary_source": "datav_local",
+  "boundary_name": "兴宾区",
+  "boundary_polygon_count": 1
 }

@@ -349,19 +349,28 @@ export function fillFindServiceExtra({ message, business_data, selectedTemplateI
   }
 
   if (tpl === 'service_order_ticket') {
+    const orderNo = order.order_id || `GD${Date.now().toString().slice(-10)}`;
     return {
       template_id: tpl,
-      answer_text: `订单已生成：${order.order_id || 'so_new'}。`,
+      answer_text: `预定成功，订单号 ${orderNo}。`,
       data: {
-        order_no: order.order_id || `SO${Date.now().toString().slice(-8)}`,
+        pageTitle: '预定成功',
+        cardTitle: '预定成功',
+        orderNo,
+        order_no: orderNo,
         ticket_desc: '请留意服务人员联系电话',
-        service_name: order.service_name || svc.name || '上门护理',
+        serviceName: order.service_name || svc.name || '上门助浴服务',
+        service_name: order.service_name || svc.name || '上门助浴服务',
         name: order.elder_name || elderName,
         phone: text(bd.phone, '—'),
+        dateDisplay: order.expected_time || '明天（待确认）',
         date: order.expected_time || '待确认',
+        timeSlot: order.time_slot || '09:00-11:00',
+        institution: order.org_name || org.org_name || '桂林乐颐家政服务公司',
         org: order.org_name || org.org_name || '',
-        status: order.status || '已下单',
+        status: order.status || '待确认',
         status_class: 'ok',
+        footSource: '预定成功',
       },
       actions: [],
       followup_suggestions: withEntityParams([
@@ -933,6 +942,7 @@ export const LOCAL_FILL_TEMPLATE_IDS = new Set([
   'worker_profile', 'order_preview', 'order_status',
   'service_order_form', 'service_order_ticket', 'service_expand', 'service_guess_like',
   'service_trace', 'service_review',
+  'service_booking_confirm', 'booking_success', 'booking_reschedule', 'contact_confirm',
   'dispatch_list', 'dispatch_detail', 'work_order', 'dispatch_status',
   'dispatch_accept', 'dispatch_reject', 'dispatch_transfer', 'dispatch_supplier_action',
   'institution_quality_report', 'staff_quality_report', 'org_quality_ranking',

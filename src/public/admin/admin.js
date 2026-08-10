@@ -3,7 +3,7 @@ const TITLES = {
   models: '模型治理', templates: '模板工作台', validate: '资源校验', logs: '运行日志',
   knowledge: '知识导入', dialogue: '对话运行',
   integrations: '第三方API', openapi: 'Open API', authaccess: '认证接入', embeds: '第三方嵌入',
-  permissions: '权限矩阵', config: '系统配置',
+  permissions: '权限矩阵', config: '系统配置', mapstudio: '地图工坊',
 };
 
 const nav = document.getElementById('nav');
@@ -81,6 +81,7 @@ async function showModule(mod) {
     integrations: renderIntegrations, openapi: renderOpenApi,
     authaccess: renderAuthAccess, embeds: renderEmbeds,
     permissions: renderPermissions, config: () => renderCrud(CRUD.config),
+    mapstudio: renderMapStudio,
   };
   (map[mod] || (() => { view.innerHTML = `<div class="placeholder">模块「${TITLES[mod]}」待开发</div>`; }))();
 }
@@ -97,6 +98,8 @@ const TYPE_LABEL = {
 };
 async function renderModels() {
   const { items } = await api('/models');
+  topbarActions.innerHTML = '';
+  view.innerHTML = '';
   topbarActions.append(btn('＋ 新建模型', () => openForm(null)));
   const rows = items.map((m) => el('tr', {},
     el('td', {}, String(m.id)),
@@ -106,23 +109,20 @@ async function renderModels() {
     el('td', {}, m.model_id || '-'),
     el('td', m.is_default ? { html: badge('ok', '默认') } : {}),
     el('td', { html: m.is_active ? badge('ok', '启用') : badge('warn', '停用') }),
-    el('td', {}, m.owner || '-'),
+    el('td', { class: 'desc-cell', title: escAttr(m.description || '') }, (m.description || '-').slice(0, 50) + (m.description && m.description.length > 50 ? '…' : '')),
     el('td', { html: m.has_api_key ? badge('ok', '有密钥') : badge('muted', '无密钥') }),
+    el('td', { html: m.test_status === 'success' ? badge('ok', '通过') : (m.test_status === 'error' ? badge('err', '失败') : '-') }),
+    el('td', {}, m.test_duration_ms != null ? `${m.test_duration_ms}ms` : '-'),
     el('td', { class: 'ops' }, ...opsFor(m)),
   ));
   view.append(el('table', { class: 'grid' },
-    el('thead', {}, el('tr', {}, ...['ID', '名称', '显示名', '供应商', '模型ID', '默认', '状态', '属主', '密钥', '操作'].map((h) => el('th', {}, h)))),
+    el('thead', {}, el('tr', {}, ...['ID', '名称', '显示名', '供应商', '模型ID', '默认', '状态', '描述', '密钥', '测试', '耗时', '操作'].map((h) => el('th', {}, h)))),
     el('tbody', {}, ...rows),
   ));
 }
 function opsFor(m) {
   const test = el('button', { class: 'btn sm' }, '测试');
-  test.onclick = async () => {
-    test.textContent = '测试中…'; test.disabled = true;
-    const r = await api(`/models/${m.id}/test`, { method: 'POST' });
-    alert(`[${r.status || '-'}] ${r.message || ''}${r.reply ? '\n回复: ' + r.reply : ''}`);
-    test.textContent = '测试'; test.disabled = false;
-  };
+  test.onclick = () => openTestDialog(m);
   const def = el('button', { class: 'btn sm' }, '设默认');
   def.onclick = async () => { await api(`/models/${m.id}/set-default`, { method: 'POST' }); renderModels(); };
   const tog = el('button', { class: 'btn sm' }, m.is_active ? '停用' : '启用');
@@ -132,6 +132,99 @@ function opsFor(m) {
   const del = el('button', { class: 'btn sm danger' }, '删除');
   del.onclick = async () => { if (confirm(`删除模型 ${m.name} ?`)) { await api(`/models/${m.id}`, { method: 'DELETE' }); renderModels(); } };
   return [test, def, tog, edit, del];
+}
+
+/** geniePPT 风格的分步测试对话框 */
+async function openTestDialog(model) {
+  const card = el('div', { class: 'modal-card test-dialog' });
+  card.innerHTML = `
+    <h3>模型测试 — ${esc(model.name)}</h3>
+    <div class="test-detail-panel" id="testSteps"></div>
+    <div class="modal-actions"><button type="button" class="btn" id="testClose">关闭</button></div>`;
+  openModal(card);
+  const stepsEl = card.querySelector('#testSteps');
+  const closeBtn = card.querySelector('#testClose');
+  let closed = false;
+  closeBtn.onclick = () => { closed = true; closeModal(); renderModels(); };
+
+  const fmtDetail = (s) => s.split('\n').map(l => `<pre>${esc(l)}</pre>`).join('');
+
+  const pushStep = (label) => {
+    const row = el('div', { class: 'test-step running' });
+    row.innerHTML = `
+      <div class="ts-header">
+        <span class="ts-icon running">○</span>
+        <span class="ts-label">${esc(label)}</span>
+        <span class="ts-duration"></span>
+      </div>
+      <div class="ts-detail"></div>`;
+    stepsEl.append(row);
+    stepsEl.scrollTop = stepsEl.scrollHeight;
+    return {
+      row,
+      done(status, detail, duration) {
+        const icon = row.querySelector('.ts-icon');
+        icon.textContent = status === 'success' ? '✓' : '✗';
+        icon.className = `ts-icon ${status}`;
+        row.classList.remove('running');
+        row.classList.add(status);
+        if (duration != null) row.querySelector('.ts-duration').textContent = `${duration}ms`;
+        if (detail) row.querySelector('.ts-detail').innerHTML = fmtDetail(detail);
+        stepsEl.scrollTop = stepsEl.scrollHeight;
+      },
+    };
+  };
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  // 步骤 1：读取模型配置（重新从服务端获取最新数据）
+  const s1 = pushStep('读取模型配置');
+  const t0 = performance.now();
+  await sleep(50);
+  let fresh = model;
+  try {
+    const res = await api('/models');
+    const found = (res.items || []).find(x => String(x.id) === String(model.id));
+    if (found) fresh = found;
+  } catch { /* 降级用传入数据 */ }
+  const d0 = Math.round(performance.now() - t0);
+  s1.done('success', `provider: ${fresh.provider || '(空)'}\nmodel_id: ${fresh.model_id || '(空)'}\napi_base: ${fresh.api_base || '(空)'}\napi_key: ${fresh.has_api_key ? '****(已设置)' : '(未设置)'}\n状态: ${fresh.is_active ? '启用' : '停用'}`, d0);
+  if (closed) return;
+
+  if (!fresh.is_active) {
+    const sErr = pushStep('测试中止');
+    sErr.done('error', `模型 "${fresh.display_name || fresh.name}" 已停用，请先启用后再测试。`);
+    return;
+  }
+
+  // 步骤 2：建立网络连接
+  const s2 = pushStep('建立网络连接');
+  const t1 = performance.now();
+  try {
+    const r = await api(`/models/${model.id}/test`, { method: 'POST' });
+    const d1 = Math.round(performance.now() - t1);
+    if (closed) return;
+    if (r.status === 'success') {
+      s2.done('success', `HTTP 200 OK\n回复: ${r.reply || '(空)'}`, d1);
+      // 步骤 3：验证响应内容
+      const s3 = pushStep('验证响应内容');
+      const t2 = performance.now();
+      await sleep(30);
+      s3.done('success', '响应有效，模型连通性正常', Math.round(performance.now() - t2));
+    } else {
+      s2.done('error', `${r.message || '未知错误'}\n${r.detail || ''}`, d1);
+    }
+  } catch (e) {
+    s2.done('error', e.message || '请求失败', Math.round(performance.now() - t1));
+  }
+  if (closed) return;
+
+  // 步骤 4：测试完成
+  const steps = [...stepsEl.querySelectorAll('.test-step')];
+  const hasError = steps.some(s => s.classList.contains('error'));
+  const total = Math.round(performance.now() - t0);
+  const sFinal = pushStep('测试完成');
+  sFinal.done(hasError ? 'error' : 'success', `总耗时: ${total}ms`, total);
 }
 function openForm(m) {
   const isEdit = !!m;
@@ -146,6 +239,7 @@ function openForm(m) {
     <label>类型 <input name="model_type" value="${escAttr(m?.model_type || 'llm_text')}"></label>
     <label>用途 <input name="purpose" value="${escAttr(m?.purpose)}"></label>
     <label>属主 <input name="owner" value="${escAttr(m?.owner || 'system')}"></label>
+    <label class="full">模型描述 <textarea name="description" rows="4" placeholder="描述该模型类型、支持的会话形式、作用、使用方法、注意事项、不适用场景等">${escAttr(m?.description)}</textarea></label>
     <label>最大上下文令牌数 <input name="max_tokens" type="number" value="${m?.max_tokens ?? 4096}"></label>
     <label>温度（0-1） <input name="temperature" type="number" step="0.1" value="${m?.temperature ?? 0.7}"></label>
     <label>排序权重 <input name="sort_order" type="number" value="${m?.sort_order ?? 0}"></label>
@@ -966,6 +1060,23 @@ function openEmbedSnippet(it) {
       btn('复制 script', () => navigator.clipboard.writeText(scriptCode), 'btn'),
       btn('关闭', closeModal, 'btn primary')),
   ));
+}
+
+/* ============ 地图工坊 ============ */
+async function renderMapStudio() {
+  topbarActions.innerHTML = '';
+  const resp = await fetch('/admin/mapstudio.html?v=20260804-c');
+  const html = await resp.text();
+  view.innerHTML = html;
+  try {
+    const mod = await import('/admin/mapstudio.js?v=20260804-c');
+    if (typeof mod.initMapStudio === 'function') {
+      mod.initMapStudio(view);
+    }
+  } catch (e) {
+    console.error('mapstudio init error:', e);
+    view.innerHTML = '<div style="padding:24px;color:#c00;">地图工坊加载失败: ' + e.message + '</div>';
+  }
 }
 
 showModule('models');

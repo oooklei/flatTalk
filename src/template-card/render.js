@@ -113,10 +113,20 @@ function renderNodes(nodes, ctxStack) {
           out += (mapped != null && mapped !== '') ? (n.raw ? mapped : escapeHtml(mapped)) : '';
         }
       } else {
-        // 处理对象类型：优先提取文本字段，否则隐藏（不显示 JSON）
-        const stringValue = (v && typeof v === 'object')
-          ? (v.text || v.value || v.name || v.label || '')
-          : String(v);
+        // 处理对象类型：云诊 analysis_table 等为 {detected,standard}，
+        // 切勿 String(obj) → "[object Object]"
+        let stringValue;
+        if (v && typeof v === 'object') {
+          stringValue = v.text ?? v.value ?? v.name ?? v.label
+            ?? v.detected ?? v.current ?? v.standard ?? v.summary ?? v.desc ?? v.meaning ?? '';
+          if (stringValue && typeof stringValue === 'object') {
+            stringValue = stringValue.text ?? stringValue.value ?? stringValue.detected ?? '';
+          }
+          stringValue = stringValue == null ? '' : String(stringValue);
+        } else {
+          stringValue = String(v);
+        }
+        if (stringValue === '[object Object]') stringValue = '';
         out += n.raw ? stringValue : escapeHtml(stringValue);
       }
       continue;

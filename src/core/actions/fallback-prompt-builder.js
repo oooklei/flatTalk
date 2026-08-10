@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { labelForActionKey } from './action-labels.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -12,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ACTION_RESOURCE_MAP_PATH = path.join(__dirname, 'action-resource-map.json');
 
 /** 特例白名单：这些 action 在 orchestrator 走硬编码分支，不走通用兜底。 */
-export const SPECIAL_CASE_ACTION_KEYS = ['travel_route.check_weather_risk'];
+export const SPECIAL_CASE_ACTION_KEYS = ['travel_route.check_weather_risk', 'travel_route.check_availability'];
 
 /** 加载资源清单（action-resource-map.json）。 */
 export function loadActionResourceMap(customPath) {
@@ -77,7 +78,7 @@ function listParams(paramsSchema = {}, paramSources = {}) {
  * @param {object} [extra] 可选扩展：{ evidence: string }
  */
 export function buildFallbackActionPrompt(action = {}, context = {}, skillResources = [], extra = {}) {
-  const label = action.label || action.action_key || '未知按钮';
+  const label = labelForActionKey(action.action_key, action.label || '未知按钮');
   const description = action.description || '';
   const target = action.target || 'bff';
   const endpoint = action.endpoint || '（无明确接口地址）';
@@ -87,12 +88,14 @@ export function buildFallbackActionPrompt(action = {}, context = {}, skillResour
   const nextTemplateId = action.next_template_id || 'answer';
 
   const skillList = (Array.isArray(skillResources) ? skillResources : [])
-    .map((r) => `- ${r.label || r.action_key}（${r.target}）：${r.endpoint || ''}`)
+    .map((r) => `- ${labelForActionKey(r.action_key, r.label || '未知按钮')}（${r.target}）：${r.endpoint || ''}`)
     .join('\n');
 
   const evidenceText = extra?.evidence
     ? `\n\n【已注入知识库证据】\n${extra.evidence}`
     : '';
+
+  const skillInstruction = buildActionSkillInstruction(action.action_key);
 
   return [
     '你是养老助手「桂小养」大模型，负责执行用户点击的按钮动作，并合成面向老人家属的答复。',
@@ -112,10 +115,28 @@ export function buildFallbackActionPrompt(action = {}, context = {}, skillResour
     '',
     `【上下文摘要】${summarizeContext(context)}`,
     '',
+    skillInstruction,
+    '',
     '请基于以上资源与上下文执行该动作：',
     '- 若【有什么资源】含「知识库」类（target=knowledge），已为你注入相关证据（evidence），请基于证据推理作答；',
     '- 若含接口类资源（target=bff/business_system/HTTP），请依据接口地址与参数说明，结合上下文给出可执行方案与要点（当前不要求你直接发起 HTTP 请求）；',
     `最终以结构化 JSON 返回，匹配模板 ${nextTemplateId} 的字段结构（含 title、summary、要点列表、风险提示、后续建议）。`,
     evidenceText,
   ].join('\n');
+}
+
+/**
+ * 按钮动作专属指令：travel_route 技能强制「金跳动产品优先」，
+ * 与主规划链路（template-card-llm-service.buildSkillInstruction）保持一致。
+ */
+export function buildActionSkillInstruction(actionKey = '') {
+  if (typeof actionKey === 'string' && actionKey.startsWith('travel_route.')) {
+    return [
+      '【旅居路线规划 · 金跳动优先规则（按钮动作同样适用）】',
+      '1. 本动作涉及的旅居路线产品以 business_data 中的 jtd.products（金跳动接口可售产品）为【首要对象】，答复与要点须以金跳动产品为准。',
+      '2. 本地路线（防城港线路、十条精品路线等）仅作【补充参考】；仅当 jtd.products 为空或不可订时改用本地路线，并标注来源。',
+      '3. 严禁把本地路线排在金跳动产品之前作为首推或主结论。',
+    ].join('\n');
+  }
+  return '（本动作无专属指令）';
 }

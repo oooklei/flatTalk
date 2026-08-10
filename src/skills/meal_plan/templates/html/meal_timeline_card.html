@@ -6,12 +6,12 @@
 <title>时间线式膳食流程卡片模板</title>
 <style>
   :root {
-    --bg: #f4f7fa;
+    --bg: #FAF8F5;
     --card: #ffffff;
-    --ink: #2b2f33;
-    --ink2: #6b7280;
-    --line: #eceff3;
-    --accent: #2f8f5b;
+    --ink: #3D3A36;
+    --ink2: #8A8278;
+    --line: #E4E0D8;
+    --accent: #E8843C;
     --accent-soft: #e9f6ef;
     --carb: #FF6B35;
     --protein: #7CB342;
@@ -31,7 +31,7 @@
 
   /* 顶部横幅 */
   .profile-banner {
-    background: linear-gradient(135deg, #2f8f5b, #56b87f);
+    background: linear-gradient(135deg, #E8843C, #F0B487);
     color: #fff; border-radius: 16px; padding: 16px; margin-bottom: 16px;
     box-shadow: 0 6px 18px rgba(20, 30, 40, 0.08);
   }
@@ -44,7 +44,7 @@
   .timeline-wrap { position: relative; padding-left: 8px; }
   .timeline-line {
     position: absolute; left: 19px; top: 8px; bottom: 8px;
-    width: 3px; background: linear-gradient(180deg, #ff9a5a, #2f8f5b); border-radius: 3px;
+    width: 3px; background: linear-gradient(180deg, #ff9a5a, #E8843C); border-radius: 3px;
   }
   .timeline-node { position: relative; padding: 0 0 18px 44px; }
   .timeline-node .dot {
@@ -53,7 +53,7 @@
     box-shadow: 0 0 0 2px #ff9a5a; z-index: 1;
   }
   .timeline-node.lunch .dot { background: #ffd24d; box-shadow: 0 0 0 2px #ffd24d; }
-  .timeline-node.dinner .dot { background: #2f8f5b; box-shadow: 0 0 0 2px #2f8f5b; }
+  .timeline-node.dinner .dot { background: #E8843C; box-shadow: 0 0 0 2px #E8843C; }
   .node-card {
     background: var(--card); border-radius: 14px; padding: 14px;
     box-shadow: 0 6px 18px rgba(20, 30, 40, 0.06); border: 1px solid var(--line);
@@ -136,17 +136,7 @@
     {{/ratios}}
   </div>
 
-  <div class="panel">
-    <div class="panel-title">🔗 相关膳食建议</div>
-    <div class="related-row">
-      {{#related}}
-      <div class="related-item">
-        <div class="rel-icon">{{relIcon|💡}}</div>
-        <div class="rel-text">{{{relText|相关建议}}}</div>
-      </div>
-      {{/related}}
-    </div>
-  </div>
+  <!-- 相关伪链接已移除 -->
 
   <script type="application/json">
   {
@@ -190,12 +180,9 @@
       { "name": "蛋白", "pct": "18%", "width": 18, "color": "#7CB342" },
       { "name": "脂肪", "pct": "30%", "width": 30, "color": "#42A5F5" }
     ],
-    "related": [
-      { "relIcon": "📋", "relText": "完整一周<br>膳食方案" },
-      { "relIcon": "🍳", "relText": "每日三餐<br>搭配指南" },
-      { "relIcon": "🏃", "relText": "餐后轻运动<br>建议" }
-    ]
+    "hasRelated": false,
+    "related": []
   }
-  </script>
+</script>
 </body>
 </html>

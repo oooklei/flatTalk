@@ -8,7 +8,17 @@ export function createContextManager({ sessionStore } = {}) {
 
   async function buildHistory(conversationId, agentKey) {
     const session = await sessionStore.getOrCreate(conversationId);
-    const agent = session.agents?.[agentKey];
+
+    // 优先取指定 agent 的 turns
+    let agent = session.agents?.[agentKey];
+    // ★ 如果指定 agent 没有 turns，回退到全局 turns（跨场景追问不脱节）
+    if ((!agent || !Array.isArray(agent.turns) || agent.turns.length === 0) && agentKey !== 'common') {
+      // 先尝试全局 turns
+      const globalTurns = Array.isArray(session.turns) ? session.turns : [];
+      if (globalTurns.length > 0) {
+        agent = { turns: globalTurns };
+      }
+    }
     if (!agent || !Array.isArray(agent.turns) || agent.turns.length === 0) return [];
 
     const validTurns = [];

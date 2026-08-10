@@ -1,7 +1,17 @@
 {
   "id": "dietary_regimen_card",
+  "name": "膳食调养建议",
   "description": "膳食调养建议卡片，展示宜食/忌食说明与食疗配方列表",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.dietary",
+  "required": [
+    "sectionBadge",
+    "dietaryAdvice",
+    "recipes"
+  ],
+  "optional_fields": [],
+  "match": "展示宜食忌食与食疗配方的膳食调养卡，非综合调理方案卡",
   "layout": "vertical",
-  "match": "展示膳食调养建议（宜食/忌食说明 + 食疗配方列表）的单卡片",
-  "required": ["sectionBadge", "dietaryAdvice", "recipes"]
+  "followup_actions": [],
+  "version": "1.0"
 }

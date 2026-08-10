@@ -212,3 +212,106 @@ node examples/demo.mjs
 - 横向模板若自身就是「多子项容器」（如 `.deck` 内含多个 `.stop`），当前按「整模板=一张卡」重复；如需「单容器多子项」效果，请在原型内用 `{{#items}}` 区间迭代。
 - 外部 CSS 通过相对路径内联；找不到的文件会在 `<style>` 留注释，不会报错中断。
 - 数据全部经 HTML 转义（`{{{ }}}` 除外），默认防 XSS。
+
+---
+
+## 10. 移动端兼容规范（必须遵循）
+
+> **背景**：手机浏览器（安卓 Chrome、iOS Safari、微信内置浏览器）对 iframe srcdoc / blob URL / sandbox / 第三方 JS 有严格限制，导致依赖客户端 JS 渲染的卡片在手机上显示空白。以下规范从 2026-08-07 的修复实践中总结，**所有新模板和模板修改必须遵循**。
+
+### 10.1 核心原则：纯静态 HTML
+
+卡片 HTML **必须是纯静态的**——服务端 Mustache 渲染后的 HTML 打开即用，不依赖任何客户端 JavaScript 执行。
+
+| 禁止 | 替代方案 |
+|------|----------|
+| `<script>` 标签（任何类型） | 用服务端 Mustache `{{#items}}` 预渲染数据 |
+| `new TMap.Map()` / `map.qq.com/api/gljs` | 用 Tencent staticmap API 生成静态图片 |
+| 客户端动态生成 DOM | 服务端 `fillNearbyResourceCard` / `route-svg-generator` 预生成 |
+| `onclick` / `onload` 等内联事件 | 用 `<a href="...">` 外部链接替代 |
+
+### 10.2 地图类模板规则
+
+1. **走线图 / 路线图**：服务端生成 SVG 并注入 `<div id="svgMapContainer">{{{svg_map}}}</div>`，不使用客户端 JS 绘制。
+2. **交互式地图**：用静态地图图片替代：
+   ```html
+   {{#has_static_map}}
+   <img src="{{static_map_img}}" alt="地图" loading="lazy" style="width:100%;border-radius:10px;">
+   {{/has_static_map}}
+   ```
+3. **导航功能**：用外部链接跳转，不嵌入地图 SDK：
+   ```html
+   <a href="{{nav_url}}" target="_blank" rel="noopener">🧭 导航</a>
+   ```
+   导航 URL 由服务端生成：`https://apis.map.qq.com/uri/v1/routeplan?type=walk&from=...&to=...&referer=KEY`
+
+### 10.3 POI 列表渲染规则
+
+POI（兴趣点）列表**必须**服务端 Mustache 渲染为静态 HTML：
+
+```html
+{{#poi_items}}
+<div class="poi-item">
+  <span class="emoji">{{emoji}}</span>
+  <span class="name">{{name}}</span>
+  <span class="dist">{{distance_text}}</span>
+  <div class="addr">{{address}}</div>
+  <a href="{{nav_url}}">导航</a>
+</div>
+{{/poi_items}}
+{{^poi_items}}
+<div class="empty">暂无数据</div>
+{{/poi_items}}
+```
+
+服务端（`model-service.js`）需提供以下 Mustache 字段：
+- `poi_items[]`：`{ emoji, name, distance_text, address, nav_url, color, ... }`
+- `has_poi_items`：布尔值，控制空状态
+- `static_map_img` / `has_static_map`：静态地图图片
+- `route_steps[]`：路线步骤数组（nearby_map_route 模板）
+
+### 10.4 图片展示规则
+
+景点图片、配套图片等**必须**用 `<img>` 标签罗列展示，不用弹窗 / 浮层 / 轮播 JS：
+
+```html
+{{#spot_cards}}
+<div class="spot-card">
+  {{#has_image}}<img src="{{first_image}}" alt="{{name}}" loading="lazy">{{/has_image}}
+  <h3>{{name}}</h3>
+  <p>{{desc}}</p>
+</div>
+{{/spot_cards}}
+```
+
+### 10.5 CSS 引用规则
+
+1. **共享 CSS 文件**（`_base.css`、`_design_tokens.css`）：模板如果使用了其中的类名（如 `.nb-*`），**必须保留** `<link rel="stylesheet" href="_base.css">` 标签。渲染管线（`discover.js → collectCss`）会读取这些文件内容并内联到 `<style>` 中。移除 `<link>` 会导致类样式丢失。
+2. **自包含模板**：如果模板完全使用内联 `<style>` 定义所有样式（不引用外部 CSS），则无需 `<link>` 标签。
+3. **相对路径**：`<link>` 的 `href` 使用相对路径（如 `_base.css`，不是 `/_base.css`），渲染时会自动内联。
+
+### 10.6 iframe 隔离判定
+
+`cardNeedsIframeIsolation()` 会检测 HTML 中的地图特征，触发 iframe 沙箱隔离。以下特征会触发隔离：
+- `data-map-mode` 属性
+- `data-layout="map"` 属性
+- `id="mapCanvas"` 元素
+- `class` 含 `nb-map`
+- `<script src="...map...">` 外链
+- `map.qq.com/api/gljs` 引用
+- `new TMap.Map(` 调用
+
+**纯静态模板不应包含上述任何特征**，否则会被强制 iframe 隔离，在手机上可能出现空白。
+
+### 10.7 部署检查清单
+
+每次修改模板后，部署前必须检查：
+
+| # | 检查项 | 方法 |
+|---|--------|------|
+| 1 | 无 `<script>` | `grep -c '<script' template.html` → 应为 0 |
+| 2 | 无 `onclick`/`onload` | `grep -c 'on[a-z]*=' template.html` → 应为 0 |
+| 3 | Mustache 字段存在 | 确认 `model-service.js` 提供了 `poi_items` 等数组 |
+| 4 | CSS 引用完整 | 使用 `.nb-*` 类的模板保留 `<link>` 标签 |
+| 5 | 布局方向 | 添加 `data-layout="vertical"` 适配手机滚动 |
+| 6 | 远程部署权限 | `docker cp` 后必须 `docker exec -u root chown 1001:1001` 修复属主 |

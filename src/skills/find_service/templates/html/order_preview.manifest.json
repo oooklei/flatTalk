@@ -1,7 +1,27 @@
 {
   "id": "order_preview",
-  "description": "订单预览确认页，提交前的信息汇总",
+  "name": "确认下单",
+  "product_domain": "find_service",
+  "intent_id": "find_service_order_preview",
+  "description": "提交前订单确认卡：服务/日期/时段/联系人/地址汇总，可改日期时段信息或改用表单。",
+  "match": "确认下单、订单信息汇总确认；非预约日期确认、非下单成功凭证、非联系人单独确认",
+  "required": [
+    "serviceName",
+    "contactName",
+    "contactPhone"
+  ],
+  "optional_fields": [
+    "pageTitle",
+    "cardTitle",
+    "dateDisplay",
+    "timeSlot",
+    "contactAddress",
+    "confirmBtnText",
+    "changeOptions",
+    "formBtnText",
+    "footSource"
+  ],
   "layout": "vertical",
-  "match": "预约服务、下单、建单、提交订单、订单预览、安排上门",
-  "required": ["orderId", "elderName", "serviceName", "orgName", "price"]
+  "version": "2.0",
+  "derived_from": "find-service/Order-confirm"
 }

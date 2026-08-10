@@ -4,6 +4,7 @@
  */
 
 import crypto from 'crypto';
+import { BaseInterfaceService } from '../interface-base.js';
 
 const DEFAULT_CONFIG = {
   baseUrl: process.env.YZ365_BASE_URL || 'http://171.111.198.212:9013',
@@ -73,6 +74,14 @@ function normalizeRecords(apiResult) {
   return [];
 }
 
+function makeYz365RecordId(record = {}, index = 0) {
+  return [
+    'yz365',
+    record.personPhone || record.memberPhone || record.idNumber || record.personName || 'unknown',
+    record.checkTime || record.deviceCode || index,
+  ].map((part) => String(part).replace(/\s+/g, '_')).join('_');
+}
+
 function analyzeCheckRecord(record) {
   const details = record.diseaseRiskDetails || [];
   const matched = [];
@@ -129,9 +138,14 @@ function analyzeCheckRecord(record) {
   };
 }
 
-export class Yz365Service {
+export class Yz365Service extends BaseInterfaceService {
   constructor(config = {}) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
+    super({
+      skillKey: 'health_risk_warning',
+      provider: 'yunzhen365',
+      sourcePath: '云诊365',
+      config: { ...DEFAULT_CONFIG, ...config },
+    });
   }
 
   async checkDetail(body = {}) {
@@ -181,15 +195,77 @@ export class Yz365Service {
     }
   }
 
-  async getElderHealthCheck(elderName, idNumber = null) {
-    const body = {};
-    if (elderName) body.personName = elderName;
-    if (idNumber) body.idNumber = idNumber;
-
-    const result = await this.checkDetail(body);
+  async fetchRecords({ pageNum = 1, pageSize = 50 } = {}) {
+    const result = await this.checkDetail({ pageNum, pageSize });
     const records = normalizeRecords(result);
-    const analyzed = records.map(analyzeCheckRecord);
+    return records.map((record, index) => ({
+      id: makeYz365RecordId(record, index),
+      ...analyzeCheckRecord(record),
+    }));
+  }
+
+  async syncAll({ pageSize = 50, maxPages = 20 } = {}) {
+    const records = [];
+    let total = null;
+    let lastResult = null;
+
+    for (let pageNum = 1; pageNum <= maxPages; pageNum += 1) {
+      const result = await this.checkDetail({ pageNum, pageSize });
+      lastResult = result;
+      const pageRecords = normalizeRecords(result);
+      const data = result?.response?.data || {};
+      const parsedTotal = Number(data.total);
+      if (Number.isFinite(parsedTotal)) total = parsedTotal;
+
+      records.push(...pageRecords.map((record, index) => ({
+        id: makeYz365RecordId(record, `${pageNum}_${index}`),
+        ...analyzeCheckRecord(record),
+      })));
+
+      if (!result.ok || pageRecords.length === 0) break;
+      if (total != null && records.length >= total) break;
+      if (pageRecords.length < pageSize) break;
+    }
+
+    const captured = this.capture(records, { replace: true });
+    return {
+      provider: 'yunzhen365',
+      ok: !!lastResult?.ok,
+      httpStatus: lastResult?.httpStatus ?? null,
+      code: lastResult?.response?.code ?? null,
+      message: lastResult?.response?.msg ?? lastResult?.error ?? null,
+      records,
+      recordCount: records.length,
+      apiTotal: total,
+      captured,
+    };
+  }
+
+  async getElderHealthCheck(elderName, idNumber = null) {
+    if (!idNumber) {
+      const synced = await this.syncAll({ pageSize: 50 });
+      const analyzed = synced.records || [];
+      const topLevels = analyzed.map(a => a.warning_level.level);
+
+      return {
+        source: 'yz365.checkDetail',
+        ok: synced.ok,
+        total: analyzed.length,
+        overallWarningLevel: analyzed.length > 0 ? overallWarningLevel(topLevels) : null,
+        records: analyzed,
+        rawError: synced.ok ? null : synced.message,
+      };
+    }
+
+    const result = await this.checkDetail({ idNumber });
+    const records = normalizeRecords(result);
+    const analyzed = records.map((record, index) => ({
+      id: makeYz365RecordId(record, index),
+      ...analyzeCheckRecord(record),
+    }));
     const topLevels = analyzed.map(a => a.warning_level.level);
+
+    this.capture(analyzed);
 
     return {
       source: 'yz365.checkDetail',
@@ -218,6 +294,7 @@ export class Yz365Service {
     const latestRecord = summary.records[0];
     const signal = latestRecord.device_signal;
     const warning = latestRecord.warning_level;
+    const displayLevel = warning.level === '\u4e00\u822c' ? '\u5173\u6ce8' : warning.level;
 
     const levelColorMap = {
       '一般': '#68b032',
@@ -237,8 +314,8 @@ export class Yz365Service {
       elderSex: signal.personSex,
       checkTime: signal.checkTime,
       healthIndex: signal.healthIndex,
-      level: warning.level,
-      levelColor: levelColorMap[warning.level] || '#68b032',
+      level: displayLevel,
+      levelColor: levelColorMap[displayLevel] || '#e8a020',
       levelIcon: levelIconMap[warning.level] || '✓',
       matchedRules: latestRecord.risk_rule_match?.matchedRules || [],
       constitutionNames: signal.constitutionNames || [],
@@ -249,6 +326,19 @@ export class Yz365Service {
   }
 
   buildWarningSummary(apiResult) {
+    if (Array.isArray(apiResult?.records) && apiResult.records[0]?.device_signal) {
+      const analyzed = apiResult.records;
+      const topLevels = analyzed.map(a => a.warning_level.level);
+      return {
+        source: 'yz365.checkDetail',
+        ok: apiResult.ok,
+        total: analyzed.length,
+        overallWarningLevel: analyzed.length > 0 ? overallWarningLevel(topLevels) : null,
+        records: analyzed,
+        rawError: apiResult.ok ? null : apiResult.rawError,
+      };
+    }
+
     const records = normalizeRecords(apiResult);
     const analyzed = records.map(analyzeCheckRecord);
     const topLevels = analyzed.map(a => a.warning_level.level);

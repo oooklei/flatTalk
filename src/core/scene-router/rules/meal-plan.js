@@ -32,14 +32,14 @@ const mealIntentTerms = [
 ];
 
 const elderConstraintTerms = [
-  '老人餐', '老人饭', '老年餐', '长者', '老年人', '爷爷', '奶奶', '外公', '外婆', '爸妈', '父亲',
+  '老人', '老人餐', '老人饭', '老年餐', '长者', '老年人', '爷爷', '奶奶', '外公', '外婆', '爸妈', '父亲',
   '母亲', '家属', '家里老人', '独居老人', '失能', '半失能',
 ];
 
 export const mealPlanRuleSet = {
   scene_key: 'meal_plan',
   default_intent: 'meal_plan_advice',
-  threshold: 5,
+  threshold: 10,
   template_candidates: ['diet_card', 'weekly_plan', 'fallback'],
   required_data: ['elder_profile', 'meal_rules', 'diet_contraindications'],
   required_knowledge: ['meal_plan'],
@@ -68,7 +68,9 @@ export const mealPlanRuleSet = {
     { group: 'travel_route', penalty: 4, terms: ['路线', '导航', '怎么走', '公交', '地铁', '打车', '到医院', '去哪里'] },
     { group: 'find_service', penalty: 4, terms: ['找护工', '找机构', '养老院', '上门服务', '家政', '护理员', '预约服务'] },
     { group: 'dispatch_manage', penalty: 5, terms: ['派单', '工单', '调度', '转人工', '客服处理', '处理进度', '催单'] },
+    { group: 'health_tcm_dietary', penalty: 5, terms: ['膳食调养', '宜食', '忌食', '食疗', '体质调理', '穴位', '中药调理', '舌诊调养'] },
     { group: 'acute_health_risk', penalty: 3.5, terms: ['胸痛', '昏迷', '呼吸困难', '中风', '抽搐', '大出血', '急救', '120'] },
+    { group: 'nearby_resource', penalty: 3, terms: ['周边', '附近', '地图', '配套', '资源', '民宿', '餐厅', '景点'] },
   ],
   infer_intent(input) {
     if (has(input, ['一周', '七天', '周计划', '本周', '下周', 'weekly', 'one week', '7 days'])) return 'meal_plan_weekly_plan';

@@ -20,7 +20,93 @@
         "days": "从上下文行程天数抽取，缺省按 7 天",
         "headcount": "从上下文出行人数抽取，缺省按 2 人"
       },
-      "next_template_id": "route_card"
+      "next_template_id": "sojourn_route"
+    },
+    {
+      "action_key": "travel_route.check_availability",
+      "label": "Check availability",
+      "skill_key": "travel_route",
+      "target": "jintiaodong",
+      "description": "Call JTD checkAvailability to verify whether the selected sojourn product can be booked for the given dates and quantity.",
+      "when": "Triggered by the availability button or user questions about booking, stock, inventory, check-in, or reservation status.",
+      "endpoint": "JTD_BASE_URL + JTD_PATH_PREFIX + /checkAvailability",
+      "params_schema": {
+        "product_id": "string",
+        "sku_id": "string",
+        "check_in": "string",
+        "check_out": "string",
+        "people_count": "number"
+      },
+      "param_sources": {
+        "product_id": "Button params.product_id or jtd.selected_product.product_id.",
+        "sku_id": "Button params.sku_id or jtd.selected_product.sku_id.",
+        "check_in": "Button params.check_in or user supplied date.",
+        "check_out": "Button params.check_out or user supplied date.",
+        "people_count": "Button params.people_count or context quantity, default 1."
+      },
+      "next_template_id": "travel_availability_card"
+    },
+    {
+      "action_key": "travel_route.check_accessibility",
+      "label": "Check accessibility",
+      "skill_key": "travel_route",
+      "target": "bff",
+      "description": "Check elder-friendly accessibility and barrier-free facilities for the travel route.",
+      "when": "Triggered when the user asks whether the route is suitable for elders with mobility constraints.",
+      "endpoint": "(bff internal capability)",
+      "params_schema": {
+        "destination": "string"
+      },
+      "param_sources": {
+        "destination": "Extract from selected route product or conversation context."
+      },
+      "next_template_id": "sojourn_route"
+    },
+    {
+      "action_key": "travel_route.check_policy_subsidy",
+      "label": "Check policy subsidy",
+      "skill_key": "travel_route",
+      "target": "business_system",
+      "description": "Check travel-related elder-care policy or subsidy eligibility.",
+      "when": "Triggered when the user asks whether a travel or elder-care route has a policy subsidy.",
+      "endpoint": "GXY_BUSINESS_SYSTEM_BASE_URL",
+      "params_schema": {
+        "region": "string",
+        "elder_type": "string"
+      },
+      "param_sources": {
+        "region": "Extract from elder home region or destination.",
+        "elder_type": "Extract from elder profile or conversation context."
+      },
+      "next_template_id": "policy_card"
+    },
+    {
+      "action_key": "travel_route.explain_safety",
+      "label": "Explain travel safety",
+      "skill_key": "travel_route",
+      "target": "knowledge",
+      "description": "Explain elder travel safety points from local or remote knowledge.",
+      "when": "Triggered when the user asks for safety guidance for elder travel.",
+      "endpoint": "local/remote knowledge retriever",
+      "params_schema": {},
+      "param_sources": {},
+      "next_template_id": "sojourn_route"
+    },
+    {
+      "action_key": "meal_plan.check_risk",
+      "label": "Check meal risk",
+      "skill_key": "meal_plan",
+      "target": "business_system",
+      "description": "Check potential dietary risk based on chronic conditions and meal plan.",
+      "when": "Triggered when the user asks whether a meal plan is risky for an elder.",
+      "endpoint": "GXY_BUSINESS_SYSTEM_BASE_URL",
+      "params_schema": {
+        "condition": "string"
+      },
+      "param_sources": {
+        "condition": "Extract from elder profile or conversation context."
+      },
+      "next_template_id": "diet_card"
     },
     {
       "action_key": "find_service.recommend",
@@ -145,6 +231,66 @@
       "params_schema": { "category": "string" },
       "param_sources": { "category": "固定 leisure" },
       "next_template_id": "nearby_list"
+    },
+    {
+      "action_key": "service_quality_eval.view_report",
+      "label": "查看机构质量报告",
+      "skill_key": "service_quality_eval",
+      "target": "bff",
+      "description": "基于服务评价记录、工单闭环、投诉反馈指标生成机构 D1-D4 综合质量报告。",
+      "when": "用户点击机构报告或询问机构服务质量、满意度、投诉率、综合评分时触发。",
+      "endpoint": "quality_metrics_service(tag-system service_order/work_order/feedback + local/sim fallback)",
+      "params_schema": { "orgId": "string", "elderId": "string" },
+      "param_sources": { "orgId": "按钮参数或上下文机构ID", "elderId": "上下文老人ID" },
+      "next_template_id": "institution_quality_report"
+    },
+    {
+      "action_key": "service_quality_eval.view_staff",
+      "label": "查看人员质量报告",
+      "skill_key": "service_quality_eval",
+      "target": "bff",
+      "description": "基于人员服务评价、完成工单、投诉样本生成护理员/服务人员质量评估报告。",
+      "when": "用户点击人员评估或询问护理员评分、服务人员质量时触发。",
+      "endpoint": "quality_metrics_service(tag-system service_order/work_order/feedback + local/sim fallback)",
+      "params_schema": { "staffId": "string", "orgId": "string" },
+      "param_sources": { "staffId": "按钮参数或上下文人员ID", "orgId": "上下文机构ID" },
+      "next_template_id": "staff_quality_report"
+    },
+    {
+      "action_key": "service_quality_eval.rectify",
+      "label": "生成整改建议",
+      "skill_key": "service_quality_eval",
+      "target": "bff",
+      "description": "将 D1-D4 薄弱项、投诉类型与工单过程缺口转成可执行整改建议。",
+      "when": "用户点击整改建议或询问问题归因、整改措施、督导转交时触发。",
+      "endpoint": "quality_metrics_service + deterministic D1-D4 rules",
+      "params_schema": { "orgId": "string", "staffId": "string" },
+      "param_sources": { "orgId": "上下文机构ID", "staffId": "上下文人员ID" },
+      "next_template_id": "rectification_suggestion"
+    },
+    {
+      "action_key": "service_quality_eval.view_complaint",
+      "label": "查看投诉详情",
+      "skill_key": "service_quality_eval",
+      "target": "bff",
+      "description": "展示投诉反馈、处理流程、关联工单和评分影响。",
+      "when": "用户点击投诉详情或询问投诉处理流程时触发。",
+      "endpoint": "quality_metrics_service feedback samples",
+      "params_schema": { "feedbackId": "string", "orgId": "string" },
+      "param_sources": { "feedbackId": "按钮参数", "orgId": "上下文机构ID" },
+      "next_template_id": "complaint_detail"
+    },
+    {
+      "action_key": "service_quality_eval.view_standard",
+      "label": "查看评分标准",
+      "skill_key": "service_quality_eval",
+      "target": "bff",
+      "description": "展示服务质量 D1-D4 评分口径、权重、标签与结果应用规则。",
+      "when": "用户点击评分标准或询问评分维度、权重、口径时触发。",
+      "endpoint": "local deterministic standard v2.0",
+      "params_schema": {},
+      "param_sources": {},
+      "next_template_id": "evaluation_standard"
     }
   ]
 }

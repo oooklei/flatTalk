@@ -413,7 +413,7 @@ async function prefabJtd() {
     if (preset.mergeInto) {
       mergePublish(preset.mergeInto, {
         aliases: [routeId, id, 'jtd_mock_bama_001'],
-        keywords: keywordsFrom(name, '0724', '测试旅居', '金跳动'),
+        keywords: keywordsFrom(name, '0724', '测试旅居'),
         destination: ['巴马'],
       });
       console.log('[merge]', routeId, '→', preset.mergeInto);
@@ -425,7 +425,7 @@ async function prefabJtd() {
         route_name: preset.title || name,
         destination: preset.destination,
         days: waypoints.length,
-        summary: `金跳动产品 ${name}`,
+        summary: String(name || preset.title || '').replace(/^金跳动产品\s*/, ''),
         highlights: [],
         waypoints,
         source: 'jintiaodong',
@@ -437,7 +437,7 @@ async function prefabJtd() {
       publish: {
         status: 'published',
         destination: [preset.destination],
-        keywords: keywordsFrom(name, preset.title, preset.destination, id.slice(-4), '金跳动', '旅居'),
+        keywords: keywordsFrom(name, preset.title, preset.destination, id.slice(-4), '旅居'),
         product_type: preset.product_type,
         title: preset.title || name,
         aliases: [id],

@@ -1,10 +1,11 @@
 {
   "template_id": "weekly_plan",
-  "items": [
+  "followup_suggestions": [
     {
       "label": "按慢病调整",
-      "user_prompt": "请按老人慢病情况调整这份一周膳食计划",
-      "action_key": "meal_plan.adjust_for_condition"
+      "user_prompt": "请按老人的健康状况调整这份一周膳食计划",
+      "action_key": "meal_plan.adjust_for_disease",
+      "category": "tight"
     }
   ]
 }

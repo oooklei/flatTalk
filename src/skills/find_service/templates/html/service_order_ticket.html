@@ -1,45 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>预定成功</title>
-  <link rel="stylesheet" href="_design_tokens.css" />
-  <link rel="stylesheet" href="_card_components.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<title>{{pageTitle}}</title>
+<style>
+:root{
+  --primary:#E8843C; --primary-deep:#D06E2A;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537;
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  --r-md:10px; --r-lg:16px; --r-full:999px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-sans);background:var(--n0);color:var(--n800);
+  font-size:16px;line-height:1.6;padding:14px;
+  overflow-wrap:anywhere;word-break:break-word;-webkit-font-smoothing:antialiased;
+}
+.card{
+  max-width:430px;width:100%;margin:0 auto;background:#fff;border:1px solid var(--n100);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:0 4px 12px rgba(62,56,50,.10);
+}
+.success-head{
+  display:flex;flex-direction:column;align-items:center;padding:22px 14px 8px;
+}
+.success-icon{
+  width:56px;height:56px;border-radius:var(--r-full);
+  background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:28px;font-weight:800;
+}
+.success-title{
+  margin-top:12px;font-family:var(--font-serif);font-size:22px;font-weight:800;color:var(--n800);letter-spacing:1px;
+}
+.rows{padding:10px 14px 16px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0}
+.row + .row{border-top:1px solid var(--n100)}
+.row .k{color:var(--n500);font-size:14px;flex:0 0 auto}
+.row .v{font-weight:700;text-align:right;font-size:14px;min-width:0}
+.row .v.status{color:var(--warn)}
+.foot{padding:10px 14px;border-top:1px solid var(--n100);color:var(--n400);font-size:11px;text-align:center}
+</style>
 </head>
 <body>
-  <!-- 语义：下单成功凭证。展示订单号/服务/预约人/电话/日期/归属机构/状态。返回首页由追问按钮体现。 -->
-  <article class="nb-card" data-layout="vertical">
-    <section class="ticket-view">
-      <div class="ticket-icon">
-        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-      </div>
-      <h3>预定成功</h3>
-      <p>{{ticket_desc}}</p>
-      <div class="ticket-card">
-        <div class="ticket-row"><span class="ticket-label">订单编号</span><span class="ticket-value">{{order_no}}</span></div>
-        <div class="ticket-row"><span class="ticket-label">服务名称</span><span class="ticket-value">{{service_name}}</span></div>
-        <div class="ticket-row"><span class="ticket-label">预约人</span><span class="ticket-value">{{name}}</span></div>
-        <div class="ticket-row"><span class="ticket-label">联系电话</span><span class="ticket-value">{{phone}}</span></div>
-        <div class="ticket-row"><span class="ticket-label">预约日期</span><span class="ticket-value">{{date}}</span></div>
-        <div class="ticket-row"><span class="ticket-label">归属机构</span><span class="ticket-value">{{org}}</span></div>
-        <div class="ticket-row"><span class="ticket-label">状态</span><span class="ticket-value"><span class="status-badge {{status_class}}">{{status}}</span></span></div>
-      </div>
-    </section>
-  </article>
-
-  <script type="application/json">
-  {
-    "ticket_desc": "您的服务预定已提交，工作人员将尽快与您联系确认。",
-    "order_no": "GD5505637938",
-    "service_name": "居家深度清洁",
-    "name": "张大爷",
-    "phone": "13800005678",
-    "date": "2026-08-01",
-    "org": "桂林夕阳红养老服务中心",
-    "status": "待确认",
-    "status_class": ""
-  }
-  </script>
+<div class="card" data-template="service_order_ticket" data-layout="vertical">
+  <div class="success-head">
+    <div class="success-icon">✓</div>
+    <h1 class="success-title">{{cardTitle}}</h1>
+  </div>
+  <div class="rows">
+    <div class="row"><span class="k">订单编号</span><span class="v">{{orderNo}}</span></div>
+    <div class="row"><span class="k">服务名称</span><span class="v">{{serviceName}}</span></div>
+    <div class="row"><span class="k">预约日期</span><span class="v">{{dateDisplay}}</span></div>
+    <div class="row"><span class="k">服务时段</span><span class="v">{{timeSlot}}</span></div>
+    <div class="row"><span class="k">归属机构</span><span class="v">{{institution}}</span></div>
+    <div class="row"><span class="k">状态</span><span class="v status">{{status}}</span></div>
+  </div>
+  <div class="foot">来源：{{footSource}}</div>
+</div>
 </body>
 </html>

@@ -1,8 +1,24 @@
 {
   "id": "service_order_ticket",
-  "description": "下单成功凭证，展示订单号/服务/预约信息/状态",
+  "name": "预定成功",
+  "product_domain": "find_service",
+  "intent_id": "find_service_order_ticket",
+  "description": "正式下单成功凭证：订单号/服务/预约日期时段/归属机构/状态。",
+  "match": "预定成功、下单成功、订单凭证；非轻量预约成功、非订单预览确认",
+  "required": [
+    "orderNo",
+    "serviceName",
+    "status"
+  ],
+  "optional_fields": [
+    "pageTitle",
+    "cardTitle",
+    "dateDisplay",
+    "timeSlot",
+    "institution",
+    "footSource"
+  ],
   "layout": "vertical",
-  "match": "预定成功、下单成功、订单凭证、订单编号、待确认、工单",
-  "required": ["order_no", "service_name", "name", "status"],
-  "followup_actions": ["查看订单详情", "返回首页", "联系客服"]
+  "version": "2.0",
+  "derived_from": "find-service/Order-success"
 }

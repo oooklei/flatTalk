@@ -16,7 +16,7 @@
     {
       "label": "调整预算",
       "user_prompt": "请按经济型预算重新规划这条旅居路线",
-      "action_key": "travel_route.calculate_budget",
+      "action_key": "travel_route.replan_by_budget",
       "category": "tight"
     }
   ]

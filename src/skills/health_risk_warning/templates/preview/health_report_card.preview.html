@@ -1,81 +1,431 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>健康报告卡片预览</title>
-<style>
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-    background: #eef4fa;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-  }
-  .container { width: 100%; max-width: 900px; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>完整风险评估报告</title>
+  <style>
+
+:root{
+  
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537; --warn-soft:#FBF3DD; --warn-deep:#9C7715;
+  --danger:#E5484D; --danger-soft:#FDECEC; --danger-deep:#b91c1c;
+  
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:999px;
+  
+  --sh-sm:0 1px 3px rgba(62,56,50,.08); --sh-md:0 4px 12px rgba(62,56,50,.10); --sh-lg:0 8px 24px rgba(62,56,50,.12);
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--font-sans); background:var(--n0); color:var(--n800);
+  font-size:16px; line-height:1.6; padding:12px;
+  overflow-wrap:anywhere; word-break:break-word; -webkit-font-smoothing:antialiased;
+}
+img{ max-width:100%; height:auto; display:block; }
+a{ color:var(--primary); text-decoration:none; }
+
+
+.card{ max-width:430px; margin:0 auto; background:#fff; border:1px solid var(--n100);
+  border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-md); }
+
+
+.hero{ padding:16px; color:#fff; background:linear-gradient(135deg,var(--primary),var(--primary-deep)); }
+.hero.blue{ background:linear-gradient(135deg,var(--accent),var(--accent-deep)); }
+.eyebrow{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--r-full);
+  background:rgba(255,255,255,.18); font-size:12px; font-weight:600; }
+.hero h1{ font-family:var(--font-serif); margin:8px 0 0; font-size:22px; line-height:1.18; letter-spacing:.5px; }
+.hero .sub{ margin-top:6px; color:rgba(255,255,255,.88); font-size:13px; }
+.hero-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.score{ font-size:42px; font-weight:800; line-height:1; }
+.score small{ font-size:14px; font-weight:600; opacity:.82; }
+
+
+.section{ padding:13px 14px; border-top:1px solid var(--n100); }
+.section-title{ margin:0 0 10px; display:flex; align-items:center; gap:7px; color:var(--n800);
+  font-size:15px; font-weight:800; font-family:var(--font-serif); }
+.section-title::before{ content:""; width:4px; height:16px; border-radius:2px; background:var(--primary); }
+.section-title.blue::before{ background:var(--accent); }
+
+
+.pill{ display:inline-flex; align-items:center; justify-content:center; min-height:22px; padding:2px 9px;
+  border-radius:var(--r-full); background:var(--primary-soft); color:var(--primary-deep);
+  font-size:12px; font-weight:700; white-space:nowrap; }
+.pill.blue{ background:var(--accent-soft); color:var(--accent); }
+.pill.ok{ background:var(--ok-soft); color:var(--ok-deep); }
+.pill.warn{ background:var(--warn-soft); color:var(--warn-deep); }
+.pill.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.grid.three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.stat{ min-width:0; padding:10px 9px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.stat .num{ color:var(--primary-deep); font-size:20px; font-weight:800; line-height:1.1; }
+.stat .num.bad{ color:var(--danger); } .stat .num.warn{ color:var(--warn-deep); } .stat .num.ok{ color:var(--ok-deep); }
+.stat .lbl{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.dim{ padding:9px 0; border-bottom:1px dashed var(--n100); }
+.dim:last-child{ border-bottom:0; }
+.dim-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; font-size:13px; }
+.dim-name{ font-weight:700; } .dim-name small{ margin-left:5px; color:var(--n400); font-weight:600; }
+.dim-score{ color:var(--primary-deep); font-weight:800; white-space:nowrap; }
+.bar{ height:7px; margin-top:6px; border-radius:var(--r-full); background:var(--n200); overflow:hidden; }
+.bar > span{ display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+.bar > span.warn{ background:linear-gradient(90deg,var(--warn),#f97316); }
+.bar > span.bad{ background:linear-gradient(90deg,var(--danger),#fb7185); }
+.note{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.row{ display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed var(--n100); }
+.row:last-child{ border-bottom:0; }
+.row .k{ color:var(--n500); flex:0 0 auto; } .row .v{ font-weight:700; text-align:right; min-width:0; }
+
+
+.list{ display:flex; flex-direction:column; gap:8px; }
+.item{ padding:10px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.item.warn{ background:var(--warn-soft); border-color:#fde68a; }
+.item.bad{ background:var(--danger-soft); border-color:#fecaca; }
+.item.ok{ background:var(--ok-soft); border-color:#bbf7d0; }
+.item .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; }
+.item .txt{ margin-top:5px; color:var(--n600); font-size:12px; }
+
+
+.tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ padding:4px 8px; border-radius:var(--r-md); background:var(--n200); color:var(--n500); font-size:12px; font-weight:600; }
+.tag.good{ background:var(--ok-soft); color:var(--ok-deep); } .tag.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.timeline{ position:relative; padding-left:22px; }
+.timeline::before{ content:""; position:absolute; left:7px; top:7px; bottom:7px; width:2px; background:var(--n100); }
+.step{ position:relative; padding:7px 0 9px; }
+.step::before{ content:""; position:absolute; left:-20px; top:12px; width:10px; height:10px; border-radius:50%;
+  background:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.step.done::before{ background:var(--ok); box-shadow:0 0 0 3px var(--ok-soft); }
+.step.bad::before{ background:var(--danger); box-shadow:0 0 0 3px var(--danger-soft); }
+.step .time{ color:var(--n400); font-size:11px; } .step .node{ font-weight:800; } .step .detail{ color:var(--n600); font-size:12px; }
+
+
+.alert{ padding:10px; border-radius:var(--r-md); background:var(--warn-soft); border:1px solid #fde68a; color:var(--warn-deep); font-size:12px; }
+.alert.bad{ background:var(--danger-soft); border-color:#fecaca; color:var(--danger-deep); }
+
+
+.foot{ padding:10px 14px; border-top:1px solid var(--n100); color:var(--n400); font-size:11px; }
+
+
+.muted{ color:var(--n500); } .faint{ color:var(--n400); }
+.text{ font-size:13px; color:var(--n600); line-height:1.6; }
+
+@media (max-width:360px){
+  body{ padding:10px; } .hero h1{ font-size:20px; } .score{ font-size:36px; }
+  .grid.three{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+  </style>
 </head>
 <body>
-<div class="container">
-  <!-- 完整健康报告模板 -->
-  <div class="report">
-    <header class="report-header" style="background: linear-gradient(135deg, #4a90d9 0%, #3a7fc4 100%); color: #fff; border-radius: 10px 10px 0 0; padding: 32px 28px 28px; text-align: center;">
-      <h1 style="font-size: 28px; font-weight: 700; letter-spacing: 3px; margin-bottom: 8px;">健康风险预警报告</h1>
-      <p style="font-size: 14px; opacity: 0.9;">基于体质与健康数据的综合评估与调养建议</p>
-    </header>
-
-    <!-- 风险评估 -->
-    <section class="card" style="background: #fff; padding: 28px; box-shadow: 0 2px 12px rgba(74,144,217,0.08);">
-      <h2 style="text-align: center; font-size: 24px; font-weight: 700; color: #4a90d9; letter-spacing: 2px; margin-bottom: 12px;">风险评估</h2>
-      <div style="height: 1px; background: #4a90d9; margin-bottom: 20px;"></div>
-      <div style="display: inline-block; background: #4a90d9; color: #fff; font-size: 15px; font-weight: 600; padding: 8px 36px 8px 18px; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%); margin-bottom: 16px;">易患病症</div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; background: #ebf4fb; border-radius: 2px; padding: 12px 8px; margin-bottom: 8px;">
-        <span style="text-align: center; font-size: 15px; font-weight: 700;">重度风险 (1项)</span>
-        <span style="text-align: center; font-size: 15px; font-weight: 700;">中度风险 (6项)</span>
-        <span style="text-align: center; font-size: 15px; font-weight: 700;">轻度风险 (6项)</span>
+<div class="card" data-template="health_report_card" data-layout="vertical">
+  <div class="hero">
+    <div class="eyebrow">📑 完整风险评估报告</div>
+    <div class="hero-row">
+      <div>
+        <h1>张明华 · 中风险</h1>
+        <p class="sub">72岁 · 男 · 档案号 YL-2026-0001</p>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding: 4px 0 0;">
-        <div style="display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 13px 4px; border-bottom: 1px solid #f0f4f8; font-size: 14px;">
-          <span>乳腺结节风险评估</span>
-          <span style="font-weight: 600; min-width: 40px; text-align: right; color: #e54d42;">65.6</span>
-          <span style="font-weight: 600; min-width: 64px; text-align: right; color: #e54d42;">预警</span>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 13px 4px; border-bottom: 1px solid #f0f4f8; font-size: 14px;">
-          <span>骨质疏松症风险评估</span>
-          <span style="font-weight: 600; min-width: 40px; text-align: right; color: #e8a020;">54.5</span>
-          <span style="font-weight: 600; min-width: 64px; text-align: right; color: #e8a020;">中度风险</span>
-        </div>
+      <div style="text-align:right">
+        <div class="score">6.5<small>/10</small></div>
+        <p class="sub">综合总评</p>
       </div>
-    </section>
-
-    <!-- 风险预警 -->
-    <section class="card" style="background: #fff; padding: 28px; box-shadow: 0 2px 12px rgba(74,144,217,0.08); margin-top: 16px;">
-      <div style="border-top: 1.5px dashed #69b1e4; border-bottom: 1.5px solid #69b1e4; padding: 26px 4px 30px;">
-        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 20px;">风险预警</h2>
-        <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
-          <li style="display: flex; align-items: flex-start; gap: 12px; font-size: 15px;">
-            <span style="flex-shrink: 0; width: 20px; height: 20px; margin-top: 2px;">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5L22.5 20.5H1.5L12 2.5Z" fill="#E54D42" stroke="#E54D42" stroke-width="1.5"/><path d="M12 9V14.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.2" fill="#fff"/></svg>
-            </span>
-            <span>提示肝胆异常。可能有睡眠不佳，情志不畅等表现。</span>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- 膳食调养 -->
-    <section class="card" style="background: #fff; padding: 28px; box-shadow: 0 2px 12px rgba(74,144,217,0.08); margin-top: 16px; border-radius: 0 0 10px 10px;">
-      <div style="display: inline-block; background: #4a90d9; color: #fff; font-size: 15px; font-weight: 600; padding: 8px 36px 8px 18px; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%); margin-bottom: 16px;">膳食调养</div>
-      <div style="border: 1px solid #e07a7a; background: #fbfbfb; border-radius: 2px; padding: 14px 16px; margin-bottom: 4px; font-size: 14px;">
-        <p><strong>【宜食】</strong>宜食用清淡、易消化、富含优质蛋白及膳食纤维的食物</p>
-        <p style="margin-top: 10px;"><strong>【忌食】</strong>忌食辛辣刺激、油腻煎炸、生冷寒凉及过甜过咸食物</p>
-      </div>
-    </section>
-
-    <p style="text-align: center; font-size: 12px; color: #888; margin-top: 20px;">本报告仅供健康管理参考，不作为临床诊断依据。如有不适请及时就医。</p>
+    </div>
   </div>
+
+  <div class="section">
+    <div class="alert">📖 本报告涵盖基础信息、综合风险总评、疾病风险、体质辨识、中医证候、个性化调理、禁忌提醒与维度结论八大模块。</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">① 基础信息</div>
+    <div class="row"><span class="k">姓名</span><span class="v">张明华</span></div>
+    <div class="row"><span class="k">年龄 / 性别</span><span class="v">72岁 · 男</span></div>
+    <div class="row"><span class="k">慢病情况</span><span class="v">高血压（3年）</span></div>
+    <div class="row"><span class="k">失智评估</span><span class="v">无</span></div>
+    <div class="row"><span class="k">失能评估</span><span class="v">无</span></div>
+    <div class="row"><span class="k">档案号</span><span class="v">YL-2026-0001</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">② 综合风险总评</div>
+    <div class="grid three">
+      <div class="stat"><div class="num warn">6.5</div><div class="lbl">综合评分</div></div>
+      <div class="stat"><div class="num warn">中风险</div><div class="lbl">风险等级</div></div>
+      <div class="stat"><div class="num bad">4</div><div class="lbl">异常指标</div></div>
+    </div>
+    <p class="text" style="margin-top:10px">多项舌诊指标异常，血瘀体质趋于明显，兼见阴虚与肝郁，建议尽早中医调理干预并规律监测血压。</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">👅 舌诊六项快捷指标</div>
+    <div class="grid three">
+    
+      <div class="stat">
+        <div class="num bad">偏暗</div>
+        <div class="lbl">舌色 · 异常</div>
+      </div>
+    
+      <div class="stat">
+        <div class="num bad">薄黄</div>
+        <div class="lbl">苔色 · 异常</div>
+      </div>
+    
+      <div class="stat">
+        <div class="num ok">正常</div>
+        <div class="lbl">舌体 · 正常</div>
+      </div>
+    
+      <div class="stat">
+        <div class="num ok">正常</div>
+        <div class="lbl">舌下络脉 · 正常</div>
+      </div>
+    
+      <div class="stat">
+        <div class="num bad">弦细</div>
+        <div class="lbl">脉象 · 异常</div>
+      </div>
+    
+      <div class="stat">
+        <div class="num bad">微黄</div>
+        <div class="lbl">面色 · 异常</div>
+      </div>
+    
+    </div>
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">③ 疾病风险评估</div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">高血压风险</span>
+        <span class="dim-score">68<small>/100</small></span>
+      </div>
+      <div class="bar"><span class="warn" style="width:68%"></span></div>
+      <div class="note">风险等级：中</div>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">心脑血管疾病风险</span>
+        <span class="dim-score">55<small>/100</small></span>
+      </div>
+      <div class="bar"><span class="warn" style="width:55%"></span></div>
+      <div class="note">风险等级：中</div>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">中风风险</span>
+        <span class="dim-score">42<small>/100</small></span>
+      </div>
+      <div class="bar"><span class="warn" style="width:42%"></span></div>
+      <div class="note">风险等级：中</div>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">肝病风险</span>
+        <span class="dim-score">45<small>/100</small></span>
+      </div>
+      <div class="bar"><span class="warn" style="width:45%"></span></div>
+      <div class="note">风险等级：中</div>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">脾胃病风险</span>
+        <span class="dim-score">40<small>/100</small></span>
+      </div>
+      <div class="bar"><span class="warn" style="width:40%"></span></div>
+      <div class="note">风险等级：中</div>
+    </div>
+    
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">④ 体质辨识</div>
+    <div class="tags" style="margin-bottom:8px">
+      <span class="tag good">主体质：血瘀质</span>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">血瘀质<small>主体质 ★</small></span>
+        <span class="dim-score">62</span>
+      </div>
+      <div class="bar"><span class="bad" style="width:62%"></span></div>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">阴虚质<small>主体质 ★</small></span>
+        <span class="dim-score">55</span>
+      </div>
+      <div class="bar"><span class="warn" style="width:55%"></span></div>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">痰湿质<small>主体质 ★</small></span>
+        <span class="dim-score">45</span>
+      </div>
+      <div class="bar"><span class="" style="width:45%"></span></div>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">湿热质<small>主体质 ★</small></span>
+        <span class="dim-score">40</span>
+      </div>
+      <div class="bar"><span class="" style="width:40%"></span></div>
+    </div>
+    
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">气郁质<small>主体质 ★</small></span>
+        <span class="dim-score">35</span>
+      </div>
+      <div class="bar"><span class="" style="width:35%"></span></div>
+    </div>
+    
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">⑤ 中医证候</div>
+    <div class="list">
+      <div class="item">
+        <div class="top"><span>肝阳上亢兼血瘀</span><span class="pill warn">证候</span></div>
+        <div class="txt">肝阳偏亢，血行不畅。舌暗苔薄黄，脉弦细。多见头晕头痛，急躁易怒，面色晦暗。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">⑥ 个性化调理方案</div>
+    <div class="list">
+    
+      <div class="item ok">
+        <div class="top"><span>🌿 天麻钩藤饮</span><span class="pill ok">中药</span></div>
+        <div class="txt">平肝潜阳、清热安神，适用于肝阳上亢所致头晕头痛。</div>
+      </div>
+    
+      <div class="item ok">
+        <div class="top"><span>🌿 血府逐瘀汤</span><span class="pill ok">中药</span></div>
+        <div class="txt">活血化瘀、行气止痛，改善面色晦暗与舌质偏暗。</div>
+      </div>
+    
+    
+      <div class="item">
+        <div class="top"><span>📍 太冲</span><span class="pill">穴位</span></div>
+        <div class="txt">平肝熄风，每日按揉 3 分钟，以酸胀为度。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>📍 曲池</span><span class="pill">穴位</span></div>
+        <div class="txt">降压通络，配合合谷穴按揉效果更佳。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>📍 百会</span><span class="pill">穴位</span></div>
+        <div class="txt">醒脑开窍，早晚各按揉 2 分钟。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>📍 合谷</span><span class="pill">穴位</span></div>
+        <div class="txt">通络止痛，缓解头部胀痛不适。</div>
+      </div>
+    
+    
+      <div class="item">
+        <div class="top"><span>🍲 低盐低脂饮食</span><span class="pill blue">膳食</span></div>
+        <div class="txt">每日食盐控制在 5g 以内，减少动物油脂摄入。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>🍲 活血食材</span><span class="pill blue">膳食</span></div>
+        <div class="txt">多食芹菜、木耳、山楂，有助于活血降压。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>🍲 戒烟限酒</span><span class="pill blue">膳食</span></div>
+        <div class="txt">少食辛辣油腻，严格忌烟酒。</div>
+      </div>
+    
+    
+      <div class="item">
+        <div class="top"><span>🏃 太极拳</span><span class="pill blue">运动</span></div>
+        <div class="txt">每日 20 分钟，动作舒缓不憋气。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>🏃 步行锻炼</span><span class="pill blue">运动</span></div>
+        <div class="txt">每日散步 30 分钟，心率不超过 110 次/分。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>🏃 运动禁忌</span><span class="pill blue">运动</span></div>
+        <div class="txt">避免剧烈运动、避免屏气用力动作。</div>
+      </div>
+    
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">⑦ 禁忌提醒</div>
+    <div class="list">
+    
+      <div class="item bad">
+        <div class="top"><span>饮食</span><span class="pill bad">禁忌</span></div>
+        <div class="txt">忌高盐高脂、忌烟酒、忌暴饮暴食</div>
+      </div>
+    
+      <div class="item bad">
+        <div class="top"><span>生活</span><span class="pill bad">禁忌</span></div>
+        <div class="txt">避免情绪激动、避免熬夜、避免骤然起身</div>
+      </div>
+    
+      <div class="item bad">
+        <div class="top"><span>用药</span><span class="pill bad">禁忌</span></div>
+        <div class="txt">降压药不可擅自停用或调整剂量</div>
+      </div>
+    
+    </div>
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">⑧ 维度结论</div>
+    <p class="text">综合舌诊、脉诊、面诊与问卷数据，老人以血瘀质为主，兼见阴虚与肝郁；疾病风险以高血压及心脑血管事件最为突出；建议以平肝潜阳、活血化瘀为调理主线，配合低盐膳食与情志调摄，每 3 个月复评一次。</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🗂️ 报告信息</div>
+    <div class="row"><span class="k">报告编号</span><span class="v">TCM-R-20260728-0001</span></div>
+    <div class="row"><span class="k">生成时间</span><span class="v">2026-07-28 09:30</span></div>
+    <div class="row"><span class="k">数据源</span><span class="v">舌诊报告 + 健康问卷 + 居家监测数据</span></div>
+  </div>
+
+  <div class="foot">本报告由人工智能分析生成，仅供健康管理参考，不构成医疗诊断依据；如有不适请及时就医。</div>
 </div>
 </body>
 </html>

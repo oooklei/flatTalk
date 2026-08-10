@@ -193,11 +193,12 @@ td.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   display: block;
   border: 1px solid var(--n100);
   border-radius: var(--r-lg);
-  background: #fff;
+  background: #FAF8F5; /* VI 暖纸底，避免预览白板感 */
   width: 100%;
   min-width: 320px;
   height: 420px; /* 初始高度，加载后按内容自适应 */
   transition: width .18s ease, height .18s ease;
+  color-scheme: light;
 }
 
 /* ===== 权限矩阵（角色 × 技能）===== */
@@ -245,6 +246,9 @@ td.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 .modal-card h3 { margin: 0 0 16px; font-family: var(--serif); color: var(--n800); }
 .modal-card label { display: block; margin-bottom: 11px; font-size: 13px; color: var(--n600); }
+.modal-card label.full { grid-column: 1 / -1; }
+.modal-card textarea { width: 100%; margin-top: 4px; padding: 9px 11px; background: #fff; border: 1px solid var(--n200); border-radius: var(--r-md); color: var(--n800); font: inherit; resize: vertical; box-sizing: border-box; }
+.grid td.desc-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .modal-card input {
   width: 100%;
   margin-top: 4px;
@@ -259,6 +263,29 @@ td.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 .modal-card label.check { display: flex; align-items: center; gap: 8px; color: var(--n800); }
 .modal-card label.check input { width: auto; margin: 0; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+/* ===== 模型测试对话框 ===== */
+.test-dialog { width: 560px; max-width: 92vw; }
+.test-detail-panel { max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.test-step {
+  border: 1px solid var(--n200); border-radius: 10px; overflow: hidden;
+  transition: border-color .2s;
+}
+.test-step.running { border-color: var(--o300); }
+.test-step.success { border-color: var(--g300); }
+.test-step.error { border-color: #E8A0A0; }
+.ts-header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--n50); font-size: 13px; }
+.test-step.running .ts-header { background: var(--o50); }
+.test-step.success .ts-header { background: var(--g100); }
+.test-step.error .ts-header { background: #FBF0F0; }
+.ts-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.ts-icon.running { color: var(--o500); }
+.ts-icon.success { color: var(--g500); }
+.ts-icon.error { color: #C44; }
+.ts-label { flex: 1; color: var(--n800); font-weight: 500; }
+.ts-duration { font-size: 12px; color: var(--n500); }
+.ts-detail { padding: 8px 16px; }
+.ts-detail pre { margin: 0; padding: 2px 0; font-family: 'SF Mono', 'Consolas', monospace; font-size: 12px; color: var(--n600); white-space: pre-wrap; word-break: break-all; line-height: 1.6; }
 
 /* ===== 运行日志：问题追踪卡片 ===== */
 .traces { display: flex; flex-direction: column; gap: 14px; }

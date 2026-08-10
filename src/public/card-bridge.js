@@ -140,7 +140,8 @@
       } else {
         window.__tmapLoadingQueue = [function () { initMiniMap(canvas, poi); }];
         var script = document.createElement('script');
-        script.src = 'https://map.qq.com/api/gljs?v=1.exp&libraries=visualization,geometry&key=' + key;
+        // 不带 visualization：部分 Key 未开通该库会整页 GLJS 加载失败
+        script.src = 'https://map.qq.com/api/gljs?v=1.exp&key=' + key;
         script.onload = function () {
           var queue = window.__tmapLoadingQueue || [];
           window.__tmapLoadingQueue = null;

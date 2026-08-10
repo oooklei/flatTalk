@@ -25,7 +25,7 @@ test('map-bridge 源码跳过 static_svg，避免 body.innerHTML 被清空', () 
   assert.match(src, /:not\(\[data-map-mode="static_svg"\]\)/);
 });
 
-test('generateSvg 字号按空间自适应（默认约10，端点可略大，贴边更小）', () => {
+test('generateSvg 字号：默认嵌入后8，地图端点嵌入后≥10', () => {
   const svg = generateSvg(
     [
       { name: '起点站', lat: 21.53, lng: 108.17, type: 'arrival', day: 'D1', plan: '抵达', spot_desc: '基地' },
@@ -38,18 +38,26 @@ test('generateSvg 字号按空间自适应（默认约10，端点可略大，贴
   assert.match(svg, /class="hit-area"/);
   assert.match(svg, /data-spot-img=/);
   assert.match(svg, /data-role="marker_name"/);
+  const boost = 620 / 360;
+  const minDefaultSrc = Math.ceil(8 * boost);
+  const minMapSrc = Math.ceil(10 * boost);
   const fontSizes = [...svg.matchAll(/font-size="(\d+)"/g)].map((m) => Number(m[1]));
   assert.ok(fontSizes.length > 0);
-  assert.ok(Math.min(...fontSizes) >= 7, `min font-size ${Math.min(...fontSizes)} < 7`);
-  assert.ok(Math.max(...fontSizes) <= 22, `max font-size ${Math.max(...fontSizes)} > 22（不应整图暴增）`);
-  const markerNames = [...svg.matchAll(/data-role="marker_name"[^>]*font-size="(\d+)"/g)]
-    .map((m) => Number(m[1]));
-  // 兼容属性顺序 font-size 在 data-role 前
-  const markerNames2 = [...svg.matchAll(/font-size="(\d+)"[^>]*data-role="marker_name"/g)]
-    .map((m) => Number(m[1]));
-  const names = [...markerNames, ...markerNames2];
-  assert.ok(names.length >= 1);
-  assert.ok(names.every((n) => n >= 7 && n <= 14), `marker name fonts out of range: ${names}`);
+  assert.ok(Math.min(...fontSizes) >= minDefaultSrc, `min font-size ${Math.min(...fontSizes)} < ${minDefaultSrc}`);
+  assert.ok(Math.max(...fontSizes) <= 40, `max font-size ${Math.max(...fontSizes)} > 40`);
+  const markerNames = [
+    ...[...svg.matchAll(/data-role="marker_name"[^>]*font-size="(\d+)"/g)].map((m) => Number(m[1])),
+    ...[...svg.matchAll(/font-size="(\d+)"[^>]*data-role="marker_name"/g)].map((m) => Number(m[1])),
+  ];
+  assert.ok(markerNames.length >= 1);
+  assert.ok(markerNames.every((n) => n >= minMapSrc && n <= 28), `marker name fonts out of range: ${markerNames}`);
+  const panelBodies = [
+    ...[...svg.matchAll(/data-role="panel_body"[^>]*font-size="(\d+)"/g)].map((m) => Number(m[1])),
+    ...[...svg.matchAll(/font-size="(\d+)"[^>]*data-role="panel_body"/g)].map((m) => Number(m[1])),
+  ];
+  if (panelBodies.length) {
+    assert.ok(panelBodies.every((n) => n >= minDefaultSrc && n < minMapSrc + 2), `panel_body should be ~8 screen: ${panelBodies}`);
+  }
 });
 
 test('dashboard 本地知识库覆盖 49 端点补图', async () => {

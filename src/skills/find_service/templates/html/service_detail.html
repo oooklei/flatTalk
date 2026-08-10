@@ -1,73 +1,196 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>服务详情</title>
-  <link rel="stylesheet" href="_design_tokens.css" />
-  <link rel="stylesheet" href="_card_components.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<title>{{name}} · 服务详情</title>
+<style>
+:root{
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537; --warn-soft:#FBF3DD; --warn-deep:#9C7715;
+  --danger:#D4604E; --danger-soft:#FAEAE8; --danger-deep:#A23A2C;
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:999px;
+  --sh-sm:0 1px 3px rgba(62,56,50,.08); --sh-md:0 4px 12px rgba(62,56,50,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-sans);background:var(--n0);color:var(--n800);
+  font-size:16px;line-height:1.6;padding:12px;
+  overflow-wrap:anywhere;word-break:break-word;-webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--primary);text-decoration:none}
+
+/* 一体卡片 */
+.card{
+  max-width:430px;width:100%;margin:0 auto;background:#fff;border:1px solid var(--n100);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-md);
+}
+
+/* 头部 */
+.hero{
+  display:flex;align-items:center;gap:12px;padding:16px;
+  color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-deep));
+}
+.hero-icon{
+  width:54px;height:54px;flex-shrink:0;border-radius:var(--r-md);
+  background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
+  font-size:30px;line-height:1;
+}
+.hero-body{flex:1;min-width:0}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--r-full);
+  background:rgba(255,255,255,.18);font-size:12px;font-weight:600;
+}
+.hero-title{font-family:var(--font-serif);margin:8px 0 0;font-size:22px;line-height:1.18;letter-spacing:.5px}
+.hero-price{margin-top:6px;display:flex;align-items:baseline;gap:4px;color:rgba(255,255,255,.92)}
+.price-num{font-family:var(--font-serif);font-size:20px;font-weight:800}
+.price-unit{font-size:13px;font-weight:600}
+
+/* 区块 */
+.section{padding:13px 14px;border-top:1px solid var(--n100)}
+.section-title{
+  margin:0 0 10px;display:flex;align-items:center;gap:7px;color:var(--n800);
+  font-size:15px;font-weight:800;font-family:var(--font-serif);
+}
+.section-title::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--primary)}
+
+/* 摘要 / 描述 */
+.summary{font-size:13px;color:var(--n600);line-height:1.6}
+.desc{font-size:13px;color:var(--n600);line-height:1.6}
+
+/* 标签 */
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{
+  padding:4px 9px;border-radius:var(--r-md);
+  background:var(--primary-soft);color:var(--primary-deep);
+  border:1px solid #F5CDAE;font-size:12px;font-weight:700;
+}
+
+/* 特色列表 */
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.feat-item{
+  position:relative;padding-left:24px;font-size:13px;color:var(--n700);line-height:1.5;
+}
+.feat-item::before{
+  content:'✓';position:absolute;left:0;top:1px;width:18px;height:18px;
+  background:var(--ok);color:#fff;border-radius:var(--r-full);
+  font-size:11px;display:flex;align-items:center;justify-content:center;
+}
+
+/* 服务机构 */
+.provider-name{font-size:14px;font-weight:700;color:var(--n800);margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stat{min-width:0;padding:10px 9px;background:var(--n50);border:1px solid var(--n100);border-radius:var(--r-md);text-align:center}
+.stat .num{color:var(--primary-deep);font-size:20px;font-weight:800;line-height:1.1;font-family:var(--font-serif)}
+.stat .lbl{margin-top:4px;color:var(--n500);font-size:11px}
+
+/* 信息行 */
+.row{display:flex;justify-content:space-between;gap:12px;padding:8px 0}
+.row + .row{border-top:1px dashed var(--n100)}
+.row .k{color:var(--n500);flex:0 0 auto;font-size:13px}
+.row .v{font-weight:700;text-align:right;min-width:0;font-size:13px}
+.row .v.link{color:var(--accent);text-decoration:none}
+
+/* 卡片内操作区（非固定底部） */
+.action{padding:12px 14px;border-top:1px solid var(--n100)}
+.btn-row{display:flex;gap:10px}
+.btn{
+  flex:1;min-height:46px;border-radius:var(--r-md);border:none;
+  font-size:15px;font-weight:700;letter-spacing:1px;font-family:var(--font-sans);
+  display:flex;align-items:center;justify-content:center;
+}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-deep));color:#fff}
+.btn-ghost{background:#fff;color:var(--primary-deep);border:1.5px solid var(--primary)}
+
+/* 卡片底部来源 */
+.foot{padding:10px 14px;border-top:1px solid var(--n100);color:var(--n400);font-size:11px;text-align:center}
+
+@media (max-width:360px){
+  body{padding:10px} .hero-title{font-size:20px}
+}
+</style>
 </head>
 <body>
-  <!-- 语义：服务详情页。服务介绍 / 标签 / 特色 / 时间 / 咨询热线。一键咨询/一键预定由追问按钮体现。 -->
-  <article class="nb-card" data-layout="vertical">
-    <header class="nb-hero">
-      <div class="eyebrow">{{category}}</div>
-      <h1>{{name}}</h1>
-      <p class="subtitle">{{price_text}}</p>
-    </header>
+<div class="card" data-template="service_detail" data-layout="vertical">
 
-    <div class="detail-section">
-      <h3>服务介绍</h3>
-      <p>{{intro}}</p>
+  <!-- 头部 -->
+  <div class="hero">
+    <div class="hero-icon">{{icon}}</div>
+    <div class="hero-body">
+      <div class="eyebrow">{{eyebrow}}</div>
+      <h1 class="hero-title">{{name}}</h1>
+      <div class="hero-price"><span class="price-num">{{price}}</span><span class="price-unit">元/{{unit}}</span></div>
     </div>
+  </div>
 
-    {{#has_tags}}
-    <div class="detail-section">
-      <h3>服务标签</h3>
-      <div class="detail-tags">
-        {{#tags}}<span class="tag">{{.}}</span>{{/tags}}
-      </div>
+  <!-- 摘要 -->
+  <div class="section">
+    <div class="section-title">📌 服务简介</div>
+    <p class="summary">{{summary}}</p>
+  </div>
+
+  <!-- 标签 -->
+  <div class="section">
+    <div class="section-title">🏷 服务标签</div>
+    <div class="tags">
+      {{#tags}}<span class="tag">{{.}}</span>{{/tags}}
+      {{^tags}}<span class="tag">暂无标签</span>{{/tags}}
     </div>
-    {{/has_tags}}
+  </div>
 
-    {{#has_features}}
-    <div class="detail-section">
-      <h3>服务特色</h3>
-      <div class="detail-features">
-        {{#features}}
-        <div class="detail-feature">
-          <div class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-          <span>{{.}}</span>
-        </div>
-        {{/features}}
-      </div>
+  <!-- 服务介绍 -->
+  <div class="section">
+    <div class="section-title">📝 服务介绍</div>
+    <p class="desc">{{fullDesc}}</p>
+  </div>
+
+  <!-- 服务特色 -->
+  <div class="section">
+    <div class="section-title">✨ 服务特色</div>
+    <ul class="feat-list">
+      {{#features}}<li class="feat-item">{{.}}</li>{{/features}}
+      {{^features}}<li class="feat-item">暂无特色说明</li>{{/features}}
+    </ul>
+  </div>
+
+  <!-- 服务机构 -->
+  <div class="section">
+    <div class="section-title">🏢 服务机构</div>
+    <div class="provider-name">{{providerName}}</div>
+    <div class="grid four">
+      <div class="stat"><div class="num">{{overallScore}}</div><div class="lbl">综合评分</div></div>
+      <div class="stat"><div class="num">{{availabilityRateText}}</div><div class="lbl">空闲率</div></div>
+      <div class="stat"><div class="num">{{responseTime}}分</div><div class="lbl">响应时间</div></div>
+      <div class="stat"><div class="num">{{staffCount}}人</div><div class="lbl">服务团队</div></div>
     </div>
-    {{/has_features}}
+  </div>
 
-    <div class="detail-section">
-      <h3>服务时间</h3>
-      <p>{{timeRange}}</p>
+  <!-- 服务时间 / 热线 -->
+  <div class="section">
+    <div class="section-title">🕒 服务信息</div>
+    <div class="row"><span class="k">服务时间</span><span class="v">{{timeRange}}</span></div>
+    <div class="row"><span class="k">服务热线</span><a class="v link" href="tel:{{hotline}}">{{hotline}}</a></div>
+  </div>
+
+  <!-- 卡片内操作区（非固定底部） -->
+  <div class="action">
+    <div class="btn-row">
+      <a class="btn btn-ghost" href="tel:{{hotline}}">一键咨询</a>
+      <a class="btn btn-primary" href="#">一键预定</a>
     </div>
+  </div>
 
-    <div class="detail-section">
-      <h3>咨询热线</h3>
-      <p style="font-size:20px;font-weight:600;color:var(--primary);">{{hotline}}</p>
-    </div>
-  </article>
-
-  <script type="application/json">
-  {
-    "category": "家政清洁",
-    "name": "居家深度清洁",
-    "price_text": "¥180 / 次",
-    "intro": "为您提供全方位的居家深度清洁服务，包含厨房清洁、卫生间消毒、卧室整理、客厅打扫等。服务人员均经过专业培训，持有健康证，服务过程全程可追溯。特别适合行动不便的老年人家庭。",
-    "tags": ["实名认证", "专业培训", "即时响应"],
-    "has_tags": true,
-    "features": ["持证上岗", "服务保险", "24小时响应", "不满意可返工"],
-    "has_features": true,
-    "timeRange": "08:00-18:00",
-    "hotline": "400-888-1234"
-  }
-  </script>
+  <div class="foot">来源：{{footSource}}</div>
+</div>
 </body>
 </html>

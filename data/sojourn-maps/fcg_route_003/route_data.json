@@ -127,6 +127,31 @@
     "route_dash_fcg_3"
   ],
   "route_id": "fcg_route_003",
-  "updated_at": "2026-08-05T22:13:28.023Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:57.719Z",
+  "spot_images_source": "dashboard_local_kb",
+  "itinerary": [
+    {
+      "day": "D1",
+      "wp_name": "嘉路滨海旅居基地",
+      "plan": "大本营出发"
+    },
+    {
+      "day": "D1",
+      "wp_name": "上思壮乡民俗村",
+      "plan": "壮锦编织+竹竿舞"
+    },
+    {
+      "day": "D1",
+      "wp_name": "上思田园",
+      "plan": "田园漫步+果蔬采摘"
+    },
+    {
+      "day": "D1",
+      "wp_name": "嘉路滨海旅居基地",
+      "plan": "返回壮药理疗"
+    }
+  ],
+  "boundary_source": "datav_local",
+  "boundary_name": "防城港市",
+  "boundary_polygon_count": 1
 }

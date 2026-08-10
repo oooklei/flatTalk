@@ -1,7 +1,16 @@
 {
   "id": "risk_warning_card",
+  "name": "健康风险预警提示",
   "description": "健康风险预警提示，含警告图标与预警文字列表",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.warning",
+  "required": [
+    "warningTitle",
+    "warnings"
+  ],
+  "optional_fields": [],
+  "match": "展示风险提示/预警列表短卡，非完整评估报告",
   "layout": "vertical",
-  "match": "展示健康风险预警提示（警告图标 + 预警文字列表）的单卡片",
-  "required": ["warningTitle", "warnings"]
+  "followup_actions": [],
+  "version": "1.0"
 }

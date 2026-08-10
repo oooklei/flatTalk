@@ -5,10 +5,9 @@ import { createNearbyResourceAgent } from './agents/nearby-resource-agent.js';
 import { createFindServiceAgent } from './agents/find-service-agent.js';
 import { createHealthRiskAgent } from './agents/health-risk-agent.js';
 import { createDispatchManageAgent } from './agents/dispatch-manage-agent.js';
+import { createServiceQualityEvalAgent } from './agents/service-quality-eval-agent.js';
 import { createCommonAgent } from './agents/common-agent.js';
-import { LEVEL_1 as SOS_LEVEL_1, LEVEL_2 as SOS_LEVEL_2 } from '../intent-classifier/emergency-detector.js';
-
-const SOS_TERMS = [...SOS_LEVEL_1, ...SOS_LEVEL_2];
+import { detectEmergency } from '../intent-classifier/emergency-detector.js';
 
 export function createSupervisor() {
   const registry = createAgentRegistry();
@@ -18,11 +17,19 @@ export function createSupervisor() {
   registry.register(createFindServiceAgent());
   registry.register(createHealthRiskAgent());
   registry.register(createDispatchManageAgent());
+  registry.register(createServiceQualityEvalAgent());
   registry.register(createCommonAgent());
 
-  function detectSOS(text) {
-    const lower = text.toLowerCase();
-    return SOS_TERMS.some((term) => lower.includes(term));
+  // 找出除 excludeKey 外、matchScore 最高的非 common agent（用于 keep 阶段的对抗性再判定）。
+  function bestOtherAgent(message, excludeKey) {
+    let bestKey = null;
+    let bestScore = 0;
+    for (const agent of registry.list()) {
+      if (agent.key === 'common' || agent.key === excludeKey) continue;
+      const s = agent.matchScore(message);
+      if (s > bestScore) { bestScore = s; bestKey = agent.key; }
+    }
+    return bestKey ? { key: bestKey, score: bestScore } : null;
   }
 
   return {
@@ -31,9 +38,10 @@ export function createSupervisor() {
     async route({ message = '', context = {} }) {
       const text = String(message || '').toLowerCase();
 
-      // Step 1: SOS
-      if (detectSOS(text)) {
-        return { agentKey: 'health_risk_warning', switched: context.active_agent !== 'health_risk_warning', from: context.active_agent || null, emergency: true, reason: 'SOS_emergency' };
+      // Step 1: SOS → find_service/service_emergency（与 orchestrator + emergency-detector 一致）
+      const emergency = detectEmergency({ text: message });
+      if (emergency.matched && (emergency.intent_type === 'SOS' || emergency.urgency_level === 'P0')) {
+        return { agentKey: 'find_service', switched: context.active_agent !== 'find_service', from: context.active_agent || null, emergency: true, reason: 'SOS_emergency' };
       }
 
       // Step 2: action_key prefix
@@ -47,12 +55,18 @@ export function createSupervisor() {
 
       const activeAgentKey = context.active_agent;
 
-      // Step 3: active_agent keep
+      // Step 3: active_agent keep（带对抗性再判定，避免场景过粘）
       if (activeAgentKey) {
         const activeAgent = registry.get(activeAgentKey);
         if (activeAgent) {
           const canHandle = activeAgent.canHandle(message, context);
           if (canHandle === true) {
+            // 活跃场景仅因弱/泛意图命中而能 handle 时，若另有场景存在明显更强的意图，
+            // 则切走，让用户能按新意图回到对应场景；否则保留同场景续写粘性。
+            const best = bestOtherAgent(message, activeAgentKey);
+            if (best && best.key !== activeAgentKey && best.score >= 0.5 && best.score > activeAgent.matchScore(message)) {
+              return { agentKey: best.key, switched: true, from: activeAgentKey, emergency: false, reason: `keep_override:${best.key}` };
+            }
             return { agentKey: activeAgentKey, switched: false, from: null, emergency: false, reason: 'active_agent_keep' };
           }
           if (canHandle && canHandle.suggest) {

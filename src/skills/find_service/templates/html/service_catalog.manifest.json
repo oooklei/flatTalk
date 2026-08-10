@@ -3,5 +3,12 @@
   "description": "养老服务目录全览，按分类展示全部可用服务",
   "layout": "vertical",
   "match": "养老服务目录、全部服务、服务分类、有哪些服务、服务清单",
-  "required": ["sceneTitle", "total", "categories"]
+  "required": [
+    "sceneTitle",
+    "total",
+    "categories"
+  ],
+  "intent_id": "find_service_catalog",
+  "product_domain": "find_service",
+  "name": "养老服务目录全览，按分类展示全部可用服务"
 }

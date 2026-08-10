@@ -2,7 +2,7 @@
 import { discoverTemplates } from '../src/template-card/discover.js';
 
 const skillDirs = [
-  ['common', 'src/skills/common/templates/html/common'],
+  ['common', 'src/skills/common/templates/html'],
   ['dispatch_manage', 'src/skills/dispatch_manage/templates/html'],
   ['find_service', 'src/skills/find_service/templates/html'],
   ['health_risk_warning', 'src/skills/health_risk_warning/templates/html'],

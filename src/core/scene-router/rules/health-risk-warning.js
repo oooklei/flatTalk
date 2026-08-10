@@ -4,6 +4,7 @@ const healthRiskAlertTerms = [
   '健康风险', '风险预警', '健康预警', '预警', '风险研判', '报警', '异常信号',
   '风险等级', '信号', '研判',
   '健康报告', '完整报告', '预警提示', '风险提示',
+  '舌诊', '舌象', '面诊', '面象', '体质', '证候', '证型', '调理方案',
 ];
 
 const healthRiskVitalTerms = [
@@ -25,7 +26,25 @@ export const healthRiskWarningRuleSet = {
   scene_key: 'health_risk_warning',
   default_intent: 'health_risk_warning.assess',
   threshold: 4,
-  template_candidates: ['health_warning_card', 'health_risk_signal_card', 'health_risk_rule_card', 'fallback'],
+  template_candidates: [
+    'health_warning_card',
+    'health_risk_signal_card',
+    'health_risk_rule_card',
+    'health_report_card',
+    'risk_assessment_card',
+    'risk_warning_card',
+    'care_advice_card',
+    'dietary_regimen_card',
+    'constitution_card',
+    'tongue_diagnosis_card',
+    'face_observation_card',
+    'tcm_syndrome_card',
+    'risk_level_card',
+    'help_card',
+    'elder_duplicate_confirm_card',
+    'health_manual_review_card',
+    'fallback',
+  ],
   required_data: ['health_risk_warning_business'],
   required_knowledge: ['health_risk_warning'],
   actions_allowed: [

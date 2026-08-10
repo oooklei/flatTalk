@@ -28,10 +28,11 @@ const SESSION_TOKEN_TTL = Number(process.env.GXY_EXTERNAL_SESSION_TTL || 3600);
 const usedNonces = new Set();
 
 /** 定期清理过期 nonce（每 10 分钟） */
-setInterval(() => {
+const nonceCleanupTimer = setInterval(() => {
   // 简单策略：超过窗口期后清空（生产环境应使用 Redis TTL）
   if (usedNonces.size > 10000) usedNonces.clear();
 }, 10 * 60 * 1000);
+nonceCleanupTimer.unref?.();
 
 // ========== 角色编码映射（业务系统 → 桂小养） ==========
 
@@ -305,19 +306,18 @@ export function decryptSessionToken(token) {
  */
 export function buildMobileUrl(token, userInfo, options = {}) {
   const roleKey = mapRoleId(userInfo.roleId);
-  const { host, port, sslPort, useHttps } = options;
+  const { host, port, sslPort, useHttps, reqPort } = options;
 
   // 构建完整 URL
-  // - useHttps=true 时使用 HTTPS + sslPort
-  // - 否则使用 HTTP + 运行时端口（port）
+  // 优先使用请求的实际端口（reqPort），确保用户从哪个端口访问就返回哪个端口
   let baseUrl = '';
   if (host) {
     if (useHttps === true) {
-      // 明确要求 HTTPS
-      baseUrl = `https://${host}:${sslPort || port || '5444'}`;
+      // HTTPS：优先用请求端口，其次 sslPort
+      baseUrl = `https://${host}:${reqPort || sslPort || port || '5444'}`;
     } else {
-      // 默认使用 HTTP + 运行时端口
-      baseUrl = `http://${host}:${port || '5298'}`;
+      // HTTP：优先用请求端口，其次运行时端口
+      baseUrl = `http://${host}:${reqPort || port || '5298'}`;
     }
   }
 

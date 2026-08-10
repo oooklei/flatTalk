@@ -1,48 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>服务订单预览</title>
-  <style>
-    :root { --primary:#1FA97E; --grad:linear-gradient(135deg,#1FA97E 0%,#4FD1A6 100%); --bg:#ECFBF5; --card:#fff; --ink:#2E3A36; --muted:#8A9A93; --border:#E1F0EA; }
-    * { box-sizing:border-box; }
-    body { margin:0; padding:14px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); }
-    .card { max-width:420px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-    .hero { padding:16px; background:var(--grad); color:#fff; }
-    h1 { margin:0; font-size:18px; }
-    .section { padding:12px 14px; border-top:1px solid var(--border); }
-    .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:13px; }
-    .row:last-child { border-bottom:none; }
-    .row .k { color:var(--muted); }
-    .row .v { font-weight:600; text-align:right; max-width:64%; }
-    .hint { margin-top:10px; padding:10px; border-radius:10px; background:#E6F7F0; color:#1FA97E; font-size:12px; line-height:1.5; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<title>{{pageTitle}}</title>
+<style>
+:root{
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8;
+  --n200:#D9D4CC; --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  --r-md:10px; --r-lg:16px; --r-full:999px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-sans);background:var(--n0);color:var(--n800);
+  font-size:16px;line-height:1.6;padding:14px;
+  overflow-wrap:anywhere;word-break:break-word;-webkit-font-smoothing:antialiased;
+}
+.card{
+  max-width:430px;width:100%;margin:0 auto;background:#fff;border:1px solid var(--n100);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:0 4px 12px rgba(62,56,50,.10);
+}
+.head{padding:18px 14px 6px;text-align:center}
+.title{font-family:var(--font-serif);font-size:19px;font-weight:800;color:var(--n800);letter-spacing:.5px}
+.rows{padding:4px 14px 14px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0}
+.row + .row{border-top:1px solid var(--n100)}
+.row .k{color:var(--n500);font-size:14px;flex:0 0 auto}
+.row .v{font-weight:700;text-align:right;font-size:14px;min-width:0}
+.action{padding:0 14px 14px}
+.btn{
+  display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:var(--r-md);
+  font-size:15px;font-weight:700;letter-spacing:1px;font-family:var(--font-sans);border:none;
+}
+.btn-block{width:100%}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-deep));color:#fff}
+.change-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.btn-small{
+  flex:1;min-width:68px;min-height:38px;border-radius:var(--r-full);
+  background:var(--n50);color:var(--n700);border:1px solid var(--n100);
+  font-size:13px;font-weight:600;
+}
+.btn-ghost-block{
+  width:100%;min-height:44px;border-radius:var(--r-md);border:1.5px solid var(--primary);
+  background:#fff;color:var(--primary-deep);font-size:14px;font-weight:700;
+}
+.foot{padding:10px 14px;border-top:1px solid var(--n100);color:var(--n400);font-size:11px;text-align:center}
+</style>
 </head>
 <body>
-  <article class="card" data-layout="vertical">
-    <header class="hero"><h1>服务订单预览</h1></header>
-    <section class="section">
-      <div class="row"><span class="k">订单号</span><span class="v">{{orderId}}</span></div>
-      <div class="row"><span class="k">服务对象</span><span class="v">{{elderName}}</span></div>
-      <div class="row"><span class="k">服务项目</span><span class="v">{{serviceName}}</span></div>
-      <div class="row"><span class="k">服务机构</span><span class="v">{{orgName}}</span></div>
-      <div class="row"><span class="k">费用</span><span class="v">¥{{price}}/{{unit}}</span></div>
-      <div class="row"><span class="k">期望时间</span><span class="v">{{expectedTime}}</span></div>
-      <div class="hint">{{confirmHint}}</div>
-    </section>
-  </article>
-  <script type="application/json">
-  {
-    "orderId": "so_new",
-    "elderName": "黄秀英",
-    "serviceName": "上门护理",
-    "orgName": "青秀社区居家养老服务中心",
-    "price": 80,
-    "unit": "次",
-    "expectedTime": "请选择上门时间",
-    "confirmHint": "确认后将自动进入派单调度"
-  }
-  </script>
+<div class="card" data-template="order_preview" data-layout="vertical">
+  <div class="head">
+    <h1 class="title">{{cardTitle}}</h1>
+  </div>
+  <div class="rows">
+    <div class="row"><span class="k">服务</span><span class="v">{{serviceName}}</span></div>
+    <div class="row"><span class="k">日期</span><span class="v">{{dateDisplay}}</span></div>
+    <div class="row"><span class="k">时段</span><span class="v">{{timeSlot}}</span></div>
+    <div class="row"><span class="k">联系人</span><span class="v">{{contactName}}</span></div>
+    <div class="row"><span class="k">电话</span><span class="v">{{contactPhone}}</span></div>
+    <div class="row"><span class="k">地址</span><span class="v">{{contactAddress}}</span></div>
+  </div>
+  <div class="action">
+    <a class="btn btn-primary btn-block" href="#">{{confirmBtnText}}</a>
+    <div class="change-row">
+      {{#changeOptions}}<a class="btn btn-small" href="#">{{.}}</a>{{/changeOptions}}
+    </div>
+    <a class="btn btn-ghost-block" href="#">{{formBtnText}}</a>
+  </div>
+  <div class="foot">来源：{{footSource}}</div>
+</div>
 </body>
 </html>

@@ -364,6 +364,86 @@
       }
     },
     {
+      "intent_id": "find_service_booking_confirm",
+      "intent_desc": "find_service / booking_confirm：预约确认、确认预约日期、AI推荐上门时间",
+      "examples": [
+        "预约确认",
+        "确认预约日期",
+        "AI推荐上门时间"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_booking_confirm"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "预约确认",
+          "确认预约日期",
+          "确认预约时间",
+          "AI推荐上门时间",
+          "推荐服务时间"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_booking_reschedule",
+      "intent_desc": "find_service / booking_reschedule：改期、修改预约日期、换个时间上门",
+      "examples": [
+        "改期",
+        "修改预约日期",
+        "换个时间上门"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "booking_reschedule"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "改期",
+          "修改预约日期",
+          "换个时间上门",
+          "改预约时间",
+          "预约改期"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_booking_success",
+      "intent_desc": "find_service / booking_success：预约成功、预约已安排（无订单号的轻量回执）",
+      "examples": [
+        "预约成功",
+        "预约已安排",
+        "预约好了吗"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "booking_success"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "预约成功",
+          "预约已安排",
+          "预约好了",
+          "预约完成"
+        ]
+      }
+    },
+    {
       "intent_id": "find_service_catalog",
       "intent_desc": "find_service / catalog：目录、全部、分类、有哪些服务",
       "examples": [
@@ -391,12 +471,38 @@
       }
     },
     {
-      "intent_id": "find_service_detail",
-      "intent_desc": "find_service / detail：特色、介绍、详情、怎么样",
+      "intent_id": "find_service_contact_confirm",
+      "intent_desc": "find_service / contact_confirm：确认联系人、确认上门地址、联系人信息",
       "examples": [
-        "特色",
-        "介绍",
-        "详情"
+        "确认联系人",
+        "确认上门地址",
+        "联系人信息"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "contact_confirm"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "确认联系人",
+          "确认上门地址",
+          "联系人信息",
+          "服务地址确认"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_detail",
+      "intent_desc": "find_service / detail：服务详情、这项服务介绍、服务特色、咨询热线",
+      "examples": [
+        "服务详情",
+        "这项服务介绍",
+        "咨询热线"
       ],
       "tags": [
         "find_service"
@@ -409,10 +515,11 @@
       "enabled": true,
       "match_hints": {
         "keywords": [
-          "特色",
-          "介绍",
-          "详情",
-          "怎么样"
+          "服务详情",
+          "这项服务介绍",
+          "服务特色",
+          "咨询热线",
+          "服务时间"
         ]
       }
     },
@@ -517,11 +624,11 @@
     },
     {
       "intent_id": "find_service_order_preview",
-      "intent_desc": "find_service / order_preview：确认订单、预览、查看订单信息、提交前",
+      "intent_desc": "find_service / order_preview：确认下单、订单信息汇总确认（正式提交前）",
       "examples": [
-        "确认订单",
-        "预览",
-        "查看订单信息"
+        "确认下单",
+        "请确认订单",
+        "订单信息对不对"
       ],
       "tags": [
         "find_service"
@@ -534,20 +641,21 @@
       "enabled": true,
       "match_hints": {
         "keywords": [
-          "确认订单",
-          "预览",
-          "查看订单信息",
-          "提交前"
+          "确认下单",
+          "请确认订单",
+          "订单信息确认",
+          "提交前确认",
+          "确认后再下单"
         ]
       }
     },
     {
       "intent_id": "find_service_order_ticket",
-      "intent_desc": "find_service / order_ticket：下单成功、订单号、预定完成、下单完成",
+      "intent_desc": "find_service / order_ticket：预定成功、下单成功、订单凭证（含订单号）",
       "examples": [
+        "预定成功",
         "下单成功",
-        "订单号",
-        "预定完成"
+        "订单凭证"
       ],
       "tags": [
         "find_service"
@@ -560,10 +668,11 @@
       "enabled": true,
       "match_hints": {
         "keywords": [
+          "预定成功",
           "下单成功",
-          "订单号",
-          "预定完成",
-          "下单完成"
+          "订单凭证",
+          "订单编号",
+          "订单号"
         ]
       }
     },
@@ -1200,40 +1309,6 @@
       }
     },
     {
-      "intent_id": "meal_plan_texture_advice",
-      "intent_desc": "软烂易咀嚼膳食调整",
-      "examples": [
-        "软烂",
-        "牙口不好吃什么",
-        "咬不动"
-      ],
-      "tags": [
-        "meal_plan"
-      ],
-      "entry": {
-        "kind": "template",
-        "skill_key": "meal_plan",
-        "template_id": "diet_texture_card"
-      },
-      "enabled": true,
-      "match_hints": {
-        "keywords": [
-          "软烂",
-          "易咀嚼",
-          "好咀嚼",
-          "牙口不好",
-          "咬不动",
-          "嚼不烂",
-          "吞咽困难",
-          "呛咳",
-          "假牙",
-          "剁碎",
-          "打成泥",
-          "糊状"
-        ]
-      }
-    },
-    {
       "intent_id": "meal_plan_dashboard",
       "intent_desc": "meal_plan / dashboard：看板、仪表盘、数据看板、膳食数据",
       "examples": [
@@ -1329,6 +1404,40 @@
         "keywords": [
           "总览",
           "概览"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_texture_advice",
+      "intent_desc": "软烂易咀嚼膳食调整",
+      "examples": [
+        "软烂",
+        "牙口不好吃什么",
+        "咬不动"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "diet_texture_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "软烂",
+          "易咀嚼",
+          "好咀嚼",
+          "牙口不好",
+          "咬不动",
+          "嚼不烂",
+          "吞咽困难",
+          "呛咳",
+          "假牙",
+          "剁碎",
+          "打成泥",
+          "糊状"
         ]
       }
     },
@@ -1840,11 +1949,12 @@
     },
     {
       "intent_id": "service_quality_eval.org_rank",
-      "intent_desc": "service_quality_eval / org_rank：机构排名、机构排行、榜单、排名榜",
+      "intent_desc": "service_quality_eval / org_rank：机构质量排名、机构排行、辖区机构榜单（榜单卡，非单机构评估报告）",
       "examples": [
-        "机构排名",
+        "机构质量排名",
+        "机构质量排名报告",
         "机构排行",
-        "榜单"
+        "辖区机构榜单"
       ],
       "tags": [
         "service_quality_eval"
@@ -1857,11 +1967,14 @@
       "enabled": true,
       "match_hints": {
         "keywords": [
+          "机构质量排名",
+          "机构质量排名报告",
           "机构排名",
           "机构排行",
-          "榜单",
-          "排名榜",
-          "辖区排名"
+          "机构质量榜单",
+          "辖区机构质量排名",
+          "质量排名报告",
+          "排名榜"
         ]
       }
     },
@@ -1896,10 +2009,10 @@
     },
     {
       "intent_id": "service_quality_eval.report",
-      "intent_desc": "service_quality_eval / report：质量报告、评估报告、综合评分、服务质量评估报告",
+      "intent_desc": "service_quality_eval / report：单机构质量评估报告（非排名榜、非人员报告、非服务口碑评价）",
       "examples": [
-        "质量报告",
-        "评估报告",
+        "机构质量评估报告",
+        "质量评估报告",
         "综合评分"
       ],
       "tags": [
@@ -1913,18 +2026,15 @@
       "enabled": true,
       "match_hints": {
         "keywords": [
+          "机构质量评估报告",
+          "机构服务质量评估报告",
+          "服务质量评估报告",
+          "机构评估报告",
+          "质量评估报告",
           "质量报告",
           "评估报告",
           "综合评分",
-          "服务质量评估报告",
-          "机构",
-          "投诉",
-          "巡检",
-          "回访",
-          "满意度",
-          "检查",
-          "评估",
-          "评价"
+          "机构综合评分"
         ]
       }
     },

@@ -5,16 +5,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>养老服务目录</title>
   <style>
-    :root { --primary:#1FA97E; --grad:linear-gradient(135deg,#1FA97E 0%,#4FD1A6 100%); --bg:#ECFBF5; --card:#fff; --ink:#2E3A36; --muted:#8A9A93; --border:#E1F0EA; }
+    :root { --primary:#E8843C; --grad:linear-gradient(135deg,#E8843C 0%,#F0B487 100%); --bg:#FDF6F0; --card:#fff; --ink:#3D3A36; --muted:#8A9A93; --border:#E4E0D8; }
     * { box-sizing:border-box; }
     body { margin:0; padding:14px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); }
     .card { max-width:420px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
     .hero { padding:16px; background:var(--grad); color:#fff; }
     h1 { margin:0; font-size:19px; }
     .subtitle { margin:6px 0 0; font-size:13px; opacity:.92; }
-    .section { padding:12px 14px; border-top:1px solid var(--border); }
-    .cat-title { font-size:14px; font-weight:700; margin:0 0 8px; color:var(--primary); }
+    /* 标签页导航 */
+    .tabs { display:flex; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; background:#F5FBF8; border-bottom:2px solid var(--border); }
+    .tabs::-webkit-scrollbar { display:none; }
+    .tab { flex:0 0 auto; appearance:none; border:0; background:transparent; padding:12px 16px; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap; border-bottom:2px solid transparent; margin-bottom:-2px; transition:.2s; }
+    .tab.active { color:var(--primary); border-bottom-color:var(--primary); background:#fff; }
+    /* 标签页面板 */
+    .tab-panel { display:none; padding:12px 14px; }
+    .tab-panel.active { display:block; }
+    .panel-count { font-size:11px; color:var(--muted); margin-bottom:8px; }
+    /* 服务项 */
     .item { display:flex; justify-content:space-between; align-items:center; padding:9px 10px; border:1px solid var(--border); border-radius:10px; margin-bottom:7px; background:#FAFFFD; }
+    .item:last-child { margin-bottom:0; }
     .item .nm { font-size:13px; font-weight:600; }
     .item .meta { font-size:11px; color:var(--muted); }
     .item .pr { color:var(--primary); font-weight:700; font-size:13px; white-space:nowrap; }
@@ -26,29 +35,78 @@
       <h1>{{sceneTitle}}</h1>
       <p class="subtitle">共 {{total}} 项可预约服务</p>
     </header>
+    <nav class="tabs">
     {{#categories}}
-    <section class="section">
-      <h2 class="cat-title">{{category}}</h2>
+      <button type="button" class="tab">{{category}}</button>
+    {{/categories}}
+    </nav>
+    {{#categories}}
+    <section class="tab-panel">
+      <p class="panel-count">{{category}} · 共 {{items.length}} 项</p>
       {{#items}}
       <div class="item">
         <div><div class="nm">{{name}}</div><div class="meta">{{tags}}</div></div>
-        <div class="pr">¥{{price}}/{{unit}}</div>
+        <div class="pr">{{price}}/{{unit}}</div>
       </div>
       {{/items}}
     </section>
     {{/categories}}
   </article>
+  <script>
+    (function(){
+      var tabs=document.querySelectorAll('.tab');
+      var panels=document.querySelectorAll('.tab-panel');
+      if(!tabs.length||!panels.length)return;
+      tabs[0].classList.add('active');
+      panels[0].classList.add('active');
+      tabs.forEach(function(tab,i){
+        tab.addEventListener('click',function(){
+          tabs.forEach(function(t){t.classList.remove('active');});
+          panels.forEach(function(p){p.classList.remove('active');});
+          tab.classList.add('active');
+          if(panels[i])panels[i].classList.add('active');
+        });
+      });
+    })();
+  </script>
   <script type="application/json">
   {
     "sceneTitle": "养老服务目录",
-    "total": 8,
+    "total": 22,
     "categories": [
       { "category": "生活照料", "items": [
         { "name": "上门护理", "price": 80, "unit": "次", "tags": "居家养老/上门服务" },
-        { "name": "助浴服务", "price": 120, "unit": "次", "tags": "助浴/上门" }
+        { "name": "助浴服务", "price": 120, "unit": "次", "tags": "助浴/上门" },
+        { "name": "助餐送餐", "price": 12, "unit": "餐", "tags": "助餐/社区养老" },
+        { "name": "居家清洁", "price": 60, "unit": "次", "tags": "家政/清洁" },
+        { "name": "上门理发扦脚", "price": 50, "unit": "次", "tags": "个人护理" },
+        { "name": "代买代办跑腿", "price": 30, "unit": "次", "tags": "代办/跑腿" },
+        { "name": "衣物清洗熨烫", "price": 40, "unit": "次", "tags": "家政" },
+        { "name": "适老化改造咨询", "price": 0, "unit": "次", "tags": "居家安全" }
+      ]},
+      { "category": "医疗健康", "items": [
+        { "name": "陪诊就医", "price": 150, "unit": "半天", "tags": "陪诊/就医" },
+        { "name": "康复训练", "price": 100, "unit": "次", "tags": "康复" },
+        { "name": "上门健康随访", "price": 80, "unit": "次", "tags": "健康随访" },
+        { "name": "慢病管理", "price": 60, "unit": "月", "tags": "慢病/用药" },
+        { "name": "中医理疗", "price": 100, "unit": "次", "tags": "中医/理疗" }
       ]},
       { "category": "机构养老", "items": [
-        { "name": "机构养老床位", "price": 2800, "unit": "月", "tags": "养老院/床位" }
+        { "name": "机构养老床位", "price": 2800, "unit": "月", "tags": "养老院/床位" },
+        { "name": "认知症照护", "price": 4200, "unit": "月", "tags": "认知症/专护" },
+        { "name": "日间照料", "price": 80, "unit": "天", "tags": "社区/托管" },
+        { "name": "短期托养喘息", "price": 150, "unit": "天", "tags": "喘息/托养" }
+      ]},
+      { "category": "智慧助老", "items": [
+        { "name": "智能养老设备租赁", "price": 30, "unit": "月", "tags": "手环/呼叫" },
+        { "name": "远程视频看护", "price": 40, "unit": "月", "tags": "远程/安全" }
+      ]},
+      { "category": "精神文化", "items": [
+        { "name": "陪伴聊天心理疏导", "price": 60, "unit": "次", "tags": "陪伴/心理" },
+        { "name": "老年大学课程", "price": 200, "unit": "期", "tags": "兴趣/课程" }
+      ]},
+      { "category": "紧急援助", "items": [
+        { "name": "24h紧急呼叫响应", "price": 0, "unit": "次", "tags": "紧急/救援" }
       ]}
     ]
   }

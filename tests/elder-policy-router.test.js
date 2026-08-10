@@ -44,3 +44,33 @@ test('养老助手使用问题命中使用指引卡片', async () => {
   assert.ok(result.card.pages[0].includes('桂小养养老助手'));
   assert.ok(result.card.pages[0].includes('查政策'));
 });
+
+test('社区居家养老补贴问题命中政策列表卡片且不降级', async () => {
+  const result = await runLocalSkill({
+    message: '社区居家养老有什么补贴和支持政策',
+    role: 'elder_family',
+  });
+
+  assert.equal(result.skill_key, 'common');
+  assert.equal(result.intent, 'elder_policy_benefit');
+  assert.equal(result.template_id, 'policy_list_card');
+  assert.ok(!result.answer_text.includes('抱歉'));
+  assert.ok(!result.answer_text.includes('暂时繁忙'));
+  assert.ok(result.card.pages[0].includes('社区居家养老支持政策'));
+  assert.ok(result.card.pages[0].includes('助餐补贴'));
+});
+
+test('适老化改造办理问题命中申请指引卡片且不降级', async () => {
+  const result = await runLocalSkill({
+    message: '适老化改造补贴怎么办理，流程是什么',
+    role: 'elder_family',
+  });
+
+  assert.equal(result.skill_key, 'common');
+  assert.equal(result.intent, 'elder_policy_apply');
+  assert.equal(result.template_id, 'policy_apply_guide_card');
+  assert.ok(!result.answer_text.includes('抱歉'));
+  assert.ok(!result.answer_text.includes('暂时繁忙'));
+  assert.ok(result.card.pages[0].includes('适老化改造补贴申请指引'));
+  assert.ok(result.card.pages[0].includes('办理流程'));
+});

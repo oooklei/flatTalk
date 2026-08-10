@@ -1,7 +1,15 @@
 {
   "id": "health_risk_signal_card",
-  "title": "设备信号明细卡",
-  "layout": "health_risk_signal_card",
-  "match": "设备信号 血压 血糖 心率 跌倒 信号明细",
-  "required": ["signals"]
+  "name": "设备信号明细",
+  "description": "设备信号明细卡：血压/血糖/心率/跌倒等远程监测信号明细",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.signal_detail",
+  "required": [
+    "signals"
+  ],
+  "optional_fields": [],
+  "match": "展示设备信号明细（血压/血糖/心率等），非规则命中卡",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
 }

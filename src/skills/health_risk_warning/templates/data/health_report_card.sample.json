@@ -1,61 +1,71 @@
 {
-  "reportTitle": "健康风险预警报告",
-  "reportSubtitle": "基于体质与健康数据的综合评估与调养建议",
-  "assessmentTitle": "风险评估",
-  "sectionBadge": "易患病症",
-  "highRiskCount": 1,
-  "midRiskCount": 6,
-  "lowRiskCount": 6,
-  "risks": [
-    { "riskName": "乳腺结节风险评估", "riskScore": 65.6, "riskLabel": "预警", "levelClass": "high" },
-    { "riskName": "骨质疏松症风险评估", "riskScore": 54.5, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "甲状腺结节风险评估", "riskScore": 55.8, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "月经不调风险评估", "riskScore": 61.8, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "精神压力评估", "riskScore": 69, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "肺结节风险评估", "riskScore": 74.2, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "子宫肌瘤风险评估", "riskScore": 61.9, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "中风风险评估", "riskScore": 38.3, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "心血管功能评估", "riskScore": 52, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "脂肪肝风险评估", "riskScore": 59.1, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "糖尿病风险评估", "riskScore": 41.2, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "高血压风险评估", "riskScore": 46.8, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "慢性胃炎风险评估", "riskScore": 48.5, "riskLabel": "轻度风险", "levelClass": "low" }
+  "badge": "完整风险评估报告",
+  "name": "张明华",
+  "age": 72,
+  "gender": "男",
+  "chronic": "高血压（3年）",
+  "dementia": "无",
+  "disability": "无",
+  "id_card": "YL-2026-0001",
+  "reportIntro": "本报告涵盖基础信息、综合风险总评、疾病风险、体质辨识、中医证候、个性化调理、禁忌提醒与维度结论八大模块。",
+  "overall_score": 6.5,
+  "overall_label": "中风险",
+  "overallClass": "warn",
+  "abnormal_count": 4,
+  "conclusion": "多项舌诊指标异常，血瘀体质趋于明显，兼见阴虚与肝郁，建议尽早中医调理干预并规律监测血压。",
+  "quick_indicators": [
+    { "name": "舌色", "value": "偏暗", "statusLabel": "异常", "statusClass": "bad" },
+    { "name": "苔色", "value": "薄黄", "statusLabel": "异常", "statusClass": "bad" },
+    { "name": "舌体", "value": "正常", "statusLabel": "正常", "statusClass": "ok" },
+    { "name": "舌下络脉", "value": "正常", "statusLabel": "正常", "statusClass": "ok" },
+    { "name": "脉象", "value": "弦细", "statusLabel": "异常", "statusClass": "bad" },
+    { "name": "面色", "value": "微黄", "statusLabel": "异常", "statusClass": "bad" }
   ],
-  "hasWarnings": true,
-  "warningTitle": "风险预警",
-  "warnings": [
-    { "warningText": "提示肝胆异常。可能有睡眠不佳，情志不畅等表现。" },
-    { "warningText": "提示中焦郁滞或下焦壅塞。可能有腹胀，食少等表现。" }
+  "disease_risks": [
+    { "name": "高血压风险", "score": 68, "level": "中", "barClass": "warn" },
+    { "name": "心脑血管疾病风险", "score": 55, "level": "中", "barClass": "warn" },
+    { "name": "中风风险", "score": 42, "level": "中", "barClass": "warn" },
+    { "name": "肝病风险", "score": 45, "level": "中", "barClass": "warn" },
+    { "name": "脾胃病风险", "score": 40, "level": "中", "barClass": "" }
   ],
-  "hasDietary": true,
-  "dietaryBadge": "膳食调养",
-  "dietaryAdvice": "宜食用清淡、易消化、富含优质蛋白及膳食纤维的食物，如小米、山药、莲子、百合、绿叶蔬菜、鱼类等。",
-  "dietaryAvoid": "忌食辛辣刺激、油腻煎炸、生冷寒凉及过甜过咸食物，如辣椒、烧烤、冰淇淋、肥肉等。",
-  "recipes": [
-    {
-      "recipeTitle": "三花橘皮茶",
-      "recipeMedicine": "菊花、茉莉花、玫瑰花各 3g",
-      "recipeIngredients": "陈皮 5g、枸杞 6粒、冰糖适量",
-      "recipeMethod": "将药材与食材洗净后放入杯中，沸水冲泡 5–8 分钟，可反复冲泡。",
-      "recipeEffect": "疏肝理气、健脾和胃，适合情志不畅、腹胀食少者日常调养。",
-      "recipeSource": "《常见病食疗方》"
-    },
-    {
-      "recipeTitle": "山药小米粥",
-      "recipeMedicine": "怀山药 30g",
-      "recipeIngredients": "小米 50g、红枣 4枚、清水适量",
-      "recipeMethod": "小米淘洗后加水煮开，加入去皮山药块与红枣，小火熬煮至粘稠即可。",
-      "recipeEffect": "健脾益胃、养心安神，有助于改善睡眠不佳、食少腹胀。",
-      "recipeSource": "《中医食疗养生手册》"
-    },
-    {
-      "recipeTitle": "百合莲子汤",
-      "recipeMedicine": "干百合 15g、莲子 20g",
-      "recipeIngredients": "银耳 10g、冰糖适量",
-      "recipeMethod": "银耳提前泡发撕小朵，与百合、莲子同煮至软糯，出锅前加冰糖调味。",
-      "recipeEffect": "润肺宁心、清心安神，适合情志不畅、睡眠欠佳者。",
-      "recipeSource": "《药膳食疗精选》"
-    }
+  "primary_constitution": "血瘀质",
+  "constitutions": [
+    { "name": "血瘀质", "score": 62, "mark": "主体质 ★", "barClass": "bad" },
+    { "name": "阴虚质", "score": 55, "mark": "", "barClass": "warn" },
+    { "name": "痰湿质", "score": 45, "mark": "", "barClass": "" },
+    { "name": "湿热质", "score": 40, "mark": "", "barClass": "" },
+    { "name": "气郁质", "score": 35, "mark": "", "barClass": "" }
   ],
-  "footerNote": "本报告仅供健康管理参考，不作为临床诊断依据。如有不适请及时就医。"
+  "syndrome_name": "肝阳上亢兼血瘀",
+  "syndrome_desc": "肝阳偏亢，血行不畅。舌暗苔薄黄，脉弦细。多见头晕头痛，急躁易怒，面色晦暗。",
+  "herbal": [
+    { "name": "天麻钩藤饮", "content": "平肝潜阳、清热安神，适用于肝阳上亢所致头晕头痛。" },
+    { "name": "血府逐瘀汤", "content": "活血化瘀、行气止痛，改善面色晦暗与舌质偏暗。" }
+  ],
+  "acupoints": [
+    { "name": "太冲", "content": "平肝熄风，每日按揉 3 分钟，以酸胀为度。" },
+    { "name": "曲池", "content": "降压通络，配合合谷穴按揉效果更佳。" },
+    { "name": "百会", "content": "醒脑开窍，早晚各按揉 2 分钟。" },
+    { "name": "合谷", "content": "通络止痛，缓解头部胀痛不适。" }
+  ],
+  "dietary": [
+    { "name": "低盐低脂饮食", "content": "每日食盐控制在 5g 以内，减少动物油脂摄入。" },
+    { "name": "活血食材", "content": "多食芹菜、木耳、山楂，有助于活血降压。" },
+    { "name": "戒烟限酒", "content": "少食辛辣油腻，严格忌烟酒。" }
+  ],
+  "exercise": [
+    { "name": "太极拳", "content": "每日 20 分钟，动作舒缓不憋气。" },
+    { "name": "步行锻炼", "content": "每日散步 30 分钟，心率不超过 110 次/分。" },
+    { "name": "运动禁忌", "content": "避免剧烈运动、避免屏气用力动作。" }
+  ],
+  "contraindications": [
+    { "type": "饮食", "items": "忌高盐高脂、忌烟酒、忌暴饮暴食" },
+    { "type": "生活", "items": "避免情绪激动、避免熬夜、避免骤然起身" },
+    { "type": "用药", "items": "降压药不可擅自停用或调整剂量" }
+  ],
+  "dimension_conclusion": "综合舌诊、脉诊、面诊与问卷数据，老人以血瘀质为主，兼见阴虚与肝郁；疾病风险以高血压及心脑血管事件最为突出；建议以平肝潜阳、活血化瘀为调理主线，配合低盐膳食与情志调摄，每 3 个月复评一次。",
+  "report_code": "TCM-R-20260728-0001",
+  "generate_time": "2026-07-28 09:30",
+  "data_source": "舌诊报告 + 健康问卷 + 居家监测数据",
+  "footer_note": "本报告由人工智能分析生成，仅供健康管理参考，不构成医疗诊断依据；如有不适请及时就医。"
 }

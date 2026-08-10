@@ -232,7 +232,7 @@ export function createKnowledgeDataService(options = {}) {
   const injectedLocalKnowledge = options.localKnowledgeService
     ?? (options.disableLocalKnowledge ? null : getLocalKnowledgeService());
   const remoteAdapter = options.remoteAdapter ?? createRemoteKnowledgeAdapter({
-    remote: options.remote ?? {},
+    ...(options.remote ?? {}),
     localKnowledgeService: injectedLocalKnowledge,
   });
   const retriever = options.retriever ?? createKnowledgeRetriever({ chunkStore, vectorStore, remoteAdapter });

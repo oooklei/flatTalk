@@ -29,6 +29,47 @@ test('SOS input with intent override still triggers emergency', async () => {
   assert.equal(result.intent, 'SOS', 'should route to SOS despite intent override');
   assert.equal(result.skill_key, 'find_service');
   assert.equal(result.template_id, 'service_emergency');
+  assert.equal(result.card?.templateId, 'service_emergency');
+  assert.ok(result.answer_text.includes('120'));
+  assert.ok(result.rendered_html.includes('立即拨打 120'));
+  assert.ok(result.actions.some((action) => action.action_key === 'sos.call_120'));
+  assert.equal(result.debug?.sos_bypass, true);
+});
+
+test('acute chest pain and breathing difficulty renders emergency card, not generic answer', async () => {
+  const orchestrator = createChatOrchestrator({
+    modelService: {
+      fillTemplateSlots: async (input) => ({
+        template_id: input.template_id,
+        answer_text: '已收到您的问题，我会结合健康状况提供建议。',
+        data: {},
+        actions: [],
+        followup_suggestions: [],
+        model_status: 'ok',
+        model_used: 'test',
+      }),
+    },
+  });
+
+  const result = await orchestrator.run({
+    message: '老人突然胸痛呼吸困难，快打120',
+    skill_key: 'common',
+    conversation_id: 'test-sos-chest-pain',
+    turn_id: 'turn-sos-chest-pain',
+    context: {},
+  });
+
+  assert.equal(result.intent, 'SOS');
+  assert.equal(result.skill_key, 'find_service');
+  assert.equal(result.template_id, 'service_emergency');
+  assert.equal(result.card?.templateId, 'service_emergency');
+  assert.equal(result.route?.source, 'flatTalk.sos_emergency_bypass');
+  assert.equal(result.route?.urgency_level, 'P0');
+  assert.ok(result.answer_text.includes('立即拨打120'));
+  assert.ok(result.rendered_html.includes('立即拨打 120'));
+  assert.ok(result.rendered_html.includes('检测到紧急情况'));
+  assert.ok(result.actions.some((action) => action.action_key === 'sos.call_120'));
+  assert.ok(result.actions.some((action) => action.action_key === 'sos.notify_family'));
   assert.equal(result.debug?.sos_bypass, true);
 });
 

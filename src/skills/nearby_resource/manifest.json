@@ -5,7 +5,20 @@
   "version": "1.0.0",
   "entry": "index.js",
   "default_template": "nearby_map_overview",
-  "templates": ["nearby_map_overview", "nearby_map_category", "nearby_map_route", "nearby_list", "nearby_recommend", "nearby_radar", "nearby_summary"],
+  "templates": [
+    "nearby_map_overview",
+    "nearby_map_category",
+    "nearby_map_route",
+    "nearby_list",
+    "nearby_recommend",
+    "nearby_radar",
+    "nearby_summary",
+    "nearby_food_card",
+    "nearby_spot_card",
+    "nearby_stay_card",
+    "nearby_wellness",
+    "nearby_compare"
+  ],
   "category": "本地生活 / 康养",
   "status": "active"
 }

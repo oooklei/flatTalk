@@ -20,6 +20,9 @@
 【业务表数据】
 {{business_data}}
 
+【技能专属指令】
+{{skill_instruction}}
+
 【最近对话历史】
 {{conversation_history}}
 
@@ -46,5 +49,5 @@
 
 特殊模板规则：
 - weekly_plan 模板：如果用户要求一周计划，weekly_plan.items 必须是长度为 7 的数组（周一到周日），每天必须包含早餐、午餐、晚餐三餐。
-- route_card 模板：itinerary（行程）和 highlights（亮点）必须是数组。
+- sojourn_route 模板：itinerary（行程）和 highlights（亮点）必须是数组。
 - health_warning_card 模板：symptoms（症状）、suggestions（建议）、lifestyle（生活指导）必须是数组。

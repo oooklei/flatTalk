@@ -1,4 +1,6 @@
-import { dedupeFollowups } from './compact-followups/renderer.js';
+import { dedupeFollowups, normalizeCompactFollowups } from './compact-followups/renderer.js';
+import { normalizeActionDisplayItem } from './actions/action-labels.js';
+import { entityParamsForScene, withEntityParams } from './conversation/entity-params.js';
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,32 +31,9 @@ export function loadStaticFollowups(skillKey, templateId) {
   }
 }
 
-const DEFAULT_ACTIONS_BY_SCENE = {
-  meal_plan: [
-    { action_key: 'meal_plan.generate_weekly_plan', label: '生成一周计划', params: { template_id: 'weekly_plan' } },
-    { action_key: 'meal_plan.adjust_for_condition', label: '按慢病调整', params: {} },
-  ],
-  health_risk_warning: [
-    { action_key: 'health_risk_warning.refresh_signals', label: '重新读取设备信号', params: { template_id: 'health_risk_signal_card' } },
-    { action_key: 'health_risk_warning.view_rule_detail', label: '查看规则命中', params: { template_id: 'health_risk_rule_card' } },
-    { action_key: 'health_risk_warning.request_manual_review', label: '请求人工复核', params: {} },
-  ],
-  nearby_resource: [
-    { action_key: 'nearby_resource.all', label: '全部资源', skill_key: 'nearby_resource', params: {} },
-    { action_key: 'nearby_resource.medical', label: '只看医疗', skill_key: 'nearby_resource', params: {} },
-    { action_key: 'nearby_resource.food', label: '只看餐馆', skill_key: 'nearby_resource', params: {} },
-    { action_key: 'nearby_resource.leisure', label: '只看游玩', skill_key: 'nearby_resource', params: {} },
-  ],
-  find_service: [
-    { action_key: 'find_service.recommend', label: '智能推荐', params: {} },
-    { action_key: 'find_service.catalog', label: '全部服务', params: { template_id: 'service_catalog' } },
-    { action_key: 'find_service.list_workers', label: '找护理人员', params: { template_id: 'worker_profile' } },
-  ],
-  dispatch_manage: [
-    { action_key: 'dispatch_manage.list', label: '派单列表', params: { template_id: 'dispatch_list' } },
-    { action_key: 'dispatch_manage.work_order', label: '查看工单', params: { template_id: 'work_order' } },
-  ],
-};
+// 聊天侧默认 CTA 一律走 followup_suggestions（见 FOLLOWUP_POLICIES）。
+// actions 仅保留卡片内特殊操作（如 SOS tel:），避免与追问双栏重复。
+const DEFAULT_ACTIONS_BY_SCENE = {};
 
 // 政策咨询 followup
 const DEFAULT_FOLLOWUPS_BY_POLICY = [
@@ -129,43 +108,73 @@ const DEFAULT_FOLLOWUPS_BY_HEALTH = [
     label: '膳食调养建议',
     user_prompt: '请提供针对当前健康风险的膳食调养建议',
     template_id: 'dietary_regimen_card',
-    intent: 'health_risk_dietary',
+    intent: 'health_risk_warning.dietary',
+    action_key: 'health_risk_warning.view_advice',
+  },
+  {
+    label: '综合风险评估',
+    user_prompt: '查看综合风险评估',
+    template_id: 'risk_assessment_card',
+    intent: 'health_risk_warning.assessment',
+    action_key: 'health_risk_warning.view_assessment',
+  },
+  {
+    label: '体质详情',
+    user_prompt: '查看中医体质辨识',
+    template_id: 'constitution_card',
+    intent: 'health_risk_warning.constitution',
+    action_key: 'health_risk_warning.view_constitution',
+  },
+  {
+    label: '调理方案',
+    user_prompt: '查看个性化调理方案',
+    template_id: 'care_advice_card',
+    intent: 'health_risk_warning.advice',
+    action_key: 'health_risk_warning.view_advice',
   },
 ];
 
 // 旅居路线 followup
 const DEFAULT_FOLLOWUPS_BY_TRAVEL = [
   {
-    label: '对比目的地',
-    user_prompt: '请对比巴马和北海哪个更适合老人旅居',
-    template_id: 'route_card',
-    intent: 'travel_route_compare',
-    action_key: 'travel_route.compare_destinations',
-  },
-  {
-    label: '查可订状态',
+    label: '检查可订',
     user_prompt: '请检查这条旅居路线近期是否可预订',
-    template_id: 'route_card',
+    template_id: 'travel_availability_card',
     intent: 'travel_route_availability',
     action_key: 'travel_route.check_availability',
   },
   {
-    label: '调整预算',
-    user_prompt: '请按经济型预算重新规划这条旅居路线',
-    template_id: 'route_card',
+    label: '测算预算',
+    user_prompt: '请按当前预算档测算这条旅居路线费用',
+    template_id: 'travel_plan_summary_card',
     intent: 'travel_route_budget',
     action_key: 'travel_route.calculate_budget',
   },
   {
-    label: '查看天气风险',
+    label: '天气风险',
     user_prompt: '请检查目的地的天气风险',
     template_id: 'travel_weather_risk_card',
     intent: 'travel_route_weather',
+    action_key: 'travel_route.check_weather_risk',
   },
 ];
 
 // 找服务 followup
 const DEFAULT_FOLLOWUPS_BY_SERVICE = [
+  {
+    label: '智能推荐',
+    user_prompt: '请智能推荐适合的养老服务',
+    template_id: 'service_recommend',
+    intent: 'find_service_recommend',
+    action_key: 'find_service.recommend',
+  },
+  {
+    label: '全部服务',
+    user_prompt: '查看全部养老服务目录',
+    template_id: 'service_catalog',
+    intent: 'find_service_catalog',
+    action_key: 'find_service.catalog',
+  },
   {
     label: '找护工上门',
     user_prompt: '我想找护工上门护理',
@@ -185,6 +194,13 @@ const DEFAULT_FOLLOWUPS_BY_SERVICE = [
 // 派单调度 followup
 const DEFAULT_FOLLOWUPS_BY_DISPATCH = [
   {
+    label: '派单列表',
+    user_prompt: '查看派单列表',
+    template_id: 'dispatch_list',
+    intent: 'dispatch_list',
+    action_key: 'dispatch_manage.list',
+  },
+  {
     label: '查看工单',
     user_prompt: '查看对应的服务工单',
     template_id: 'work_order',
@@ -203,9 +219,16 @@ const DEFAULT_FOLLOWUPS_BY_DISPATCH = [
 // 周边资源 followup
 const DEFAULT_FOLLOWUPS_BY_NEARBY = [
   {
+    label: '全部资源',
+    user_prompt: '请展示嘉路康养中心周边全部资源',
+    template_id: 'nearby_map',
+    intent: 'nearby_resource.all',
+    action_key: 'nearby_resource.all',
+  },
+  {
     label: '只看医疗',
     user_prompt: '请展示嘉路康养中心周边15公里内的医疗资源',
-    template_id: 'nearby_map',
+    template_id: 'nearby_map_category',
     intent: 'nearby_resource.medical',
     action_key: 'nearby_resource.medical',
   },
@@ -240,6 +263,12 @@ const FOLLOWUP_POLICIES = {
   'find_service.default': DEFAULT_FOLLOWUPS_BY_SERVICE,
   'dispatch_manage.default': DEFAULT_FOLLOWUPS_BY_DISPATCH,
   'nearby_resource.default': DEFAULT_FOLLOWUPS_BY_NEARBY,
+  'service_quality_eval.default': [
+    { label: '机构报告', user_prompt: '查看机构服务质量报告', action_key: 'service_quality_eval.view_report' },
+    { label: '人员评估', user_prompt: '查看护理员服务质量评估', action_key: 'service_quality_eval.view_staff' },
+    { label: '整改建议', user_prompt: '查看服务质量整改建议', action_key: 'service_quality_eval.rectify' },
+    { label: '查看投诉详情', user_prompt: '查看服务质量投诉详情', action_key: 'service_quality_eval.view_complaint' },
+  ],
 };
 
 function filterByScene(items, sceneKey) {
@@ -253,7 +282,55 @@ function filterByScene(items, sceneKey) {
   });
 }
 
-export function composeInteractions({ sceneDecision = {}, modelResult = {}, staticFollowups = [] } = {}) {
+/**
+ * 把 LIS 的次意图建议（matcher 的 suggestions）转成追问项。
+ *
+ * LIS 只给 { intent_id, confidence, skill_key, template_id, label }，
+ * 没有 `user_prompt` —— 而 isFollowupAllowed 要求 label + user_prompt 都在，
+ * 缺了会被静默丢弃。这里用目录描述作为点击后发送的消息。
+ *
+ * **不设 action_key**：followupIntentKey 会原样返回 action_key，
+ * 若填 LIS 的 intent_id（如 travel_route_weather_risk），就无法与场景既有的
+ * 同义追问（travel_route.check_weather_risk）归并 —— 卡片底部会出现
+ * 「查看天气风险」和「查询旅居目的地天气与出行风险」两个近义按钮。
+ * 留空 action_key 可让 followupIntentKey 走文案归一，交给 uniqueFollowup 去重。
+ * 真正的路由靠 user_prompt 重新过一遍 LIS 分拣。
+ *
+ * @param {Array<object>} suggestions - matcher 返回的 suggestions
+ * @param {Set<string>} allowed - 场景允许的 action_key 集合
+ * @returns {Array<object>}
+ */
+function normalizeLisSuggestions(suggestions, allowed) {
+  if (!Array.isArray(suggestions) || suggestions.length === 0) return [];
+  return suggestions
+    .map((s) => {
+      if (!s || typeof s !== 'object') return null;
+      const intentId = String(s.intent_id || '').trim();
+      if (!intentId) return null;
+      const label = String(s.label || intentId).trim();
+      if (!label) return null;
+      return normalizeActionDisplayItem({
+        label,
+        // 点击后实际发送的消息；LIS 会重新分拣到该 intent
+        user_prompt: label,
+        intent: intentId,
+        template_id: s.template_id || undefined,
+        skill_key: s.skill_key || undefined,
+        category: 'other',
+        source: 'lis_secondary',
+      });
+    })
+    .filter(Boolean)
+    .filter((item) => isFollowupAllowed(item, allowed));
+}
+
+export function composeInteractions({
+  sceneDecision = {},
+  modelResult = {},
+  staticFollowups = [],
+  entityParams = null,
+  lisSuggestions = [],
+} = {}) {
   if (sceneDecision.decision !== 'accept') {
     return {
       actions: [],
@@ -268,41 +345,62 @@ export function composeInteractions({ sceneDecision = {}, modelResult = {}, stat
   const modelFollowups = Array.isArray(modelResult.followup_suggestions) ? modelResult.followup_suggestions : [];
 
   // 根据 followup_policy 获取默认 followups
-  const followupPolicy = sceneDecision.followup_policy || '';
+  const followupPolicy = sceneDecision.followup_policy || defaultFollowupPolicyForScene(sceneKey);
   const defaultFollowups = FOLLOWUP_POLICIES[followupPolicy] || [];
 
-  const compactFollowups = Array.isArray(modelResult.compact_followups)
-    ? modelResult.compact_followups
-    : [];
+  const compactFollowups = normalizeCompactFollowups(modelResult.compact_followups);
 
-  // compact_followups 的 action_key 集合，用于从 actions 中去重
-  const compactActionKeys = new Set(compactFollowups.map((f) => f.action_key).filter(Boolean));
-  // compact_followups 的归一化 user_prompt 集合，用于按文案相似度进一步去重
-  const compactPrompts = new Set(compactFollowups.map((f) => normalizePrompt(f.user_prompt)).filter(Boolean));
+  // 全局实体 params：默认策略追问也带上锁定实体，避免「查看详情」丢上下文
+  const lockedEntityParams = {
+    ...entityParamsForScene(sceneKey, modelResult.data || {}, {}),
+    ...(entityParams || {}),
+  };
 
-  let actions = [...modelActions, ...defaultActions]
-    .filter((action) => isActionAllowed(action, allowed))
-    .filter(uniqueAction)
-    .filter((action) => !compactActionKeys.has(action.action_key))
-    .filter((action) => !compactPrompts.has(normalizePrompt(action.user_prompt)))
-    .slice(0, 4);
-  actions = filterByScene(actions, sceneKey);
+  // LIS 次意图建议：跨技能，不能走 filterByScene（前缀检查会全部丢掉），
+  // 但必须参与 uniqueFollowup —— 否则会与场景既有的同义追问重复。
+  const lisFollowups = normalizeLisSuggestions(lisSuggestions, allowed);
 
-  // actions 的 action_key 集合，用于从 followups 中去重（避免按钮和追问重复）
-  const actionKeys = new Set(actions.map((a) => a.action_key).filter(Boolean));
-
+  // 原则：聊天侧以追问（followup_suggestions）为主；actions 仅保留追问未覆盖的操作键
   let rawFollowups = [...staticFollowups, ...modelFollowups, ...defaultFollowups]
+    .map(normalizeActionDisplayItem)
     .filter((followup) => isFollowupAllowed(followup, allowed))
     .filter(uniqueFollowup)
-    .filter((followup) => !actionKeys.has(followup.action_key))
     .map((followup) => ({ ...followup, category: followup.category === 'other' ? 'other' : 'tight' }))
     .sort((a, b) => (CATEGORY_RANK[a.category] ?? 0) - (CATEGORY_RANK[b.category] ?? 0));
   rawFollowups = filterByScene(rawFollowups, sceneKey);
 
+  // 场景内追问优先（放前面），LIS 建议补在其后；再整体去重
+  rawFollowups = [...rawFollowups, ...lisFollowups].filter(uniqueFollowup);
+
+  const followups = withEntityParams(
+    dedupeFollowups(compactFollowups, rawFollowups).slice(0, FOLLOWUP_CAP),
+    lockedEntityParams,
+  );
+
+  const followupKeys = new Set([
+    ...compactFollowups.map((f) => f.action_key).filter(Boolean),
+    ...followups.map((f) => f.action_key).filter(Boolean),
+  ]);
+  const followupIntents = new Set([
+    ...compactFollowups.map((f) => followupIntentKey(f)).filter(Boolean),
+    ...followups.map((f) => followupIntentKey(f)).filter(Boolean),
+  ]);
+  const compactPrompts = new Set(compactFollowups.map((f) => normalizePrompt(f.user_prompt)).filter(Boolean));
+
+  let actions = [...modelActions, ...defaultActions]
+    .map(normalizeActionDisplayItem)
+    .filter((action) => isActionAllowed(action, allowed))
+    .filter(uniqueAction)
+    .filter((action) => !followupKeys.has(action.action_key))
+    .filter((action) => !followupIntents.has(followupIntentKey(action)))
+    .filter((action) => !compactPrompts.has(normalizePrompt(action.user_prompt || action.label)))
+    .slice(0, 4);
+  actions = withEntityParams(filterByScene(actions, sceneKey), lockedEntityParams);
+
   return {
     actions,
-    compact_followups: compactFollowups,
-    followup_suggestions: dedupeFollowups(compactFollowups, rawFollowups).slice(0, FOLLOWUP_CAP),
+    compact_followups: withEntityParams(compactFollowups, lockedEntityParams),
+    followup_suggestions: followups,
   };
 }
 
@@ -312,12 +410,50 @@ function uniqueAction(action, index, actions) {
 }
 
 function uniqueFollowup(followup, index, followups) {
+  const intent = followupIntentKey(followup);
   const label = normalizeFollowupKey(followup.label);
   const prompt = normalizeFollowupKey(followup.user_prompt);
-  return followups.findIndex((item) => (
-    normalizeFollowupKey(item.label) === label
-    || normalizeFollowupKey(item.user_prompt) === prompt
-  )) === index;
+  return followups.findIndex((item) => {
+    if (intent && followupIntentKey(item) === intent) return true;
+    if (item.action_key && followup.action_key && item.action_key === followup.action_key) return true;
+    return normalizeFollowupKey(item.label) === label
+      || normalizeFollowupKey(item.user_prompt) === prompt;
+  }) === index;
+}
+
+/** 把同义文案收成同一意图键，用于追问去重（全场景） */
+function followupIntentKey(followup = {}) {
+  if (followup.action_key) return String(followup.action_key).trim().toLowerCase();
+  const text = `${followup.label || ''}${followup.user_prompt || ''}`.toLowerCase();
+  // travel
+  if (/天气|潮汐/.test(text)) return 'travel_route.check_weather_risk';
+  if (/可订|预订|预定/.test(text)) return 'travel_route.check_availability';
+  if (/预算/.test(text)) return 'travel_route.calculate_budget';
+  if (/对比|比较/.test(text) && /(目的地|路线|基地)/.test(text)) return 'travel_route.compare_destinations';
+  if (/重新规划|换.*(路线|目的地)/.test(text)) return 'travel_route.replan';
+  // find_service
+  if (/智能推荐|推荐服务/.test(text)) return 'find_service.recommend';
+  if (/全部服务|服务目录/.test(text)) return 'find_service.catalog';
+  if (/护工|护理人员|上门护理/.test(text)) return 'find_service.list_workers';
+  if (/养老机构|服务机构|看机构|入住机构|养老院/.test(text)) return 'find_service.list_orgs';
+  // nearby
+  if (/全部.*(资源|配套)|全部配套/.test(text)) return 'nearby_resource.all';
+  if (/只看医疗|医疗资源/.test(text)) return 'nearby_resource.medical';
+  if (/餐馆|吃饭|餐饮/.test(text)) return 'nearby_resource.food';
+  if (/游玩|景点|好玩/.test(text)) return 'nearby_resource.leisure';
+  // health
+  if (/重新读取|刷新信号/.test(text)) return 'health_risk_warning.refresh_signals';
+  if (/规则命中/.test(text)) return 'health_risk_warning.view_rule_detail';
+  if (/人工复核|转人工/.test(text)) return 'health_risk_warning.request_manual_review';
+  if (/调理方案/.test(text)) return 'health_risk_warning.view_advice';
+  // meal
+  if (/一周计划|一周食谱/.test(text)) return 'meal_plan.generate_weekly_plan';
+  if (/慢病调整|按慢病/.test(text)) return 'meal_plan.adjust_for_condition';
+  // dispatch
+  if (/派单列表/.test(text)) return 'dispatch_manage.list';
+  if (/查看工单|服务工单/.test(text)) return 'dispatch_manage.work_order';
+  if (/查看进度|派单进度/.test(text)) return 'dispatch_manage.status';
+  return '';
 }
 
 function isActionAllowed(action, allowed) {
@@ -334,7 +470,18 @@ function isActionAllowed(action, allowed) {
 
 function isFollowupAllowed(followup, allowed) {
   if (!followup?.label || !followup?.user_prompt) return false;
-  return !followup.action_key || allowed.size === 0 || allowed.has(followup.action_key);
+  if (!followup.action_key || allowed.size === 0 || allowed.has(followup.action_key)) return true;
+  return Array.from(allowed).some((entry) => (
+    typeof entry === 'string'
+    && entry.endsWith('.*')
+    && followup.action_key.startsWith(entry.slice(0, -1))
+  ));
+}
+
+function defaultFollowupPolicyForScene(sceneKey) {
+  if (!sceneKey) return '';
+  const policy = `${sceneKey}.default`;
+  return FOLLOWUP_POLICIES[policy] ? policy : '';
 }
 
 function normalizeFollowupKey(value) {

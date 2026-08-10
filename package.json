@@ -11,6 +11,9 @@
     "assets:copy": "node scripts/copy-source-assets.js",
     "smoke:chat": "node scripts/smoke-chat.js",
     "check:weekly": "node scripts/check-weekly-plan.mjs",
+    "check:templates": "node scripts/check-template-layout.mjs",
+    "check:intents": "node scripts/audit-intent-pipeline.mjs",
+    "check:pipeline": "npm run check:templates && npm run check:intents",
     "check": "npm run validate:no-source-links && npm run validate:assets && npm test"
   },
   "dependencies": {
@@ -21,8 +24,10 @@
   },
   "devDependencies": {
     "docx": "^9.7.1",
+    "mermaid": "^11.16.1",
     "mysql2": "^3.23.2",
     "playwright": "^1.62.0",
+    "sharp": "^0.35.3",
     "xlsx": "^0.18.5"
   }
 }

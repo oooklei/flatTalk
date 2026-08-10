@@ -1,8 +1,32 @@
 {
   "id": "service_detail",
-  "description": "服务详情页，含介绍/标签/特色/时间/咨询热线",
+  "name": "服务详情",
+  "product_domain": "find_service",
+  "intent_id": "find_service_detail",
+  "description": "单项养老服务详情卡：简介/标签/特色/机构指标/时段/热线，支持一键咨询与预定。",
+  "match": "展示单项服务详情（介绍/特色/热线），非服务目录、非订单确认、非预约改期",
+  "required": [
+    "name",
+    "summary",
+    "hotline"
+  ],
+  "optional_fields": [
+    "icon",
+    "price",
+    "unit",
+    "tags",
+    "fullDesc",
+    "features",
+    "providerName",
+    "overallScore",
+    "availabilityRateText",
+    "responseTime",
+    "staffCount",
+    "timeRange",
+    "eyebrow",
+    "footSource"
+  ],
   "layout": "vertical",
-  "match": "服务详情、这项服务介绍、有什么特色、咨询热线、服务时间",
-  "required": ["name", "intro", "hotline"],
-  "followup_actions": ["一键预定", "一键咨询", "返回"]
+  "version": "2.0",
+  "derived_from": "find-service/Deep-cleaning-home"
 }

@@ -57,6 +57,7 @@ export const nearbyResourceRuleSet = {
     'nearby_resource.shop',
     'nearby_resource.transit',
     'nearby_resource.wellness',
+    'nearby_resource.medical',
     'nearby_resource.compare',
     'nearby_resource.recommend',
     'nearby_resource.route',
@@ -83,18 +84,25 @@ export const nearbyResourceRuleSet = {
   conflicts: [
     { group: 'travel_route', penalty: 3.5, terms: ['路线', '导航', '怎么走', '公交', '地铁', '打车', '行程', '旅居', '旅游', '百色', '巴马', '北海'] },
     { group: 'meal_plan', penalty: 3, terms: ['膳食', '食谱', '一周饮食', '营养餐', '三餐'] },
-    { group: 'find_service', penalty: 3.5, terms: ['找护工', '找机构', '养老院', '上门服务', '家政', '护理员', '预约服务', '建单', '下单'] },
+    { group: 'find_service', penalty: 5.5, terms: ['找护工', '找机构', '服务机构', '养老机构', '养老服务机构', '服务中心', '居家养老', '护理站', '养老院', '上门服务', '家政', '护理员', '预约服务', '建单', '下单', '助浴', '助餐', '陪诊'] },
     { group: 'dispatch_manage', penalty: 4, terms: ['派单', '工单', '调度', '转人工', '客服处理', '处理进度', '催单'] },
     { group: 'service_quality_eval', penalty: 5, terms: ['服务质量', '质量评估', '服务评价', '满意度', '投诉', '整改', '评分', '督导', '评估报告'] },
     { group: 'acute_health_risk', penalty: 3.5, terms: ['胸痛', '昏迷', '呼吸困难', '中风', '抽搐', '大出血', '急救', '120'] },
   ],
   infer_intent(input) {
-    if (has(input, ['民宿', '住宿', '住', '康养小院', '入住', 'stay', 'hotel'])) return 'nearby_resource.stay';
+    // 「服务机构/养老机构」属于找服务，不要因「入住」等宽词落到住宿宾馆
+    if (has(input, ['服务机构', '养老机构', '养老服务机构', '服务中心', '居家养老', '护理站', '养老院', '敬老院'])) {
+      return 'nearby_resource.wellness';
+    }
+    if (has(input, ['民宿', '住宿', '住', '康养小院', 'stay', 'hotel'])) return 'nearby_resource.stay';
+    // 「入住」单独出现且无机构语境时，仍按住宿；有机构语境已在上方拦截
+    if (has(input, ['入住']) && !has(input, ['机构', '护理', '养老'])) return 'nearby_resource.stay';
     if (has(input, ['景区', '滨海', '海边', '海滩', '逛', 'spot', 'tour', 'scenic'])) return 'nearby_resource.spot';
     if (has(input, ['餐饮', '餐厅', '吃饭', '美食', '饭店', '海鲜', '私房菜', '大排档', '食', '吃', 'food', 'restaurant'])) return 'nearby_resource.food';
     if (has(input, ['垂钓', '钓鱼', '休闲', '娱乐', '健身', 'leisure'])) return 'nearby_resource.leisure';
     if (has(input, ['购物', '特产', '买', '超市', '市场', 'shop', 'shopping'])) return 'nearby_resource.shop';
     if (has(input, ['包车', '交通', '出行', '怎么去', 'transit'])) return 'nearby_resource.transit';
+    if (has(input, ['只看医疗', '医疗资源'])) return 'nearby_resource.medical';
     if (has(input, ['医疗', '卫生所', '药店', '诊所', '卫生院', '医养', '康养配套', '养老设施', 'wellness', 'medical', 'hospital'])) return 'nearby_resource.wellness';
     if (has(input, ['清单', '列出来', '列出'])) return 'nearby_resource.list';
     if (has(input, ['走路', '步行', '可达', '遛弯'])) return 'nearby_resource.radar';

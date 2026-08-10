@@ -1,7 +1,15 @@
 {
   "id": "health_warning_card",
-  "title": "健康风险预警结果卡",
-  "layout": "health_warning_card",
-  "match": "健康风险预警 血压 血糖 跌倒 心率 设备信号 风险等级",
-  "required": ["level"]
+  "name": "健康风险预警结果",
+  "description": "健康风险预警结果卡：综合风险等级 + 信号预警 + 规则命中研判",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.assess",
+  "required": [
+    "level"
+  ],
+  "optional_fields": [],
+  "match": "展示综合健康风险预警结果（等级+信号+规则），非完整报告、非等级标准说明",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
 }

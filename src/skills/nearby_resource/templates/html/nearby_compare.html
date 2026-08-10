@@ -4,8 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>嘉路康养生活圈 · 同类对比</title>
-  <link rel="stylesheet" href="./_design_tokens.css" />
-  <link rel="stylesheet" href="./_base.css" />
+  <link rel="stylesheet" href="_design_tokens.css">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    :root{--primary:#E8843C;--primary-weak:#FDF6F0;--accent:#E8843C;--accent-weak:#FAE6D5;--card:#fff;--card-2:#FDF6F0;--bg:#FAF8F5;--ink:#3D3A36;--ink-2:#6B6660;--muted:#8A8278;--border:#E4E0D8;--line:#E4E0D8;--wellness:#E5484D;--radius:16px;--radius-sm:12px;--shadow:0 4px 18px rgba(62,56,50,.08);--shadow-sm:0 2px 8px rgba(62,56,50,.08);--tap:44px;}
+  </style>
 </head>
 <body>
   <div class="nb-wrap">
@@ -15,7 +18,7 @@
           <h2 class="nb-title">⚖️ 同类资源对比</h2>
           <p class="nb-sub">{{centerName}} 周边 {{categoryLabel}} · 精选 Top3 并排比较</p>
         </div>
-        <span class="nb-badge">本地库</span>
+        <span class="nb-badge">周边配套</span>
       </div>
       <div class="nb-cmp">
         {{#picks}}
@@ -34,15 +37,5 @@
       </div>
     </section>
   </div>
-  <script type="application/json">
-  {
-    "centerName": "嘉路康养中心", "categoryLabel": "民宿",
-    "picks": [
-      { "poi_id": "s1", "name": "海岸假日民宿", "emoji": "🏠", "distance_text": "0.8", "biz_status": "营业中", "tel": "0770-1234567", "tags": ["近海", "适老电梯"], "tags_text": "近海·适老电梯", "lat": 21.531, "lng": 108.172 },
-      { "poi_id": "s2", "name": "嘉路康养小院", "emoji": "🏠", "distance_text": "0.2", "biz_status": "营业中", "tel": "0770-0000000", "tags": ["医养结合"], "tags_text": "医养结合", "lat": 21.528, "lng": 108.167 },
-      { "poi_id": "s3", "name": "渔家小院", "emoji": "🏠", "distance_text": "1.4", "biz_status": "营业中", "tags": ["安静"], "tags_text": "安静", "lat": 21.524, "lng": 108.160 }
-    ]
-  }
-  </script>
 </body>
 </html>

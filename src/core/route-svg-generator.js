@@ -17,8 +17,12 @@
 import { generateSvg } from '../admin/mapstudio.js';
 import { renderTemplate } from '../template-card/render.js';
 import { toSimplified, toSimplifiedDeep } from './utils/simplified-chinese.js';
+import { buildRouteMapArtBackground } from './map/route-map-art.js';
+import { TencentMapAdapter } from '../services/map/tencent-map-adapter.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import https from 'node:https';
+import http from 'node:http';
 
 // ------------------------------------------------------------
 // 目的地 → 本地边界 GeoJSON 文件名映射
@@ -100,13 +104,74 @@ export async function generateRouteHtml(routeName, routeDescription, options = {
     lng: wp.lng,
   }));
 
-  // 5. 生成 SVG
+  // 5. 艺术/丘陵底图（可关闭：FLATTALK_ROUTE_MAP_AI=0 或 options.aiArt=false）
   const routeId = options.routeId || slugify(routeName);
   const version = options.version || 'standard';
-  const svg = generateSvg(waypoints, routeId, toSimplified(routeName), version, '', boundary);
+  let artBg = '';
+  const enableAi = options.aiArt !== false && String(process.env.FLATTALK_ROUTE_MAP_AI || '1') !== '0';
+  try {
+    const lats = waypoints.map((w) => Number(w.lat)).filter(Number.isFinite);
+    const lngs = waypoints.map((w) => Number(w.lng)).filter(Number.isFinite);
+    if (lats.length && lngs.length) {
+      const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+      const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+      const span = Math.max(Math.max(...lats) - Math.min(...lats), Math.max(...lngs) - Math.min(...lngs));
+      let zoom = 11;
+      if (span > 1.5) zoom = 8;
+      else if (span > 0.8) zoom = 9;
+      else if (span > 0.4) zoom = 10;
+      else if (span > 0.15) zoom = 11;
+      else if (span > 0.06) zoom = 12;
+      else zoom = 13;
+      const mapAdapter = new TencentMapAdapter();
+      const art = await buildRouteMapArtBackground({
+        routeId: version === 'elder' ? `${routeId}_elder` : routeId,
+        routeName,
+        destination,
+        waypoints,
+        centerLat,
+        centerLng,
+        zoom,
+        size: version === 'elder' ? '800*960' : '800*840',
+        enableAi,
+        downloadImageAsBase64: downloadImageAsBase64Quick,
+        buildStaticMapUrl: (c, m, o) => mapAdapter.buildStaticMapUrl(c, m, o),
+      });
+      if (art?.ok && art.data_uri) {
+        artBg = art.data_uri;
+        warnings.push(`art_source=${art.source}`);
+      } else if (art?.error) {
+        warnings.push(`art_skip=${art.error}`);
+      }
+    }
+  } catch (e) {
+    warnings.push(`art_error=${e?.message || e}`);
+  }
+
+  // 6. 生成 SVG
+  const svg = generateSvg(waypoints, routeId, toSimplified(routeName), version, artBg, boundary);
 
   // 6. 组装模板数据
   const hasSpots = waypoints.some((w) => (w.spot_images || []).length > 0 || (w.spot_desc || '').length > 0);
+
+  // 景点图鉴：把每个有图片/描述的端点拆成卡片数据，供 Mustache 直接渲染（无需 JS）
+  const spot_cards = waypoints
+    .filter((w) => (w.spot_images || []).length > 0 || (w.spot_desc || '').length > 0)
+    .map((w) => {
+      const imgs = (w.spot_images || [])
+        .map((img) => (typeof img === 'string' ? img : (img && (img.url || img.src)) || ''))
+        .filter(Boolean);
+      return {
+        name: toSimplified(w.name || ''),
+        day: w.day || '',
+        desc: toSimplified(w.spot_desc || ''),
+        first_image: imgs[0] || '',
+        has_image: imgs.length > 0,
+        image_count: imgs.length,
+      };
+    });
+  const hasSpotCards = spot_cards.length > 0;
+
   const templateData = {
     routeTitle: toSimplified(routeName),
     destination,
@@ -121,6 +186,8 @@ export async function generateRouteHtml(routeName, routeDescription, options = {
     itinerary: (options.itinerary || buildItineraryFromWaypoints(waypoints)).map(toSimplifiedDeep),
     healthNotice: toSimplified(options.healthNotice || ''),
     hasSpots,
+    hasSpotCards,
+    spot_cards,
     static_svg: svg,
     compact_followups: '',
   };
@@ -131,6 +198,20 @@ export async function generateRouteHtml(routeName, routeDescription, options = {
   try {
     const template = fs.readFileSync(templatePath, 'utf8');
     html = renderTemplate(template, templateData);
+    // 服务端预渲染：把 SVG 直接注入 svgMapContainer，去掉所有 <script>，
+    // 使卡片成为纯静态 HTML（无需 iframe 隔离，移动端内联渲染不白屏）
+    html = html
+      // 把 SVG 注入 svgMapContainer
+      .replace(
+        /(<div\s+class=["']svg-container["']\s+id=["']svgMapContainer["']>)([\s\S]*?)(<\/div>)/i,
+        (m, open, _inner, close) => `${open}\n        ${svg}\n      ${close}`,
+      )
+      // 去掉 data-static-svg（不再触发 iframe 隔离）
+      .replace(/\s+data-static-svg=["']1["']/gi, '')
+      // 去掉所有 <script> 块（SVG 已预渲染，JS 交互不再依赖）
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+      // 去掉残留的 on* 内联事件（弹窗按钮等）
+      .replace(/\son\w+=["'][^"']*["']/gi, '');
   } catch (e) {
     warnings.push(`模板渲染失败: ${e.message}，返回 SVG 原文`);
     html = svg;
@@ -351,14 +432,19 @@ function selectProductTemplate(routeName, description) {
     }
   }
 
-  // 兜底：有明确滨海目的地时优先 coastal，而不是永远落到 wellness 示例（巴马）
+  // 兜底：有明确目的地时按城选型；禁止无目的地时默认落到 wellness（巴马样例）
   if (!bestMatch || bestScore <= 0) {
     if (/北海|防城港|东兴|钦州|银滩|涠洲|海边|海滩|滨海/.test(text)) {
       bestMatch = index.products.find((p) => p.id === 'route_coastal') || index.products[0];
+    } else if (/桂林|阳朔|漓江|遇龙河/.test(text)) {
+      bestMatch = index.products.find((p) => p.id === 'route_culture' || (p.destinations || []).some((d) => /桂林|阳朔/.test(d)))
+        || index.products.find((p) => p.id === 'route_ecology')
+        || null;
     } else if (/巴马|百魔洞|长寿村|赐福湖/.test(text)) {
       bestMatch = index.products.find((p) => p.id === 'route_wellness') || index.products[0];
     } else {
-      bestMatch = index.products[0];
+      // 泛化「旅居/产品详情」不得静默套巴马 wellness 样例
+      bestMatch = null;
     }
   }
 
@@ -385,10 +471,11 @@ function selectProductTemplate(routeName, description) {
 const DESTINATION_LANDMARKS = {
   巴马: ['巴马', '百魔洞', '赐福湖', '盘阳河', '命河', '长寿村', '水晶宫'],
   北海: ['北海', '银滩', '涠洲'],
-  防城港: ['防城港', '京族', '白浪滩', '东兴', '芒街', '江山半岛'],
+  防城港: ['防城港', '京族', '白浪滩', '东兴', '芒街', '江山半岛', '嘉路'],
   桂林: ['桂林', '阳朔', '漓江', '象鼻山', '遇龙河'],
   南宁: ['南宁', '青秀山'],
   贺州: ['贺州', '黄姚'],
+  七洞乡: ['七洞乡', '七洞'],
 };
 
 function inferLandmarkCity(text = '') {
@@ -401,19 +488,36 @@ function inferLandmarkCity(text = '') {
 
 function isSampleCompatibleWithDestination(sample, destinationOrText) {
   if (!sample || typeof sample !== 'object') return false;
+  const hasContent = !!(
+    sample.destination
+    || sample.routeTitle
+    || (Array.isArray(sample.highlights) && sample.highlights.length)
+    || (Array.isArray(sample.itinerary) && sample.itinerary.length)
+  );
+  if (!hasContent) return false;
+
   const targetCity = inferLandmarkCity(destinationOrText);
-  if (!targetCity) return true;
   const sampleCity = inferLandmarkCity([
     sample.destination,
     sample.routeTitle,
     ...(Array.isArray(sample.highlights) ? sample.highlights : []),
     JSON.stringify(sample.itinerary || []),
   ].filter(Boolean).join(' '));
-  if (sampleCity && sampleCity !== targetCity) return false;
+
+  // 目标无已知城、示例绑了明确城 → 不相容（避免「七洞乡」吃巴马 wellness 样例）
+  if (!targetCity && sampleCity) return false;
+  if (targetCity && sampleCity && sampleCity !== targetCity) return false;
   // 目标是北海时，绝不能出现巴马地标簇
   if (targetCity === '北海') {
     const blob = JSON.stringify(sample);
     if (/巴马|百魔洞|赐福湖|盘阳河/.test(blob)) return false;
+  }
+  // 目标非巴马时，不得套用巴马地标样例
+  if (targetCity && targetCity !== '巴马') {
+    const blob = JSON.stringify(sample);
+    if (/百魔洞|赐福湖|盘阳河|命河/.test(blob) && !String(destinationOrText || '').includes('巴马')) {
+      return false;
+    }
   }
   return true;
 }
@@ -444,4 +548,31 @@ function loadProductSample(productId) {
   } catch {
     return null;
   }
+}
+
+function downloadImageAsBase64Quick(url, timeoutMs = 15000) {
+  return new Promise((resolve) => {
+    try {
+      const client = String(url || '').startsWith('https') ? https : http;
+      const req = client.get(url, { timeout: timeoutMs }, (resp) => {
+        if (resp.statusCode !== 200) { resolve(null); return; }
+        const chunks = [];
+        resp.on('data', (c) => chunks.push(c));
+        resp.on('end', () => {
+          const buf = Buffer.concat(chunks);
+          const mime = resp.headers['content-type'] || 'image/png';
+          // 腾讯有时返回 JSON 错误
+          if (String(mime).includes('json') || buf.slice(0, 1).toString() === '{') {
+            resolve(null);
+            return;
+          }
+          resolve(`data:${mime};base64,${buf.toString('base64')}`);
+        });
+      });
+      req.on('error', () => resolve(null));
+      req.on('timeout', () => { req.destroy(); resolve(null); });
+    } catch {
+      resolve(null);
+    }
+  });
 }

@@ -1,39 +1,41 @@
-/* 嘉路康养中心 · 周边资源模板统一设计令牌
- * 被所有 nearby_* 模板以 <link rel="stylesheet"> 引用，模板卡片系统会自动内联。
- * 修改此处即可统一全技能配色与质感，避免各模板漂移。 */
+/* 周边资源 · VI 令牌（C端桂小养：暖橙主色，对齐 guiyang-vi-system） */
 :root {
-  /* 主色：康养海青 + 暖珊瑚（服务/CTA） */
-  --primary: #0E7C86;
-  --primary-weak: #E3F2F3;
-  --accent: #F2994A;
-  --accent-weak: #FDEDE0;
+  --o50: #FDF6F0; --o100: #FAE6D5; --o200: #F5CDAE; --o300: #F0B487; --o400: #EB9B60;
+  --o500: #E8843C; --o600: #D06E2A; --o700: #A85420;
+  --b100: #E8F0F5; --b300: #7FA8C2; --b500: #3A6B8C; --b700: #1E4A66;
+  --g100: #E8F2EC; --g300: #A0C4AB; --g500: #6B9B7A; --g700: #3D6B4D;
+  --j100: #FBF3DD; --j500: #D4A537; --j700: #9C7715;
+  --n0: #FAF8F5; --n50: #F0EDE7; --n100: #E4E0D8; --n400: #A8A09A;
+  --n500: #8A8278; --n600: #6B6660; --n800: #3D3A36;
 
-  /* 表面与文字 */
-  --bg: #F6F9FA;
+  --primary: #E8843C;
+  --primary-weak: #FDF6F0;
+  --accent: #E8843C;
+  --accent-weak: #FAE6D5;
+
+  --bg: #FAF8F5;
   --card: #FFFFFF;
-  --card-2: #F8FBFC;
-  --ink: #1F2A33;
-  --ink-2: #43515C;
-  --muted: #6B7A8F;
-  --border: #E3EAEE;
-  --line: #EEF3F5;
+  --card-2: #FDF6F0;
+  --ink: #3D3A36;
+  --ink-2: #6B6660;
+  --muted: #8A8278;
+  --border: #E4E0D8;
+  --line: #E4E0D8;
 
-  /* 阴影 / 圆角（适老友好） */
-  --shadow: 0 6px 22px rgba(16, 52, 60, .10);
-  --shadow-sm: 0 2px 8px rgba(16, 52, 60, .08);
+  --shadow: 0 4px 18px rgba(62, 56, 50, 0.08);
+  --shadow-sm: 0 2px 8px rgba(62, 56, 50, 0.08);
   --radius: 16px;
   --radius-sm: 12px;
 
-  /* 分类色（与数据层 CATEGORY_META 对齐） */
-  --stay: #3B82A0;     /* 住 · 海蓝 */
-  --food: #F2994A;     /* 吃 · 暖橙 */
-  --spot: #2BAE8E;     /* 游 · 绿 */
-  --leisure: #8E6FD8;  /* 娱 · 紫 */
-  --shop: #E08AC0;     /* 购 · 粉 */
-  --transit: #6B7A8F;  /* 行 · 灰蓝 */
-  --wellness: #E5484D; /* 养/医 · 红 */
-  --other: #9AA7B2;    /* 其他 */
+  /* 分类色：收敛到 VI 色族，避免高饱和霓虹 */
+  --stay: #3A6B8C;
+  --food: #E8843C;
+  --spot: #6B9B7A;
+  --leisure: #D4A537;
+  --shop: #EB9B60;
+  --transit: #8A8278;
+  --wellness: #E5484D;
+  --other: #A8A09A;
 
-  /* 触控最小尺寸（适老 ≥44px） */
   --tap: 44px;
 }

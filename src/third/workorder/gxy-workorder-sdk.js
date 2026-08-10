@@ -4,7 +4,7 @@
  * 覆盖工单全生命周期：同步/查询/分页/取消/执行进度/时间轴
  */
 
-import { generateSignatureHeaders } from './lib/hmac-signature.js';
+import { generateSignatureHeaders } from '../lib/hmac-signature.js';
 
 // ─── 默认配置 ──────────────────────────────────────────────────
 

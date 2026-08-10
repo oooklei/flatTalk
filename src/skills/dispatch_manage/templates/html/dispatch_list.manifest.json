@@ -2,6 +2,13 @@
   "id": "dispatch_list",
   "description": "派单列表总览，展示待接单/进行中/已完成的工单列表",
   "layout": "vertical",
-  "match": "派单列表、派单调度、工单列表、待接单、我的派单、调度中心",
-  "required": ["total", "pending", "orders"]
+  "match": "派单列表、我的派单、待接单、调度中心；非单条派单详情、非接拒单",
+  "required": [
+    "total",
+    "pending",
+    "orders"
+  ],
+  "intent_id": "dispatch_list",
+  "product_domain": "dispatch_manage",
+  "name": "派单列表总览，展示待接单/进行中/已完成的工单列"
 }

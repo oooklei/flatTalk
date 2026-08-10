@@ -127,6 +127,31 @@
     "route_dash_fcg_4"
   ],
   "route_id": "fcg_route_004",
-  "updated_at": "2026-08-05T22:13:28.027Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:57.762Z",
+  "spot_images_source": "dashboard_local_kb",
+  "itinerary": [
+    {
+      "day": "D1",
+      "wp_name": "嘉路滨海旅居基地",
+      "plan": "大本营出发"
+    },
+    {
+      "day": "D1",
+      "wp_name": "十万大山森林公园",
+      "plan": "森林步道+林间冥想"
+    },
+    {
+      "day": "D1",
+      "wp_name": "十万大山茶疗区",
+      "plan": "草本科普+茶疗体验"
+    },
+    {
+      "day": "D1",
+      "wp_name": "嘉路滨海旅居基地",
+      "plan": "返回中医调理"
+    }
+  ],
+  "boundary_source": "datav_local",
+  "boundary_name": "防城港市",
+  "boundary_polygon_count": 1
 }

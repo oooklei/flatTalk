@@ -1,5 +1,7 @@
 // src/core/compact-followups/renderer.js
 
+import { labelForActionKey, isRawActionKeyText } from '../actions/action-labels.js';
+
 // 互逆动作对
 const COMPLEMENTARY_PAIRS = [
   ['收藏', '取消收藏'],
@@ -14,9 +16,10 @@ const COMPLEMENTARY_PAIRS = [
  * @returns {string} HTML 字符串（空数组返回空字符串）
  */
 export function renderCompactFollowups(followups) {
-  if (!Array.isArray(followups) || followups.length === 0) return '';
+  const validFollowups = normalizeCompactFollowups(followups);
+  if (validFollowups.length === 0) return '';
 
-  const chips = followups.map((f) => {
+  const chips = validFollowups.map((f) => {
     const styleClass = f.style === 'primary' ? ' compact-chip--primary'
       : f.style === 'danger' ? ' compact-chip--danger'
       : f.input ? ' compact-chip--input'
@@ -30,6 +33,26 @@ export function renderCompactFollowups(followups) {
   return `<div class="compact-followups">\n${chips.join('\n')}\n</div>`;
 }
 
+export function normalizeCompactFollowups(followups) {
+  if (!Array.isArray(followups)) return [];
+  return followups
+    .filter((item) => item && typeof item === 'object')
+    .map((item) => {
+      const actionKey = normalizeVisibleText(item.action_key || item.key || '');
+      const rawLabel = normalizeVisibleText(item.label || item.text || item.title || item.name);
+      const label = labelForActionKey(actionKey, rawLabel);
+      const rawPrompt = normalizeVisibleText(item.user_prompt || item.prompt || item.label || item.text || '');
+      const userPrompt = rawPrompt && !isRawActionKeyText(rawPrompt) ? rawPrompt : label;
+      return {
+        ...item,
+        label,
+        user_prompt: userPrompt,
+        action_key: actionKey,
+      };
+    })
+    .filter((item) => item.label && item.action_key);
+}
+
 /**
  * 互斥去重：从 message followups 中剔除与 compact followups 重复的条目
  * @param {Array} compactFollowups - 卡片紧密追问（全量保留）
@@ -37,18 +60,19 @@ export function renderCompactFollowups(followups) {
  * @returns {Array} 去重后的消息追问数组
  */
 export function dedupeFollowups(compactFollowups = [], messageFollowups = []) {
-  if (!compactFollowups.length) return messageFollowups;
+  const normalizedCompactFollowups = normalizeCompactFollowups(compactFollowups);
+  if (!normalizedCompactFollowups.length) return messageFollowups;
   if (!messageFollowups.length) return [];
 
   // 收集 compact 的 action_key 集合
-  const compactKeys = new Set(compactFollowups.map((f) => f.action_key).filter(Boolean));
+  const compactKeys = new Set(normalizedCompactFollowups.map((f) => f.action_key).filter(Boolean));
 
   // 收集 compact 的 label 集合（归一化）
-  const compactLabels = new Set(compactFollowups.map((f) => normalizeLabel(f.label)));
+  const compactLabels = new Set(normalizedCompactFollowups.map((f) => normalizeLabel(f.label)).filter(Boolean));
 
   // 收集互逆对
   const compactComplements = new Set();
-  for (const f of compactFollowups) {
+  for (const f of normalizedCompactFollowups) {
     for (const [a, b] of COMPLEMENTARY_PAIRS) {
       if (normalizeLabel(f.label).includes(normalizeLabel(a))) compactComplements.add(normalizeLabel(b));
       if (normalizeLabel(f.label).includes(normalizeLabel(b))) compactComplements.add(normalizeLabel(a));
@@ -83,6 +107,14 @@ function escapeHtml(text) {
 
 function normalizeLabel(label = '') {
   return String(label).trim().toLowerCase().replace(/\s+/g, '');
+}
+
+function normalizeVisibleText(value = '') {
+  return String(value ?? '')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;|&#160;|&#x[aA]0;/g, ' ')
+    .trim();
 }
 
 /**

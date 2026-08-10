@@ -1,8 +1,17 @@
 {
   "id": "service_recommend",
-  "description": "综合服务推荐页，含维度标签+服务卡列表+拓展推荐+猜你喜欢",
+  "description": "综合服务推荐页，含维度标签+服务卡列表",
   "layout": "vertical",
   "match": "养老服务推荐、服务匹配、找护工、找养老机构、上门护理、助浴、陪诊、助餐、康复训练、认知症照护",
-  "required": ["sceneTitle", "total", "services", "highlightOrg", "highlightWorker"],
-  "followup_actions": ["一键预定", "换个维度看看", "查看详情", "更多服务"]
+  "required": [
+    "sceneTitle",
+    "total",
+    "services",
+    "highlightOrg",
+    "highlightWorker"
+  ],
+  "followup_actions": [],
+  "intent_id": "find_service_discover",
+  "product_domain": "find_service",
+  "name": "综合服务推荐页，含维度标签+服务卡列表"
 }

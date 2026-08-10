@@ -1,188 +1,288 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>风险评估</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>综合风险评估</title>
   <style>
-    :root {
-      --blue: #4a90d9;
-      --blue-deep: #3d7ec4;
-      --blue-light: #ebf4fb;
-      --blue-line: #a8c8e0;
-      --risk-high: #e54d42;
-      --risk-mid: #e8a020;
-      --risk-low: #68b032;
-      --text: #222;
-      --text-muted: #666;
-      --bg: #f5f8fc;
-      --card: #fff;
-    }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537; --warn-soft:#FBF3DD; --warn-deep:#9C7715;
+  --danger:#E5484D; --danger-soft:#FDECEC; --danger-deep:#b91c1c;
+  
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:999px;
+  
+  --sh-sm:0 1px 3px rgba(62,56,50,.08); --sh-md:0 4px 12px rgba(62,56,50,.10); --sh-lg:0 8px 24px rgba(62,56,50,.12);
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--font-sans); background:var(--n0); color:var(--n800);
+  font-size:16px; line-height:1.6; padding:12px;
+  overflow-wrap:anywhere; word-break:break-word; -webkit-font-smoothing:antialiased;
+}
+img{ max-width:100%; height:auto; display:block; }
+a{ color:var(--primary); text-decoration:none; }
 
-    body {
-      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 24px 16px 48px;
-    }
 
-    .page {
-      max-width: 860px;
-      margin: 0 auto;
-      background: var(--card);
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(74, 144, 217, 0.08);
-      padding: 28px 28px 36px;
-    }
+.card{ max-width:430px; margin:0 auto; background:#fff; border:1px solid var(--n100);
+  border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-md); }
 
-    .main-title {
-      text-align: center;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--blue);
-      letter-spacing: 2px;
-      margin-bottom: 12px;
-    }
 
-    .title-line {
-      height: 1px;
-      background: var(--blue);
-      margin-bottom: 20px;
-    }
+.hero{ padding:16px; color:#fff; background:linear-gradient(135deg,var(--primary),var(--primary-deep)); }
+.hero.blue{ background:linear-gradient(135deg,var(--accent),var(--accent-deep)); }
+.eyebrow{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--r-full);
+  background:rgba(255,255,255,.18); font-size:12px; font-weight:600; }
+.hero h1{ font-family:var(--font-serif); margin:8px 0 0; font-size:22px; line-height:1.18; letter-spacing:.5px; }
+.hero .sub{ margin-top:6px; color:rgba(255,255,255,.88); font-size:13px; }
+.hero-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.score{ font-size:42px; font-weight:800; line-height:1; }
+.score small{ font-size:14px; font-weight:600; opacity:.82; }
 
-    .section-badge {
-      display: inline-block;
-      background: var(--blue);
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
-      padding: 8px 36px 8px 18px;
-      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
-      margin-bottom: 16px;
-    }
 
-    .risk-summary {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      background: var(--blue-light);
-      border-radius: 2px;
-      padding: 12px 8px;
-      margin-bottom: 8px;
-    }
+.section{ padding:13px 14px; border-top:1px solid var(--n100); }
+.section-title{ margin:0 0 10px; display:flex; align-items:center; gap:7px; color:var(--n800);
+  font-size:15px; font-weight:800; font-family:var(--font-serif); }
+.section-title::before{ content:""; width:4px; height:16px; border-radius:2px; background:var(--primary); }
+.section-title.blue::before{ background:var(--accent); }
 
-    .risk-summary span {
-      text-align: center;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-    }
 
-    .risk-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0 32px;
-      padding: 8px 4px 0;
-    }
+.pill{ display:inline-flex; align-items:center; justify-content:center; min-height:22px; padding:2px 9px;
+  border-radius:var(--r-full); background:var(--primary-soft); color:var(--primary-deep);
+  font-size:12px; font-weight:700; white-space:nowrap; }
+.pill.blue{ background:var(--accent-soft); color:var(--accent); }
+.pill.ok{ background:var(--ok-soft); color:var(--ok-deep); }
+.pill.warn{ background:var(--warn-soft); color:var(--warn-deep); }
+.pill.bad{ background:var(--danger-soft); color:var(--danger-deep); }
 
-    .risk-item {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 4px;
-      border-bottom: 1px solid #f0f4f8;
-      font-size: 14px;
-    }
 
-    .risk-item:nth-last-child(-n+2) {
-      border-bottom: none;
-    }
+.grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.grid.three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.stat{ min-width:0; padding:10px 9px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.stat .num{ color:var(--primary-deep); font-size:20px; font-weight:800; line-height:1.1; }
+.stat .num.bad{ color:var(--danger); } .stat .num.warn{ color:var(--warn-deep); } .stat .num.ok{ color:var(--ok-deep); }
+.stat .lbl{ margin-top:4px; color:var(--n500); font-size:11px; }
 
-    .risk-name { color: var(--text); }
 
-    .risk-score,
-    .risk-label {
-      font-weight: 600;
-      white-space: nowrap;
-    }
+.dim{ padding:9px 0; border-bottom:1px dashed var(--n100); }
+.dim:last-child{ border-bottom:0; }
+.dim-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; font-size:13px; }
+.dim-name{ font-weight:700; } .dim-name small{ margin-left:5px; color:var(--n400); font-weight:600; }
+.dim-score{ color:var(--primary-deep); font-weight:800; white-space:nowrap; }
+.bar{ height:7px; margin-top:6px; border-radius:var(--r-full); background:var(--n200); overflow:hidden; }
+.bar > span{ display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+.bar > span.warn{ background:linear-gradient(90deg,var(--warn),#f97316); }
+.bar > span.bad{ background:linear-gradient(90deg,var(--danger),#fb7185); }
+.note{ margin-top:4px; color:var(--n500); font-size:11px; }
 
-    .risk-score { min-width: 40px; text-align: right; }
-    .risk-label { min-width: 64px; text-align: right; }
 
-    .high { color: var(--risk-high); }
-    .mid { color: var(--risk-mid); }
-    .low { color: var(--risk-low); }
+.row{ display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed var(--n100); }
+.row:last-child{ border-bottom:0; }
+.row .k{ color:var(--n500); flex:0 0 auto; } .row .v{ font-weight:700; text-align:right; min-width:0; }
 
-    /* tc-deck 支持样式 */
-    .tc-deck { box-sizing: border-box; }
-    .tc-deck[data-layout="horizontal"] { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 16px; overflow-x: auto; padding: 8px 0; }
-    .tc-deck[data-layout="vertical"] { display: flex; flex-direction: column; gap: 16px; }
-    .tc-card { flex: 0 0 auto; }
 
-    @media (max-width: 640px) {
-      .page { padding: 20px 14px 28px; }
-      .main-title { font-size: 22px; }
-      .risk-summary { grid-template-columns: 1fr; gap: 6px; }
-      .risk-grid { grid-template-columns: 1fr; gap: 0; }
-      .risk-item:nth-last-child(-n+2) { border-bottom: 1px solid #f0f4f8; }
-      .risk-item:last-child { border-bottom: none; }
-    }
+.list{ display:flex; flex-direction:column; gap:8px; }
+.item{ padding:10px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.item.warn{ background:var(--warn-soft); border-color:#fde68a; }
+.item.bad{ background:var(--danger-soft); border-color:#fecaca; }
+.item.ok{ background:var(--ok-soft); border-color:#bbf7d0; }
+.item .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; }
+.item .txt{ margin-top:5px; color:var(--n600); font-size:12px; }
+
+
+.tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ padding:4px 8px; border-radius:var(--r-md); background:var(--n200); color:var(--n500); font-size:12px; font-weight:600; }
+.tag.good{ background:var(--ok-soft); color:var(--ok-deep); } .tag.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.timeline{ position:relative; padding-left:22px; }
+.timeline::before{ content:""; position:absolute; left:7px; top:7px; bottom:7px; width:2px; background:var(--n100); }
+.step{ position:relative; padding:7px 0 9px; }
+.step::before{ content:""; position:absolute; left:-20px; top:12px; width:10px; height:10px; border-radius:50%;
+  background:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.step.done::before{ background:var(--ok); box-shadow:0 0 0 3px var(--ok-soft); }
+.step.bad::before{ background:var(--danger); box-shadow:0 0 0 3px var(--danger-soft); }
+.step .time{ color:var(--n400); font-size:11px; } .step .node{ font-weight:800; } .step .detail{ color:var(--n600); font-size:12px; }
+
+
+.alert{ padding:10px; border-radius:var(--r-md); background:var(--warn-soft); border:1px solid #fde68a; color:var(--warn-deep); font-size:12px; }
+.alert.bad{ background:var(--danger-soft); border-color:#fecaca; color:var(--danger-deep); }
+
+
+.foot{ padding:10px 14px; border-top:1px solid var(--n100); color:var(--n400); font-size:11px; }
+
+
+.muted{ color:var(--n500); } .faint{ color:var(--n400); }
+.text{ font-size:13px; color:var(--n600); line-height:1.6; }
+
+@media (max-width:360px){
+  body{ padding:10px; } .hero h1{ font-size:20px; } .score{ font-size:36px; }
+  .grid.three{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
   </style>
 </head>
 <body>
-  <div class="tc-deck" data-layout="vertical">
-    <div class="tc-card">
-      <div class="page">
-        <h1 class="main-title">{{mainTitle|风险评估}}</h1>
-        <div class="title-line"></div>
-
-        <div class="section-badge">{{sectionBadge|易患病症}}</div>
-
-        <div class="risk-summary">
-          <span>重度风险 ({{highRiskCount|0}}项)</span>
-          <span>中度风险 ({{midRiskCount|0}}项)</span>
-          <span>轻度风险 ({{lowRiskCount|0}}项)</span>
-        </div>
-
-        <div class="risk-grid">
-          {{#risks}}
-          <div class="risk-item">
-            <span class="risk-name">{{riskName}}</span>
-            <span class="risk-score {{levelClass}}">{{riskScore}}</span>
-            <span class="risk-label {{levelClass}}">{{riskLabel}}</span>
-          </div>
-          {{/risks}}
-        </div>
+<div class="card" data-template="risk_assessment_card" data-layout="vertical">
+  <div class="hero">
+    <div class="eyebrow">🩺 {{badge|综合风险评估}}</div>
+    <div class="hero-row">
+      <div>
+        <h1>{{elderly_name|张明华}} · {{overall_label|中风险}}</h1>
+        <p class="sub">{{age|72}}岁 · {{gender|男}} · {{primary_constitution|血瘀质}}</p>
+      </div>
+      <div style="text-align:right">
+        <div class="score">{{overall_score|6.5}}<small>/10</small></div>
+        <p class="sub">综合评分</p>
       </div>
     </div>
   </div>
 
-<script type="application/json">
-{
-  "mainTitle": "风险评估",
-  "sectionBadge": "易患病症",
-  "highRiskCount": 1,
-  "midRiskCount": 6,
-  "lowRiskCount": 6,
-  "risks": [
-    { "riskName": "乳腺结节风险评估", "riskScore": 65.6, "riskLabel": "预警", "levelClass": "high" },
-    { "riskName": "骨质疏松症风险评估", "riskScore": 54.5, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "甲状腺结节风险评估", "riskScore": 55.8, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "月经不调风险评估", "riskScore": 61.8, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "精神压力评估", "riskScore": 69, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "肺结节风险评估", "riskScore": 74.2, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "子宫肌瘤风险评估", "riskScore": 61.9, "riskLabel": "中度风险", "levelClass": "mid" },
-    { "riskName": "中风风险评估", "riskScore": 38.3, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "心血管功能评估", "riskScore": 52, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "脂肪肝风险评估", "riskScore": 59.1, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "糖尿病风险评估", "riskScore": 41.2, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "高血压风险评估", "riskScore": 46.8, "riskLabel": "轻度风险", "levelClass": "low" },
-    { "riskName": "慢性胃炎风险评估", "riskScore": 48.5, "riskLabel": "轻度风险", "levelClass": "low" }
-  ]
-}
-</script>
+  <div class="section">
+    <div class="alert">🤖 {{aiNote|AI 生成 · 基于最新舌诊/脉诊/面诊数据，仅供参考，不构成医疗诊断}}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">👤 基础信息</div>
+    <div class="row"><span class="k">姓名</span><span class="v">{{elderly_name|张明华}}</span></div>
+    <div class="row"><span class="k">年龄 / 性别</span><span class="v">{{age|72}}岁 · {{gender|男}}</span></div>
+    <div class="row"><span class="k">慢病情况</span><span class="v">{{chronic|高血压}}</span></div>
+    <div class="row"><span class="k">失智评估</span><span class="v">{{dementia|无}}</span></div>
+    <div class="row"><span class="k">失能评估</span><span class="v">{{disability|无}}</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📊 综合研判</div>
+    <div class="grid three">
+      <div class="stat"><div class="num {{scoreClass|warn}}">{{overall_score|6.5}}</div><div class="lbl">综合评分</div></div>
+      <div class="stat"><div class="num {{scoreClass|warn}}">{{overall_label|中风险}}</div><div class="lbl">风险等级</div></div>
+      <div class="stat"><div class="num bad">{{abnormal_count|4}}</div><div class="lbl">异常项数</div></div>
+    </div>
+    <p class="text" style="margin-top:10px">{{conclusion|多项舌诊指标异常，体质偏颇趋于明显，建议尽早中医调理}}</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">👅 舌诊六项指标</div>
+    <div class="grid three">
+    {{#indicators}}
+      <div class="stat">
+        <div class="num {{statusClass|bad}}">{{value|偏暗}}</div>
+        <div class="lbl">{{name|舌色}} · {{statusLabel|异常}}</div>
+      </div>
+    {{/indicators}}
+    </div>
+    {{^indicators}}
+    <p class="text">暂无舌诊指标数据</p>
+    {{/indicators}}
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 舌象 / 脉象 / 面诊</div>
+    <div class="list">
+      <div class="item">
+        <div class="top"><span>舌象</span><span class="pill">望诊</span></div>
+        <div class="txt">{{tongue_summary|舌偏暗，苔薄黄，舌体正常，舌下络脉正常}}</div>
+      </div>
+      <div class="item">
+        <div class="top"><span>脉象 · {{pulse_type|弦细}}</span><span class="pill blue">{{pulse_rate|78次/分}}</span></div>
+        <div class="txt">{{pulse_interpretation|脉弦细，主肝郁血虚或阴虚阳亢}}</div>
+      </div>
+      <div class="item">
+        <div class="top"><span>面诊 · {{face_complexion|微黄}}</span><span class="pill">望色</span></div>
+        <div class="txt">{{face_interpretation|面色微黄，提示脾虚或气血不足}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📈 疾病风险评估 TOP5</div>
+    {{#disease_risks}}
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">{{name|高血压风险}}</span>
+        <span class="dim-score">{{score|68}}<small>/100</small></span>
+      </div>
+      <div class="bar"><span class="{{barClass|warn}}" style="width:{{score|68}}%"></span></div>
+      <div class="note">风险等级：{{level|中}}</div>
+    </div>
+    {{/disease_risks}}
+    {{^disease_risks}}
+    <p class="text">暂无疾病风险评估数据</p>
+    {{/disease_risks}}
+  </div>
+
+  <div class="section">
+    <div class="section-title">🧬 体质辨识</div>
+    <div class="tags" style="margin-bottom:8px">
+      <span class="tag good">主体质：{{primary_constitution|血瘀质}}</span>
+    </div>
+    {{#constitutions}}
+    <div class="dim">
+      <div class="dim-head">
+        <span class="dim-name">{{name|血瘀质}}<small>{{mark|主体质 ★}}</small></span>
+        <span class="dim-score">{{score|62}}</span>
+      </div>
+      <div class="bar"><span class="{{barClass}}" style="width:{{score|62}}%"></span></div>
+    </div>
+    {{/constitutions}}
+    {{^constitutions}}
+    <p class="text">暂无体质辨识数据</p>
+    {{/constitutions}}
+  </div>
+
+  <div class="section">
+    <div class="section-title">📜 中医证候</div>
+    <div class="list">
+      <div class="item">
+        <div class="top"><span>{{syndrome_name|肝阳上亢兼血瘀}}</span><span class="pill warn">证候</span></div>
+        <div class="txt">{{syndrome_desc|肝阳偏亢，血行不畅。舌暗苔薄黄，脉弦细。多见头晕头痛，急躁易怒，面色晦暗。}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">💡 个性化调理方案摘要</div>
+    {{#care_summary}}
+    <div class="row"><span class="k">{{label|中药}}</span><span class="v">{{content|天麻钩藤饮、血府逐瘀汤}}</span></div>
+    {{/care_summary}}
+    {{^care_summary}}
+    <p class="text">暂无调理方案摘要</p>
+    {{/care_summary}}
+  </div>
+
+  <div class="section">
+    <div class="section-title">⚠️ 禁忌提醒</div>
+    <div class="list">
+    {{#contraindications}}
+      <div class="item bad">
+        <div class="top"><span>{{type|饮食}}</span><span class="pill bad">禁忌</span></div>
+        <div class="txt">{{items|忌高盐高脂、忌烟酒}}</div>
+      </div>
+    {{/contraindications}}
+    </div>
+    {{^contraindications}}
+    <p class="text">暂无特殊禁忌</p>
+    {{/contraindications}}
+  </div>
+
+  <div class="section">
+    <div class="section-title">🗂️ 报告信息</div>
+    <div class="row"><span class="k">报告编号</span><span class="v">{{report_code|TCM-20260728-0001}}</span></div>
+    <div class="row"><span class="k">生成时间</span><span class="v">{{generate_time|2026-07-28 09:00}}</span></div>
+    <div class="row"><span class="k">数据源</span><span class="v">{{data_source|最新舌诊报告}}</span></div>
+  </div>
+
+  <div class="foot">来源：{{sourceLabel|中医四诊数据 + 复合风险模型}} · 评估结果仅作健康管理参考，不构成医疗诊断</div>
+</div>
 </body>
 </html>

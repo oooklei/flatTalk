@@ -3,27 +3,27 @@
   --ink: #3D3A36;
   --muted: #8A8278;
   --line: #E4E0D8;
-  --primary: #2A9B6C;
-  --primary-dark: #1E7A54;
+  --primary: #E8843C;
+  --primary-dark: #D06E2A;
   --warn: #C47D16;
   --danger: #E5484D;
-  --grad: linear-gradient(135deg, #2A9B6C 0%, #1E7A54 100%);
+  --grad: linear-gradient(135deg, #E8843C 0%, #D06E2A 100%);
 }
 /* 1) 意图识别卡 */
 .ai-result-card{background:#fff;border:1px solid var(--line,#E4E0D8);border-radius:14px;padding:12px 13px;margin:0 auto;max-width:420px;color:var(--ink,#3D3A36);}
 .ai-result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .ai-result-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;}
-.ai-result-badge.service{background:#E6F7F0;color:#16855f;}
+.ai-result-badge.service{background:#FDF6F0;color:#D06E2A;}
 .ai-result-badge.sos{background:#FDECEC;color:#E5484D;}
-.ai-result-badge.health{background:#EAF2FE;color:#2C7BE5;}
-.ai-result-badge.chat{background:#EEF0F2;color:#6B7A8F;}
+.ai-result-badge.health{background:#E8F0F5;color:#3A6B8C;}
+.ai-result-badge.chat{background:#EEF0F2;color:#8A8278;}
 .ai-result-confidence{font-size:12px;color:var(--muted);}
 .ai-result-confidence .score{font-weight:700;color:var(--primary);}
 .ai-result-confidence .score.low{color:var(--warn);}
 .ai-result-section{margin-top:8px;}
 .ai-result-section-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;}
 .ai-result-entities{display:flex;flex-wrap:wrap;gap:6px;}
-.ai-result-entity{background:#F4F8F7;color:var(--ink);font-size:12px;padding:4px 9px;border-radius:8px;}
+.ai-result-entity{background:#FDF6F0;color:var(--ink);font-size:12px;padding:4px 9px;border-radius:8px;}
 .ai-result-entity .entity-type{color:var(--muted);margin-right:2px;}
 /* 2) 紧急求助卡 */
 .emergency-alert{border-radius:14px;overflow:hidden;max-width:420px;margin:0 auto;border:1px solid #F3C9C9;background:#FFF;}
@@ -49,18 +49,22 @@
 .recommend-tab.active{background:var(--grad);color:#fff;border-color:transparent;}
 .service-list{display:flex;flex-direction:column;gap:10px;}
 .service-card,.expand-card{display:flex;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px;align-items:stretch;}
+.service-card.is-clickable{cursor:pointer;transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;}
+.service-card.is-clickable:hover,.service-card.is-clickable:focus{border-color:#F0B27A;box-shadow:0 2px 10px rgba(232,132,60,.14);outline:none;}
+.service-card.is-clickable:active{transform:scale(.995);}
 .card-thumb{width:62px;height:62px;border-radius:12px;background:linear-gradient(135deg,#D8F3EA,#B7E9D8);display:flex;align-items:center;justify-content:center;font-size:30px;flex:none;}
 .card-body{flex:1;min-width:0;display:flex;flex-direction:column;}
 .card-title{font-size:15px;font-weight:700;color:var(--ink);}
 .card-meta{font-size:12px;color:var(--muted);line-height:1.5;margin:3px 0;}
 .supplier-info{font-size:12px;color:#5B6B64;margin:2px 0 6px;}
-.card-price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
+.card-price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;gap:8px;}
 .card-price{color:var(--primary);font-weight:700;font-size:16px;}
 .card-price .unit{font-size:11px;color:var(--muted);font-weight:500;margin-left:2px;}
+.card-cta{flex:none;font-size:12px;font-weight:600;color:var(--primary);}
 .btn-book-sm{border:none;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;background:var(--grad);color:#fff;}
 .expand-badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;margin-bottom:5px;}
-.expand-badge.availability{background:#E6F7F0;color:#16855f;}
-.expand-badge.environment{background:#EAF2FE;color:#2C7BE5;}
+.expand-badge.availability{background:#FDF6F0;color:#D06E2A;}
+.expand-badge.environment{background:#E8F0F5;color:#3A6B8C;}
 .expand-badge.response{background:#FFF1E6;color:#E0833A;}
 .guess-like-section{margin-top:16px;}
 .guess-like-header{margin-bottom:10px;}
@@ -80,7 +84,7 @@
 .detail-section h3{margin:0 0 7px;font-size:14px;color:var(--ink);}
 .detail-section p{margin:0;font-size:13px;color:#5B6B64;line-height:1.6;}
 .detail-tags{display:flex;flex-wrap:wrap;gap:6px;}
-.tag{background:#E6F7F0;color:#16855f;font-size:12px;padding:4px 10px;border-radius:8px;}
+.tag{background:#FDF6F0;color:#D06E2A;font-size:12px;padding:4px 10px;border-radius:8px;}
 .detail-features{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .detail-feature{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink);}
 .detail-feature .check{width:18px;height:18px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;flex:none;}
@@ -94,7 +98,7 @@
 .field-source{font-size:11px;color:var(--primary);margin-top:4px;}
 .time-recommendations{display:flex;flex-direction:column;gap:8px;}
 .time-recommendation{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#FAFFFD;}
-.time-recommendation.selected{border-color:var(--primary);background:#E6F7F0;}
+.time-recommendation.selected{border-color:var(--primary);background:#FDF6F0;}
 .time-slot{font-size:14px;font-weight:600;color:var(--ink);}
 .time-reason{font-size:11px;color:var(--muted);}
 .time-check{width:18px;height:18px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;}
@@ -106,13 +110,13 @@
 .ticket-icon svg{width:28px;height:28px;fill:#fff;}
 .ticket-view h3{margin:0 0 6px;font-size:18px;color:var(--ink);}
 .ticket-view>p{margin:0 0 14px;font-size:13px;color:var(--muted);}
-.ticket-card{background:#F4F8F7;border-radius:12px;padding:12px;text-align:left;}
+.ticket-card{background:#FDF6F0;border-radius:12px;padding:12px;text-align:left;}
 .ticket-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line);}
 .ticket-row:last-child{border-bottom:none;}
 .ticket-label{color:var(--muted);}
 .ticket-value{color:var(--ink);font-weight:600;}
 .status-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;background:#FFF1E6;color:#E0833A;}
-.status-badge.done{background:#E6F7F0;color:#16855f;}
+.status-badge.done{background:#FDF6F0;color:#D06E2A;}
 
 /* —— 服务追溯卡 / 服务口碑卡（新增业务场景，复用令牌） —— */
 .trace-meta{margin-top:4px;}
@@ -123,7 +127,7 @@
 .trace-list{position:relative;margin-top:6px;padding-left:18px;}
 .trace-list::before{content:"";position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--line);}
 .trace-item{position:relative;padding:7px 0;}
-.trace-item::before{content:"";position:absolute;left:-16px;top:11px;width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px #E6F7F0;}
+.trace-item::before{content:"";position:absolute;left:-16px;top:11px;width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px #FDF6F0;}
 .trace-item.bad::before{background:var(--danger);box-shadow:0 0 0 3px #FDECEC;}
 .trace-item .t{font-size:11px;color:var(--muted);}
 .trace-item .n{font-size:13px;font-weight:600;color:var(--ink);}
@@ -142,3 +146,4 @@
 .review-item .who{font-weight:600;color:var(--ink);}
 .review-item .txt{color:var(--muted);margin-top:2px;line-height:1.5;}
 .review-complaint{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:999px;background:#FFF1E6;color:#E0833A;font-size:12px;}
+.foot{padding:10px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:right;background:#fff;}

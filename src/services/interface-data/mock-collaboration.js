@@ -20,6 +20,7 @@ export const mockElders = [
     elder_id: "elder_huang_xiuying",
     elder_name: "黄秀英",
     age: 82,
+    gender: "女",
     community_id: "org_qingxiu_community",
     community_name: "青秀社区",
     address_label: "南宁市青秀区津头街道",
@@ -27,9 +28,21 @@ export const mockElders = [
     ability_status: "尚未评估"
   },
   {
+    elder_id: "elder_huang_xiuying_2",
+    elder_name: "黄秀英",
+    age: 76,
+    gender: "女",
+    community_id: "org_qingxiu_community",
+    community_name: "青秀社区",
+    address_label: "南宁市青秀区凤岭北路",
+    care_level: "慢病随访",
+    ability_status: "轻度失能"
+  },
+  {
     elder_id: "elder_li_deming",
     elder_name: "李德明",
     age: 78,
+    gender: "男",
     community_id: "org_qingxiu_community",
     community_name: "青秀社区",
     address_label: "南宁市青秀区长湖路片区",
@@ -40,6 +53,7 @@ export const mockElders = [
     elder_id: "elder_wei_guilan",
     elder_name: "韦桂兰",
     age: 86,
+    gender: "女",
     community_id: "org_qingxiu_community",
     community_name: "青秀社区",
     address_label: "南宁市青秀区凤岭片区",
@@ -515,6 +529,14 @@ function orgById(orgId) {
 
 function elderById(elderId) {
   return mockElders.find((elder) => elder.elder_id === elderId) || null;
+}
+
+/** 按姓名精确匹配可见范围内的老人档案（用于同名确认） */
+export function findEldersByName(name = '', user = null) {
+  const target = String(name || '').trim();
+  if (!target) return [];
+  const pool = user ? getVisibleElders(user) : mockElders;
+  return pool.filter((elder) => elder.elder_name === target);
 }
 
 export function getMockUserByToken(token = "", roleKey = "") {

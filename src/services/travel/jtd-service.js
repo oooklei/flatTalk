@@ -190,8 +190,9 @@ function buildWaypointsForProduct(destination, totalDays = 3) {
       plan: i === 0 ? `抵达${wp.name}，办理入住` : i === days - 1 ? `从${wp.name}返程` : `${wp.name}康养体验`,
     }));
   }
-  // 兜底：中心坐标环形
+  // 兜底：中心坐标环形；未知目的地不造巴马假点
   const center = getCenterCoordFor(destination);
+  if (!center) return [];
   const waypoints = [];
   const radius = 0.04;
   for (let i = 0; i < days; i++) {
@@ -218,11 +219,15 @@ const DESTINATION_COORDS = {
   '广西巴马': { lat: 24.0487, lng: 107.2586, name: '巴马瑶族自治县' },
   '广西北海': { lat: 21.4817, lng: 109.1196, name: '北海市' },
   '广西桂林': { lat: 25.2619, lng: 110.2900, name: '桂林市' },
+  '广西防城港': { lat: 21.6869, lng: 108.3538, name: '防城港市' },
   '广西七洞乡': { lat: 23.6817, lng: 109.0512, name: '来宾市兴宾区七洞乡' },
 };
 function getCenterCoordFor(destination) {
-  const key = Object.keys(DESTINATION_COORDS).find((k) => destination.includes(k.replace('广西', '')));
-  return key ? DESTINATION_COORDS[key] : DESTINATION_COORDS['广西巴马'];
+  const text = String(destination || '');
+  if (!text.trim()) return null;
+  const key = Object.keys(DESTINATION_COORDS).find((k) => text.includes(k.replace('广西', '')) || text.includes(k));
+  // 未知目的地禁止静默落到巴马坐标
+  return key ? DESTINATION_COORDS[key] : null;
 }
 
 /**
@@ -409,7 +414,7 @@ export class JtdTravelService extends BaseInterfaceService {
     super({
       skillKey: 'travel_route',
       provider: 'jintiaodong',
-      sourcePath: '金跳动旅居',
+      sourcePath: 'jtd',
       config: options,
     });
     this.configuredMode = options.mode || process.env.JTD_API_MODE || 'auto';
@@ -483,7 +488,7 @@ export class JtdTravelService extends BaseInterfaceService {
       dataSource = 'mock';
     }
 
-    const selected = selectProduct(products, userMessage);
+    const selected = selectProduct(products, userMessage, request);
 
     // LLM 补字段：selected_product 的 destination 缺失时，调用 LLM 推理补齐
     if (selected && !selected.destination) {
@@ -581,7 +586,9 @@ export function createJtdTravelService(options = {}) {
 
 export function buildSearchQuery(request = {}) {
   const text = String(request.message || request.text || request.query || '');
-  const city = inferCity(text);
+  const params = request.context?.action_params || request.params || {};
+  const city = String(params.destination || params.city || request.context?.previous_destination || '').trim()
+    || inferCity(text);
   return {
     tenantId: request.context?.tenantId || request.context?.tenant_id || process.env.JTD_TENANT_ID || '042788',
     productDomain: /基地|住宿|住哪|酒店|客栈|民宿/.test(text) ? 'sojourn_base' : 'sojourn_route',
@@ -593,6 +600,7 @@ export function buildSearchQuery(request = {}) {
     pageNum: 1,
     // 扩容到 50，确保不漏产品（之前 pageSize=3 会截断真实结果）
     pageSize: 50,
+    product_id: params.product_id || request.context?.previous_product_id || '',
   };
 }
 
@@ -923,13 +931,32 @@ function inferBudget(text) {
   return '';
 }
 
-function selectProduct(products, text) {
+export function selectProduct(products, text, request = {}) {
   if (!products.length) return null;
-  if (/北海|海边|海滨/.test(text)) return products.find((item) => /北海/.test(item.destination || item.city || item.product_name)) || products[0];
-  if (/巴马|长寿|百色/.test(text)) return products.find((item) => /巴马|百色/.test(item.destination || item.city || item.product_name)) || products[0];
-  if (/北海|海边|海滨/.test(text)) return products.find((item) => /北海/.test(item.destination || item.city || item.product_name)) || products[0];
-  if (/巴马|长寿|百色/.test(text)) return products.find((item) => /巴马|百色/.test(item.destination || item.city || item.product_name)) || products[0];
-  return products[0];
+  const params = request.context?.action_params || request.params || {};
+  const productId = String(params.product_id || request.context?.previous_product_id || '').trim();
+  if (productId) {
+    const byId = products.find((item) => String(item.product_id) === productId);
+    if (byId) return byId;
+    // 有锁定 product_id 却未命中时，禁止静默落到 products[0]
+    return null;
+  }
+  const dest = String(params.destination || params.city || request.context?.previous_destination || '').trim();
+  const blob = `${text || ''} ${dest}`;
+  const pickCity = (re) => products.find((item) => re.test(`${item.destination || ''} ${item.city || ''} ${item.product_name || ''}`)) || null;
+  if (/桂林|阳朔|漓江|遇龙河/.test(blob)) return pickCity(/桂林|阳朔/);
+  if (/北海|海边|海滨/.test(blob)) return pickCity(/北海/);
+  if (/巴马|长寿|百色/.test(blob)) return pickCity(/巴马|百色/);
+  if (/防城港|东兴|嘉路/.test(blob)) return pickCity(/防城港|东兴/);
+  // 有明确锁定目的地时，不要静默落到 products[0]（常为巴马 mock）
+  if (dest) {
+    return products.find((item) => {
+      const hay = `${item.destination || ''} ${item.city || ''} ${item.product_name || ''}`;
+      return hay.includes(dest) || dest.includes(String(item.destination || item.city || ''));
+    }) || null;
+  }
+  // 完全无锁定信号时也不静默 products[0]（首条常为巴马 mock）；由上层走澄清/远程缺口卡
+  return null;
 }
 
 function sourceStatusFrom(result) {

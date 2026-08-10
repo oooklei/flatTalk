@@ -191,5 +191,50 @@
     "喀斯特"
   ],
   "spot_images_source": "dashboard_local_kb",
-  "updated_at": "2026-08-05T22:13:28.003Z"
+  "updated_at": "2026-08-06T01:23:57.592Z",
+  "itinerary": [
+    {
+      "day": "D1",
+      "wp_name": "巴马县城",
+      "plan": "抵达巴马，入住康养基地"
+    },
+    {
+      "day": "D2",
+      "wp_name": "百魔洞",
+      "plan": "天下第一洞·负氧离子磁疗"
+    },
+    {
+      "day": "D3",
+      "wp_name": "长寿村",
+      "plan": "探访百岁老人·养生文化"
+    },
+    {
+      "day": "D3",
+      "wp_name": "命河",
+      "plan": "命字河道奇观"
+    },
+    {
+      "day": "D4",
+      "wp_name": "百鸟岩",
+      "plan": "乘船穿越三天三夜"
+    },
+    {
+      "day": "D4",
+      "wp_name": "水晶宫",
+      "plan": "溶洞天花板·鹅管群"
+    },
+    {
+      "day": "D5",
+      "wp_name": "赐福湖",
+      "plan": "百岛长湖·游船疗养"
+    },
+    {
+      "day": "D5",
+      "wp_name": "返程",
+      "plan": "盘阳河漂流·返程"
+    }
+  ],
+  "boundary_source": "datav_local",
+  "boundary_name": "巴马瑶族自治县",
+  "boundary_polygon_count": 1
 }

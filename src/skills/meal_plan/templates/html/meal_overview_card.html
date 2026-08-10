@@ -6,12 +6,12 @@
 <title>每日膳食总览卡片模板</title>
 <style>
   :root {
-    --bg: #f4f7fa;
+    --bg: #FAF8F5;
     --card: #ffffff;
-    --ink: #2b2f33;
-    --ink2: #6b7280;
-    --line: #eceff3;
-    --accent: #2f8f5b;
+    --ink: #3D3A36;
+    --ink2: #8A8278;
+    --line: #E4E0D8;
+    --accent: #E8843C;
     --accent-soft: #e9f6ef;
     --carb: #FF6B35;
     --protein: #7CB342;
@@ -45,7 +45,7 @@
   }
 
   /* 顶部汇总卡 */
-  .summary-card { background: linear-gradient(135deg, #2f8f5b, #56b87f); color: #fff; }
+  .summary-card { background: linear-gradient(135deg, #E8843C, #F0B487); color: #fff; }
   .summary-card .sum-title { font-size: 18px; font-weight: 700; }
   .summary-card .sum-desc { margin-top: 6px; font-size: 13px; opacity: 0.95; }
   .summary-card .sum-stats {
@@ -147,18 +147,7 @@
       {{/ratios}}
     </div>
 
-    <!-- 相关 -->
-    <div class="card related-card">
-      <div class="section-title">🔗 相关膳食建议</div>
-      <div class="related-row">
-        {{#related}}
-        <div class="related-item">
-          <div class="rel-icon">{{relIcon|💡}}</div>
-          <div class="rel-text">{{{relText|相关建议}}}</div>
-        </div>
-        {{/related}}
-      </div>
-    </div>
+    <!-- 相关伪链接已移除，一周计划走气泡外追问 -->
   </div>
 
   <script type="application/json">
@@ -202,11 +191,8 @@
       { "name": "蛋白质", "pct": "15~20%", "width": 18, "barCls": "bar-fill-protein" },
       { "name": "脂肪", "pct": "25~30%", "width": 30, "barCls": "bar-fill-fat" }
     ],
-    "related": [
-      { "relIcon": "📋", "relText": "完整一周<br>膳食方案" },
-      { "relIcon": "🍳", "relText": "每日三餐<br>搭配指南" },
-      { "relIcon": "🏃", "relText": "餐后轻运动<br>建议" }
-    ]
+    "hasRelated": false,
+    "related": []
   }
   </script>
 </body>

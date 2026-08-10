@@ -2,8 +2,12 @@
   "route_name": "0724测试旅居路线",
   "destination": "巴马",
   "days": 4,
-  "summary": "金跳动产品 0724测试旅居路线",
-  "highlights": [],
+  "summary": "0724测试旅居路线",
+  "highlights": [
+    "巴马县城·抵达",
+    "百魔洞·负氧磁疗",
+    "长寿村·长寿文化"
+  ],
   "waypoints": [
     {
       "id": "wp1",
@@ -111,6 +115,31 @@
   "source": "jintiaodong",
   "jtd_product_id": "2070305000000000266",
   "route_id": "jtd_2070305000000000266",
-  "updated_at": "2026-08-05T22:13:28.097Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:58.181Z",
+  "spot_images_source": "dashboard_local_kb",
+  "itinerary": [
+    {
+      "day": "D1",
+      "wp_name": "巴马县城",
+      "plan": "抵达"
+    },
+    {
+      "day": "D2",
+      "wp_name": "百魔洞",
+      "plan": "负氧磁疗"
+    },
+    {
+      "day": "D3",
+      "wp_name": "长寿村",
+      "plan": "长寿文化"
+    },
+    {
+      "day": "D3",
+      "wp_name": "巴马县城",
+      "plan": "返程"
+    }
+  ],
+  "boundary_source": "datav_local",
+  "boundary_name": "巴马瑶族自治县",
+  "boundary_polygon_count": 1
 }

@@ -9,19 +9,31 @@
 </head>
 <body>
   <!-- 语义：AI 处理中可视化（意图识别→实体抽取→知识库匹配）。属加载态，无按钮。 -->
-  <article class="thinking-card" data-layout="vertical">
-    <div class="thinking-title">{{title}}</div>
-    <div class="thinking-steps">
-      {{#steps}}
-      <div class="thinking-step {{#active}}active{{/active}}">
-        <div class="step-icon">{{num}}</div>
-        <div>
-          <div class="step-text">{{text}}</div>
-          <div class="step-detail">{{detail}}</div>
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <span class="eyebrow">智能匹配</span>
+      <h1>正在分析您的需求</h1>
+      <p class="subtitle">请稍候，马上为您匹配服务</p>
+    </header>
+
+    <section class="nb-section">
+      <article class="thinking-card" style="border:0;box-shadow:none;padding:0;max-width:none">
+        <div class="thinking-title">{{title}}</div>
+        <div class="thinking-steps">
+          {{#steps}}
+          <div class="thinking-step {{#active}}active{{/active}}">
+            <div class="step-icon">{{num}}</div>
+            <div>
+              <div class="step-text">{{text}}</div>
+              <div class="step-detail">{{detail}}</div>
+            </div>
+          </div>
+          {{/steps}}
         </div>
-      </div>
-      {{/steps}}
-    </div>
+      </article>
+    </section>
+
+    <div class="foot">AI 找服务 · 匹配中 · 桂小养</div>
   </article>
 
   <script type="application/json">

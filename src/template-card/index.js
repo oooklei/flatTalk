@@ -106,8 +106,23 @@ export function renderCard(dir, json, options = {}) {
   const records = list && list.length ? list : [data];
 
   // 渲染每张卡片：原型自带示例数据作为缺省值，再被真实数据覆盖
+  // 注意：空数组/空字符串不应覆盖 defaultData 中的有效值
+  const mergeData = (defaults, rec) => {
+    const merged = { ...defaults };
+    if (rec && typeof rec === 'object') {
+      for (const [k, v] of Object.entries(rec)) {
+        // 空数组不覆盖（保留 defaultData 中的有效数据）
+        if (Array.isArray(v) && v.length === 0) continue;
+        // null/undefined/空字符串不覆盖
+        if (v === null || v === undefined || v === '') continue;
+        merged[k] = v;
+      }
+    }
+    return merged;
+  };
+
   const cardsHtml = records
-    .map((rec) => `<div class="tc-card">${renderTemplate(template.body, { ...template.defaultData, ...rec })}</div>`)
+    .map((rec) => `<div class="tc-card">${renderTemplate(template.body, mergeData(template.defaultData, rec))}</div>`)
     .join('\n');
 
   // 分页
@@ -117,7 +132,7 @@ export function renderCard(dir, json, options = {}) {
     for (let i = 0; i < records.length; i += pageLimit) chunks.push(records.slice(i, i + pageLimit));
     pages = chunks.map((_, idx) => {
       const slice = chunks[idx]
-        .map((rec) => `<div class="tc-card">${renderTemplate(template.body, { ...template.defaultData, ...rec })}</div>`)
+        .map((rec) => `<div class="tc-card">${renderTemplate(template.body, mergeData(template.defaultData, rec))}</div>`)
         .join('\n');
       return assembleDocument(template.css, template.layout, slice, { index: idx + 1, total: chunks.length }, renderFollowups(template.followupActions));
     });
@@ -148,8 +163,16 @@ export function renderPreview(dir, templateId) {
   if (!template) throw new Error(`未找到模板: ${templateId}`);
   const stripJson = (s) => s.replace(
     /<script\b[^>]*type=["']application\/json["'][^>]*>[\s\S]*?<\/script>/gi, '');
-  // 先删默认数据脚本块，再整体用默认数据渲染，保留原 <body>/<style> 不变
-  const fp = renderTemplate(stripJson(template.html), template.defaultData);
+  // 先删默认数据脚本块，再整体用默认数据渲染；并把 <link> CSS 内联，避免预览白板
+  let fp = renderTemplate(stripJson(template.html), template.defaultData);
+  if (template.css) {
+    fp = fp.replace(/<link\b[^>]*rel=["']stylesheet["'][^>]*>/gi, '');
+    if (/<\/head>/i.test(fp)) {
+      fp = fp.replace(/<\/head>/i, `<style data-preview-inline="collectCss">\n${template.css}\n</style></head>`);
+    } else {
+      fp = `<style data-preview-inline="collectCss">\n${template.css}\n</style>\n${fp}`;
+    }
+  }
   const fu = renderFollowups(template.followupActions);
   if (!fu) return fp;
   return `${fp}\n<style>${FOLLOWUP_CSS}</style>${fu}`;

@@ -3,6 +3,14 @@
   "description": "按维度拓展推荐，展示空闲率/环境/响应速度最优的服务选择",
   "layout": "vertical",
   "match": "拓展推荐、其他优质选择、空闲率最高、环境得分高、响应最快、维度推荐",
-  "required": ["badge_text", "name", "price", "unit"],
-  "followup_actions": ["查看该服务", "返回推荐"]
+  "required": [
+    "badge_text",
+    "name",
+    "price",
+    "unit"
+  ],
+  "followup_actions": [],
+  "intent_id": "find_service_expand",
+  "product_domain": "find_service",
+  "name": "按维度拓展推荐，展示空闲率/环境/响应速度最优的"
 }

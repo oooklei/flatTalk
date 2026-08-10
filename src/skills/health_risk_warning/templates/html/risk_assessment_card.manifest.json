@@ -1,7 +1,18 @@
 {
   "id": "risk_assessment_card",
-  "description": "疾病风险评估结果，展示重度/中度/轻度风险分级与分值",
+  "name": "综合风险评估",
+  "description": "综合风险评估单卡：基础信息+风险徽章+舌诊六项+舌/脉/面诊+疾病风险TOP5+体质辨识+中医证候+调理摘要+禁忌提醒+报告信息",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.assessment",
+  "required": [
+    "elderly_name",
+    "overall_score",
+    "overall_label",
+    "indicators"
+  ],
+  "optional_fields": [],
+  "match": "展示综合风险评估详情（多模块指标），非简版预警结果卡",
   "layout": "vertical",
-  "match": "展示各类疾病风险评估结果（重度/中度/轻度风险分级、分值、标签）的单卡片",
-  "required": ["mainTitle", "risks"]
+  "followup_actions": [],
+  "version": "1.0"
 }

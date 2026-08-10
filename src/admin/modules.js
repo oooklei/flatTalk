@@ -4,7 +4,7 @@ import path from 'node:path';
 import { json } from './util.js';
 import { readReg, handleRegistryApi } from './store.js';
 import { callModelChat } from './models.js';
-import { discoverTemplates, renderTemplate, collectNames, collectTopLevelNames } from '../template-card/index.js';
+import { discoverTemplates, renderTemplate, renderCard, collectNames, collectTopLevelNames } from '../template-card/index.js';
 import { makeTemplateFromHtml, parseMultipart, toTemplateId } from '../template-card/make-template.js';
 import { loadIntegrations } from './integrations.js';
 import { getTraceLogger } from '../core/observability/trace-logger.js';
@@ -51,9 +51,263 @@ function listSkillKeys() {
 }
 
 function parseEmbeddedJson(html) {
-  const m = /<script[^>]*type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i.exec(html);
-  if (!m) return {};
-  try { return JSON.parse(m[1]); } catch { return {}; }
+  const re = /<script([^>]*)type=["']application\/json["']([^>]*)>([\s\S]*?)<\/script>/gi;
+  const candidates = [];
+  let m;
+  while ((m = re.exec(html))) {
+    const attrs = `${m[1] || ''}${m[2] || ''}`;
+    const body = String(m[3] || '').trim();
+    if (!body || body.startsWith('{{{') || body.startsWith('{{')) continue;
+    // 跳过带 id 的数据槽（如 waypointSpotsData），优先取模板默认值块
+    if (/\sid\s*=/.test(attrs)) {
+      candidates.push({ body, prefer: 0 });
+      continue;
+    }
+    candidates.push({ body, prefer: 1 });
+  }
+  candidates.sort((a, b) => b.prefer - a.prefer);
+  for (const c of candidates) {
+    try {
+      const obj = JSON.parse(c.body);
+      if (obj && typeof obj === 'object' && !Array.isArray(obj)) return obj;
+    } catch { /* next */ }
+  }
+  return {};
+}
+
+/** 旅居走线卡预览：内嵌 static_svg 为空时，注入 sojourn-maps 真实 SVG */
+function resolvePreviewStaticSvg(templateId = '', data = {}) {
+  if (data?.static_svg && String(data.static_svg).includes('<svg')) {
+    return String(data.static_svg);
+  }
+  const id = String(templateId || '');
+  const dest = String(data?.destination || '');
+  const mapsDir = path.join(ROOT, 'data', 'sojourn-maps');
+  const prefer = [];
+  if (/coastal|滨海|防城|京族|北海/i.test(`${id}${dest}`)) prefer.push('fcg_route_001', 'fcg_route_002');
+  if (/wellness|康养|巴马|sojourn_base|medical|spot/i.test(`${id}${dest}`)) prefer.push('bama_5d4n', 'fcg_route_001');
+  if (/culture|文化|桂林/i.test(`${id}${dest}`)) prefer.push('gx_excel_01', 'gx_excel_03');
+  if (/ecology|生态/i.test(`${id}${dest}`)) prefer.push('gx_excel_08', 'gx_excel_05');
+  prefer.push('fcg_route_001', 'gx_excel_01', 'bama_5d4n');
+
+  const tryRead = (routeId) => {
+    const candidates = [
+      path.join(mapsDir, routeId, 'map_standard.svg'),
+      path.join(mapsDir, `${routeId}_standard.svg`),
+    ];
+    for (const fp of candidates) {
+      try {
+        if (!fs.existsSync(fp)) continue;
+        const svg = fs.readFileSync(fp, 'utf8');
+        if (svg.includes('<svg')) return svg;
+      } catch { /* next */ }
+    }
+    return '';
+  };
+
+  for (const rid of prefer) {
+    const svg = tryRead(rid);
+    if (svg) return svg;
+  }
+
+  try {
+    for (const e of fs.readdirSync(mapsDir, { withFileTypes: true })) {
+      if (!e.isDirectory()) continue;
+      const svg = tryRead(e.name);
+      if (svg) return svg;
+    }
+  } catch { /* ignore */ }
+  return '';
+}
+
+const PREVIEW_CENTER = { lat: 21.531, lng: 108.172, name: '嘉路康养中心' };
+const PREVIEW_NEARBY_POIS = [
+  { poi_id: 's1', name: '海岸假日民宿', address: '港口区某路12号', lng: 108.172, lat: 21.531, distance: 0.8, distance_text: '0.8', cat: 'stay', color: '#3B82A0', emoji: '🏠', biz_status: '营业中', tel: '0770-1234567', open_time: '24小时', tags: ['近海', '适老'], tags_text: '近海·适老' },
+  { poi_id: 's2', name: '渔家海鲜大排档', address: '渔洲坪', lng: 108.160, lat: 21.524, distance: 1.2, distance_text: '1.2', cat: 'food', color: '#F2994A', emoji: '🍜', biz_status: '营业中', tel: '0770-2233445', open_time: '11:00-22:00', tags: ['海鲜'], tags_text: '海鲜' },
+  { poi_id: 's3', name: '西湾滨海景区', address: '西湾大道', lng: 108.150, lat: 21.540, distance: 2.5, distance_text: '2.5', cat: 'spot', color: '#2BAE8E', emoji: '🏖️', biz_status: '开放中', tags: ['海景'], tags_text: '海景' },
+  { poi_id: 's4', name: '渔人码头垂钓场', address: '渔洲坪码头', lng: 108.158, lat: 21.520, distance: 3.1, distance_text: '3.1', cat: 'leisure', color: '#8E6FD8', emoji: '🎣', biz_status: '营业中', open_time: '06:00-20:00', tags: ['垂钓'], tags_text: '垂钓' },
+  { poi_id: 's5', name: '港口区人民医院', address: '港口区医院路', lng: 108.168, lat: 21.535, distance: 1.0, distance_text: '1.0', cat: 'wellness', color: '#E5484D', emoji: '🏥', biz_status: '营业中', open_time: '全天', tags: ['医疗'], tags_text: '医疗' },
+];
+
+function previewMapKey() {
+  return process.env.TENCENT_MAP_JS_KEY || 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
+}
+
+function previewMapFields(center = PREVIEW_CENTER, markers = PREVIEW_NEARBY_POIS) {
+  const c = {
+    lat: Number(center.lat) || PREVIEW_CENTER.lat,
+    lng: Number(center.lng) || PREVIEW_CENTER.lng,
+    name: center.name || PREVIEW_CENTER.name,
+  };
+  const list = Array.isArray(markers) && markers.length ? markers : PREVIEW_NEARBY_POIS;
+  return {
+    map_key: previewMapKey(),
+    centerLat: c.lat,
+    centerLng: c.lng,
+    centerName: c.name,
+    center_json: JSON.stringify(c),
+    markers_json: JSON.stringify(list),
+    markers: list,
+    radiusKm: 15,
+    static_map_url: '', // 预览优先走示意 SVG / 实时 SDK，避免依赖静态瓦片签名
+  };
+}
+
+/** srcdoc 预览无法加载相对 CSS：把所有同目录 <link rel=stylesheet> 内联为 <style> */
+function inlinePreviewStyles(html, skill) {
+  if (!html || !skill) return html;
+  const dir = path.resolve(ROOT, 'src', 'skills', skill, 'templates', 'html');
+  const cssCache = new Map();
+  const readCss = (href) => {
+    const name = String(href || '').replace(/^\.\//, '').split('?')[0].split('#')[0];
+    if (!name || /^(https?:|data:|\/\/)/i.test(name)) return '';
+    if (path.isAbsolute(name) || name.includes('..')) return '';
+    if (cssCache.has(name)) return cssCache.get(name);
+    let css = '';
+    try {
+      const fp = path.resolve(dir, name);
+      const safe = fp === dir || fp.startsWith(dir + path.sep);
+      if (safe && fs.existsSync(fp)) css = fs.readFileSync(fp, 'utf8');
+    } catch { /* ignore */ }
+    cssCache.set(name, css);
+    return css;
+  };
+
+  let out = String(html).replace(
+    /<link\b[^>]*rel=["']stylesheet["'][^>]*>/gi,
+    (tag) => {
+      const href = (tag.match(/href=["']([^"']+)["']/i) || [])[1];
+      if (!href || /^(https?:|data:|\/\/)/i.test(href)) return tag;
+      const css = readCss(href);
+      return css ? `<style data-preview-inline="${href.replace(/[^\w.\-]/g, '_')}">\n${css}\n</style>` : `<!-- preview missing css: ${href} -->`;
+    },
+  );
+
+  // 片段卡（无 <html>/<link>）：注入技能目录下公共样式，避免纯白文字
+  const isFragment = !/<html[\s>]/i.test(out) && !/<link\b[^>]*rel=["']stylesheet["']/i.test(html);
+  if (isFragment) {
+    const bundle = ['_design_tokens.css', '_card_components.css', '_base.css', '_health_warning.css']
+      .map((n) => readCss(n))
+      .filter(Boolean)
+      .join('\n');
+    if (bundle) {
+      out = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>\n${bundle}\n</style></head><body>\n${out}\n</body></html>`;
+    }
+  }
+  return out;
+}
+
+function enrichTemplatePreviewData(templateId, data = {}) {
+  const id = String(templateId || '');
+  const next = { ...data };
+
+  const isRouteSvg = /^(route_svg|route_coastal|route_wellness|route_culture|route_ecology|sojourn_route)$/.test(id);
+  const isCenterMap = /^(sojourn_base|travel_medical_card|travel_spot_card)$/.test(id);
+  const isNearbyMap = /^(nearby_map_overview|nearby_map_category|nearby_map_route|nearby_radar|nearby_list)$/.test(id);
+
+  if (isRouteSvg) {
+    if (!next.static_svg || !String(next.static_svg).includes('<svg')) {
+      const svg = resolvePreviewStaticSvg(id, next);
+      if (svg) next.static_svg = svg;
+    }
+    if (!next.waypoint_spots_json) next.waypoint_spots_json = '[]';
+    if (!next.highlights) next.highlights = ['康养氧疗', '慢节奏走线', '适老接驳'];
+    if (!Array.isArray(next.itinerary)) {
+      next.itinerary = [
+        { day: 'D1', theme: '抵达适应', plan: '入住建档，轻松周边慢走', has_theme: true, has_slots: false, has_accommodation: false },
+        { day: 'D2', theme: '深度体验', plan: '核心景点康养体验', has_theme: true, has_slots: false, has_accommodation: false },
+      ];
+    }
+    // sojourn_route 内联 {{{center_json}}} 等，空值会炸 JS，必须给合法字面量
+    const map = previewMapFields(
+      { lat: 21.69, lng: 108.35, name: next.destination || next.centerName || '防城港' },
+      [
+        { name: '白浪滩', lat: 21.668, lng: 108.362, type: 'arrival', day: 'D1' },
+        { name: '京族三岛', lat: 21.580, lng: 108.320, type: 'spot', day: 'D2' },
+        { name: '东兴口岸', lat: 21.548, lng: 107.972, type: 'departure', day: 'D3' },
+      ],
+    );
+    if (!next.center_json || String(next.center_json).includes('{{{')) next.center_json = map.center_json;
+    if (!next.centerLat) next.centerLat = map.centerLat;
+    if (!next.centerLng) next.centerLng = map.centerLng;
+    if (!next.centerName) next.centerName = map.centerName;
+    if (!next.waypoints_json || String(next.waypoints_json).includes('{{{')) next.waypoints_json = map.markers_json;
+    if (!next.spots_json || String(next.spots_json).includes('{{{')) next.spots_json = '[]';
+    if (!next.polyline_path_json || String(next.polyline_path_json).includes('{{{')) next.polyline_path_json = '[]';
+    if (!next.fit_bounds_json || String(next.fit_bounds_json).includes('{{{')) next.fit_bounds_json = 'null';
+    if (next.route_planning_url == null) next.route_planning_url = '';
+    if (!next.routeTitle) next.routeTitle = next.routeTitle || '防城港滨海旅居线';
+    if (!next.destination) next.destination = '防城港';
+    if (!next.days) next.days = '3天2晚';
+    if (!next.summary) next.summary = '滨海康养慢节奏走线示意。';
+  }
+
+  if (isCenterMap) {
+    const map = previewMapFields(
+      { lat: 21.6146, lng: 108.3545, name: next.centerName || '防城港康养基地' },
+      PREVIEW_NEARBY_POIS.slice(0, 4),
+    );
+    Object.assign(next, {
+      map_key: next.map_key || map.map_key,
+      centerLat: next.centerLat || map.centerLat,
+      centerLng: next.centerLng || map.centerLng,
+      centerName: next.centerName || map.centerName,
+      center_json: (next.center_json && !String(next.center_json).includes('{{{')) ? next.center_json : map.center_json,
+      markers_json: (next.markers_json && !String(next.markers_json).includes('{{{')) ? next.markers_json : map.markers_json,
+      static_map_url: next.static_map_url || '',
+      static_map_url_json: JSON.stringify(next.static_map_url || ''),
+    });
+    if (id === 'travel_spot_card' && (!Array.isArray(next.spots) || !next.spots.length)) {
+      next.spots = PREVIEW_NEARBY_POIS.filter((p) => p.cat === 'spot' || p.cat === 'leisure').map((p) => ({
+        name: p.name,
+        desc: p.address,
+        play: '慢走观景，预留休息',
+        meta: `${p.distance_text}km · ${p.biz_status || ''}`,
+      }));
+    }
+  }
+
+  if (isNearbyMap) {
+    const map = previewMapFields(
+      { lat: next.centerLat || PREVIEW_CENTER.lat, lng: next.centerLng || PREVIEW_CENTER.lng, name: next.centerName || PREVIEW_CENTER.name },
+      Array.isArray(next.markers) && next.markers.length ? next.markers : PREVIEW_NEARBY_POIS,
+    );
+    Object.assign(next, {
+      // 管理台 srcdoc 预览里腾讯 SDK 常空白，强制走示意 SVG
+      map_key: '',
+      centerLat: map.centerLat,
+      centerLng: map.centerLng,
+      centerName: map.centerName,
+      center_json: map.center_json,
+      markers_json: map.markers_json,
+      markers: map.markers,
+      radiusKm: next.radiusKm || 15,
+      total: next.total || map.markers.length,
+      category: next.category || 'all',
+      walkCount: next.walkCount || map.markers.length,
+      walkItems_json: next.walkItems_json && !String(next.walkItems_json).includes('{{{')
+        ? next.walkItems_json
+        : map.markers_json,
+      routeStops_json: next.routeStops_json && !String(next.routeStops_json).includes('{{{')
+        ? next.routeStops_json
+        : JSON.stringify(map.markers.map((p, i) => ({ ...p, step: i + 1, title: p.name, role: p.role || `第${i + 1}站` }))),
+      static_map_url: '',
+      static_map_url_json: '""',
+      statsLabels: next.statsLabels || [
+        { label: '住', emoji: '🏠', color: '#3B82A0', count: 1 },
+        { label: '吃', emoji: '🍜', color: '#F2994A', count: 1 },
+        { label: '游', emoji: '🏖️', color: '#2BAE8E', count: 1 },
+        { label: '养', emoji: '🏥', color: '#E5484D', count: 1 },
+      ],
+    });
+  }
+
+  return next;
+}
+
+/** @deprecated 使用 enrichTemplatePreviewData */
+function enrichTravelPreviewData(templateId, data = {}) {
+  return enrichTemplatePreviewData(templateId, data);
 }
 
 function followupsDirForSkill(skill) {
@@ -78,10 +332,16 @@ function findTemplatePair(id) {
 }
 
 // 将默认数据写回 HTML 内嵌的 <script type="application/json">，找不到则追加到 </body> 前
+// 优先写回「无 id」的默认值块，避免覆盖 waypointSpotsData 等数据槽
 function setEmbeddedJson(html, obj) {
   const json = JSON.stringify(obj, null, 2);
-  const re = /(<script[^>]*type=["']application\/json["'][^>]*>)([\s\S]*?)(<\/script>)/i;
+  const re = /(<script(?![^>]*\sid\s*=)[^>]*type=["']application\/json["'][^>]*>)([\s\S]*?)(<\/script>)/i;
   if (re.test(html)) return html.replace(re, `$1\n${json}\n$3`);
+  const reAny = /(<script[^>]*type=["']application\/json["'][^>]*>)([\s\S]*?)(<\/script>)/i;
+  // 若仅有带 id 的槽，则在 </body> 前追加独立默认值块
+  if (reAny.test(html)) {
+    return html.replace(/<\/body>/i, `<script type="application/json">\n${json}\n</script>\n</body>`);
+  }
   return html.replace(/<\/body>/i, `<script type="application/json">\n${json}\n</script>\n</body>`);
 }
 
@@ -148,7 +408,7 @@ async function handleTemplates(req, res, method, parts) {
     return json(res, 200, { ok: true, reports });
   }
 
-  // 预览
+  // 预览：与生产同路径 renderCard（collectCss 内联样式），避免 srcdoc 相对 CSS 白板
   if (parts[0] === 'preview' && parts[1] && method === 'GET') {
     const id = decodeURIComponent(parts[1]);
     const pair = scanTemplatePairs().find((p) => {
@@ -157,9 +417,32 @@ async function handleTemplates(req, res, method, parts) {
     });
     if (!pair) return json(res, 404, { ok: false, error: 'template_not_found' });
     const html = fs.readFileSync(pair.htmlFile, 'utf8');
-    const out = renderTemplate(html, parseEmbeddedJson(html) || {});
+    const embedded = parseEmbeddedJson(html) || {};
+    const data = enrichTemplatePreviewData(id, embedded);
+    const htmlDir = path.dirname(pair.htmlFile);
+    let out = '';
+    try {
+      const card = renderCard(htmlDir, { template_id: id, data });
+      out = card.pages[0] || '';
+    } catch {
+      out = renderTemplate(html, data);
+    }
+    out = inlinePreviewStyles(out, pair.skill);
     const layout = JSON.parse(fs.readFileSync(pair.manifestFile, 'utf8')).layout || 'card';
-    return json(res, 200, { ok: true, id, html: out, layout });
+    return json(res, 200, {
+      ok: true,
+      id,
+      html: out,
+      layout,
+      preview_meta: {
+        static_svg_injected: !!(data.static_svg && String(data.static_svg).includes('<svg')),
+        static_svg_bytes: data.static_svg ? String(data.static_svg).length : 0,
+        map_key: !!(data.map_key),
+        markers: Array.isArray(data.markers) ? data.markers.length : 0,
+        center: data.centerName || '',
+        css_inlined: /<style[\s>]/i.test(out) && !/<link\b[^>]*rel=["']stylesheet["']/i.test(out),
+      },
+    });
   }
 
   // 追问读写：/templates/:id/followups（admin 挂载的紧密/其他追问）

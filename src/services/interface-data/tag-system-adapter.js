@@ -2,7 +2,7 @@ import { HttpClient } from './http-client.js';
 import { PgTagReader } from './pg-tag-reader.js';
 
 export function createTagSystemAdapter(options = {}) {
-  const baseUrl = options.baseUrl || process.env.FLATTALK_TAG_SYSTEM_BASE_URL || 'http://192.168.1.160:8010';
+  const baseUrl = options.baseUrl || process.env.FLATTALK_TAG_SYSTEM_BASE_URL || 'http://10.21.202.9:8010';
   const token = options.token || process.env.FLATTALK_TAG_SYSTEM_TOKEN || process.env.TAG_SYSTEM_SSO_TOKEN || '';
   const profileByEntity = options.profileByEntity || null;
   const pgReader = options.pgReader ?? new PgTagReader({ pgUrl: options.pgUrl });

@@ -480,10 +480,110 @@ function sanitizeHtmlCard(html = "") {
     html = decodeBasicHtmlEntities(html);
   }
   if (!html.includes("gxy-html-fallback") || !html.includes("data-renderer=")) return "";
-  return html
+
+  // 保护 textarea 内容（卡片源码供 blob 物化），避免 script/on* 清洗破坏卡片 HTML
+  const protectedChunks = [];
+  html = html.replace(/<textarea([^>]*)>([\s\S]*?)<\/textarea>/gi, (m, attrs, content) => {
+    const idx = protectedChunks.length;
+    protectedChunks.push(content);
+    return `<textarea${attrs} data-protected-idx="${idx}"></textarea>`;
+  });
+
+  html = html
     .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/\son\w+="[^"]*"/gi, "")
     .replace(/\son\w+='[^']*'/gi, "");
+
+  // 还原 textarea 内容
+  html = html.replace(/<textarea([^>]*?)\s+data-protected-idx="(\d+)"([^>]*)><\/textarea>/gi,
+    (m, pre, idx, post) => `<textarea${pre}${post}>${protectedChunks[parseInt(idx)] || ""}</textarea>`);
+
+  return html;
+}
+
+/**
+ * 卡片 HTML 缓存：绕过 DOM textarea，避免移动端浏览器对超长 innerHTML 内容截断。
+ * key = iframe 序号，value = 完整未清洗的卡片 HTML（含 <script>）。
+ */
+const _cardHtmlCache = new Map();
+let _cardHtmlCacheSeq = 0;
+
+/**
+ * 历史经验（travel_route-pipeline.md §8.2）：
+ * srcdoc 属性转义串在部分环境下会导致腾讯 GLJS/瓦片异常；
+ * 注入气泡后把 iframe 换成 blob: URL，同源 + 可执行脚本，Referer 走父页面域名。
+ * 另：手机浏览器常截断超长 srcdoc 属性 → 空白卡；优先读 JS 缓存或同级 textarea.gxy-card-html-source。
+ */
+function materializeTemplateCardFrames(root, rawCardHtml = "") {
+  if (!root || !root.querySelectorAll) return;
+  const frames = root.querySelectorAll("iframe.gxy-template-card-frame");
+  console.log("[CardBlob] frames found:", frames.length, "rawCardHtml len:", rawCardHtml.length);
+  frames.forEach((iframe, fi) => {
+    try {
+      if (iframe.dataset.blobMaterialized === "1") return;
+      let html = "";
+      // 优先从 JS 变量提取 textarea 内页面源码（完全绕过 DOM）
+      if (rawCardHtml && rawCardHtml.length > 20) {
+        const taMatch = rawCardHtml.match(/<textarea[^>]*class="[^"]*gxy-card-html-source[^"]*"[^>]*>([\s\S]*?)<\/textarea>/i);
+        if (taMatch && taMatch[1].length > 20) {
+          html = taMatch[1].replace(/&lt;\/textarea/gi, "</textarea");
+          console.log("[CardBlob] extracted from JS textarea, len:", html.length);
+        } else if (/<(?:!doctype|html)\b/i.test(rawCardHtml)) {
+          html = rawCardHtml;
+          console.log("[CardBlob] using rawCardHtml directly, len:", html.length);
+        }
+      }
+      // 回退：从 DOM textarea 读取
+      if (!html || html.length < 20) {
+        const holder = iframe.parentElement?.querySelector?.("textarea.gxy-card-html-source");
+        if (holder) {
+          html = String(holder.value || "");
+          console.log("[CardBlob] DOM textarea value len:", html.length);
+          try { holder.remove(); } catch { /* ignore */ }
+        }
+      }
+      // 回退：srcdoc
+      if (!html || html.length < 20) {
+        const srcdoc = iframe.getAttribute("srcdoc");
+        if (srcdoc && srcdoc.length >= 20) {
+          html = srcdoc;
+          console.log("[CardBlob] using srcdoc, len:", html.length);
+        }
+      }
+      if (!html || html.length < 20) {
+        console.warn("[CardBlob] no HTML source found for iframe", fi);
+        return;
+      }
+      const origin = (typeof location !== "undefined" && location.origin) ? location.origin : "";
+      html = html
+        .replace(/<link\b[^>]*rel=["']stylesheet["'][^>]*>/gi, (tag) => {
+          const href = (tag.match(/href=["']([^"']+)["']/i) || [])[1] || "";
+          if (!href || /^(https?:|data:|\/\/|\/)/i.test(href)) return tag;
+          return "<!-- stripped-relative-css -->";
+        });
+      if (origin && !/<base\b/i.test(html)) {
+        const baseTag = `<base href="${origin}/">`;
+        html = /<head[^>]*>/i.test(html)
+          ? html.replace(/<head([^>]*)>/i, `<head$1>${baseTag}`)
+          : `${baseTag}${html}`;
+      }
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      iframe.dataset.blobMaterialized = "1";
+      iframe.removeAttribute("srcdoc");
+      iframe.setAttribute(
+        "sandbox",
+        "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox",
+      );
+      iframe.src = url;
+      console.log("[CardBlob] iframe", fi, "blob URL set:", url.substring(0, 50));
+      setTimeout(() => {
+        try { URL.revokeObjectURL(url); } catch { /* ignore */ }
+      }, 120000);
+    } catch (e) {
+      console.warn("[CardBlob] materialize failed for iframe", fi, ":", e);
+    }
+  });
 }
 
 function recoverHtmlCardFromSource(value = "") {
@@ -501,8 +601,10 @@ function recoverHtmlCardFromSource(value = "") {
     '<style>',
     '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:hidden;}',
     '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:860px;border:0;border-radius:10px;background:#fff;overflow:hidden;}',
+    '.gxy-card-html-source{display:none !important;}',
     '</style>',
-    `<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" scrolling="no" srcdoc="${escapeHtml(pageHtml)}"></iframe>`,
+    `<textarea class="gxy-card-html-source" hidden aria-hidden="true">${String(pageHtml).replace(/<\/textarea/gi, "&lt;/textarea")}</textarea>`,
+    '<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" scrolling="no"></iframe>',
     '</article>',
   ].join('');
 }
@@ -839,6 +941,10 @@ async function recordWavDataUrl(stream, durationMs = 6000) {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext) throw new Error("当前浏览器不支持 WAV 录音采集");
   const context = new AudioContext();
+  // 移动端 AudioContext 需要 resume 才能采集
+  if (context.state === "suspended") {
+    try { await context.resume(); } catch { /* ignore */ }
+  }
   const source = context.createMediaStreamSource(stream);
   const processor = context.createScriptProcessor(4096, 1, 1);
   const chunks = [];
@@ -849,10 +955,16 @@ async function recordWavDataUrl(stream, durationMs = 6000) {
     total += input.length;
   };
   source.connect(processor);
-  processor.connect(context.destination);
+  // 移动端 ScriptProcessorNode 必须连接到 destination 才能触发 onaudioprocess
+  // 用零增益 GainNode 避免回授，同时保持回调持续运行
+  const silentGain = context.createGain();
+  silentGain.gain.value = 0;
+  processor.connect(silentGain);
+  silentGain.connect(context.destination);
   await new Promise((resolve) => window.setTimeout(resolve, durationMs));
   processor.disconnect();
   source.disconnect();
+  silentGain.disconnect();
   await context.close?.();
   if (!total) throw new Error("未录到有效语音");
   const merged = new Float32Array(total);
@@ -973,6 +1085,14 @@ class MobileApp {
     try {
       this.state.location = await window.locationService.detect();
       console.log("[Mobile] location:", this.state.location);
+      // 便于核对：定位是否会随下一句聊天真正上报（payload.location）
+      if (this.state.location?.lat != null) {
+        console.log("[Mobile] location will be sent on chat as payload.location", {
+          lat: this.state.location.lat,
+          lng: this.state.location.lng,
+          source: this.state.location.source,
+        });
+      }
     } catch (e) {
       console.warn("[Mobile] location detect failed:", e);
     }
@@ -2024,6 +2144,7 @@ class MobileApp {
     if (!log) return;
     const role = kind === "user" ? "user" : "ai";
     const safeText = fallbackCleanText(text);
+    const rawCardHtml = options.rawCardHtml || options.html || "";
     const html = options.html ? sanitizeHtmlCard(options.html) : "";
     const body = html
       ? html
@@ -2031,6 +2152,10 @@ class MobileApp {
       ? renderPendingBubbleContent(safeText)
       : options.markdown ? renderMarkdown(safeText) : escapeHtml(safeText);
     log.insertAdjacentHTML("beforeend", `<div class="bubble ${role} ${options.markdown ? "markdown-body" : ""} ${html ? "html-card-bubble" : ""} ${options.pending ? "pending-bubble" : ""}">${body}</div>`);
+    if (html) {
+      const bubbles = log.querySelectorAll(".bubble");
+      materializeTemplateCardFrames(bubbles[bubbles.length - 1], rawCardHtml);
+    }
     scrubVisibleMojibake(log);
     log.scrollTop = log.scrollHeight;
   }
@@ -2072,10 +2197,12 @@ class MobileApp {
     if (last) {
       last.classList.remove("pending-bubble");
       last.classList.toggle("markdown-body", Boolean(options.markdown));
+      const rawCardHtml = options.rawCardHtml || options.html || "";
       const html = options.html ? sanitizeHtmlCard(options.html) : "";
       last.classList.toggle("html-card-bubble", Boolean(html));
       if (html) last.innerHTML = html;
       else last.innerHTML = options.markdown ? renderMarkdown(safeText) : escapeHtml(safeText);
+      if (html) materializeTemplateCardFrames(last, rawCardHtml);
       scrubVisibleMojibake(last);
       // 标签页自动初始化：检测 .tab + .tab-panel 并绑定点击切换
       this._initTabs(last);
@@ -2223,6 +2350,15 @@ class MobileApp {
         presetKey: this.auth.presetKey,
         location: this.state.location || null,
       };
+      if (payload.location?.lat != null) {
+        console.log("[Mobile] chat payload.location:", {
+          lat: payload.location.lat,
+          lng: payload.location.lng,
+          source: payload.location.source,
+        });
+      } else {
+        console.warn("[Mobile] chat payload.location missing — nearby may fall back to 嘉路中心");
+      }
       if (sendOptions.skill_key) {
         payload.skill_key = sendOptions.skill_key;
       }
@@ -2378,6 +2514,7 @@ class MobileApp {
       console.log(`[SceneSwitch] 已从「${fromName}」切换到「${toName}」，之前的话题随时可以回来`);
     }
     const answer = sanitizeAssistantText(normalizedBody.answer || normalizedBody.answer_text || normalizedBody.message || normalizedBody.error || "\u670d\u52a1\u5df2\u54cd\u5e94\u3002");
+    const rawCardHtml = String(normalizedBody.rendered_html || normalizedBody.html_fallback || "");
     const fallbackHtml = renderSafeHtmlFallback(normalizedBody);
     const routeMeta = {
       skill_key: normalizedBody.skill_key || "",
@@ -2389,7 +2526,7 @@ class MobileApp {
     };
     this.state.latestResult = normalizedBody;
     this.state.latestAnswer = answer;
-    this.updateLastAiBubble(answer, { markdown: !fallbackHtml, html: fallbackHtml, error: normalizedBody.ok === false, meta: routeMeta });
+    this.updateLastAiBubble(answer, { markdown: !fallbackHtml, html: fallbackHtml, rawCardHtml, error: normalizedBody.ok === false, meta: routeMeta });
     this.appendAssistantActions(normalizedBody);
     this.appendCompactFollowups(normalizedBody);
     this.appendFollowupSuggestions(normalizedBody);
@@ -2425,7 +2562,8 @@ class MobileApp {
         ...item,
         skill_key: item.skill_key || result.skill_key || "common",
         source_template_id: item.source_template_id || result.template_id || "",
-        next_template_id: item.next_template_id || result.template_id || "",
+        // 仅透传条目自带的 next；勿默认成当前卡，否则服务端会当成「显式模板」锁死旧卡
+        ...(item.next_template_id ? { next_template_id: item.next_template_id } : {}),
       })}">${escapeHtml(item.label || "\u6267\u884c")}</button>
     `).join("");
     last.insertAdjacentHTML("beforeend", `<div class="mobile-action-bar">${buttons}</div>`);
@@ -2444,7 +2582,7 @@ class MobileApp {
     const oldBar = last.querySelector(".ambiguity-options-bar");
     if (oldBar) oldBar.remove();
     const buttonsHtml = options.map((opt) =>
-      `<button type="button" class="ambiguity-option-btn" data-scene="${escapeHtml(opt.scene_key || opt.skill_key || "")}" data-label="${escapeHtml(opt.label || "")}" data-route-id="${escapeHtml(opt.route_id || "")}" ` +
+      `<button type="button" class="ambiguity-option-btn" data-scene="${escapeHtml(opt.scene_key || opt.skill_key || "")}" data-label="${escapeHtml(opt.label || "")}" data-route-id="${escapeHtml(opt.route_id || "")}" data-intent-id="${escapeHtml(opt.lis_clarify_intent_id || opt.intent_id || "")}" ` +
       `style="display:block;width:100%;padding:14px;margin:6px 0;border:1.5px solid #e0e0e0;border-radius:12px;` +
       `background:#fff;cursor:pointer;text-align:left;font-size:15px;color:#333;transition:all 0.2s;">` +
       `<span style="font-size:20px;margin-right:8px;">${escapeHtml(opt.icon || "")}</span>` +
@@ -2469,8 +2607,13 @@ class MobileApp {
         const label = btn.getAttribute("data-label");
         const scene = btn.getAttribute("data-scene");
         const routeId = btn.getAttribute("data-route-id");
+        const intentId = btn.getAttribute("data-intent-id");
         const context = { ambiguity_pick: true, ambiguity_scene_key: scene };
         if (routeId) context.publish_route_id = routeId;
+        if (intentId) {
+          context.lis_clarify_intent_id = intentId;
+          context.selected_intent_id = intentId;
+        }
         this.sendMessage(label, {
           skill_key: scene || (routeId ? "travel_route" : ""),
           context,
@@ -2592,7 +2735,9 @@ class MobileApp {
         ...item,
         skill_key: item.skill_key || result.skill_key || "common",
         source_template_id: item.source_template_id || result.template_id || "",
-        next_template_id: item.next_template_id || result.template_id || "",
+        // 仅透传条目自带的 next；勿默认成当前卡（如 diet_card），否则「生成一周计划」
+        // 会被 handleChat 当成显式 template_id，盖住 meal_plan.generate_weekly_plan→weekly_plan
+        ...(item.next_template_id ? { next_template_id: item.next_template_id } : {}),
       })}">${escapeHtml(item.label || item.user_prompt || "\u7ee7\u7eed")}</button>
     `).join("");
     last.insertAdjacentHTML("beforeend", `<div class="mobile-followup-bar">${buttons}</div>`);
@@ -2616,6 +2761,15 @@ class MobileApp {
     const bubbles = screen.querySelectorAll(".bubble.ai");
     const last = bubbles[bubbles.length - 1];
     if (!last) return;
+    // 卡片 HTML 内已注入 compact-followups 时，不再在气泡外重复追加
+    if (last.querySelector(".compact-followups") || last.querySelector(".compact-chip")) return;
+    const frame = last.querySelector("iframe");
+    try {
+      const doc = frame?.contentDocument;
+      if (doc?.querySelector?.(".compact-followups, .compact-chip")) return;
+    } catch {
+      // cross-origin / not ready — fall through to outer bar
+    }
     const oldBar = last.querySelector(".mobile-compact-bar");
     if (oldBar) oldBar.remove();
     const buttons = items.map((item) => {
@@ -2757,6 +2911,9 @@ class MobileApp {
     const originalText = button?.textContent || suggestion.label || prompt;
     const canExecuteAction = Boolean(suggestion.action_key && isSupportedMobileAction(suggestion));
     const payloadSuggestion = { ...suggestion };
+    if (canExecuteAction && suggestion.action_key && !payloadSuggestion.skill_key) {
+      payloadSuggestion.skill_key = suggestion.action_key.split(".")[0];
+    }
     if (!canExecuteAction && payloadSuggestion.action_key) {
       payloadSuggestion.unsupported_action_key = payloadSuggestion.action_key;
       delete payloadSuggestion.action_key;
@@ -3404,7 +3561,6 @@ class MobileApp {
   }
 
   async startVoiceInput() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const input = screen.querySelector("#mobileChatInput");
     const button = screen.querySelector("#mobileVoiceButton");
     const securityMessage = voiceSecurityMessage();
@@ -3413,87 +3569,35 @@ class MobileApp {
       this.addBubble("ai", securityMessage, { error: true });
       return;
     }
-    if (!SpeechRecognition || !input) {
-      await this.startServerVoiceInput({ reason: "当前浏览器不支持在线语音识别" });
-      return;
-    }
+    // 直接使用服务器 ASR（浏览器 SpeechRecognition 在国内网络下依赖 Google 服务，必然失败浪费时间）
+    if (!input) return;
     if (this.state.sending) {
       this.showToast("消息处理中，请稍后再使用语音");
       return;
     }
-    if (this.state.recognizing) {
-      this.stopVisibleVoiceInput();
+    if (this.state.recordingServerVoice) {
       return;
     }
-    const recognition = new SpeechRecognition();
-    recognition.lang = "zh-CN";
-    recognition.interimResults = true;
-    recognition.continuous = true;
-    let finalTranscript = input.value.trim();
-    let submitted = false;
-    this.state.recognizing = true;
-    this.voiceRecognition = recognition;
-    button?.classList.add("listening");
-    recognition.onresult = (event) => {
-      let interimTranscript = "";
-      let receivedFinal = false;
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        const transcript = event.results[index][0]?.transcript || "";
-        if (event.results[index].isFinal) {
-          finalTranscript = `${finalTranscript} ${transcript}`.trim();
-          receivedFinal = true;
-        } else {
-          interimTranscript += transcript;
-        }
-      }
-      input.value = `${finalTranscript} ${interimTranscript}`.trim();
-      if (this.state.sending || !receivedFinal || submitted) return;
-      const parsed = parseVoiceSubmitCommand(input.value);
-      if (!parsed.shouldSubmit) return;
-      submitted = true;
-      input.value = parsed.text;
-      recognition.stop();
-      if (parsed.text) window.setTimeout(() => {
-        if (!this.state.sending && input.value.trim() === parsed.text) this.sendMessage(parsed.text);
-      }, 120);
-    };
-    recognition.onerror = (event) => {
-      const error = event?.error || "识别失败";
-      if (error === "network") {
-        this.state.speechNetworkUnavailable = true;
-        this.resetVisibleVoiceInput({ focus: true });
-        this.startServerVoiceInput({ reason: "浏览器在线语音识别服务连接失败" });
-        return;
-      }
-      const message = ["not-allowed", "service-not-allowed"].includes(error)
-        ? "浏览器未授予麦克风权限。请确认当前页面使用 HTTPS/localhost，并在地址栏允许麦克风。"
-        : `语音输入未完成：${error}`;
-      this.addBubble("ai", message, { error: true });
-    };
-    recognition.onend = () => {
-      this.resetVisibleVoiceInput({ focus: true });
-    };
-    try {
-      recognition.start();
-    } catch {
-      this.resetVisibleVoiceInput({ focus: true });
-      this.addBubble("ai", "语音输入启动失败，请稍后再试。");
-    }
+    await this.startServerVoiceInput({ reason: "" });
   }
 
   async startServerVoiceInput({ reason = "正在使用服务器语音识别" } = {}) {
     const input = screen.querySelector("#mobileChatInput");
+    const button = screen.querySelector("#mobileVoiceButton");
     if (!navigator.mediaDevices?.getUserMedia || !(window.AudioContext || window.webkitAudioContext)) {
       this.addBubble("ai", `${reason}，但当前浏览器不支持录音上传。请直接输入文字。`, { error: true });
       return;
     }
     if (this.state.sending || this.state.recordingServerVoice) return;
     this.state.recordingServerVoice = true;
-    this.addBubble("ai", `${reason}，已切换为服务器 ASR。请在 6 秒内重新说出需求，我会自动识别并提交。`);
+    // 显示录音中状态：按钮变色 + toast 提示
+    button?.classList.add("listening");
+    this.showToast("录音中…请说话");
     let stream = null;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const audioBase64 = await recordWavDataUrl(stream, 6000);
+      this.showToast("录音结束，正在识别…");
       const payload = await fetchJson("/api/input/voice", {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -3514,17 +3618,26 @@ class MobileApp {
         })
       });
       if (payload.input?.text) {
-        if (input) input.value = payload.input.text;
-        this.addBubble("ai", `已识别：${payload.input.text}`);
+        const recognized = payload.input.text;
+        const { shouldSubmit, text: submitText } = parseVoiceSubmitCommand(recognized);
+        if (shouldSubmit) {
+          if (submitText && input) input.value = submitText;
+          this.showToast(submitText ? `已识别并提交：${submitText}` : "语音命令，正在提交…");
+          await this.sendMessage(submitText || recognized);
+        } else {
+          if (input) input.value = recognized;
+          this.showToast(`已识别：${recognized}（说"提交"或"好了"发送）`);
+        }
       } else if (payload.input?.voiceOk === false) {
-        this.addBubble("ai", `语音暂未识别出有效文字。请靠近麦克风、说完整一句后再试，或直接输入文字。${payload.input.warning ? `（${payload.input.warning}）` : ""}`, { error: true });
+        this.showToast(payload.input.warning || "语音未识别出有效文字，请再试一次");
       }
       if (payload.result) this.addAssistantResult(payload.result);
     } catch (err) {
-      this.addBubble("ai", `服务器语音识别未完成：${err.message}。请再试一次或直接输入文字。`, { error: true });
+      this.showToast(`语音识别未完成：${err.message}`);
     } finally {
       stream?.getTracks?.().forEach((track) => track.stop());
       this.state.recordingServerVoice = false;
+      button?.classList.remove("listening");
       this.resetVisibleVoiceInput({ focus: true });
     }
   }
@@ -3628,6 +3741,36 @@ window.addEventListener('message', (event) => {
     }
   } catch (e) { /* 忽略卡片消息异常 */ }
 });
+
+// 找服务等内联卡会被 sanitize 剥掉 script，父页代理 [data-action-key] 点击。
+document.addEventListener('click', (event) => {
+  try {
+    const btn = event.target?.closest?.('.html-card-bubble [data-action-key], .gxy-html-fallback [data-action-key]');
+    if (!btn) return;
+    const actionKey = btn.getAttribute('data-action-key') || '';
+    if (!actionKey) return;
+    event.preventDefault();
+    event.stopPropagation();
+    let params = {};
+    const paramsStr = btn.getAttribute('data-params');
+    if (paramsStr) {
+      try { params = JSON.parse(paramsStr); } catch { /* ignore */ }
+    }
+    const app = window.FlatTalkMobileApp;
+    if (app && typeof app.handleAssistantAction === 'function') {
+      const title = btn.querySelector?.('.card-title')?.textContent?.trim() || '';
+      const prompt = btn.getAttribute('data-user-prompt') || (title ? `查看「${title}」服务详情` : '查看详情');
+      app.handleAssistantAction({
+        action_key: actionKey,
+        action_type: btn.getAttribute('data-action-type') || 'dispatch',
+        skill_key: btn.getAttribute('data-skill-key') || '',
+        user_prompt: prompt,
+        label: prompt,
+        params,
+      }, null); // 勿传入整张卡 DOM，避免 textContent=「处理中」毁掉卡片结构
+    }
+  } catch (e) { /* 忽略内联卡点击异常 */ }
+}, true);
 
 const mojibakeObserver = new MutationObserver(() => scrubVisibleMojibake(screen));
 mojibakeObserver.observe(screen, {

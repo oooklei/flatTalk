@@ -3,5 +3,13 @@
   "description": "单个派单详情，含接单/拒单/改派操作入口",
   "layout": "vertical",
   "match": "派单详情、处理派单、接单、拒单、改派、这条派单",
-  "required": ["dispatchId", "orderId", "workerName", "status"]
+  "required": [
+    "dispatchId",
+    "orderId",
+    "workerName",
+    "status"
+  ],
+  "intent_id": "dispatch_detail",
+  "product_domain": "dispatch_manage",
+  "name": "单个派单详情，含接单/拒单/改派操作入口"
 }

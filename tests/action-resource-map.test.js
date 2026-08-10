@@ -11,45 +11,53 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mapPath = path.join(__dirname, '..', 'src', 'core', 'actions', 'action-resource-map.json');
 
-test('action-resource-map: 默认加载内置清单，含 travel_route/meal_plan 样板', () => {
+test('action-resource-map loads built-in travel and meal actions', () => {
   const map = loadActionResourceMap();
-  assert.ok(Array.isArray(map.actions) && map.actions.length > 0, 'actions 应为非空数组');
+  assert.ok(Array.isArray(map.actions) && map.actions.length > 0);
   const keys = map.actions.map((a) => a.action_key);
-  assert.ok(keys.includes('travel_route.calculate_budget'), '应含 travel_route.calculate_budget');
-  assert.ok(keys.includes('travel_route.check_accessibility'), '应含 travel_route.check_accessibility');
-  assert.ok(keys.includes('travel_route.check_policy_subsidy'), '应含 travel_route.check_policy_subsidy');
-  assert.ok(keys.includes('meal_plan.check_risk'), '应含 meal_plan.check_risk');
+  assert.ok(keys.includes('travel_route.calculate_budget'));
+  assert.ok(keys.includes('travel_route.check_availability'));
+  assert.ok(keys.includes('travel_route.check_accessibility'));
+  assert.ok(keys.includes('travel_route.check_policy_subsidy'));
+  assert.ok(keys.includes('meal_plan.check_risk'));
 });
 
-test('action-resource-map: 每条必含 endpoint / param_sources', () => {
+test('action-resource-map actions include endpoint and param_sources', () => {
   const map = loadActionResourceMap();
-  for (const a of map.actions) {
-    assert.ok(a.endpoint, `${a.action_key} 缺 endpoint`);
-    assert.ok(a.param_sources, `${a.action_key} 缺 param_sources`);
+  for (const action of map.actions) {
+    assert.ok(action.endpoint, `${action.action_key} missing endpoint`);
+    assert.ok(action.param_sources, `${action.action_key} missing param_sources`);
   }
 });
 
-test('action-resource-map: 可通过自定义路径加载', () => {
+test('action-resource-map can load a custom path', () => {
   const map = loadActionResourceMap(mapPath);
   assert.ok(map.actions.length > 0);
 });
 
-test('getActionResource: 精确命中', () => {
+test('getActionResource returns exact action', () => {
   const map = loadActionResourceMap();
-  const r = getActionResource('travel_route.calculate_budget', map);
-  assert.ok(r);
-  assert.equal(r.label, '测算旅居预算');
-  assert.equal(r.target, 'bff');
-  assert.equal(r.next_template_id, 'route_card');
-  assert.ok(r.params_schema && r.params_schema.destination);
-  assert.ok(r.param_sources && r.param_sources.destination);
+  const budget = getActionResource('travel_route.calculate_budget', map);
+  assert.ok(budget);
+  assert.equal(budget.target, 'bff');
+  assert.equal(budget.next_template_id, 'route_card');
+  assert.ok(budget.params_schema && budget.params_schema.destination);
+  assert.ok(budget.param_sources && budget.param_sources.destination);
+
+  const availability = getActionResource('travel_route.check_availability', map);
+  assert.ok(availability);
+  assert.equal(availability.target, 'jintiaodong');
+  assert.equal(availability.next_template_id, 'travel_availability_card');
 });
 
-test('getActionResource: 缺省用内置 map，找不到返回 null', () => {
+test('getActionResource returns null for unknown action with default map', () => {
   assert.equal(getActionResource('not_exist.action_key'), null);
-  assert.ok(getActionResource('meal_plan.check_risk'), '内置 map 应命中 meal_plan.check_risk');
+  assert.ok(getActionResource('meal_plan.check_risk'));
 });
 
-test('SPECIAL_CASE_ACTION_KEYS: 初始仅 check_weather_risk', () => {
-  assert.deepEqual(SPECIAL_CASE_ACTION_KEYS, ['travel_route.check_weather_risk']);
+test('SPECIAL_CASE_ACTION_KEYS bypass generic fallback for deterministic actions', () => {
+  assert.deepEqual(SPECIAL_CASE_ACTION_KEYS, [
+    'travel_route.check_weather_risk',
+    'travel_route.check_availability',
+  ]);
 });

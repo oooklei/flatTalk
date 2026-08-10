@@ -180,6 +180,9 @@
   "source": "flatTalk-dashboard",
   "dashboard_id": "route_dash_excel_线路9_桂林_阳朔_三江_龙胜梯田温泉侗瑶养老旅居线",
   "route_id": "gx_excel_09",
-  "updated_at": "2026-08-05T22:13:28.078Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:58.079Z",
+  "spot_images_source": "dashboard_local_kb",
+  "boundary_source": "datav_local",
+  "boundary_name": "桂林市",
+  "boundary_polygon_count": 1
 }

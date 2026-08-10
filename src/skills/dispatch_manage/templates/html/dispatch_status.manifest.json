@@ -3,5 +3,12 @@
   "description": "派单进度跟踪，展示工单状态更新与催单功能",
   "layout": "vertical",
   "match": "派单进度、状态更新、催单、改约、状态查询",
-  "required": ["dispatchId", "status", "changedAt"]
+  "required": [
+    "dispatchId",
+    "status",
+    "changedAt"
+  ],
+  "intent_id": "dispatch_status",
+  "product_domain": "dispatch_manage",
+  "name": "派单进度跟踪，展示工单状态更新与催单功能"
 }

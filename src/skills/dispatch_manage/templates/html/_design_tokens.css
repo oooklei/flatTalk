@@ -1,25 +1,26 @@
-/* dispatch_manage 共享设计令牌 —— 遵循现有模板库：蓝色系 #2C7BE5 */
+/* dispatch_manage · VI 令牌（政务端桂颐：霁蓝主色 + 暖橙点缀） */
 :root{
-  --primary:#2C7BE5;
-  --primary-dark:#1E63C0;
-  --grad:linear-gradient(135deg,#2C7BE5 0%,#5AA0F2 100%);
-  --bg:#EEF4FE;
+  --primary:#3A6B8C;
+  --primary-dark:#1E4A66;
+  --grad:linear-gradient(135deg,#3A6B8C 0%,#1E4A66 100%);
+  --bg:#FAF8F5;
   --card:#fff;
-  --ink:#1F2D3D;
-  --muted:#6B7A8F;
-  --line:#E3E8EF;
+  --ink:#3D3A36;
+  --muted:#8A8278;
+  --line:#E4E0D8;
   --danger:#E5484D;
-  --shadow:0 4px 18px rgba(31,45,61,.08);
+  --accent:#E8843C;
+  --shadow:0 4px 18px rgba(62,56,50,.08);
   --radius:16px;
 
-  --text-primary:#1F2D3D;
-  --text-secondary:#6B7A8F;
+  --text-primary:#3D3A36;
+  --text-secondary:#8A8278;
   --fs-body:15px;
   --fs-section:15px;
   --fs-form-label:14px;
 }
 *{box-sizing:border-box;}
-body{margin:0;padding:14px;font-size:16px;line-height:1.55;font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%;}
+body{margin:0;padding:14px;font-size:16px;line-height:1.55;font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%;}
 .nb-card{max-width:420px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
 .nb-hero{padding:16px;background:var(--grad);color:#fff;}
 .nb-hero .eyebrow{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.22);font-size:12px;margin-bottom:8px;}

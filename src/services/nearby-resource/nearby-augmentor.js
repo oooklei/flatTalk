@@ -11,6 +11,7 @@
 import TencentMapAdapter from '../map/tencent-map-adapter.js';
 import { enrichCategories, attachEnrichment } from './tavily-nearby-adapter.js';
 import * as poiCache from './poi-cache.js';
+import { captureToLocalKnowledge } from '../interface-knowledge-capture.js';
 
 // ── 配置 ──
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10分钟
@@ -249,6 +250,24 @@ export async function enrich(facilities, center, intent = 'all', options = {}) {
   };
 
   console.log('[nearby-augmentor] enrichment stats:', stats);
+
+  // 取数即入库：真实外部接口获取的数据（腾讯地图补充 POI + Tavily 富化）写入 nearby_resource 知识库（按 poi_id 幂等）
+  try {
+    const external = merged.filter((m) => m._source === 'tencent' || m.enriched_description || (m.enriched_images && m.enriched_images.length));
+    if (external.length) {
+      captureToLocalKnowledge({
+        skillKey: 'nearby_resource',
+        provider: 'nearby_external',
+        sourcePath: '腾讯地图+Tavily',
+        records: external.map((m) => ({
+          id: String(m.poi_id || m.name || `poi_${Math.random().toString(36).slice(2)}`),
+          type: m._source === 'tencent' ? 'tencent_poi' : 'tavily_enriched',
+          data: m,
+          capturedAt: new Date().toISOString(),
+        })),
+      });
+    }
+  } catch (e) { /* 入库失败不影响 nearby 主流程 */ }
 
   const result = { facilities: merged, stats, cache_status: tencentCacheStatus };
 

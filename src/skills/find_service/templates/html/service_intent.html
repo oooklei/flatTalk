@@ -9,29 +9,41 @@
 </head>
 <body>
   <!-- 语义：展示 AI 对用户输入的意图理解（意图徽标+置信度+抽取实体+紧急级别），保证可解释性。卡内无按钮，动作由追问体现。 -->
-  <article class="ai-result-card" data-layout="vertical">
-    <div class="ai-result-header">
-      <span class="ai-result-badge {{badge_type}}">{{badge_icon}} {{badge_label}}</span>
-      <span class="ai-result-confidence">置信度：<span class="score {{conf_class}}">{{confidence}}</span></span>
-    </div>
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <span class="eyebrow">意图识别</span>
+      <h1>我已理解您的需求</h1>
+      <p class="subtitle">置信度 {{confidence}} · 可解释结果</p>
+    </header>
 
-    {{#show_entities}}
-    <div class="ai-result-section">
-      <div class="ai-result-section-title">识别到的信息</div>
-      <div class="ai-result-entities">
-        {{#entities}}
-        <div class="ai-result-entity"><span class="entity-type">{{type}}</span>：{{value}}</div>
-        {{/entities}}
+    <section class="nb-section">
+      <div class="ai-result-card" style="border:0;box-shadow:none;padding:0;max-width:none">
+        <div class="ai-result-header">
+          <span class="ai-result-badge {{badge_type}}">{{badge_icon}} {{badge_label}}</span>
+          <span class="ai-result-confidence">置信度：<span class="score {{conf_class}}">{{confidence}}</span></span>
+        </div>
+
+        {{#show_entities}}
+        <div class="ai-result-section">
+          <div class="ai-result-section-title">识别到的信息</div>
+          <div class="ai-result-entities">
+            {{#entities}}
+            <div class="ai-result-entity"><span class="entity-type">{{type}}</span>：{{value}}</div>
+            {{/entities}}
+          </div>
+        </div>
+        {{/show_entities}}
+
+        {{#show_emergency}}
+        <div class="ai-result-section">
+          <div class="ai-result-section-title">紧急级别</div>
+          <div class="ai-result-entity" style="background:{{emergency_bg}};color:{{emergency_color}};">{{emergency_text}}</div>
+        </div>
+        {{/show_emergency}}
       </div>
-    </div>
-    {{/show_entities}}
+    </section>
 
-    {{#show_emergency}}
-    <div class="ai-result-section">
-      <div class="ai-result-section-title">紧急级别</div>
-      <div class="ai-result-entity" style="background:{{emergency_bg}};color:{{emergency_color}};">{{emergency_text}}</div>
-    </div>
-    {{/show_emergency}}
+    <div class="foot">AI 找服务 · 意图识别 · 桂小养</div>
   </article>
 
   <script type="application/json">
@@ -47,8 +59,8 @@
     ],
     "show_entities": true,
     "show_emergency": true,
-    "emergency_bg": "#f0fdf4",
-    "emergency_color": "#22c55e",
+    "emergency_bg": "#E8F2EC",
+    "emergency_color": "#3D6B4D",
     "emergency_text": "绿色（提示）"
   }
   </script>

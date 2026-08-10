@@ -1,9 +1,22 @@
 import { fillTemplateSlots as fillTemplateSlotsMock } from '../model-service.js';
+import { LOCAL_FILL_TEMPLATE_IDS } from './extra-template-fills.js';
 import { pickChatModel, publicModelName } from './model-registry.js';
 import { callOpenAiCompatibleModel } from './openai-compatible-client.js';
 import { loadPrompt } from './prompt-loader.js';
 import { createKnowledgeDataService } from '../../services/knowledge-data/index.js';
 import { createTencentWeatherAdapter } from '../../services/weather/tencent-weather.js';
+
+function shouldForceLocalFill(requestedId, skillKey) {
+  // 旧模板已废弃，按新主卡处理
+  if (requestedId === 'route_card') requestedId = 'sojourn_route';
+  if (requestedId === 'travel_base_card') requestedId = 'sojourn_base';
+  if (requestedId && LOCAL_FILL_TEMPLATE_IDS.has(requestedId)) return true;
+  if (requestedId && String(requestedId).startsWith('nearby_')) return true;
+  // skill 级强制仅保留结构化主路径；其余缺本地填槽的模板放开 LLM
+  if (skillKey === 'travel_route' && (!requestedId || ['sojourn_route', 'sojourn_base'].includes(requestedId))) return true;
+  if (skillKey === 'find_service' && (!requestedId || requestedId === 'service_recommend')) return true;
+  return false;
+}
 
 export function createTemplateCardModelService(options = {}) {
   const mode = options.modelMode || process.env.FLATTALK_MODEL_MODE || 'admin';
@@ -15,7 +28,26 @@ export function createTemplateCardModelService(options = {}) {
     async fillTemplateSlots(input = {}) {
       if (useMock) {
         const result = await fillTemplateSlotsMock({ ...input, knowledgeService, weatherService });
-        return { ...result, model_status: 'mock', model_used: 'mock' };
+        if (result?.model_status === 'no_local_fill') {
+          return buildNoLocalFillApology(input, result);
+        }
+        return { ...result, model_status: result.model_status || 'mock', model_used: result.model_used || 'mock' };
+      }
+
+      const requestedId = input.template_id || input.templateId || '';
+      if (shouldForceLocalFill(requestedId, input.skill_key)) {
+        const localResult = await fillTemplateSlotsMock({ ...input, knowledgeService, weatherService });
+        if (localResult?.model_status === 'no_local_fill') {
+          // 本地清单声称有填槽但未命中：放开 LLM
+        } else {
+          return { ...localResult, model_status: 'local_deterministic', model_used: 'local' };
+        }
+      } else {
+        // 先尝试本地；有结果则用本地，否则走 LLM
+        const localResult = await fillTemplateSlotsMock({ ...input, knowledgeService, weatherService });
+        if (localResult && localResult.model_status !== 'no_local_fill' && (localResult.answer_text || Object.keys(localResult.data || {}).length)) {
+          return { ...localResult, model_status: 'local_deterministic', model_used: 'local' };
+        }
       }
 
       const model = pickChatModel({ registryPath: options.registryPath, modelId: options.modelId });
@@ -85,6 +117,34 @@ export function createTemplateCardModelService(options = {}) {
   };
 }
 
+function buildNoLocalFillApology(input = {}, result = {}) {
+  const templateId = result.template_id || input.template_id || input.templateId || 'answer';
+  const message = input.message || '';
+  const answerText = message
+    ? `抱歉，我暂时无法处理「${message}」，请稍后重试或换个问法。`
+    : '抱歉，我暂时无法处理您的请求，请稍后重试。';
+  return {
+    template_id: templateId,
+    answer_text: answerText,
+    answer: answerText,
+    data: {
+      title: '桂小养答复',
+      skill_name: '通用回答',
+      answer_text: answerText,
+      answer: answerText,
+      metrics: [
+        { label: '处理状态', value: '降级兜底' },
+        { label: '下一步', value: '请稍后重试或换个问法' },
+      ],
+    },
+    actions: [],
+    followup_suggestions: [],
+    template_fit_notes: ['fallback_common_answer', 'no_local_fill'],
+    model_status: 'no_local_fill',
+    model_used: 'mock',
+  };
+}
+
 function buildFallbackMockAnswer(input = {}, status = 'mock_mode', rawReply = '') {
   const templateId = input.template_id || input.templateId || 'answer';
   const label = input.label || '该按钮动作';
@@ -134,6 +194,7 @@ function buildMessages(input) {
     evidence: input.evidence || [],
     business_data: input.business_data || {},
     conversation_history: historyText,
+    skill_instruction: buildSkillInstruction(input.skill_key),
   });
   const messages = [
     { role: 'system', content: system },
@@ -144,6 +205,18 @@ function buildMessages(input) {
   }
   messages.push({ role: 'user', content: user });
   return messages;
+}
+
+function buildSkillInstruction(skillKey = '') {
+  if (skillKey === 'travel_route') {
+    return [
+      '【旅居路线规划 · 金跳动优先规则】',
+      '1. business_data 中的 jtd.products（金跳动接口返回的可售旅居路线产品）是本次回复的【首要推荐对象】，必须作为 sojourn_route 的 product 字段，并在 answer_text 开头明确以该产品为首推。',
+      '2. 知识库证据或 business_data.routes 中的本地路线（防城港线路、十条精品路线等）仅作【补充参考】；只有当 jtd.products 为空或明显不可订时，才改用本地路线，且必须在 answer_text 中标注「金跳动暂无匹配产品，以下为本地参考路线」。',
+      '3. 严禁把本地路线排在金跳动产品之前作为首推；金跳动产品存在时，一律以金跳动为首。',
+    ].join('\n');
+  }
+  return '（本技能无专属指令）';
 }
 
 function formatHistoryText(history = []) {

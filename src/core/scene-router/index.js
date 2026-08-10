@@ -8,6 +8,7 @@ import { dispatchManageRuleSet, identifyDispatchManageScene } from './rules/disp
 import { serviceQualityEvalRuleSet } from './rules/service-quality-eval.js';
 import { nearbyResourceRuleSet } from './rules/nearby-resource.js';
 import { stableSortCandidates } from './scene-transition-manager.js';
+import { isJialuNearbyOnlyUtterance } from './place-brand-intent.js';
 
 export { DEFAULT_THRESHOLDS, scoreRuleSet } from './scoring-engine.js';
 export { elderPolicyRuleSet } from './rules/elder-policy.js';
@@ -48,6 +49,26 @@ export function identifyScene(input, options = {}) {
   const candidates = (options.ruleSets ?? RULE_SETS)
     .map((ruleSet) => scoreRuleSet(input, ruleSet, { ...globalThresholds, ...(perScene[ruleSet.scene_key] ?? {}) }));
 
+  // 举一反三：嘉路机构裸问 → 强制周边胜出（品牌 ≠ 旅居线路）
+  const utterance = typeof input === 'string'
+    ? input
+    : [input?.text, input?.utterance, input?.message, input?.query].filter(Boolean).join(' ');
+  if (isJialuNearbyOnlyUtterance(utterance)) {
+    for (const c of candidates) {
+      if (c.scene_key === 'nearby_resource') {
+        c.score = Math.max(c.score || 0, 12);
+        c.positive_score = Math.max(c.positive_score || 0, 12);
+        c.confidence = 1;
+        c.decision = 'accept';
+        c.intent = c.intent || nearbyResourceRuleSet.default_intent;
+      } else if (c.scene_key === 'travel_route') {
+        c.score = Math.min(c.score || 0, 1);
+        c.confidence = Math.min(c.confidence || 0, 0.3);
+        c.decision = 'reject';
+      }
+    }
+  }
+
   const sortedCandidates = candidates.sort((a, b) =>
     (b.confidence - a.confidence)
     || (b.score - a.score)
@@ -59,12 +80,14 @@ export function identifyScene(input, options = {}) {
 
   const second = sortedCandidates[1];
   const margin = second ? top.confidence - second.confidence : top.confidence;
+  // 品牌周边硬优先时视为已 routed，避免 margin 不足触发消歧
+  const forceRouted = isJialuNearbyOnlyUtterance(utterance) && top.scene_key === 'nearby_resource';
 
   return {
     ...top,
     candidates: sortedCandidates,
-    margin,
-    routed: top.decision === 'accept' && isAtLeastMargin(margin, globalThresholds.margin),
+    margin: forceRouted ? Math.max(margin, globalThresholds.margin) : margin,
+    routed: forceRouted || (top.decision === 'accept' && isAtLeastMargin(margin, globalThresholds.margin)),
   };
 }
 

@@ -10,7 +10,7 @@ const DEFAULT_CONFIG = Object.freeze({
   retry: { maxAttempts: 2, backoffMs: [500, 1500] },
   endpoints: {
     searchProducts: { method: 'POST', path: '/searchProducts' },
-    productDetail: { method: 'POST', path: '/productDetail' },
+    productDetail: { method: 'GET', path: '/productDetail' },
     checkAvailability: { method: 'POST', path: '/checkAvailability' },
   },
 });
@@ -28,22 +28,40 @@ export function createJtdClient(options = {}) {
       return buildSignedRequest(config, endpointName, payload, fixed);
     },
     searchProducts(query = {}) {
-      return requestWithRetry({ config, fetchImpl, endpointName: 'searchProducts', payload: query });
+      const payload = { tenantId: config.tenantId, productDomain: 'sojourn_route', ...query };
+      return requestWithRetry({ config, fetchImpl, endpointName: 'searchProducts', payload });
     },
-    productDetail(productId, skuId = '') {
+    productDetail(productId, skuId = '', extra = {}) {
+      // GET 请求：参数按字母升序拼到 query string，body 为空
+      const query = {
+        id: productId,
+        productDomain: extra.productDomain || 'sojourn_route',
+        tenantId: config.tenantId,
+        ...(skuId ? { skuId } : {}),
+      };
       return requestWithRetry({
         config,
         fetchImpl,
         endpointName: 'productDetail',
-        payload: { productId, ...(skuId ? { skuId } : {}) },
+        payload: query,
       });
     },
-    checkAvailability({ productId, skuId = '', checkIn, checkOut, quantity = 1 } = {}) {
+    checkAvailability({ productId, skuId = '', checkIn, checkOut, quantity = 1, ...extra } = {}) {
+      const payload = {
+        tenantId: config.tenantId,
+        productDomain: extra.productDomain || 'sojourn_route',
+        productId,
+        skuId,
+        checkIn,
+        checkOut,
+        quantity,
+        ...extra,
+      };
       return requestWithRetry({
         config,
         fetchImpl,
         endpointName: 'checkAvailability',
-        payload: { productId, skuId, checkIn, checkOut, quantity },
+        payload,
       });
     },
   };
@@ -86,6 +104,7 @@ function buildConfig(options = {}) {
       || env.TRAVEL_PRODUCT_API_APP_SECRET
       || env.TRAVEL_PRODUCT_API_SECRET
       || DEFAULT_CONFIG.appSecret,
+    tenantId: options.tenantId || env.JTD_TENANT_ID || '',
     timeoutMs: Number(options.timeoutMs || env.JTD_TIMEOUT_MS || DEFAULT_CONFIG.timeoutMs),
     retry: {
       ...DEFAULT_CONFIG.retry,

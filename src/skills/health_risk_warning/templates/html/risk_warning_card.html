@@ -1,131 +1,222 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>风险预警</title>
   <style>
-    :root {
-      --blue: #4a90d9;
-      --blue-line: #69b1e4;
-      --warn-red: #e54d42;
-      --text: #1a1a1a;
-      --bg: #f5f8fc;
-      --card: #fff;
-    }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537; --warn-soft:#FBF3DD; --warn-deep:#9C7715;
+  --danger:#E5484D; --danger-soft:#FDECEC; --danger-deep:#b91c1c;
+  
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:999px;
+  
+  --sh-sm:0 1px 3px rgba(62,56,50,.08); --sh-md:0 4px 12px rgba(62,56,50,.10); --sh-lg:0 8px 24px rgba(62,56,50,.12);
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--font-sans); background:var(--n0); color:var(--n800);
+  font-size:16px; line-height:1.6; padding:12px;
+  overflow-wrap:anywhere; word-break:break-word; -webkit-font-smoothing:antialiased;
+}
+img{ max-width:100%; height:auto; display:block; }
+a{ color:var(--primary); text-decoration:none; }
 
-    body {
-      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      padding: 24px 16px 48px;
-    }
 
-    .page {
-      max-width: 860px;
-      margin: 0 auto;
-      background: var(--card);
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(74, 144, 217, 0.08);
-      padding: 8px 28px 28px;
-    }
+.card{ max-width:430px; margin:0 auto; background:#fff; border:1px solid var(--n100);
+  border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-md); }
 
-    .warning-block {
-      border-top: 1.5px dashed var(--blue-line);
-      border-bottom: 1.5px solid var(--blue-line);
-      padding: 28px 4px 32px;
-    }
 
-    .warning-title {
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 22px;
-      letter-spacing: 1px;
-    }
+.hero{ padding:16px; color:#fff; background:linear-gradient(135deg,var(--primary),var(--primary-deep)); }
+.hero.blue{ background:linear-gradient(135deg,var(--accent),var(--accent-deep)); }
+.eyebrow{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--r-full);
+  background:rgba(255,255,255,.18); font-size:12px; font-weight:600; }
+.hero h1{ font-family:var(--font-serif); margin:8px 0 0; font-size:22px; line-height:1.18; letter-spacing:.5px; }
+.hero .sub{ margin-top:6px; color:rgba(255,255,255,.88); font-size:13px; }
+.hero-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.score{ font-size:42px; font-weight:800; line-height:1; }
+.score small{ font-size:14px; font-weight:600; opacity:.82; }
 
-    .warning-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
 
-    .warning-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-size: 16px;
-      color: var(--text);
-    }
+.section{ padding:13px 14px; border-top:1px solid var(--n100); }
+.section-title{ margin:0 0 10px; display:flex; align-items:center; gap:7px; color:var(--n800);
+  font-size:15px; font-weight:800; font-family:var(--font-serif); }
+.section-title::before{ content:""; width:4px; height:16px; border-radius:2px; background:var(--primary); }
+.section-title.blue::before{ background:var(--accent); }
 
-    .warn-icon {
-      flex-shrink: 0;
-      width: 20px;
-      height: 20px;
-      margin-top: 3px;
-    }
 
-    .warn-icon svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
+.pill{ display:inline-flex; align-items:center; justify-content:center; min-height:22px; padding:2px 9px;
+  border-radius:var(--r-full); background:var(--primary-soft); color:var(--primary-deep);
+  font-size:12px; font-weight:700; white-space:nowrap; }
+.pill.blue{ background:var(--accent-soft); color:var(--accent); }
+.pill.ok{ background:var(--ok-soft); color:var(--ok-deep); }
+.pill.warn{ background:var(--warn-soft); color:var(--warn-deep); }
+.pill.bad{ background:var(--danger-soft); color:var(--danger-deep); }
 
-    .warning-text {
-      flex: 1;
-      line-height: 1.65;
-    }
 
-    /* tc-deck 支持样式 */
-    .tc-deck { box-sizing: border-box; }
-    .tc-deck[data-layout="horizontal"] { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 16px; overflow-x: auto; padding: 8px 0; }
-    .tc-deck[data-layout="vertical"] { display: flex; flex-direction: column; gap: 16px; }
-    .tc-card { flex: 0 0 auto; }
+.grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.grid.three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.stat{ min-width:0; padding:10px 9px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.stat .num{ color:var(--primary-deep); font-size:20px; font-weight:800; line-height:1.1; }
+.stat .num.bad{ color:var(--danger); } .stat .num.warn{ color:var(--warn-deep); } .stat .num.ok{ color:var(--ok-deep); }
+.stat .lbl{ margin-top:4px; color:var(--n500); font-size:11px; }
 
-    @media (max-width: 640px) {
-      .page { padding: 8px 14px 20px; }
-      .warning-title { font-size: 22px; }
-      .warning-item { font-size: 15px; }
-    }
+
+.dim{ padding:9px 0; border-bottom:1px dashed var(--n100); }
+.dim:last-child{ border-bottom:0; }
+.dim-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; font-size:13px; }
+.dim-name{ font-weight:700; } .dim-name small{ margin-left:5px; color:var(--n400); font-weight:600; }
+.dim-score{ color:var(--primary-deep); font-weight:800; white-space:nowrap; }
+.bar{ height:7px; margin-top:6px; border-radius:var(--r-full); background:var(--n200); overflow:hidden; }
+.bar > span{ display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+.bar > span.warn{ background:linear-gradient(90deg,var(--warn),#f97316); }
+.bar > span.bad{ background:linear-gradient(90deg,var(--danger),#fb7185); }
+.note{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.row{ display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed var(--n100); }
+.row:last-child{ border-bottom:0; }
+.row .k{ color:var(--n500); flex:0 0 auto; } .row .v{ font-weight:700; text-align:right; min-width:0; }
+
+
+.list{ display:flex; flex-direction:column; gap:8px; }
+.item{ padding:10px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.item.warn{ background:var(--warn-soft); border-color:#fde68a; }
+.item.bad{ background:var(--danger-soft); border-color:#fecaca; }
+.item.ok{ background:var(--ok-soft); border-color:#bbf7d0; }
+.item .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; }
+.item .txt{ margin-top:5px; color:var(--n600); font-size:12px; }
+
+
+.tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ padding:4px 8px; border-radius:var(--r-md); background:var(--n200); color:var(--n500); font-size:12px; font-weight:600; }
+.tag.good{ background:var(--ok-soft); color:var(--ok-deep); } .tag.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.timeline{ position:relative; padding-left:22px; }
+.timeline::before{ content:""; position:absolute; left:7px; top:7px; bottom:7px; width:2px; background:var(--n100); }
+.step{ position:relative; padding:7px 0 9px; }
+.step::before{ content:""; position:absolute; left:-20px; top:12px; width:10px; height:10px; border-radius:50%;
+  background:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.step.done::before{ background:var(--ok); box-shadow:0 0 0 3px var(--ok-soft); }
+.step.bad::before{ background:var(--danger); box-shadow:0 0 0 3px var(--danger-soft); }
+.step .time{ color:var(--n400); font-size:11px; } .step .node{ font-weight:800; } .step .detail{ color:var(--n600); font-size:12px; }
+
+
+.alert{ padding:10px; border-radius:var(--r-md); background:var(--warn-soft); border:1px solid #fde68a; color:var(--warn-deep); font-size:12px; }
+.alert.bad{ background:var(--danger-soft); border-color:#fecaca; color:var(--danger-deep); }
+
+
+.foot{ padding:10px 14px; border-top:1px solid var(--n100); color:var(--n400); font-size:11px; }
+
+
+.muted{ color:var(--n500); } .faint{ color:var(--n400); }
+.text{ font-size:13px; color:var(--n600); line-height:1.6; }
+
+@media (max-width:360px){
+  body{ padding:10px; } .hero h1{ font-size:20px; } .score{ font-size:36px; }
+  .grid.three{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
   </style>
 </head>
 <body>
-  <div class="tc-deck" data-layout="vertical">
-    <div class="tc-card">
-      <div class="page">
-        <section class="warning-block">
-          <h1 class="warning-title">{{warningTitle|风险预警}}</h1>
-          <ul class="warning-list">
-            {{#warnings}}
-            <li class="warning-item">
-              <span class="warn-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2.5L22.5 20.5H1.5L12 2.5Z" fill="#E54D42" stroke="#E54D42" stroke-width="1.5" stroke-linejoin="round"/>
-                  <path d="M12 9V14.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
-                  <circle cx="12" cy="17.5" r="1.2" fill="#fff"/>
-                </svg>
-              </span>
-              <span class="warning-text">{{warningText}}</span>
-            </li>
-            {{/warnings}}
-          </ul>
-        </section>
+<div class="card" data-template="risk_warning_card" data-layout="vertical">
+  <div class="hero">
+    <div class="eyebrow">{{badge|风险预警}}</div>
+    <div class="hero-row">
+      <div>
+        <h1>⚠️ {{warningTitle|风险预警}}</h1>
+        <p class="sub">{{subtitle|基于中医体质辨识与健康信号的综合提示}}</p>
       </div>
+      <div class="sub" style="text-align:right">{{assessTime|2026-07-30}}</div>
     </div>
   </div>
 
-<script type="application/json">
-{
-  "warningTitle": "风险预警",
-  "warnings": [
-    { "warningText": "提示肝胆异常。可能有睡眠不佳，情志不畅等表现。" },
-    { "warningText": "提示中焦郁滞或下焦壅塞。可能有腹胀，食少等表现。" }
-  ]
-}
-</script>
+  <div class="section">
+    <div class="section-title">📊 预警概览</div>
+    <div class="grid three">
+      <div class="stat"><div class="num bad">{{warnings_count|2}}</div><div class="lbl">预警条目</div></div>
+      <div class="stat"><div class="num warn">{{topLevel|中}}</div><div class="lbl">最高等级</div></div>
+      <div class="stat"><div class="num">{{scope|体质辨识}}</div><div class="lbl">评估范围</div></div>
+    </div>
+  </div>
+
+  {{#summary}}
+  <div class="section">
+    <div class="section-title">📝 总体研判</div>
+    <p class="text">{{summary}}</p>
+  </div>
+  {{/summary}}
+
+  <div class="section">
+    <div class="section-title">⚠️ 预警提示（{{warnings_count|2}}）</div>
+    <div class="list">
+    {{#warnings}}
+      <div class="item {{itemClass|bad}}">
+        <div class="top">
+          <span>⚠️ {{category|肝胆异常}}</span>
+          <span class="pill {{levelPill|bad}}">{{level|中}}</span>
+        </div>
+        <div class="txt">{{warningText|提示肝胆异常。可能有睡眠不佳，情志不畅等表现。}}</div>
+        {{#advice}}
+        <div class="note">建议：{{advice}}</div>
+        {{/advice}}
+      </div>
+    {{/warnings}}
+    </div>
+    {{^warnings}}
+    <p class="text">当前未发现明显健康风险提示，请继续保持良好作息。</p>
+    {{/warnings}}
+  </div>
+
+  <div class="section">
+    <div class="section-title">🏷️ 关联表现</div>
+    <div class="tags">
+    {{#symptomTags}}
+      <span class="tag {{tagClass}}">{{name}}</span>
+    {{/symptomTags}}
+    </div>
+    {{^symptomTags}}
+    <p class="text">暂未记录关联表现。</p>
+    {{/symptomTags}}
+  </div>
+
+  <div class="section">
+    <div class="section-title">✅ 调理方向</div>
+    <div class="list">
+    {{#suggestions}}
+      <div class="item">
+        <div class="top"><span>{{name}}</span><span class="pill {{pillClass|ok}}">{{tag|建议}}</span></div>
+        <div class="txt">{{detail}}</div>
+      </div>
+    {{/suggestions}}
+    </div>
+    {{^suggestions}}
+    <p class="text">暂无调理建议，请咨询专业医师。</p>
+    {{/suggestions}}
+  </div>
+
+  {{#notice}}
+  <div class="section">
+    <div class="section-title">📌 就医提示</div>
+    <div class="alert bad">{{notice}}</div>
+  </div>
+  {{/notice}}
+
+  <div class="foot">来源：{{sourceLabel|中医体质辨识 + 健康风险规则}} · 预警提示仅供参考，不能替代医师诊断</div>
+</div>
 </body>
 </html>

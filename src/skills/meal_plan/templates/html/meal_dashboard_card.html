@@ -8,10 +8,10 @@
   :root {
     --bg: #eef2f7;
     --card: #ffffff;
-    --ink: #2b2f33;
-    --ink2: #6b7280;
+    --ink: #3D3A36;
+    --ink2: #8A8278;
     --line: #e8ecf1;
-    --accent: #2f8f5b;
+    --accent: #E8843C;
     --accent-soft: #e9f6ef;
     --carb: #FF6B35;
     --protein: #7CB342;
@@ -38,7 +38,7 @@
   .card { background: var(--card); border-radius: 16px; padding: 16px; box-shadow: 0 6px 18px rgba(20, 30, 40, 0.06); border: 1px solid var(--line); }
 
   /* 侧栏：画像卡 */
-  .profile-card { text-align: center; background: linear-gradient(135deg, #2f8f5b, #56b87f); color: #fff; }
+  .profile-card { text-align: center; background: linear-gradient(135deg, #E8843C, #F0B487); color: #fff; }
   .profile-card .p-name { font-size: 18px; font-weight: 700; }
   .profile-card .p-desc { font-size: 12px; opacity: 0.95; margin-top: 6px; }
   .profile-card .p-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
@@ -152,18 +152,7 @@
         </table>
       </div>
 
-      <div class="card">
-        <div class="table-title">🔗 相关膳食建议</div>
-        <div class="related-row">
-          {{#related}}
-          <div class="related-item">
-            <div class="rel-icon">{{relIcon|💡}}</div>
-            <div class="rel-title">{{relTitle|建议}}</div>
-            <div class="rel-desc">{{relDesc|说明}}</div>
-          </div>
-          {{/related}}
-        </div>
-      </div>
+      <!-- 相关伪链接已移除 -->
     </div>
   </div>
 
@@ -211,11 +200,8 @@
         ] }
     ],
     "grandTotal": "590 kcal",
-    "related": [
-      { "relIcon": "📋", "relTitle": "完整一周的膳食方案", "relDesc": "清单·菜谱、每日三餐搭配指南" },
-      { "relIcon": "🥗", "relTitle": "低盐低糖烹饪技巧", "relDesc": "调味替代、少油做法" },
-      { "relIcon": "🏃", "relTitle": "餐后轻运动建议", "relDesc": "散步、拉伸等安全活动" }
-    ]
+    "hasRelated": false,
+    "related": []
   }
   </script>
 </body>

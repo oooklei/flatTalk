@@ -2,8 +2,14 @@
   "route_name": "0730测试旅居路线5天4日游",
   "destination": "七洞乡",
   "days": 5,
-  "summary": "金跳动产品 0730测试旅居路线5天4日游",
-  "highlights": [],
+  "summary": "0730测试旅居路线5天4日游",
+  "highlights": [
+    "七洞乡抵达点·抵达入住",
+    "七洞乡Day2体验点·康养体验",
+    "七洞乡Day3体验点·康养体验",
+    "七洞乡Day4体验点·康养体验",
+    "七洞乡返程点·返程"
+  ],
   "waypoints": [
     {
       "id": "wp1",
@@ -54,6 +60,36 @@
   "source": "jintiaodong",
   "jtd_product_id": "2070305000000000271",
   "route_id": "jtd_2070305000000000271",
-  "updated_at": "2026-08-05T22:13:28.102Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:58.216Z",
+  "spot_images_source": "dashboard_local_kb",
+  "itinerary": [
+    {
+      "day": "D1",
+      "wp_name": "七洞乡抵达点",
+      "plan": "抵达入住"
+    },
+    {
+      "day": "D2",
+      "wp_name": "七洞乡Day2体验点",
+      "plan": "康养体验"
+    },
+    {
+      "day": "D3",
+      "wp_name": "七洞乡Day3体验点",
+      "plan": "康养体验"
+    },
+    {
+      "day": "D4",
+      "wp_name": "七洞乡Day4体验点",
+      "plan": "康养体验"
+    },
+    {
+      "day": "D5",
+      "wp_name": "七洞乡返程点",
+      "plan": "返程"
+    }
+  ],
+  "boundary_source": "datav_local",
+  "boundary_name": "兴宾区",
+  "boundary_polygon_count": 1
 }

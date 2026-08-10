@@ -4,8 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>嘉路康养生活圈 · 资源清单</title>
-  <link rel="stylesheet" href="./_design_tokens.css" />
-  <link rel="stylesheet" href="./_base.css" />
+  <link rel="stylesheet" href="_design_tokens.css">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    :root{--primary:#E8843C;--primary-weak:#FDF6F0;--accent:#E8843C;--accent-weak:#FAE6D5;--card:#fff;--card-2:#FDF6F0;--bg:#FAF8F5;--ink:#3D3A36;--ink-2:#6B6660;--muted:#8A8278;--border:#E4E0D8;--line:#E4E0D8;--wellness:#E5484D;--radius:16px;--radius-sm:12px;--shadow:0 4px 18px rgba(62,56,50,.08);--shadow-sm:0 2px 8px rgba(62,56,50,.08);--tap:44px;}
+  </style>
 </head>
 <body>
   <div class="nb-wrap">
@@ -15,7 +18,7 @@
           <h2 class="nb-title">{{centerName}} · 周边配套清单</h2>
           <p class="nb-sub">{{radiusKm}} 公里生活圈 · 共 {{total}} 个配套</p>
         </div>
-        <span class="nb-badge">本地库</span>
+        <span class="nb-badge">周边配套</span>
       </div>
       <div class="nb-filters">
         <div class="nb-chip active" data-cat="all"><span class="nb-emoji">📍</span>全部</div>
@@ -27,7 +30,10 @@
         <div class="nb-chip" data-cat="transit"><span class="nb-emoji">🚐</span>行</div>
         <div class="nb-chip" data-cat="wellness"><span class="nb-emoji">🏥</span>养</div>
       </div>
-      {{#isDefaultLocation}}<div style="padding:8px 16px;background:#FFF3E0;border-top:1px solid #FFCC80;font-size:12px;color:#E65100;display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span>⚠️</span>未获取到您的实时位置，当前以嘉路康养中心为默认中心。</div>{{/isDefaultLocation}}
+      {{#isDefaultLocation}}<div style="padding:8px 16px;background:#FDF6F0;border-top:1px solid #FFCC80;font-size:12px;color:#E65100;display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span>⚠️</span>未获取到您的实时位置，当前以嘉路康养中心为默认中心。</div>{{/isDefaultLocation}}
+      <div class="nb-map-mini" style="margin:0 0 10px;border:1px solid var(--border,#E4E0D8);border-radius:10px;overflow:hidden;background:#F0EDE7;">
+        <svg id="listMapSvg" viewBox="0 0 400 180" style="width:100%;height:180px;display:block;" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
       <div class="nb-list">
         {{#markers}}
         <div class="nb-row" data-cat="{{cat}}">
@@ -53,29 +59,5 @@
       {{{compact_followups}}}
     </section>
   </div>
-  <script>
-    document.querySelectorAll('.nb-chip').forEach(function (c) {
-      c.addEventListener('click', function () {
-        var cat = c.getAttribute('data-cat');
-        document.querySelectorAll('.nb-chip').forEach(function (x) { x.classList.remove('active'); });
-        c.classList.add('active');
-        document.querySelectorAll('.nb-row').forEach(function (r) {
-          r.style.display = (cat === 'all' || r.getAttribute('data-cat') === cat) ? '' : 'none';
-        });
-      });
-    });
-  </script>
-  <script type="application/json">
-  {
-    "centerName": "嘉路康养中心", "radiusKm": 15, "total": 5, "category": "",
-    "markers": [
-      { "poi_id": "x1", "name": "海岸假日民宿", "address": "港口区某路12号", "distance_text": "0.8", "cat": "stay", "color": "#3B82A0", "emoji": "🏠", "biz_status": "营业中", "tel": "0770-1234567", "open_time": "24小时", "tags": ["近海", "适老"], "tags_text": "近海·适老" },
-      { "poi_id": "x2", "name": "渔家海鲜大排档", "address": "渔洲坪", "distance_text": "1.2", "cat": "food", "color": "#F2994A", "emoji": "🍜", "biz_status": "营业中", "tel": "0770-2233445", "open_time": "11:00-22:00", "tags": ["海鲜大排档", "私房菜"], "tags_text": "海鲜大排档·私房菜" },
-      { "poi_id": "x3", "name": "西湾滨海景区", "address": "西湾大道", "distance_text": "2.5", "cat": "spot", "color": "#2BAE8E", "emoji": "🏖️", "biz_status": "开放中", "tags": ["海景", "日落"], "tags_text": "海景·日落" },
-      { "poi_id": "x4", "name": "渔人码头垂钓场", "address": "渔洲坪码头", "distance_text": "3.1", "cat": "leisure", "color": "#8E6FD8", "emoji": "🎣", "biz_status": "营业中", "open_time": "06:00-20:00", "tags": ["垂钓"], "tags_text": "垂钓" },
-      { "poi_id": "x5", "name": "海特产购物店", "address": "港口区某路", "distance_text": "1.6", "cat": "shop", "color": "#E08AC0", "emoji": "🛍️", "biz_status": "营业中", "open_time": "09:00-21:00", "tags": ["特产"], "tags_text": "特产" }
-    ]
-  }
-  </script>
 </body>
 </html>

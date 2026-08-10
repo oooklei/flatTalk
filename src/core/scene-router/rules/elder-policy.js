@@ -13,7 +13,7 @@ const serviceIntentTerms = [
 
 const assistantUsageTerms = [
   '养老助手', '桂小养', '怎么用', '能做什么', '可以做什么', '使用方法', '功能',
-  '帮我', '助手',
+  '助手',
 ];
 
 const elderTerms = [
@@ -51,7 +51,7 @@ export const elderPolicyRuleSet = {
   evidence_groups: [
     { group: 'policy_topic', weight: 4, terms: policyTopicTerms },
     { group: 'service_intent', weight: 1.5, terms: serviceIntentTerms },
-    { group: 'assistant_usage', weight: 4, terms: assistantUsageTerms },
+    { group: 'assistant_usage', weight: 7, terms: assistantUsageTerms },
     { group: 'elder_context', weight: 1.5, terms: elderTerms },
   ],
   role_boost: {
@@ -66,12 +66,16 @@ export const elderPolicyRuleSet = {
   conflicts: [
     { group: 'meal_plan', penalty: 4, terms: ['膳食', '饮食', '早餐', '午餐', '晚餐', '控糖', '低盐', '营养餐'] },
     { group: 'travel_route', penalty: 4, terms: ['旅居', '旅游', '路线', '行程', '巴马', '北海', '交通接驳'] },
+    { group: 'health_risk_warning', penalty: 5, terms: ['健康风险', '风险预警', '预警', '血压', '血糖', '跌倒', '规则命中'] },
+    { group: 'service_quality_eval', penalty: 5, terms: ['服务质量', '质量评估', '服务评价', '满意度', '投诉', '整改', '评分'] },
+    { group: 'nearby_resource', penalty: 4, terms: ['嘉路', '康养中心', '周边', '附近', '地图', '配套'] },
+    { group: 'dispatch_manage', penalty: 4, terms: ['派单', '工单', '调度', '接单', '拒单'] },
     { group: 'acute_health_risk', penalty: 4, terms: ['胸痛', '昏迷', '呼吸困难', '中风', '急救', '120'] },
   ],
   infer_intent(input) {
     if (has(input, assistantUsageTerms)) return 'elder_assistant_usage';
     if (has(input, applyIntentTerms)) return 'elder_policy_apply';
-    if (has(input, ['有哪些', '有什么', '汇总', '一览', '列表', '政策汇总', '政策一览'])) return 'elder_policy_list';
+    if (has(input, ['有哪些', '汇总', '一览', '列表', '政策汇总', '政策一览'])) return 'elder_policy_list';
     if (has(input, detailIntentTerms)) return 'elder_policy_detail';
     if (has(input, ['补贴', '津贴', '长护险', '养老金', '养老保险'])) return 'elder_policy_benefit';
     return 'elder_policy_consult';

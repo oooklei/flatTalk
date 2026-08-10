@@ -189,6 +189,31 @@
     "route_dash_fcg_2"
   ],
   "route_id": "fcg_route_002",
-  "updated_at": "2026-08-05T22:13:28.019Z",
-  "spot_images_source": "dashboard_local_kb"
+  "updated_at": "2026-08-06T01:23:57.681Z",
+  "spot_images_source": "dashboard_local_kb",
+  "itinerary": [
+    {
+      "day": "D1",
+      "wp_name": "嘉路滨海旅居基地",
+      "plan": "大本营出发"
+    },
+    {
+      "day": "D1",
+      "wp_name": "东兴口岸",
+      "plan": "国门+界碑观光"
+    },
+    {
+      "day": "D1",
+      "wp_name": "中越友谊大桥",
+      "plan": "边境打卡+手工体验"
+    },
+    {
+      "day": "D1",
+      "wp_name": "嘉路滨海旅居基地",
+      "plan": "返回基地康养"
+    }
+  ],
+  "boundary_source": "datav_local",
+  "boundary_name": "防城港市",
+  "boundary_polygon_count": 1
 }

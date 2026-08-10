@@ -30,6 +30,10 @@ export function resolveModelApiKey(model = {}) {
   if (provider && process.env[`FLATTALK_MODEL_${provider}_API_KEY`]) {
     return process.env[`FLATTALK_MODEL_${provider}_API_KEY`];
   }
+  // longcat 回退：兼容旧变量名 FLATTALK_MODEL_ANTHROPIC_API_KEY
+  if (provider === 'LONGCAT' && process.env.FLATTALK_MODEL_ANTHROPIC_API_KEY) {
+    return process.env.FLATTALK_MODEL_ANTHROPIC_API_KEY;
+  }
   return process.env.FLATTALK_MODEL_API_KEY || '';
 }
 

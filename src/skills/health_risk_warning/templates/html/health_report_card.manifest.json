@@ -1,7 +1,16 @@
 {
   "id": "health_report_card",
-  "description": "完整健康风险预警报告，含风险评估+风险预警+膳食调养三模块",
+  "name": "完整健康报告",
+  "description": "完整风险评估报告，含八大模块（基础信息/综合风险总评/疾病风险/体质辨识/中医证候/个性化调理/禁忌提醒/维度结论）",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.report",
+  "required": [
+    "name",
+    "overall_score"
+  ],
+  "optional_fields": [],
+  "match": "展示完整健康/风险评估报告（多模块），非单卡预警结果",
   "layout": "vertical",
-  "match": "展示完整的健康风险预警报告（包含风险评估、风险预警、膳食调养三个模块的综合报告卡片）",
-  "required": ["reportTitle", "risks"]
+  "followup_actions": [],
+  "version": "1.0"
 }

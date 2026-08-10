@@ -100,6 +100,33 @@ test('jtd service runs availability only for availability or booking triggers', 
   assert.equal(typeof context.availability.normalized.available, 'boolean');
 });
 
+test('travel_route availability action renders dedicated availability card', async () => {
+  const dataService = createDataService({
+    travelData: { jtdOptions: { mode: 'mock' } },
+  });
+  const result = await runLocalSkill({
+    conversation_id: 'conv_jtd_availability',
+    turn_id: 'turn_jtd_availability',
+    skill_key: 'travel_route',
+    message: '检查这条北海旅居路线近期是否可预订',
+    context: {
+      action_key: 'travel_route.check_availability',
+      action_params: {
+        check_in: '2026-08-10',
+        check_out: '2026-08-13',
+        people_count: 2,
+      },
+    },
+  }, { dataService });
+
+  assert.equal(result.skill_key, 'travel_route');
+  assert.equal(result.template_id, 'travel_availability_card');
+  assert.equal(result.card.templateId, 'travel_availability_card');
+  assert.equal(result.data.availabilitySourceStatus, 'mock_vendor_data');
+  assert.equal(typeof result.data.availabilityAvailable, 'boolean');
+  assert.match(result.answer_text, /可订|不可订|mock/);
+});
+
 test('travel_route orchestration injects JTD context before filling route card', async () => {
   const dataService = createDataService({
     travelData: { jtdOptions: { mode: 'mock' } },

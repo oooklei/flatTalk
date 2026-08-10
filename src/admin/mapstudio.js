@@ -20,6 +20,10 @@ import { searchCategory } from '../services/nearby-resource/tavily-nearby-adapte
 import { toSimplified, toSimplifiedDeep } from '../core/utils/simplified-chinese.js';
 import { generateRouteHtml } from '../core/route-svg-generator.js';
 import { lookupDashboardSpotImages } from '../skills/travel_route/dashboard-spot-kb.js';
+import {
+  classifyWaypointFeature,
+  buildRouteMapArtBackground,
+} from '../core/map/route-map-art.js';
 
 const ROOT = process.cwd();
 const MAPS_DIR = path.join(ROOT, 'data', 'sojourn-maps');
@@ -303,79 +307,227 @@ const DESTINATION_GEOJSON_MAP = {
   '防城港': ['fcg', 'fcg_boundary', 'fangchenggang'],
   '北海': ['beihai', 'beihai_boundary'],
   '东兴': ['dongxing', 'dx_boundary'],
+  '七洞乡': ['qidong', 'laibin', 'xingbin', '七洞', '来宾', '兴宾'],
+  '七洞': ['qidong', 'laibin', 'xingbin', '七洞乡', '来宾', '兴宾'],
+  '来宾': ['laibin', '来宾'],
+  '兴宾': ['xingbin', '兴宾'],
+  '桂林': ['guilin', '桂林'],
+  '南宁': ['nanning', '南宁'],
+  '贺州': ['hezhou', '贺州'],
+  '柳州': ['liuzhou', '柳州'],
 };
 
-async function fetchDistrictBoundary(destination) {
-  // 源1：腾讯地图行政区API
-  try {
-    const map = new TencentMapAdapter();
-    const result = await map.getDistrictBoundary(destination, 'district');
-    if (result.ok && result.polygons && result.polygons.length > 0) {
-      return { polygons: result.polygons, source: 'tencent', name: result.name || destination };
-    }
-  } catch (e) {
-    // 腾讯API失败，尝试本地GeoJSON
-  }
+/** DataV 行政区 adcode（乡镇级回退到市/区） */
+const DESTINATION_ADCODE_MAP = {
+  '巴马': '451227',
+  '巴马瑶族自治县': '451227',
+  '防城港': '450600',
+  '防城港市': '450600',
+  '东兴': '450681',
+  '东兴市': '450681',
+  '北海': '450500',
+  '北海市': '450500',
+  '桂林': '450300',
+  '桂林市': '450300',
+  '南宁': '450100',
+  '南宁市': '450100',
+  '贺州': '451100',
+  '贺州市': '451100',
+  '柳州': '450200',
+  '柳州市': '450200',
+  '来宾': '451300',
+  '来宾市': '451300',
+  '兴宾': '451302',
+  '来宾市兴宾区': '451302',
+  '七洞乡': '451302',
+  '七洞': '451302',
+};
 
-  // 源2：本地GeoJSON（阿里DataV下载，坐标同为GCJ-02）
-  try {
-    const geoDir = path.join(ROOT, 'geographicSVG');
-    if (fs.existsSync(geoDir)) {
-      // 构建搜索关键词列表（中文 + ASCII映射）
-      const searchKeys = [destination];
-      const mapped = DESTINATION_GEOJSON_MAP[destination];
+function parseGeoJsonPolygons(geojson) {
+  const features = geojson?.features || [];
+  if (!features.length) return [];
+  const polygons = [];
+  const parseRing = (ring) => {
+    if (!Array.isArray(ring)) return null;
+    return ring
+      .filter((pt) => Array.isArray(pt) && pt.length >= 2)
+      .map(([lng, lat]) => ({ lat, lng }));
+  };
+  for (const feature of features) {
+    const geom = feature.geometry || {};
+    const coords = geom.coordinates || [];
+    if (geom.type === 'Polygon') {
+      const outer = parseRing(coords[0]);
+      if (outer && outer.length > 2) polygons.push(outer);
+    } else if (geom.type === 'MultiPolygon') {
+      for (const poly of coords) {
+        if (!Array.isArray(poly) || poly.length === 0) continue;
+        const outer = parseRing(poly[0]);
+        if (outer && outer.length > 2) polygons.push(outer);
+      }
+    }
+  }
+  return polygons;
+}
+
+function fetchDatavGeoJson(adcode) {
+  return new Promise((resolve, reject) => {
+    const url = `https://geo.datav.aliyun.com/areas_v3/bound/${adcode}.json`;
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
+/** 目的地 → 依次尝试的边界查询名（乡镇级回退到上级行政区） */
+function boundaryQueryNames(destination = '', routeName = '') {
+  const blob = `${destination} ${routeName}`;
+  const names = [];
+  const push = (n) => {
+    const v = String(n || '').trim();
+    if (v && !names.includes(v)) names.push(v);
+  };
+  push(destination);
+  if (/七洞/.test(blob)) {
+    push('七洞乡');
+    push('来宾市兴宾区');
+    push('来宾市');
+  }
+  if (/防城港|嘉路|京族|东兴|白浪滩/.test(blob)) {
+    push('防城港市');
+    push('防城港');
+    if (/东兴/.test(blob)) push('东兴市');
+  }
+  if (/巴马|百魔洞|赐福湖/.test(blob)) {
+    push('巴马瑶族自治县');
+    push('巴马');
+  }
+  if (/北海|银滩|涠洲/.test(blob)) {
+    push('北海市');
+    push('北海');
+  }
+  if (/桂林|阳朔|永福|恭城|荔浦/.test(blob) && !/七洞/.test(blob)) {
+    push('桂林市');
+    push('桂林');
+  }
+  if (/贺州|昭平|钟山|富川/.test(blob)) {
+    push('贺州市');
+    push('贺州');
+  }
+  if (/柳州|金秀/.test(blob)) {
+    push('柳州市');
+    push('柳州');
+  }
+  if (/南宁|上林|马山|崇左|大新|宁明/.test(blob) && !/防城港|北海/.test(blob)) {
+    push('南宁市');
+    push('南宁');
+  }
+  return names.filter(Boolean);
+}
+
+/**
+ * 获取行政区边界（可多候选名依次尝试：腾讯 API → 本地 GeoJSON）
+ * 纯矢量 SVG 不再嵌入光栅底图；边界线由此注入。
+ */
+export async function fetchDistrictBoundary(destination, routeName = '') {
+  const candidates = boundaryQueryNames(destination, routeName);
+  if (!candidates.length && destination) candidates.push(destination);
+
+  for (const name of candidates) {
+    try {
+      const map = new TencentMapAdapter();
+      const result = await map.getDistrictBoundary(name, 'district');
+      if (result.ok && result.polygons && result.polygons.length > 0) {
+        return { polygons: result.polygons, source: 'tencent', name: result.name || name };
+      }
+    } catch {
+      // continue
+    }
+
+    try {
+      const geoDir = path.join(ROOT, 'geographicSVG');
+      if (!fs.existsSync(geoDir)) continue;
+      const searchKeys = [name];
+      const mapped = DESTINATION_GEOJSON_MAP[name] || DESTINATION_GEOJSON_MAP[destination];
       if (mapped) searchKeys.push(...mapped);
 
       const files = fs.readdirSync(geoDir).filter((f) => f.endsWith('.geojson'));
       for (const file of files) {
         const lower = file.toLowerCase();
         const matched = searchKeys.some((k) => {
-          const lk = k.toLowerCase().replace(/边界|县|市/g, '');
-          return lower.includes(lk) || lk.includes(lower.replace('.geojson', '').replace(/边界|县|市/g, ''));
+          const lk = String(k).toLowerCase().replace(/边界|县|市|区|乡|镇/g, '');
+          if (!lk) return false;
+          return lower.includes(lk)
+            || lk.includes(lower.replace('.geojson', '').replace(/边界|县|市|区/g, ''));
         });
         if (!matched) continue;
         const geojson = JSON.parse(fs.readFileSync(path.join(geoDir, file), 'utf8'));
-        const features = geojson.features || [];
-        if (features.length > 0) {
-          const geom = features[0].geometry || {};
-          const coords = geom.coordinates || [];
-          const gtype = geom.type;
-          // 严格按 GeoJSON 规范解析 Polygon / MultiPolygon
-          // Polygon:    coords = [ring, ring, ...]            ring = [[lng,lat], ...]
-          // MultiPolygon: coords = [poly, poly, ...]          poly = [ring, ring, ...]
-          // 每个 polygon 取第一个（外）环，忽略孔洞
-          const polygons = [];
-          const parseRing = (ring) => {
-            if (!Array.isArray(ring)) return null;
-            return ring
-              .filter((pt) => Array.isArray(pt) && pt.length >= 2)
-              .map(([lng, lat]) => ({ lat, lng }));
+        const polygons = parseGeoJsonPolygons(geojson);
+        if (polygons.length > 0) {
+          return {
+            polygons,
+            source: 'datav_local',
+            name: geojson.features?.[0]?.properties?.name || name,
           };
-          if (gtype === 'Polygon') {
-            const outer = parseRing(coords[0]);
-            if (outer && outer.length > 2) polygons.push(outer);
-          } else if (gtype === 'MultiPolygon') {
-            for (const poly of coords) {
-              if (!Array.isArray(poly) || poly.length === 0) continue;
-              const outer = parseRing(poly[0]);
-              if (outer && outer.length > 2) polygons.push(outer);
-            }
-          }
-          if (polygons.length > 0) {
-            return { polygons, source: 'datav_local', name: features[0].properties?.name || destination };
-          }
         }
       }
+    } catch {
+      // continue
     }
-  } catch (e) {
-    // 本地GeoJSON也失败
+
+    // 源3：阿里 DataV 在线拉取并缓存到 geographicSVG
+    const adcode = DESTINATION_ADCODE_MAP[name] || DESTINATION_ADCODE_MAP[destination];
+    if (adcode) {
+      try {
+        const geojson = await fetchDatavGeoJson(adcode);
+        const polygons = parseGeoJsonPolygons(geojson);
+        if (polygons.length > 0) {
+          try {
+            const geoDir = path.join(ROOT, 'geographicSVG');
+            if (!fs.existsSync(geoDir)) fs.mkdirSync(geoDir, { recursive: true });
+            const cacheName = `${String(name).replace(/[\\/:*?"<>|]/g, '_')}_boundary.geojson`;
+            // 也写一份 ASCII 友好别名
+            const asciiAlias = {
+              '来宾市': 'laibin_boundary.geojson',
+              '来宾市兴宾区': 'xingbin_boundary.geojson',
+              '七洞乡': 'qidong_xingbin_boundary.geojson',
+              '桂林市': 'guilin_boundary.geojson',
+              '南宁市': 'nanning_boundary.geojson',
+              '贺州市': 'hezhou_boundary.geojson',
+              '柳州市': 'liuzhou_boundary.geojson',
+            }[name];
+            fs.writeFileSync(path.join(geoDir, cacheName), JSON.stringify(geojson), 'utf8');
+            if (asciiAlias) {
+              fs.writeFileSync(path.join(geoDir, asciiAlias), JSON.stringify(geojson), 'utf8');
+            }
+          } catch {
+            // 缓存失败不影响返回
+          }
+          return {
+            polygons,
+            source: 'datav_remote',
+            name: geojson.features?.[0]?.properties?.name || name,
+          };
+        }
+      } catch {
+        // continue
+      }
+    }
   }
 
-  return { polygons: [], source: 'none', name: destination };
+  return { polygons: [], source: 'none', name: destination || routeName || '' };
 }
 
 /**
- * 扩展经纬度边界框以包含多边形坐标
+ * 扩展经纬度边界框以包含多边形坐标（整市撑开，易把线路挤扁——仅流水线静态图用）
  */
 function expandBoundsWithBoundary(bounds, polygons) {
   if (!polygons || polygons.length === 0) return bounds;
@@ -391,6 +543,53 @@ function expandBoundsWithBoundary(bounds, polygons) {
     }
   }
   return ex;
+}
+
+/**
+ * 线路优先取景：以途经点为主框，行政区边界只轻扩作背景示意，绝不整市撑开。
+ * 兼顾「看得见走线」与「看得见区划轮廓（可裁切）」。
+ */
+function composeRouteAwareBounds(wpBounds, polygons, {
+  maxExpandRatio = 0.45,
+  minSpanDeg = 0.035,
+} = {}) {
+  let bounds = { ...wpBounds };
+  let latSpan = Math.max(bounds.maxLat - bounds.minLat, 1e-6);
+  let lngSpan = Math.max(bounds.maxLng - bounds.minLng, 1e-6);
+
+  // 滨海短线 lat 跨度极小：保证最小视野，避免点挤成一条线
+  if (latSpan < minSpanDeg) {
+    const mid = (bounds.maxLat + bounds.minLat) / 2;
+    bounds.minLat = mid - minSpanDeg / 2;
+    bounds.maxLat = mid + minSpanDeg / 2;
+    latSpan = minSpanDeg;
+  }
+  if (lngSpan < minSpanDeg) {
+    const mid = (bounds.maxLng + bounds.minLng) / 2;
+    bounds.minLng = mid - minSpanDeg / 2;
+    bounds.maxLng = mid + minSpanDeg / 2;
+    lngSpan = minSpanDeg;
+  }
+
+  if (!polygons?.length) return bounds;
+
+  const soft = {
+    minLat: bounds.minLat - latSpan * maxExpandRatio,
+    maxLat: bounds.maxLat + latSpan * maxExpandRatio,
+    minLng: bounds.minLng - lngSpan * maxExpandRatio,
+    maxLng: bounds.maxLng + lngSpan * maxExpandRatio,
+  };
+  for (const polygon of polygons) {
+    for (const pt of polygon) {
+      if (!Number.isFinite(pt?.lat) || !Number.isFinite(pt?.lng)) continue;
+      if (pt.lat < soft.minLat || pt.lat > soft.maxLat || pt.lng < soft.minLng || pt.lng > soft.maxLng) continue;
+      if (pt.lat < bounds.minLat) bounds.minLat = pt.lat;
+      if (pt.lat > bounds.maxLat) bounds.maxLat = pt.lat;
+      if (pt.lng < bounds.minLng) bounds.minLng = pt.lng;
+      if (pt.lng > bounds.maxLng) bounds.maxLng = pt.lng;
+    }
+  }
+  return bounds;
 }
 
 /**
@@ -557,14 +756,12 @@ async function handlePipelineLegacy(req, res, body, route, originalWaypoints) {
     tags: (route.tags || []).map(toSimplified),
   };
 
-  // 步骤5.5：生成腾讯静态地图底图（高分辨率下载→base64嵌入SVG）
-  // ★ 使用扩展边界（waypoints + 行政区边界）来计算中心点和缩放
+  // 步骤5.5：地理丘陵/卫星底图 → Seedream 图生图美化（失败则退回地理底图）
   const mapAdapter = new TencentMapAdapter();
   const wpBounds = calcBounds(cleanedWaypoints);
   const bounds = expandBoundsWithBoundary(wpBounds, boundaryResult.polygons);
   const centerLat = (bounds.minLat + bounds.maxLat) / 2;
   const centerLng = (bounds.minLng + bounds.maxLng) / 2;
-  // 根据经纬度跨度估算缩放级别
   const latSpan = bounds.maxLat - bounds.minLat;
   const lngSpan = bounds.maxLng - bounds.minLng;
   const maxSpan = Math.max(latSpan, lngSpan);
@@ -576,28 +773,54 @@ async function handlePipelineLegacy(req, res, body, route, originalWaypoints) {
   else if (maxSpan > 0.06) zoom = 12;
   else zoom = 13;
 
-  // 请求高清静态图（2倍分辨率，腾讯最大支持 1200*960）
+  const enableAiArt = body?.ai_art !== false
+    && String(process.env.FLATTALK_ROUTE_MAP_AI || '1') !== '0';
+
   let staticMapB64Standard = '';
   let staticMapB64Elder = '';
+  let artMeta = { source: 'none' };
   try {
-    const urlStd = mapAdapter.buildStaticMapUrl(
-      { lat: centerLat, lng: centerLng }, [], { zoom, size: '800*840' }
-    );
-    const urlElder = mapAdapter.buildStaticMapUrl(
-      { lat: centerLat, lng: centerLng }, [], { zoom, size: '800*960' }
-    );
-    // 并发下载两张高清底图
-    const [b64Std, b64Elder] = await Promise.all([
-      downloadImageAsBase64(urlStd, 12000),
-      downloadImageAsBase64(urlElder, 12000),
-    ]);
-    staticMapB64Standard = b64Std || '';
-    staticMapB64Elder = b64Elder || '';
+    const artStd = await buildRouteMapArtBackground({
+      routeId: route_id,
+      routeName: route.product_name,
+      destination: route.destination || '',
+      waypoints: cleanedWaypoints,
+      centerLat,
+      centerLng,
+      zoom,
+      size: '800*840',
+      enableAi: enableAiArt,
+      downloadImageAsBase64,
+      buildStaticMapUrl: (c, m, o) => mapAdapter.buildStaticMapUrl(c, m, o),
+    });
+    const artElder = await buildRouteMapArtBackground({
+      routeId: `${route_id}_elder`,
+      routeName: route.product_name,
+      destination: route.destination || '',
+      waypoints: cleanedWaypoints,
+      centerLat,
+      centerLng,
+      zoom,
+      size: '800*960',
+      enableAi: enableAiArt,
+      downloadImageAsBase64,
+      buildStaticMapUrl: (c, m, o) => mapAdapter.buildStaticMapUrl(c, m, o),
+    });
+    staticMapB64Standard = artStd?.data_uri || '';
+    staticMapB64Elder = artElder?.data_uri || staticMapB64Standard;
+    artMeta = {
+      source: artStd?.source || 'none',
+      maptype: artStd?.maptype || '',
+      model: artStd?.model || '',
+      cached: !!artStd?.cached,
+      features: artStd?.features?.topLabels || [],
+      error: artStd?.error || '',
+    };
   } catch (e) {
-    // 静态图下载失败不影响SVG生成（无底图）
+    artMeta = { source: 'none', error: e?.message || 'art_failed' };
   }
 
-  // 步骤6：生成两种版本的 SVG（含高清底图 + 行政区边界）
+  // 步骤6：生成两种版本的 SVG（艺术/丘陵底图 + 行政区边界 + 语义标点）
   const svgStandard = generateSvg(cleanedWaypoints, route_id, route.product_name, 'standard', staticMapB64Standard, boundaryResult.polygons);
   const svgElder = generateSvg(cleanedWaypoints, route_id, route.product_name, 'elder', staticMapB64Elder, boundaryResult.polygons);
 
@@ -607,6 +830,7 @@ async function handlePipelineLegacy(req, res, body, route, originalWaypoints) {
     svg_standard: svgStandard,
     svg_elder: svgElder,
     stats,
+    art: artMeta,
   });
 }
 
@@ -674,64 +898,81 @@ function shortName(name, maxLen = 6) {
   return name.length > maxLen ? name.slice(0, maxLen) + '…' : name;
 }
 
-/** 适老版整体略放大；标准版以 10 为默认基准 */
+/**
+ * SVG 字号按「嵌入卡片后屏幕字号」设计。
+ * viewBox 宽 620，手机卡常见可视宽约 360 → 压缩比 ~1.72；
+ * 缩放后（屏幕）字号一律不低于 10。
+ */
+const SVG_VB_W = 620;
+const CARD_DESIGN_W = 360;
+const SCREEN_DEFAULT_FS = 10;
+const SCREEN_MAP_MIN_FS = 10;
+
+function svgEmbedBoost() {
+  return SVG_VB_W / CARD_DESIGN_W;
+}
+
 function svgFontScale(version) {
-  return version === 'elder' ? 1.25 : 1;
+  return version === 'elder' ? 1.2 : 1;
+}
+
+/** 屏幕目标字号 → SVG 源字号（嵌入后不低于 floor） */
+function toSvgFontSize(screenPx, version = 'standard', floor = SCREEN_DEFAULT_FS) {
+  const px = Math.max(floor, Number(screenPx) || floor);
+  return Math.max(
+    Math.ceil(floor * svgEmbedBoost()),
+    Math.round(px * svgEmbedBoost() * svgFontScale(version))
+  );
 }
 
 /**
- * 按角色取字号（图框外/装饰默认约 10，标题略大）
+ * 按角色取字号（数值为嵌入后屏幕目标字号，再按压缩比写入 SVG）
  */
 function roleFontSize(role, version = 'standard') {
-  const s = svgFontScale(version);
-  const table = {
-    hero_title: 18,
-    hero_sub: 10,
-    map_deco: 9,
+  const screen = {
+    hero_title: 16,
+    map_deco: 10,
     legend: 10,
-    panel_title: 12,
+    panel_title: 11,
     panel_body: 10,
     list_item: 10,
     marker_glyph: 10,
   };
-  return Math.max(8, Math.round((table[role] || 10) * s));
+  return toSvgFontSize(screen[role] || SCREEN_DEFAULT_FS, version, SCREEN_DEFAULT_FS);
 }
 
 /**
- * 地图端点名称字号：开敞区略放大，贴边/出框缩小，默认约 10
+ * 地图端点名称：开敞区略放大，贴边略收，嵌入后不低于 10
  */
 function markerNameFontSize(x, y, mapRegion, version = 'standard') {
-  const s = svgFontScale(version);
-  const base = 10 * s;
-  const openMax = 13 * s;
-  const edgeMin = 8 * s;
+  const base = SCREEN_MAP_MIN_FS;
+  const openMax = 12;
   const { x: mx, y: my, width: mw, height: mh } = mapRegion;
   const edgeDist = Math.min(x - mx, mx + mw - x, y - my, my + mh - y);
   const margin = 48;
-  if (edgeDist < 0) return Math.max(7, Math.round(edgeMin - 1));
-  if (edgeDist < margin) {
-    const t = edgeDist / margin;
-    return Math.max(7, Math.round(edgeMin + (base - edgeMin) * t));
+  let screen = base;
+  if (edgeDist < 0 || edgeDist < margin) {
+    screen = base;
+  } else {
+    const cx = mx + mw / 2;
+    const cy = my + mh / 2;
+    const dx = (x - cx) / Math.max(mw / 2, 1);
+    const dy = (y - cy) / Math.max(mh / 2, 1);
+    const centerScore = 1 - Math.min(1, Math.sqrt(dx * dx + dy * dy));
+    screen = base + (openMax - base) * centerScore * 0.9;
   }
-  const cx = mx + mw / 2;
-  const cy = my + mh / 2;
-  const dx = (x - cx) / Math.max(mw / 2, 1);
-  const dy = (y - cy) / Math.max(mh / 2, 1);
-  const centerScore = 1 - Math.min(1, Math.sqrt(dx * dx + dy * dy));
-  return Math.round(base + (openMax - base) * centerScore * 0.85);
+  return toSvgFontSize(screen, version, SCREEN_MAP_MIN_FS);
 }
 
 export function generateSvg(waypoints, routeId, routeName, version = 'standard', staticMapUrl = '', boundaryPolygons = []) {
-  // staticMapUrl 参数保留以向后兼容，但不再使用（已切换为纯矢量SVG，无光栅底图）
-  void staticMapUrl;
+  const hasArtBg = !!(staticMapUrl && String(staticMapUrl).startsWith('data:image'));
   const preset = VERSION_PRESETS[version] || VERSION_PRESETS.standard;
   // 端点圆点略放大即可，字号交给 roleFontSize / markerNameFontSize
   const markerScale = version === 'elder' ? 1.25 : 1.1;
 
-  // 固定卡片尺寸 620×850（不再从 preset.viewBox 取）
-  const VB_W = 620, VB_H = 850;
-  // 地图子区域：x=10,y=68 开始的 600×460 区域
-  const MAP_X = 10, MAP_Y = 68, MAP_W = 600, MAP_H = 460;
+  // 加长地图区：线路 + 区划示意需要更多纵向空间（卡片可随 viewBox 拉长）
+  const VB_W = 620, VB_H = 980;
+  const MAP_X = 10, MAP_Y = 68, MAP_W = 600, MAP_H = 560;
   const mapRegion = { x: MAP_X, y: MAP_Y, width: MAP_W, height: MAP_H };
   const vb = { width: VB_W, height: VB_H };
 
@@ -745,9 +986,9 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     wps = [...bases, ...others].slice(0, preset.maxMarkers);
   }
 
-  // ★ 计算扩展边界（waypoints + 行政区边界）确保边界完整可见
-  const wpBounds = calcBounds(wps);
-  const bounds = expandBoundsWithBoundary(wpBounds, boundaryPolygons);
+  // ★ 线路优先取景（区划不整市撑开）；边界可画出框外，由 clip 裁切
+  const wpBounds = calcBounds(wps, 0.22);
+  const bounds = composeRouteAwareBounds(wpBounds, boundaryPolygons);
 
   // ★ 投影到地图子区域（非整个 viewBox）
   let markers = wps.map((wp, i) => {
@@ -786,15 +1027,15 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     .filter((s) => s && s.length > 4);
   const wellnessText = descs.length > 0
     ? descs.slice(0, 3).join(' · ').slice(0, 90)
-    : toSimplified('康养旅居 · 慢节奏 · 自然疗愈');
+    : toSimplified('慢节奏出行 · 自然疗愈');
 
-  // 辅助：从 waypoint 提取全部景点图片URL（逗号分隔，支持多图轮播）
+  // 辅助：从 waypoint 提取全部景点图片URL（换行分隔，避免拆破 data:image 逗号）
   const pickImgs = (wp) => {
     if (!Array.isArray(wp.spot_images) || wp.spot_images.length === 0) return '';
     return wp.spot_images.map((img) => {
       if (typeof img === 'string') return img;
       return (img && (img.url || img.src)) || '';
-    }).filter(Boolean).join(',');
+    }).filter(Boolean).join('\n');
   };
 
   // ============================================================
@@ -837,17 +1078,16 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     '<filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" ' +
     'flood-color="#000" flood-opacity="0.15"/></filter>'
   );
+  parts.push(
+    `<clipPath id="mapClip"><rect x="${MAP_X}" y="${MAP_Y}" width="${MAP_W}" height="${MAP_H}" rx="12"/></clipPath>`
+  );
   parts.push('</defs>');
 
-  // ===== Hero 标题栏 (y=0-58) =====
+  // ===== Hero 标题栏 (y=0-58) —— 仅线路名，不写营销/技术副标题 =====
   parts.push(`<rect x="0" y="0" width="${VB_W}" height="58" rx="16" fill="url(#heroGrad)"/>`);
   parts.push(
-    `<text class="svg-text" data-role="hero_title" x="18" y="36" fill="#fff" font-size="${roleFontSize('hero_title', version)}" ` +
+    `<text class="svg-text" data-role="hero_title" x="18" y="38" fill="#fff" font-size="${roleFontSize('hero_title', version)}" ` +
     `font-weight="bold">${escXml(shortName(routeNameSim, 20))}</text>`
-  );
-  parts.push(
-    `<text class="svg-text" data-role="hero_sub" x="18" y="51" fill="rgba(255,255,255,0.75)" ` +
-    `font-size="${roleFontSize('hero_sub', version)}">康养旅居 · 精品路线</text>`
   );
 
   // ===== 地理地图区域背景 (y=68-528) =====
@@ -856,38 +1096,55 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     `fill="#F8F8F0" stroke="#DDD" stroke-width="0.5"/>`
   );
 
-  // ===== 装饰性山脉（边缘半透明三角形/贝塞尔） =====
-  parts.push('<g class="mountains" opacity="0.55">');
-  // 左上山脉
-  parts.push(
-    `<path d="M${MAP_X + 8},${MAP_Y + 70} Q${MAP_X + 28},${MAP_Y + 18} ${MAP_X + 48},${MAP_Y + 70} ` +
-    `Q${MAP_X + 70},${MAP_Y + 12} ${MAP_X + 92},${MAP_Y + 70} ` +
-    `Q${MAP_X + 115},${MAP_Y + 22} ${MAP_X + 138},${MAP_Y + 70}" ` +
-    `fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>`
-  );
-  // 右上山脉
-  parts.push(
-    `<path d="M${MAP_X + MAP_W - 140},${MAP_Y + 55} ` +
-    `Q${MAP_X + MAP_W - 115},${MAP_Y + 6} ${MAP_X + MAP_W - 88},${MAP_Y + 55} ` +
-    `Q${MAP_X + MAP_W - 62},${MAP_Y + 2} ${MAP_X + MAP_W - 32},${MAP_Y + 55}" ` +
-    `fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>`
-  );
-  // 底部山脉
-  parts.push(
-    `<path d="M${MAP_X + MAP_W * 0.45},${MAP_Y + MAP_H - 18} ` +
-    `Q${MAP_X + MAP_W * 0.58},${MAP_Y + MAP_H - 58} ${MAP_X + MAP_W * 0.72},${MAP_Y + MAP_H - 18} ` +
-    `Q${MAP_X + MAP_W * 0.85},${MAP_Y + MAP_H - 62} ${MAP_X + MAP_W - 5},${MAP_Y + MAP_H - 18}" ` +
-    `fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>`
-  );
-  parts.push(
-    `<text class="svg-text" data-role="map_deco" x="${MAP_X + 70}" y="${MAP_Y + 88}" fill="#2E7D32" ` +
-    `font-size="${roleFontSize('map_deco', version)}" opacity="0.55" font-style="italic">山区</text>`
-  );
-  parts.push('</g>');
+  // 艺术/丘陵底图（Seedream 图生图或腾讯 terrain/satellite）
+  if (hasArtBg) {
+    parts.push(
+      `<image href="${staticMapUrl}" x="${MAP_X}" y="${MAP_Y}" width="${MAP_W}" height="${MAP_H}" ` +
+      `preserveAspectRatio="xMidYMid slice" opacity="0.94" clip-path="url(#mapClip)" />`
+    );
+    // 轻遮罩，保证橙色走线与白字标签可读
+    parts.push(
+      `<rect x="${MAP_X}" y="${MAP_Y}" width="${MAP_W}" height="${MAP_H}" rx="12" ` +
+      `fill="#FFFDF8" opacity="0.18" clip-path="url(#mapClip)"/>`
+    );
+  }
 
-  // ===== 行政区边界（从 boundaryPolygons 投影） =====
+  // ===== 装饰性山脉（仅无艺术底图且无行政区边界时作示意） =====
+  if (!hasArtBg && boundaryPaths.length === 0) {
+    parts.push('<g class="mountains" opacity="0.55">');
+    parts.push(
+      `<path d="M${MAP_X + 8},${MAP_Y + 70} Q${MAP_X + 28},${MAP_Y + 18} ${MAP_X + 48},${MAP_Y + 70} ` +
+      `Q${MAP_X + 70},${MAP_Y + 12} ${MAP_X + 92},${MAP_Y + 70} ` +
+      `Q${MAP_X + 115},${MAP_Y + 22} ${MAP_X + 138},${MAP_Y + 70}" ` +
+      `fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>`
+    );
+    parts.push(
+      `<path d="M${MAP_X + MAP_W - 140},${MAP_Y + 55} ` +
+      `Q${MAP_X + MAP_W - 115},${MAP_Y + 6} ${MAP_X + MAP_W - 88},${MAP_Y + 55} ` +
+      `Q${MAP_X + MAP_W - 62},${MAP_Y + 2} ${MAP_X + MAP_W - 32},${MAP_Y + 55}" ` +
+      `fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>`
+    );
+    parts.push(
+      `<path d="M${MAP_X + MAP_W * 0.45},${MAP_Y + MAP_H - 18} ` +
+      `Q${MAP_X + MAP_W * 0.58},${MAP_Y + MAP_H - 58} ${MAP_X + MAP_W * 0.72},${MAP_Y + MAP_H - 18} ` +
+      `Q${MAP_X + MAP_W * 0.85},${MAP_Y + MAP_H - 62} ${MAP_X + MAP_W - 5},${MAP_Y + MAP_H - 18}" ` +
+      `fill="url(#hillGrad)" stroke="#4CAF50" stroke-width="0.5"/>`
+    );
+    parts.push(
+      `<text class="svg-text" data-role="map_deco" x="${MAP_X + 70}" y="${MAP_Y + 88}" fill="#2E7D32" ` +
+      `font-size="${roleFontSize('map_deco', version)}" opacity="0.55" font-style="italic">山区</text>`
+    );
+    parts.push('</g>');
+  } else if (!hasArtBg) {
+    parts.push(
+      `<text class="svg-text" data-role="map_deco" x="${MAP_X + 16}" y="${MAP_Y + 28}" fill="#2E7D32" ` +
+      `font-size="${roleFontSize('map_deco', version)}" opacity="0.7">行政区划示意</text>`
+    );
+  }
+
+  // ===== 行政区边界（线路优先视野下，区划可局部裁切） =====
   if (boundaryPaths.length > 0) {
-    parts.push('<g class="district-boundary" filter="url(#shadow)">');
+    parts.push(`<g class="district-boundary" clip-path="url(#mapClip)" filter="url(#shadow)" opacity="${hasArtBg ? '0.35' : '0.92'}">`);
     for (const bd of boundaryPaths) {
       parts.push(
         `<path d="${bd}" fill="url(#boundaryGrad)" stroke="#4CAF50" ` +
@@ -897,19 +1154,21 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     parts.push('</g>');
   }
 
-  // ===== 装饰性河流（贝塞尔曲线 + 标注） =====
-  parts.push('<g class="rivers">');
-  parts.push(
-    `<path d="M${MAP_X + 35},${MAP_Y + MAP_H * 0.75} ` +
-    `Q${MAP_X + 160},${MAP_Y + MAP_H * 0.55} ${MAP_X + 290},${MAP_Y + MAP_H * 0.68} ` +
-    `T${MAP_X + MAP_W - 45},${MAP_Y + MAP_H * 0.55}" ` +
-    `fill="none" stroke="url(#riverGrad)" stroke-width="6" stroke-linecap="round" opacity="0.5"/>`
-  );
-  parts.push(
-    `<text class="svg-text" data-role="map_deco" x="${MAP_X + 210}" y="${MAP_Y + MAP_H * 0.58}" fill="#1565C0" ` +
-    `font-size="${roleFontSize('map_deco', version)}" opacity="0.65">主要河流</text>`
-  );
-  parts.push('</g>');
+  // ===== 装饰性河流（有艺术底图时跳过，避免与真实水系打架） =====
+  if (!hasArtBg) {
+    parts.push('<g class="rivers">');
+    parts.push(
+      `<path d="M${MAP_X + 35},${MAP_Y + MAP_H * 0.75} ` +
+      `Q${MAP_X + 160},${MAP_Y + MAP_H * 0.55} ${MAP_X + 290},${MAP_Y + MAP_H * 0.68} ` +
+      `T${MAP_X + MAP_W - 45},${MAP_Y + MAP_H * 0.55}" ` +
+      `fill="none" stroke="url(#riverGrad)" stroke-width="6" stroke-linecap="round" opacity="0.5"/>`
+    );
+    parts.push(
+      `<text class="svg-text" data-role="map_deco" x="${MAP_X + 210}" y="${MAP_Y + MAP_H * 0.58}" fill="#1565C0" ` +
+      `font-size="${roleFontSize('map_deco', version)}" opacity="0.65">主要河流</text>`
+    );
+    parts.push('</g>');
+  }
 
   // ===== 走线路径（前进段 + 返程段） =====
   parts.push('<g class="route-paths" filter="url(#shadow)">');
@@ -929,18 +1188,19 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
   }
   parts.push('</g>');
 
-  // ===== 标点 markers =====
+  // ===== 标点 markers（语义着色：山/湖/海/馆/亭/基…） =====
   parts.push('<g class="markers">');
   for (const m of markers) {
-    let color, label, baseR;
+    const feat = classifyWaypointFeature(m.name || '', m.spot_desc || m.plan || '', m.type || '');
+    let color = feat.color || '#FF7826';
+    let label = feat.glyph || '景';
+    let baseR = 7;
     if (m.type === 'base' || m.type === 'arrival') {
       color = '#4CAF50'; label = '起'; baseR = 8;
-    } else if (m.type === 'wellness') {
-      color = '#8E24AA'; label = '养'; baseR = 7;
     } else if (m.type === 'departure') {
       color = '#1976D2'; label = '返'; baseR = 8;
-    } else {
-      color = '#FF7826'; label = '景'; baseR = 7;
+    } else if (m.type === 'wellness') {
+      color = '#8E24AA'; label = '养'; baseR = 7;
     }
     const radius = Math.round(baseR * markerScale);
     const glyphFs = roleFontSize('marker_glyph', version);
@@ -953,47 +1213,51 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     const imgUrl = pickImgs(m);
     parts.push(
       `<g class="route-marker" style="cursor:pointer"` +
-      ` data-type="${escXml(m.type)}" data-day="${escXml(simDay)}"` +
+      ` data-type="${escXml(m.type)}" data-feature="${escXml(feat.key || '')}" data-day="${escXml(simDay)}"` +
       ` data-name="${escXml(simName)}" data-plan="${escXml(simPlan)}"` +
       ` data-lat="${m.lat}" data-lng="${m.lng}"` +
       ` data-spot-desc="${escXml(simDesc)}"` +
       (imgUrl ? ` data-spot-img="${escXml(imgUrl)}"` : '') +
       ` transform="translate(${m.x},${m.y})">` +
       `<circle class="hit-area" r="${hitR}" fill="transparent" pointer-events="all"/>` +
+      `<circle r="${radius + 2}" fill="#fff" opacity="0.9"/>` +
       `<circle r="${radius}" fill="${color}" stroke="#fff" stroke-width="2"/>` +
       `<text class="svg-text" data-role="marker_glyph" text-anchor="middle" dy="${Math.round(glyphFs * 0.35)}" fill="#fff" ` +
       `font-size="${glyphFs}" font-weight="bold">${label}</text>` +
       `<text class="svg-text" data-role="marker_name" y="${radius + nameFs}" text-anchor="middle" font-size="${nameFs}" ` +
-      `fill="#000" font-family="sans-serif">${escXml(shortName(simName, 8))}</text>` +
+      `fill="#1A1A1A" stroke="#FFFDF8" stroke-width="3" paint-order="stroke" font-family="sans-serif">${escXml(shortName(simName, 8))}</text>` +
       `</g>`
     );
   }
   parts.push('</g>');
 
-  // ===== 图例栏 (y=535-563) =====
-  parts.push(`<g class="legend" transform="translate(${MAP_X}, 535)">`);
+  // ===== 图例 / 特色 / 列表：紧随加长后的地图区 =====
+  const legendY = MAP_Y + MAP_H + 10;
+  parts.push(`<g class="legend" transform="translate(${MAP_X}, ${legendY})">`);
   parts.push(
     `<rect width="${MAP_W}" height="28" rx="6" fill="rgba(255,255,255,0.92)" ` +
     `stroke="#ddd" stroke-width="0.5"/>`
   );
   const legendEntries = [
     { color: '#4CAF50', label: '起点' },
-    { color: '#FF7826', label: '途经' },
-    { color: '#8E24AA', label: '康养' },
+    { color: '#2E7D32', label: '山川' },
+    { color: '#1565C0', label: '湖河' },
+    { color: '#0288D1', label: '滨海' },
+    { color: '#8E24AA', label: '馆所' },
     { color: '#1976D2', label: '返程' },
   ];
   const legFs = roleFontSize('legend', version);
   legendEntries.forEach((e, i) => {
-    const cx = i * 110 + 30;
+    const cx = i * 95 + 24;
     parts.push(
-      `<circle cx="${cx}" cy="14" r="6" fill="${e.color}"/>` +
-      `<text class="svg-text" data-role="legend" x="${cx + 12}" y="18" font-size="${legFs}" fill="#333">${e.label}</text>`
+      `<circle cx="${cx}" cy="14" r="5" fill="${e.color}"/>` +
+      `<text class="svg-text" data-role="legend" x="${cx + 10}" y="18" font-size="${legFs}" fill="#333">${e.label}</text>`
     );
   });
   parts.push('</g>');
 
-  // ===== 康养特色信息栏 (y=570-640) =====
-  parts.push(`<g class="wellness-info" transform="translate(${MAP_X}, 570)">`);
+  const wellnessY = legendY + 36;
+  parts.push(`<g class="wellness-info" transform="translate(${MAP_X}, ${wellnessY})">`);
   parts.push(
     `<rect width="${MAP_W}" height="70" rx="10" fill="#FFF8E1" ` +
     `stroke="#FFE0B2" stroke-width="0.8"/>`
@@ -1015,8 +1279,8 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
   }
   parts.push('</g>');
 
-  // ===== 景点列表区 (y=650-840) =====
-  parts.push(`<g class="spot-list" transform="translate(${MAP_X}, 650)">`);
+  const listY = wellnessY + 80;
+  parts.push(`<g class="spot-list" transform="translate(${MAP_X}, ${listY})">`);
   parts.push(
     `<rect width="${MAP_W}" height="190" rx="10" fill="#FAFAFA" ` +
     `stroke="#EEE" stroke-width="0.5"/>`
@@ -1033,17 +1297,19 @@ export function generateSvg(waypoints, routeId, routeName, version = 'standard',
     const simDay = toSimplified(m.day || '');
     const simPlan = toSimplified(m.plan || '');
     const simDesc = toSimplified(m.spot_desc || '');
+    const feat = classifyWaypointFeature(m.name || '', m.spot_desc || m.plan || '', m.type || '');
     const imgUrl = pickImgs(m);
     // 景点行可见（显示名称/日程），图片URL通过 data-spot-img 隐藏
     parts.push(
       `<g class="spot-item" data-name="${escXml(simName)}" data-day="${escXml(simDay)}"` +
+      ` data-feature="${escXml(feat.key || '')}"` +
       ` data-spot-desc="${escXml(simDesc)}"` +
       (imgUrl ? ` data-spot-img="${escXml(imgUrl)}"` : '') + `>` +
-      `<circle cx="18" cy="${yPos - 3}" r="3" fill="#FF7826"/>` +
+      `<circle cx="18" cy="${yPos - 3}" r="3" fill="${feat.color || '#FF7826'}"/>` +
       `<text class="svg-text" data-role="list_item" x="28" y="${yPos}" fill="#333" font-size="${itemFs}">` +
-      `${escXml(shortName(simName, 10))}` +
+      `${escXml(feat.glyph || '景')} ${escXml(shortName(simName, 10))}` +
       (simDay ? ` · ${escXml(simDay)}` : '') +
-      (simPlan ? ` · ${escXml(shortName(simPlan, 18))}` : '') +
+      (simPlan ? ` · ${escXml(shortName(simPlan, 16))}` : '') +
       `</text></g>`
     );
     yPos += 18;
