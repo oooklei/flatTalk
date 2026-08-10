@@ -4,8 +4,10 @@ import {
   tryLisGate,
   isLisGateEnabled,
   getLisBaseUrl,
+  getLisSortRetries,
   LIS_GATE_ENABLED,
   LIS_BASE_URL,
+  loadCatalogEntries,
 } from '../src/core/lis/lis-gate-hook.js';
 
 const CATALOG = [
@@ -24,23 +26,14 @@ const CATALOG = [
     enabled: true,
     entry: { skill_key: 'travel_route', template_id: 'route_svg' },
   },
+  {
+    intent_id: 'health_risk_warning.tongue',
+    enabled: true,
+    entry: { skill_key: 'health_risk_warning', template_id: 'tongue_diagnosis_card' },
+  },
 ];
 
-function freshTicket(overrides = {}) {
-  return {
-    ticket_id: 'tkt_test_travel',
-    lis_version: '1.0',
-    domain: 'travel_route',
-    primary_intent_id: 'travel_route_plan',
-    issued_at: new Date().toISOString(),
-    ttl_seconds: 1800,
-    clarify_round: 0,
-    signature: '',
-    ...overrides,
-  };
-}
-
-function sessionWithTurns(turnCount = 3, ticket = null) {
+function sessionWithTurns(turnCount = 3) {
   const turns = [];
   for (let i = 1; i <= turnCount; i += 1) {
     turns.push({
@@ -54,7 +47,7 @@ function sessionWithTurns(turnCount = 3, ticket = null) {
     conversation_id: 'conv_lis_gate',
     active_agent: 'travel_route',
     turns,
-    global_context: { routing_ticket: ticket },
+    global_context: {},
   };
 }
 
@@ -74,9 +67,14 @@ describe('LIS gate env helpers', () => {
     assert.equal(getLisBaseUrl({}), 'http://127.0.0.1:8100');
     assert.equal(getLisBaseUrl({ LIS_BASE_URL: 'http://lis:8100/' }), 'http://lis:8100');
   });
+
+  it('getLisSortRetries defaults to 2', () => {
+    assert.equal(getLisSortRetries({}), 2);
+    assert.equal(getLisSortRetries({ LIS_SORT_RETRIES: '0' }), 0);
+  });
 });
 
-describe('tryLisGate (mock lisClient)', () => {
+describe('tryLisGate pure SORT (mock lisClient)', () => {
   let prevFlag;
 
   before(() => {
@@ -93,94 +91,75 @@ describe('tryLisGate (mock lisClient)', () => {
     process.env.LIS_GATE_ENABLED = '1';
   });
 
-  it('a) action_key + valid ticket → SKILL_LOCK; sort/boundary NEVER called', async () => {
+  it('action_key still calls sort (no Skill Lock defer)', async () => {
+    let sorted = false;
+    const lisClient = {
+      async sort() {
+        sorted = true;
+        return {
+          decision: { status: 'MATCH_OK', max_confidence: 0.9, threshold: 0.5 },
+          intents: [{ intent_id: 'health_risk_warning.tongue', role: 'primary', confidence: 0.9 }],
+        };
+      },
+      async boundary() { throw new Error('boundary must not be called'); },
+    };
+    const r = await tryLisGate({
+      request: {
+        message: '查看舌诊详情',
+        context: { action_key: 'health_risk_warning.view_tongue' },
+      },
+      session: { conversation_id: 'c', turns: [], global_context: {} },
+      catalogEntries: CATALOG,
+      lisClient,
+    });
+    assert.equal(sorted, true);
+    assert.equal(r.mode, 'SORT');
+    assert.notEqual(r.reason, 'defer_action_key');
+    assert.equal(r.handled, true);
+    assert.equal(r.template_id, 'tongue_diagnosis_card');
+  });
+
+  it('free text with history still sorts (no boundary)', async () => {
     const calls = { sort: 0, boundary: 0 };
     const lisClient = {
       async sort() {
         calls.sort += 1;
-        return {};
+        return {
+          decision: { status: 'MATCH_OK', max_confidence: 0.9 },
+          intents: [
+            { intent_id: 'travel_route_weather_risk', confidence: 0.9, role: 'primary' },
+          ],
+        };
       },
       async boundary() {
         calls.boundary += 1;
         return {};
       },
     };
-    const ticket = freshTicket();
-    const session = sessionWithTurns(2, ticket);
+    const session = sessionWithTurns(2);
+    session.global_context.routing_ticket = {
+      ticket_id: 'stale',
+      domain: 'travel_route',
+      issued_at: new Date().toISOString(),
+      ttl_seconds: 1800,
+    };
     const result = await tryLisGate({
-      request: {
-        message: '查看天气',
-        skill_key: 'travel_route',
-        template_id: 'travel_weather_risk_card',
-        conversation_id: 'conv_lis_gate',
-        context: { action_key: 'travel_route.check_weather_risk' },
-      },
+      request: { message: '那天气怎么样', conversation_id: 'conv_lis_gate', context: {} },
       session,
       catalogEntries: CATALOG,
       lisClient,
-      snapshot: { scene: 'travel_route' },
     });
-
-    assert.equal(result.handled, true);
-    assert.equal(result.mode, 'SKILL_LOCK');
-    assert.equal(result.skill_key, 'travel_route');
-    assert.equal(calls.sort, 0);
     assert.equal(calls.boundary, 0);
-    assert.ok(session.global_context.routing_ticket);
+    assert.equal(calls.sort, 1);
+    assert.equal(result.handled, true);
+    assert.equal(result.mode, 'SORT');
+    assert.equal(result.skill_key, 'travel_route');
+    assert.equal(session.global_context.routing_ticket, null);
   });
 
-  it('b) valid ticket + free text + dialogue turns>=3 → boundary called once', async () => {
-    const calls = { sort: 0, boundary: 0 };
+  it('MATCH_OK does not persist routing_ticket', async () => {
     const lisClient = {
       async sort() {
-        calls.sort += 1;
-        return {};
-      },
-      async boundary(body) {
-        calls.boundary += 1;
-        assert.ok(body.routing_ticket);
-        assert.ok(Array.isArray(body.dialogue?.turns));
-        assert.ok(body.dialogue.turns.length >= 3);
-        return {
-          status: 'STAY',
-          routing_ticket: body.routing_ticket,
-          intents: [
-            { intent_id: 'travel_route_weather_risk', confidence: 0.9, role: 'primary' },
-          ],
-        };
-      },
-    };
-    // 2 session turns → 4 dialogue turns (>=3)
-    const ticket = freshTicket();
-    const session = sessionWithTurns(2, ticket);
-    const result = await tryLisGate({
-      request: {
-        message: '那天气怎么样',
-        skill_key: '',
-        conversation_id: 'conv_lis_gate',
-        context: {},
-      },
-      session,
-      catalogEntries: CATALOG,
-      lisClient,
-      snapshot: { scene: 'travel_route' },
-    });
-
-    assert.equal(calls.boundary, 1);
-    assert.equal(calls.sort, 0);
-    assert.equal(result.handled, true);
-    assert.equal(result.mode, 'BOUNDARY');
-    assert.equal(result.skill_key, 'travel_route');
-    assert.equal(result.template_id, 'travel_weather_risk_card');
-    assert.ok(session.global_context.routing_ticket);
-  });
-
-  it('c) no ticket → sort called', async () => {
-    const calls = { sort: 0, boundary: 0 };
-    const lisClient = {
-      async sort(body) {
-        calls.sort += 1;
-        assert.equal(body.utterance, '附近有什么好吃的');
         return {
           decision: { status: 'MATCH_OK', max_confidence: 0.88 },
           intents: [
@@ -188,124 +167,167 @@ describe('tryLisGate (mock lisClient)', () => {
           ],
           routing_ticket: {
             ticket_id: 'tkt_food',
-            lis_version: '1.0',
             domain: 'nearby_resource',
-            primary_intent_id: 'nearby_resource.food',
             issued_at: new Date().toISOString(),
             ttl_seconds: 1800,
           },
         };
       },
-      async boundary() {
-        calls.boundary += 1;
-        return {};
-      },
     };
-    const session = sessionWithTurns(0, null);
+    const session = sessionWithTurns(0);
     const result = await tryLisGate({
-      request: {
-        message: '附近有什么好吃的',
-        conversation_id: 'conv_lis_gate',
-        context: {},
-      },
+      request: { message: '附近有什么好吃的', conversation_id: 'conv_lis_gate', context: {} },
       session,
       catalogEntries: CATALOG,
       lisClient,
     });
-
-    assert.equal(calls.sort, 1);
-    assert.equal(calls.boundary, 0);
     assert.equal(result.handled, true);
     assert.equal(result.mode, 'SORT');
     assert.equal(result.skill_key, 'nearby_resource');
-    assert.equal(result.template_id, 'nearby_food_card');
-    assert.equal(session.global_context.routing_ticket?.domain, 'nearby_resource');
+    assert.equal(session.global_context.routing_ticket, null);
+    assert.equal(session.global_context.lis_locked_scene, 'nearby_resource');
   });
 
   it('flag off → handled false and no LIS calls', async () => {
     process.env.LIS_GATE_ENABLED = '0';
-    const calls = { sort: 0, boundary: 0 };
-    const lisClient = {
-      async sort() { calls.sort += 1; return {}; },
-      async boundary() { calls.boundary += 1; return {}; },
-    };
+    const calls = { sort: 0 };
     const result = await tryLisGate({
       request: { message: '你好', context: {} },
-      session: sessionWithTurns(0, null),
+      session: sessionWithTurns(0),
       catalogEntries: CATALOG,
-      lisClient,
+      lisClient: { async sort() { calls.sort += 1; return {}; } },
     });
     assert.equal(result.handled, false);
     assert.equal(calls.sort, 0);
-    assert.equal(calls.boundary, 0);
   });
 
-  it('ESCAPE clears ticket then calls sort', async () => {
-    const calls = { sort: 0, boundary: 0 };
-    const lisClient = {
-      async boundary() {
-        calls.boundary += 1;
-        return { status: 'ESCAPE', routing_ticket: null, intents: [] };
-      },
-      async sort() {
-        calls.sort += 1;
-        return {
-          decision: { status: 'MATCH_OK', max_confidence: 0.9 },
-          intents: [
-            { intent_id: 'nearby_resource.food', confidence: 0.9, role: 'primary' },
-          ],
-          routing_ticket: {
-            ticket_id: 'tkt_after_escape',
-            lis_version: '1.0',
-            domain: 'nearby_resource',
-            primary_intent_id: 'nearby_resource.food',
-            issued_at: new Date().toISOString(),
-            ttl_seconds: 1800,
-          },
-        };
-      },
-    };
-    const session = sessionWithTurns(2, freshTicket());
-    const result = await tryLisGate({
-      request: { message: '附近有什么好吃的餐厅', context: {} },
-      session,
-      catalogEntries: CATALOG,
-      lisClient,
-    });
-    assert.equal(calls.boundary, 1);
-    assert.equal(calls.sort, 1);
-    assert.equal(result.handled, true);
-    assert.equal(result.skill_key, 'nearby_resource');
-    assert.equal(session.global_context.routing_ticket?.domain, 'nearby_resource');
-  });
-
-  it('reenter clears ticket and falls through to sort', async () => {
-    const calls = { sort: 0, boundary: 0 };
-    const lisClient = {
-      async sort() {
-        calls.sort += 1;
-        return { decision: { status: 'NEED_CLARIFY', max_confidence: 0.2 }, intents: [] };
-      },
-      async boundary() {
-        calls.boundary += 1;
-        return {};
-      },
-    };
-    const session = sessionWithTurns(2, freshTicket());
+  it('reenter clears pending and sorts', async () => {
+    const calls = { sort: 0 };
+    const session = sessionWithTurns(2);
+    session.global_context.routing_ticket = { ticket_id: 'x' };
     const result = await tryLisGate({
       request: {
         message: '重新开始',
-        skill_key: 'travel_route',
         context: { reenter_chat: true, action_key: 'x' },
       },
       session,
       catalogEntries: CATALOG,
-      lisClient,
+      lisClient: {
+        async sort() {
+          calls.sort += 1;
+          return { decision: { status: 'NEED_CLARIFY', max_confidence: 0.2 }, intents: [] };
+        },
+      },
     });
     assert.equal(session.global_context.routing_ticket, null);
     assert.equal(calls.sort, 1);
-    assert.equal(calls.boundary, 0);
     assert.equal(result.handled, false);
     assert.equal(result.mode, 'SORT');
+  });
+
+  it('NEED_CLARIFY stores pending supply and returns ambiguity options', async () => {
+    const lisClient = {
+      async sort() {
+        return {
+          decision: { status: 'NEED_CLARIFY', max_confidence: 0.2 },
+          intents: [],
+          clarify: {
+            question: '您更想办理哪一件事？',
+            options: [
+              { label: '旅居线路', intent_id: 'travel_route_plan', confidence: 0.4 },
+              { label: '周边餐饮', intent_id: 'nearby_resource.food', confidence: 0.3 },
+            ],
+          },
+          trace_id: 'lis_clarify_1',
+        };
+      },
+      async clarify() { throw new Error('should not clarify yet'); },
+    };
+    const session = { conversation_id: 'c_clarify', turns: [], global_context: {} };
+    const result = await tryLisGate({
+      request: { message: '今天心情不错随便聊聊', conversation_id: 'c_clarify', context: {} },
+      session,
+      catalogEntries: CATALOG,
+      lisClient,
+    });
+    assert.equal(result.need_clarify, true);
+    assert.equal(result.mode, 'CLARIFY');
+    assert.ok(session.global_context.pending_clarify_supply);
+    assert.equal(result.ambiguity_options.length, 2);
+  });
+
+  it('pending clarify + selected_intent_id → clarify resolve → MATCH_OK', async () => {
+    const calls = { clarify: 0 };
+    const pending = {
+      decision: { status: 'NEED_CLARIFY', max_confidence: 0.2, clarify_round: 0 },
+      intents: [],
+      clarify: { question: '?', options: [{ intent_id: 'travel_route_plan', label: '旅居' }] },
+      utterance: '随便聊聊',
+      trace_id: 'lis_prev',
+      slots: {},
+    };
+    const lisClient = {
+      async sort() { throw new Error('sort should not run'); },
+      async clarify(body) {
+        calls.clarify += 1;
+        assert.equal(body.mode, 'resolve');
+        assert.equal(body.selected_intent_id, 'travel_route_plan');
+        return {
+          decision: { status: 'MATCH_OK', max_confidence: 0.9 },
+          intents: [{ intent_id: 'travel_route_plan', confidence: 0.9, role: 'primary' }],
+        };
+      },
+    };
+    const session = {
+      conversation_id: 'c_clarify2',
+      turns: [],
+      global_context: { pending_clarify_supply: pending },
+    };
+    const result = await tryLisGate({
+      request: {
+        message: '旅居线路',
+        conversation_id: 'c_clarify2',
+        context: { lis_clarify_intent_id: 'travel_route_plan' },
+      },
+      session,
+      catalogEntries: CATALOG,
+      lisClient,
+    });
+    assert.equal(calls.clarify, 1);
+    assert.equal(result.handled, true);
+    assert.equal(result.skill_key, 'travel_route');
+    assert.equal(session.global_context.pending_clarify_supply, null);
+    assert.equal(session.global_context.routing_ticket, null);
+  });
+
+  it('sort retries then returns lis_unreachable', async () => {
+    process.env.LIS_SORT_RETRIES = '2';
+    let n = 0;
+    const result = await tryLisGate({
+      request: { message: '舌诊详情', conversation_id: 'c_down', context: {} },
+      session: { conversation_id: 'c_down', turns: [], global_context: {} },
+      catalogEntries: CATALOG,
+      lisClient: {
+        async sort() {
+          n += 1;
+          throw new Error('ECONNREFUSED');
+        },
+      },
+      breaker: {
+        shouldSkip: () => false,
+        recordSuccess() {},
+        recordFailure() {},
+      },
+    });
+    assert.equal(n, 3);
+    assert.equal(result.handled, false);
+    assert.equal(result.reason, 'lis_unreachable');
+    delete process.env.LIS_SORT_RETRIES;
+  });
+});
+
+describe('loadCatalogEntries smoke', () => {
+  it('returns an array', () => {
+    assert.ok(Array.isArray(loadCatalogEntries()));
   });
 });

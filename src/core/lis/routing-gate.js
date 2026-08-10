@@ -6,25 +6,14 @@ export function isTicketValid(ticket) {
 }
 
 /**
- * @returns {{ mode: 'SORT'|'BOUNDARY'|'SKILL_LOCK', reason: string }}
+ * Pure-SORT consumer: flatTalk always sorts via LIS.
+ * BOUNDARY / SKILL_LOCK ticket modes are retired on the FT main path.
+ *
+ * @returns {{ mode: 'SORT', reason: string }}
  */
 export function decideRoute({
-  ticket,
-  context = {},
-  skill_key = '',
-  utterance = '',
-  dialogueTurnCount = 0,
   reenter_chat = false,
 } = {}) {
   if (reenter_chat) return { mode: 'SORT', reason: 'reenter_chat' };
-  const valid = isTicketValid(ticket);
-  const actionLocked = Boolean(context.action_key && (skill_key || context.followup_source));
-  const followupLocked = Boolean(context.followup_source && skill_key);
-  if (valid && (actionLocked || followupLocked)) {
-    return { mode: 'SKILL_LOCK', reason: 'action_or_followup' };
-  }
-  if (valid && String(utterance || '').trim() && dialogueTurnCount >= 3) {
-    return { mode: 'BOUNDARY', reason: 'free_text_with_history' };
-  }
-  return { mode: 'SORT', reason: valid ? 'insufficient_turns' : 'no_or_invalid_ticket' };
+  return { mode: 'SORT', reason: 'pure_sort' };
 }

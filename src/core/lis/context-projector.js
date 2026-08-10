@@ -6,7 +6,8 @@
  * Do not fabricate turns to reach the boundary minimum of 3.
  */
 
-const DEFAULT_LIMIT = 8;
+const DEFAULT_LIMIT = 5;
+const HARD_CAP_LIMIT = 8;
 
 const ENTITY_LOCK_KEYS = [
   'entity_type',
@@ -36,7 +37,9 @@ const ENTITY_LOCK_KEYS = [
  * @returns {import('../../types').DialogueView|object}
  */
 export function projectDialogueView(session = {}, { ticket = null, limit = DEFAULT_LIMIT } = {}) {
-  const maxPairs = Math.max(1, Number(limit) || DEFAULT_LIMIT);
+  const requested = Number(limit);
+  const capped = Number.isFinite(requested) && requested > 0 ? requested : DEFAULT_LIMIT;
+  const maxPairs = Math.min(HARD_CAP_LIMIT, Math.max(1, capped));
   const rawTurns = Array.isArray(session.turns) ? session.turns : [];
   // Take last N session turns (each may expand to 2 DialogueTurns)
   const window = rawTurns.slice(-maxPairs);
@@ -112,26 +115,16 @@ export function projectBizHints({
     destination: firstText(snap.destination, ctx.destination, request.destination),
   };
 
+  // scene soft-bias 仅来自上一轮 LIS 锁定结果，禁止 Supervisor / 客户端自造 skill_key 摆渡。
   const scene = {
-    skill_key: firstText(
-      request.skill_key,
-      ctx.skill_key,
-      snap.scene,
-      ctx.previous_scene,
-    ),
-    scene_key: firstText(request.scene_key, ctx.scene_key, snap.scene, request.skill_key),
-    intent_id: firstText(
-      request.intent_id,
-      request.intent,
-      ctx.intent_id,
-      snap.intent,
-      ctx.previous_intent,
-    ),
+    skill_key: firstText(snap.scene, ctx.previous_scene, ctx.lis_locked_scene),
+    scene_key: firstText(snap.scene, ctx.previous_scene, ctx.lis_locked_scene),
+    intent_id: firstText(snap.intent, ctx.previous_intent, ctx.lis_locked_intent),
     template_id: firstText(
-      request.template_id,
-      ctx.template_id,
       snap.template_id,
       ctx.previous_template,
+      ctx.last_template,
+      ctx.lis_locked_template,
     ),
     action_key: firstText(ctx.action_key, request.action_key),
     action_params: isPlainObject(ctx.action_params)

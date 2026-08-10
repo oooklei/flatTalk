@@ -49,5 +49,19 @@ describe('context-projector', () => {
     assert.equal(hints.user.elder_id, 'E1');
     assert.equal(hints.entity_lock.route_id, 'R1');
     assert.deepEqual(hints.catalog_intent_ids, ['travel_route_plan']);
+    assert.equal(hints.scene.skill_key, 'travel_route');
+  });
+
+  it('BizHints.scene ignores Supervisor request.skill_key', () => {
+    const hints = projectBizHints({
+      request: {
+        skill_key: 'dispatch_manage',
+        context: { previous_scene: 'health_risk_warning' },
+      },
+      snapshot: { scene: 'health_risk_warning', intent: 'health_risk_warning.tongue' },
+      catalogIntentIds: [],
+    });
+    assert.equal(hints.scene.skill_key, 'health_risk_warning');
+    assert.notEqual(hints.scene.skill_key, 'dispatch_manage');
   });
 });

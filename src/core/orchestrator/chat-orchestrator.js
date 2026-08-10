@@ -4,12 +4,14 @@ import { fileURLToPath } from 'node:url';
 
 import { buildEnvelope } from '../../contracts/envelope.js';
 import { composeInteractions, loadStaticFollowups } from '../interaction-composer.js';
+import { templateIdFromAction } from '../actions/action-dispatcher.js';
 import { classifyIntent } from '../intent-classifier/index.js';
 import { fillTemplateSlots, fillTravelWeatherRisk, fillTravelWeatherRiskCard } from '../model-service.js';
 import { extractCities } from '../city-extractor/index.js';
 import { renderTemplateCardResult } from '../render/template-card-renderer.js';
 import { identifyScene } from '../scene-router/index.js';
-import { resolveTemplateId, resolveTemplateWithRouteType } from '../scene-router/intent-template-map.js';
+// intent→template 映射已统一到 config/intent-catalog.json（与 LIS IntentKB 同源）。
+// 原 scene-router/intent-template-map.js 是第二份映射表，已删除。
 import { matchPublishedPackages, getPublishedPackageById } from '../scene-router/publish-index.js';
 import { inferRouteType } from '../scene-router/rules/travel-route.js';
 import { createDataService } from '../../services/data-service.js';
@@ -51,18 +53,44 @@ const _supervisorForGuard = createSupervisor();
 
 // 从上下文/业务数据中解析天气查询的城市（优先 action 传入的目的地，返回数组以支持多城市）
 function resolveWeatherCity(request = {}, businessData = {}) {
-  const params = request.context?.action_params || {};
-  const fromParams = params.city || request.context?.city;
-  if (fromParams && String(fromParams).trim()) return [String(fromParams).trim()];
+  const params = request.context?.action_params || request.params || {};
+  const ctx = request.context || {};
+  // 按钮 params 常传 destination（天气卡 followup），兼容 city
+  const fromParams = firstNonEmpty(
+    params.city,
+    params.destination,
+    ctx.city,
+    ctx.destination,
+    ctx.previous_city,
+    ctx.previous_destination,
+  );
+  if (fromParams) return [fromParams];
   // 从预提取结果读取
   const cities = businessData?.cities;
-  if (Array.isArray(cities) && cities.length) return cities;
+  if (Array.isArray(cities) && cities.length) {
+    return cities.map((c) => String(c || '').trim()).filter(Boolean);
+  }
   const bd = businessData || {};
   const jtd = bd.jtd || {};
   const product = jtd.selected_product || (Array.isArray(jtd.products) ? jtd.products[0] : null);
   const route = bd.route || (Array.isArray(bd.routes) ? bd.routes[0] : null);
-  const fallback = String(product?.destination || product?.city || route?.destination || bd.primary_city || bd.destination || '').trim();
+  const fallback = firstNonEmpty(
+    product?.destination,
+    product?.city,
+    route?.destination,
+    bd.primary_city,
+    bd.destination,
+    bd.city,
+  );
   return fallback ? [fallback] : [];
+}
+
+function firstNonEmpty(...values) {
+  for (const value of values) {
+    const text = String(value || '').trim();
+    if (text) return text;
+  }
+  return '';
 }
 
 export function createChatOrchestrator(options = {}) {
@@ -194,114 +222,6 @@ export function createChatOrchestrator(options = {}) {
         sceneInput.semantic = semantic;
         request.semantic = semantic;
 
-        // ★ 轻量追问短路：followup 按钮触发且 skill_key 已知时，跳过意图/场景/知识检索，
-        //    直接走 模板解析→业务数据→本地模板填充→渲染，避免完整 16 步流水线
-        if (process.env.FLATTALK_DEBUG_ROUTING === '1') {
-          console.log('[bypass-check]', {
-            has_followup_source: !!request.context?.followup_source,
-            followup_source: request.context?.followup_source,
-            skill_key: request.skill_key,
-            reenter_chat: request.context?.reenter_chat,
-            action_key: request.context?.action_key,
-          });
-        }
-        if (request.context?.followup_source && request.skill_key && !request.context?.reenter_chat
-            // 天气特例动作不走短路，需要走正常流程的天气分支（调天气服务+渲染天气卡片）
-            && request.context?.action_key !== 'travel_route.check_weather_risk') {
-          mark('followup_bypass', '轻量追问', { skill_key: request.skill_key, action_key: request.context?.action_key });
-          const fSkillKey = request.skill_key;
-          const fSkillTemplates = resolveSkillTemplates(fSkillKey);
-          const fTemplateId = request.template_id || request.templateId || fSkillTemplates.defaultTemplateId;
-          const fIntentContext = {
-            ...intentContext,
-            intent: `${fSkillKey}.followup`,
-            action_key: request.context?.action_key,
-            action_params: request.context?.action_params,
-          };
-          // 仅加载业务数据（轻量，按场景查询本地表）
-          const fBusinessData = await loadBusinessData({
-            sceneDecision: { scene_key: fSkillKey, decision: 'accept', confidence: 1 },
-            request,
-            dataService,
-          });
-          mark('followup_data', '追问业务数据', { loaded: !!(fBusinessData && Object.keys(fBusinessData).length) });
-          // 走真实 LLM 填充（如有 modelService），否则回退本地确定性
-          const fillFn = (modelService && typeof modelService.fillTemplateSlots === 'function')
-            ? modelService.fillTemplateSlots
-            : fillTemplateSlots;
-          let fModelResult = await fillFn({
-            message: sceneInput.text,
-            skill_key: fSkillKey,
-            template_id: fTemplateId,
-            default_template_id: fSkillTemplates.defaultTemplateId,
-            template_library: fSkillTemplates.library,
-            business_data: fBusinessData,
-            intent_context: fIntentContext,
-            conversation_history: await injectHistory(request, contextManager, fSkillKey),
-          });
-          mark('followup_fill', '追问模板填充', { template_id: fModelResult.template_id });
-          fModelResult = await applySmartFallback(fModelResult, {
-            message: sceneInput.text, skill_key: fSkillKey, conversation_id: request.conversation_id,
-          }, smartFallbackHandler, contextManager);
-          const fStaticFollowups = loadStaticFollowups(fSkillKey, fModelResult.template_id || fTemplateId);
-          const fInteractions = composeInteractions({
-            sceneDecision: { scene_key: fSkillKey, intent: `${fSkillKey}.followup`, decision: 'accept', confidence: 1 },
-            modelResult: fModelResult,
-            staticFollowups: fStaticFollowups,
-          });
-          const fRenderResult = renderTemplateCardResult({
-            templateDir: fSkillTemplates.templateDir,
-            modelResult: fModelResult,
-            actions: fInteractions.actions,
-            followupSuggestions: fInteractions.followup_suggestions,
-            compactFollowups: fInteractions.compact_followups,
-          });
-          mark('followup_render', '追问卡片渲染', { status: fRenderResult.render_status });
-          const fTemplateIdFinal = fRenderResult.card.templateId || fModelResult.template_id || fTemplateId;
-          const fEnvelope = buildEnvelope({
-            request_id: request.request_id,
-            conversation_id: request.conversation_id,
-            turn_id: request.turn_id,
-            skill_key: fSkillKey,
-            intent: `${fSkillKey}.followup`,
-            template_id: fTemplateIdFinal,
-            template_key: fTemplateIdFinal,
-            answer_text: fModelResult.answer_text,
-            data: fModelResult.data,
-            actions: fInteractions.actions,
-            followup_suggestions: fInteractions.followup_suggestions,
-            evidence: [],
-            route: {
-              source: 'flatTalk.followup_bypass',
-              scene_key: fSkillKey,
-              decision: 'accept',
-              confidence: 1,
-              routed: true,
-              template_reason: fRenderResult.card.reason,
-              render_status: fRenderResult.render_status,
-              intent_context: fIntentContext,
-            },
-          });
-          mark('done', '追问响应封装', { scene_key: fEnvelope.route.scene_key });
-          try {
-            getTraceLogger().write({
-              level: 'ok', kind: 'followup', question: traceQuestion,
-              conversation_id: request.conversation_id, turn_id: request.turn_id, request_id: request.request_id,
-              route: fEnvelope.route, stages,
-            });
-          } catch {}
-          return {
-            ...fEnvelope,
-            answer: fEnvelope.answer_text,
-            llm: fRenderResult.llm,
-            card: fRenderResult.card,
-            rendered_html: fRenderResult.rendered_html,
-            html_fallback: fRenderResult.html_fallback,
-            context_snapshot: buildSnapshot({ ...fEnvelope, semantic: request.semantic || sceneInput.semantic }),
-            debug: { followup_bypass: true, skill_key: fSkillKey, template_id: fTemplateIdFinal },
-          };
-        }
-
         // 加载 per-skill 场景阈值（来自 skill_configs 表），使各技能可独立调节 accept/review 门槛
         let thresholdsByScene = options.thresholdsByScene ?? null;
         if (!thresholdsByScene && typeof dataService.tableData?.getSkillConfigs === 'function') {
@@ -313,9 +233,9 @@ export function createChatOrchestrator(options = {}) {
             }
           } catch { thresholdsByScene = null; }
         }
-        // ★ action_key 锁定：当请求来自 action_button 且 skill_key 已知时，
-        //    跳过 identifyScene 路由（避免"天气风险"等文本被误判到其他场景）
-        const actionLockedSkillKey = (request.context?.action_key && request.skill_key
+        // LIS 关闭时仍可用 action_key 锁定；LIS 开启时一律走纯 SORT，禁止本地 Skill Lock 摆渡。
+        const actionLockedSkillKey = (!isLisGateEnabled()
+          && request.context?.action_key && request.skill_key
           && !request.context?.reenter_chat)
           ? request.skill_key
           : null;
@@ -324,48 +244,175 @@ export function createChatOrchestrator(options = {}) {
         let skillKey;
         let acceptedScene;
 
-        // ★ LIS Gatekeeper Ticket（默认关闭；LIS_GATE_ENABLED=1 时在 identifyScene 之前介入）
+        // ★ LIS 纯 SORT 门控（默认关闭；LIS_GATE_ENABLED=1 时在 identifyScene 之前介入）
         let lisGateResult = null;
+        let lisSession = null;
         if (isLisGateEnabled()) {
           try {
             const sessionStore = options.sessionStore || null;
-            const session = options.session
+            lisSession = options.session
               || (sessionStore && request.conversation_id
                 ? await sessionStore.getOrCreate(request.conversation_id)
                 : { conversation_id: request.conversation_id || '', turns: [], global_context: {} });
             const lisClient = options.lisClient || createLisClient({ baseUrl: getLisBaseUrl() });
             const catalogEntries = options.catalogEntries || loadCatalogEntries();
+            const gc = lisSession?.global_context || {};
             const snapshot = request.context?.context_snapshot
               || {
-                scene: request.context?.previous_scene || request.context?.active_agent || '',
-                intent: request.context?.previous_intent || '',
-                template_id: request.context?.previous_template || request.context?.last_template || '',
+                scene: gc.lis_locked_scene
+                  || request.context?.previous_scene
+                  || '',
+                intent: gc.lis_locked_intent
+                  || request.context?.previous_intent
+                  || '',
+                template_id: gc.lis_locked_template
+                  || request.context?.previous_template
+                  || request.context?.last_template
+                  || '',
               };
+            // 把 LIS 锁定域也注入 context，供 BizHints 投影（禁止 Supervisor skill_key）
+            if (gc.lis_locked_scene) {
+              request.context = {
+                ...(request.context || {}),
+                lis_locked_scene: gc.lis_locked_scene,
+                lis_locked_intent: gc.lis_locked_intent || '',
+                lis_locked_template: gc.lis_locked_template || '',
+                previous_scene: request.context?.previous_scene || gc.lis_locked_scene,
+              };
+            }
             lisGateResult = await tryLisGate({
               request,
-              session,
+              session: lisSession,
               catalogEntries,
               lisClient,
               snapshot,
             });
-            if (sessionStore && session?.conversation_id) {
-              try { await sessionStore.save(session); } catch { /* ticket persist best-effort */ }
+            if (sessionStore && lisSession?.conversation_id) {
+              try { await sessionStore.save(lisSession); } catch { /* session persist best-effort */ }
             }
             mark('lis_gate', 'LIS门控', {
               handled: Boolean(lisGateResult?.handled),
               mode: lisGateResult?.mode || '',
+              reason: lisGateResult?.reason || '',
               skill_key: lisGateResult?.skill_key || '',
+              need_clarify: Boolean(lisGateResult?.need_clarify),
             });
           } catch (err) {
-            lisGateResult = { handled: false };
+            lisGateResult = { handled: false, mode: 'SORT', reason: 'lis_unreachable' };
             mark('lis_gate', 'LIS门控异常回退', { error: err?.message || String(err) });
           }
+        }
+
+        // LIS NEED_CLARIFY：短路返回澄清选项（复用 ambiguity_options UI）
+        if (lisGateResult?.need_clarify && Array.isArray(lisGateResult.ambiguity_options)) {
+          const question = lisGateResult.clarify?.question
+            || '您更想办理哪一件事？请选择或补充说明。';
+          const ambEnvelope = buildEnvelope({
+            request_id: request.request_id,
+            conversation_id: request.conversation_id,
+            turn_id: request.turn_id,
+            skill_key: 'common',
+            agent_key: 'common',
+            intent: 'lis.need_clarify',
+            template_id: 'answer',
+            template_key: 'answer',
+            answer_text: question,
+            data: {
+              lis_clarify: lisGateResult.clarify || null,
+              supply_trace_id: lisGateResult.supply?.trace_id || '',
+            },
+            actions: [],
+            followup_suggestions: [],
+            evidence: [],
+            route: {
+              source: 'lis_clarify',
+              scene_key: 'common',
+              decision: 'need_clarify',
+              confidence: Number(lisGateResult.supply?.decision?.max_confidence) || 0,
+              routed: false,
+              intent_context: intentContext,
+            },
+          });
+          mark('lis_clarify', 'LIS澄清', {
+            option_count: lisGateResult.ambiguity_options.length,
+          });
+          return {
+            ...ambEnvelope,
+            ambiguity_options: lisGateResult.ambiguity_options,
+            answer: question,
+            context_snapshot: buildSnapshot({ ...ambEnvelope, semantic: request.semantic || sceneInput.semantic }),
+            stages,
+            debug: { lis_clarify: true, option_count: lisGateResult.ambiguity_options.length },
+          };
+        }
+
+        // LIS 不可达 / 未命中：禁止 identifyScene 业务摆渡，直接 common 兜底卡
+        if (isLisGateEnabled() && !lisGateResult?.handled) {
+          const unreachable = ['lis_unreachable', 'lis_unavailable', 'lis_client_missing']
+            .includes(String(lisGateResult?.reason || ''));
+          const answerText = unreachable
+            ? '网络或系统暂时异常，请稍后重试。如需紧急帮助请拨打 SOS。'
+            : '暂时没能准确理解您的需求，您可以换个说法，或直接选择常用服务。';
+          const fbEnvelope = buildEnvelope({
+            request_id: request.request_id,
+            conversation_id: request.conversation_id,
+            turn_id: request.turn_id,
+            skill_key: 'common',
+            agent_key: 'common',
+            intent: unreachable ? 'common.lis_unreachable' : 'common.lis_fallback',
+            template_id: 'answer',
+            template_key: 'answer',
+            answer_text: answerText,
+            data: { lis_reason: lisGateResult?.reason || 'unhandled' },
+            actions: [],
+            followup_suggestions: [],
+            evidence: [],
+            route: {
+              source: 'lis_common_fallback',
+              scene_key: 'common',
+              decision: 'fallback',
+              confidence: 0,
+              routed: false,
+              intent_context: intentContext,
+            },
+          });
+          mark('lis_fallback', 'LIS兜底common', { reason: lisGateResult?.reason || 'unhandled' });
+          const fbTemplates = resolveSkillTemplates('common');
+          const fbRender = renderTemplateCardResult({
+            templateDir: fbTemplates.templateDir,
+            modelResult: { template_id: 'answer', answer_text: answerText, data: fbEnvelope.data },
+            actions: [],
+            followupSuggestions: [],
+            compactFollowups: [],
+          });
+          return {
+            ...fbEnvelope,
+            answer: answerText,
+            llm: fbRender.llm,
+            card: fbRender.card,
+            rendered_html: fbRender.rendered_html,
+            html_fallback: fbRender.html_fallback,
+            context_snapshot: buildSnapshot({ ...fbEnvelope, semantic: request.semantic || sceneInput.semantic }),
+            stages,
+            debug: { lis_common_fallback: true, reason: lisGateResult?.reason || 'unhandled' },
+          };
         }
 
         if (lisGateResult?.handled && lisGateResult.skill_key) {
           skillKey = lisGateResult.skill_key;
           if (lisGateResult.template_id) {
             request.template_id = lisGateResult.template_id;
+          }
+          const lisSlots = lisGateResult.supply?.slots || {};
+          if (lisSlots && typeof lisSlots === 'object') {
+            request.context = {
+              ...(request.context || {}),
+              ...(lisSlots.city ? { city: lisSlots.city, previous_city: lisSlots.city } : {}),
+              ...(lisSlots.destination
+                ? { destination: lisSlots.destination, previous_destination: lisSlots.destination }
+                : {}),
+              lis_slots: lisSlots,
+            };
           }
           acceptedScene = {
             scene_key: skillKey,
@@ -382,7 +429,7 @@ export function createChatOrchestrator(options = {}) {
             template_id: lisGateResult.template_id || '',
           });
         } else if (actionLockedSkillKey) {
-          // action_button 路径：直接锁定场景，不走路由
+          // action_button 路径（仅 LIS 关闭）：直接锁定场景，不走路由
           skillKey = actionLockedSkillKey;
           acceptedScene = {
             scene_key: skillKey,
@@ -474,9 +521,44 @@ export function createChatOrchestrator(options = {}) {
             });
         mark('knowledge', '知识检索', { status: knowledge.status, source: knowledge.source, local_status: knowledge.local_status, remote_status: knowledge.remote_status, local_count: knowledge.local_count, remote_count: knowledge.remote_count });
         const businessData = isWeatherAction
-          ? { primary_city: request.context?.action_params?.city || '' }
+          ? (() => {
+            const params = request.context?.action_params || request.params || {};
+            const ctx = request.context || {};
+            const city = firstNonEmpty(
+              params.city,
+              params.destination,
+              ctx.previous_city,
+              ctx.previous_destination,
+              ctx.city,
+              ctx.destination,
+            );
+            return {
+              primary_city: city,
+              destination: city,
+              city,
+            };
+          })()
           : await loadBusinessData({ sceneDecision: acceptedScene || sceneDecision, request, dataService });
         mark('business_data', '业务数据', { loaded: !!(businessData && Object.keys(businessData).length), skipped: isWeatherAction });
+        // 旅居：把上一轮快照里的城市/目的地写回 businessData，避免追问句不含地名时丢城市
+        if (skillKey === 'travel_route' && businessData && typeof businessData === 'object') {
+          const params = request.context?.action_params || request.params || {};
+          const ctx = request.context || {};
+          const lockedCity = firstNonEmpty(
+            businessData.primary_city,
+            businessData.destination,
+            businessData.city,
+            params.city,
+            params.destination,
+            ctx.previous_city,
+            ctx.previous_destination,
+          );
+          if (lockedCity) {
+            if (!businessData.primary_city) businessData.primary_city = lockedCity;
+            if (!businessData.destination) businessData.destination = lockedCity;
+            if (!businessData.city) businessData.city = lockedCity;
+          }
+        }
         // 城市预提取（仅 travel_route 场景，非天气 action）：从消息+业务数据+对话历史中提取城市
         if (skillKey === 'travel_route' && !isWeatherAction) {
           try {
@@ -491,6 +573,7 @@ export function createChatOrchestrator(options = {}) {
             if (cityResult?.primary) {
               businessData.primary_city = cityResult.primary;
               businessData.cities = cityResult.cities;
+              if (!businessData.destination) businessData.destination = cityResult.primary;
             }
             mark('city_extract', '城市提取', { primary: cityResult?.primary, cities: cityResult?.cities, source: cityResult?.source });
           } catch (e) {
@@ -501,7 +584,13 @@ export function createChatOrchestrator(options = {}) {
         // 推断产品类型（康养/滨海/文化/生态）用于模板路由；优先 published 包命中
         let routeType = '';
         let publishHit = null;
-        if (skillKey === 'travel_route' && acceptedScene) {
+        // 专用动作（天气/可订/预算等）不走线路包消歧，避免「查天气」被同分线路选项截胡
+        const skipPublishMatch = Boolean(request.context?.action_key && [
+          'travel_route.check_weather_risk',
+          'travel_route.check_availability',
+          'travel_route.calculate_budget',
+        ].includes(request.context.action_key));
+        if (skillKey === 'travel_route' && acceptedScene && !skipPublishMatch) {
           const forcedRouteId = String(request.context?.publish_route_id || request.context?.route_id || '').trim();
           let hits = matchPublishedPackages(sceneInput.text);
           // 举一反三：话语归属城市与包 destination 冲突时剔除（嘉路≠巴马）
@@ -526,7 +615,35 @@ export function createChatOrchestrator(options = {}) {
           const second = hits[1];
           if (top && (!second || top.score > second.score)) {
             publishHit = top;
-            routeType = top.product_template_id || inferRouteType(sceneInput.text);
+            // 线路包只负责补业务数据（route_id/标题/目的地），**不覆写模板**：
+            // LIS 已按意图下发 template_id 时它才是权威。
+            //
+            // 实测事故：「这条线路要多少钱」LIS 判定 travel_route_budget
+            // -> travel_budget_card（置信 1.000），但文本同时匹配上一条已发布
+            // 线路包，被 product_template_id 覆写成 route_compare_card
+            // —— 用户问价格却看到线路对比卡。
+            // 线路包的 product_template_id 表达的是"这条线路长什么样"，
+            // 与"用户此刻想看什么"是两件事，后者由 LIS 意图决定。
+            const lisTemplateId = request.template_id || request.templateId || '';
+            // 方案B 回程：用户从消歧选项点回来时，前端回传 pending_template_id。
+            // 此时话语可能只是线路标题（不含"多少钱"），LIS 无法再判出预算意图，
+            // 所以必须用上一轮暂存的模板，否则消歧一轮就把原始诉求丢了。
+            const pendingTemplateId = String(
+              request.context?.pending_template_id || '',
+            ).trim();
+            const resolvedTemplateId = lisTemplateId || pendingTemplateId;
+            const lisTemplateInSkill = resolvedTemplateId
+              && availableTemplateIds.includes(resolvedTemplateId);
+            if (!lisTemplateInSkill) {
+              routeType = top.product_template_id || inferRouteType(sceneInput.text);
+            } else {
+              routeType = resolvedTemplateId;
+              mark('publish_template_kept', '意图模板优先于线路包', {
+                lis_template_id: lisTemplateId,
+                pending_template_id: pendingTemplateId,
+                publish_template_id: top.product_template_id || '',
+              });
+            }
             businessData.route_id = top.route_id;
             businessData.route_title = top.meta?.title || top.route_id;
             businessData.destination = Array.isArray(top.meta?.destination)
@@ -541,6 +658,17 @@ export function createChatOrchestrator(options = {}) {
             };
           } else if (top && second && top.score === second.score && !forcedRouteId) {
             // 第二刀同分：回传选线选项，避免静默落到错包
+            //
+            // 方案B：选项必须**携带本轮已识别的意图**。
+            // 消歧只解决"哪条线路"，不该丢掉"用户想看什么"：
+            // 「巴马这条线路要多少钱」LIS 已判定 travel_route_budget(1.000)，
+            // 若选项只带 route_id，用户点完会退回默认线路卡，价格问题始终没答。
+            // 带上 intent_id/template_id 后，下一轮 forcedRouteId 命中单条包，
+            // 再由 LIS 模板优先分支出 travel_budget_card。
+            const pendingIntentId = lisGateResult?.intent_id
+              || acceptedScene?.intent
+              || '';
+            const pendingTemplateId = request.template_id || request.templateId || '';
             const routeOptions = hits.slice(0, 3).map((h) => ({
               scene_key: 'travel_route',
               skill_key: 'travel_route',
@@ -549,8 +677,16 @@ export function createChatOrchestrator(options = {}) {
               label: h.meta?.title || h.route_id,
               desc: (h.meta?.destination || []).join('·') || h.product_template_id || '',
               confidence: h.score,
+              // 前端点选时需原样回传这三个字段（见 handleChat 的 context 透传）
+              pending_intent_id: pendingIntentId,
+              pending_template_id: pendingTemplateId,
+              user_prompt: sceneInput.text,
             }));
-            mark('publish_ambiguous', '线路包消歧', { options: routeOptions.map((o) => o.route_id) });
+            mark('publish_ambiguous', '线路包消歧', {
+              options: routeOptions.map((o) => o.route_id),
+              pending_intent_id: pendingIntentId,
+              pending_template_id: pendingTemplateId,
+            });
             const ambAnswer = '找到多条相近旅居线路，请选择您想看的一条：';
             const ambEnvelope = buildEnvelope({
               request_id: request.request_id,
@@ -694,7 +830,13 @@ export function createChatOrchestrator(options = {}) {
         }
         const staticFollowups = loadStaticFollowups(skillKey, modelResult.template_id || routedTemplateId);
         const interactionScene = acceptedScene || sceneDecision;
-        const interactions = composeInteractions({ sceneDecision: interactionScene, modelResult, staticFollowups });
+        const interactions = composeInteractions({
+          sceneDecision: interactionScene,
+          modelResult,
+          staticFollowups,
+          // LIS 次意图（role=secondary 且 confidence>=0.6）转追问建议
+          lisSuggestions: lisGateResult?.intent_suggestions || [],
+        });
         const renderResult = renderTemplateCardResult({
           templateDir: skillTemplates.templateDir,
           modelResult,
@@ -1073,10 +1215,107 @@ async function acceptScene(request, sceneDecision) {
   return null;
 }
 
+/**
+ * 追问场景的轻量意图解析：用 user_prompt 走一次 LIS，返回**差异化**模板。
+ *
+ * 为什么追问也要跑意图识别：
+ *   action_key 是粗粒度动作标识，一个 key 常服务多个语义。实测冲突：
+ *     meal_plan.adjust_for_condition  <- 「按健康状况调整」/「换成软烂版」
+ *     travel_route.calculate_budget   <- 「测算费用」/「按经济型重新规划」
+ *   这些差异只存在于 user_prompt 里，丢掉它就必然多意图共用一张卡。
+ *
+ * 为什么要与上一轮模板对比：
+ *   追问句常与当前卡同域（如在早餐卡上问"换成软烂版"），LIS 可能仍判回
+ *   同一个意图。此时返回同模板等于"点了按钮但卡没变"，体验上是失败的。
+ *   只有识别出**不同**模板才采纳；相同则返回空，让调用方回落 action_key 推导。
+ *
+ * 失败不抛错：追问是增强路径，LIS 不可达时应静默回落，不能阻断出卡。
+ */
+async function resolveFollowupIntent({
+  text,
+  skillKey,
+  lisClient,
+  catalogEntries = [],
+  availableIds = [],
+  prevTemplateId = '',
+} = {}) {
+  const empty = { intent_id: '', template_id: '' };
+  if (!lisClient || typeof lisClient.sort !== 'function' || !text) return empty;
+
+  // 只送本技能的意图，避免追问被跨技能候选带偏
+  const scoped = catalogEntries.filter(
+    (e) => (e.entry?.skill_key || e.entry?.domain || '') === skillKey && e.enabled !== false,
+  );
+  const intentIds = scoped.map((e) => e.intent_id);
+  if (!intentIds.length) return empty;
+
+  const supply = await lisClient.sort({
+    utterance: text,
+    catalog_intent_ids: intentIds,
+  });
+  const top = (supply?.intents || [])[0];
+  if (!top?.intent_id) return empty;
+
+  const hit = scoped.find((e) => e.intent_id === top.intent_id);
+  const templateId = hit?.entry?.template_id || '';
+  if (!templateId) return empty;
+  // 模板必须在该技能实际存在
+  if (availableIds.length && !availableIds.includes(templateId)) return empty;
+  // 与上一轮相同 → 视为无差异，交回上层用 action_key 推导
+  if (prevTemplateId && templateId === prevTemplateId) {
+    return { intent_id: top.intent_id, template_id: '' };
+  }
+  return { intent_id: top.intent_id, template_id: templateId };
+}
+
 function intentFromScene(sceneDecision = {}, sceneKey = '') {
   return sceneDecision?.scene_key === sceneKey && sceneDecision?.decision !== 'reject'
     ? sceneDecision.intent
     : '';
+}
+
+/**
+ * 由意图解析模板 ID。
+ *
+ * 权威源是 config/intent-catalog.json（intent_id → entry.template_id，强制 1:1），
+ * 与 LIS IntentKB 同源：LIS 命中时直接下发 template_id（见 lisGateResult 分支），
+ * 此函数只在 LIS 未命中、走 scene-router 降级时使用，保证两条路径拿到同一张卡。
+ *
+ * 原先此处查 intent-template-map.js，那是**第二份**映射表（87 键）：
+ * 与 catalog 分属两个文件、无统一事务，改一处漏一处就会静默断链；
+ * 且它同一模板被多个意图共用，违反 1:1。现已删除该文件。
+ */
+function resolveTemplateIdFromCatalog(intent, availableIds = []) {
+  if (!intent) return '';
+  const entries = loadCatalogEntries();
+  const hit = entries.find((e) => e.intent_id === intent);
+  const templateId = hit?.entry?.template_id || '';
+  if (!templateId) return '';
+  // availableIds 为该技能实际存在的模板；为空表示调用方未做限制
+  if (availableIds.length && !availableIds.includes(templateId)) return '';
+  return templateId;
+}
+
+/**
+ * travel_route 的 route_type 模板升级。
+ *
+ * 语义与原 resolveTemplateWithRouteType 一致：仅当基础模板为 route_svg 时，
+ * 才把它升级为具体产品模板（康养/滨海/文化/生态），且该模板必须真实存在。
+ */
+const ROUTE_TYPE_TEMPLATES = Object.freeze([
+  'route_wellness',
+  'route_coastal',
+  'route_culture',
+  'route_ecology',
+]);
+
+function resolveRouteTypeTemplate(intent, availableIds = [], routeType = '') {
+  const baseTemplateId = resolveTemplateIdFromCatalog(intent, availableIds);
+  if (baseTemplateId !== 'route_svg' || !routeType) return baseTemplateId;
+  if (ROUTE_TYPE_TEMPLATES.includes(routeType) && availableIds.includes(routeType)) {
+    return routeType;
+  }
+  return baseTemplateId;
 }
 
 function selectRoutedTemplateId(sceneDecision, availableIds = [], routeType = '') {
@@ -1087,15 +1326,11 @@ function selectRoutedTemplateId(sceneDecision, availableIds = [], routeType = ''
 
   // travel_route 场景：带 route_type 的模板路由（康养/滨海/文化/生态 → 对应产品模板）
   if (sceneKey === 'travel_route' && routeType) {
-    const productTemplateId = resolveTemplateWithRouteType(sceneKey, intent, availableIds, routeType);
+    const productTemplateId = resolveRouteTypeTemplate(intent, availableIds, routeType);
     if (productTemplateId) return productTemplateId;
   }
 
-  // 通过 intent-template-map 查找
-  const templateId = resolveTemplateId(sceneKey, intent, availableIds);
-  if (templateId) return templateId;
-
-  return '';
+  return resolveTemplateIdFromCatalog(intent, availableIds);
 }
 
 async function retrieveKnowledge(ragService, request) {
