@@ -1,0 +1,2305 @@
+{
+  "catalog_version": "1.0.0",
+  "updated_at": "2026-08-09T19:03:45.973Z",
+  "_note": "生产配置，非示例。intent_id → entry.template_id 强制 1:1。由 scripts/generate-intent-registry.mjs 从 scene-router 规则迁移生成，人工维护的 intent_desc/examples/match_hints 会被保留。LIS IntentKB 是意图与锚点的权威源，本文件是 flatTalk 侧的执行入口映射。",
+  "intents": [
+    {
+      "intent_id": "dispatch_accept",
+      "intent_desc": "dispatch_manage / dispatch_accept：接单、接、确认接",
+      "examples": [
+        "接单",
+        "接",
+        "确认接"
+      ],
+      "tags": [
+        "dispatch_manage"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "dispatch_accept"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "接单",
+          "接",
+          "确认接"
+        ]
+      }
+    },
+    {
+      "intent_id": "dispatch_detail",
+      "intent_desc": "dispatch_manage / dispatch_detail：派单详情、工单详情、处理",
+      "examples": [
+        "派单详情",
+        "工单详情",
+        "处理",
+        "看一下"
+      ],
+      "tags": [
+        "dispatch_manage"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "dispatch_detail"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "派单详情",
+          "工单详情",
+          "处理",
+          "看一下"
+        ]
+      }
+    },
+    {
+      "intent_id": "dispatch_list",
+      "intent_desc": "查看派单列表与工单",
+      "examples": [
+        "我的派单",
+        "工单列表"
+      ],
+      "tags": [
+        "dispatch"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "dispatch_list"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "dispatch_reject",
+      "intent_desc": "dispatch_manage / dispatch_reject：拒单、拒绝、不接、拒接",
+      "examples": [
+        "拒单",
+        "拒绝",
+        "不接"
+      ],
+      "tags": [
+        "dispatch_manage"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "dispatch_reject"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "拒单",
+          "拒绝",
+          "不接",
+          "拒接"
+        ]
+      }
+    },
+    {
+      "intent_id": "dispatch_status",
+      "intent_desc": "dispatch_manage / dispatch_status：进度、状态、催、改约",
+      "examples": [
+        "进度",
+        "状态",
+        "催"
+      ],
+      "tags": [
+        "dispatch_manage"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "dispatch_status"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "进度",
+          "状态",
+          "催",
+          "改约"
+        ]
+      }
+    },
+    {
+      "intent_id": "dispatch_supplier",
+      "intent_desc": "dispatch_manage / dispatch_supplier：供应商、一票否决",
+      "examples": [
+        "供应商",
+        "一票否决"
+      ],
+      "tags": [
+        "dispatch_manage"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "dispatch_supplier_action"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "供应商",
+          "一票否决"
+        ]
+      }
+    },
+    {
+      "intent_id": "dispatch_transfer",
+      "intent_desc": "dispatch_manage / dispatch_transfer：转交、转派、改派、转给",
+      "examples": [
+        "转交",
+        "转派",
+        "改派"
+      ],
+      "tags": [
+        "dispatch_manage"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "dispatch_transfer"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "转交",
+          "转派",
+          "改派",
+          "转给"
+        ]
+      }
+    },
+    {
+      "intent_id": "dispatch_work_order",
+      "intent_desc": "dispatch_manage / dispatch_work_order：工单、服务工单",
+      "examples": [
+        "工单",
+        "服务工单"
+      ],
+      "tags": [
+        "dispatch_manage"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "dispatch_manage",
+        "template_id": "work_order"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "工单",
+          "服务工单"
+        ]
+      }
+    },
+    {
+      "intent_id": "elder_assistant_usage",
+      "intent_desc": "common / elder_assistant_usage：养老助手、桂小养、怎么用、能做什么",
+      "examples": [
+        "养老助手",
+        "桂小养",
+        "怎么用"
+      ],
+      "tags": [
+        "common"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "common",
+        "template_id": "assistant_usage_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "养老助手",
+          "桂小养",
+          "怎么用",
+          "能做什么",
+          "可以做什么",
+          "使用方法",
+          "功能",
+          "助手"
+        ]
+      }
+    },
+    {
+      "intent_id": "elder_policy_apply",
+      "intent_desc": "common / elder_policy_apply：怎么申请、如何申请、怎么办理、办理流程",
+      "examples": [
+        "怎么申请",
+        "如何申请",
+        "怎么办理"
+      ],
+      "tags": [
+        "common"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "common",
+        "template_id": "policy_apply_guide_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "怎么申请",
+          "如何申请",
+          "怎么办理",
+          "办理流程",
+          "申请流程",
+          "去哪办",
+          "哪里办理",
+          "需要什么材料",
+          "要哪些材料",
+          "申请条件",
+          "办理条件"
+        ]
+      }
+    },
+    {
+      "intent_id": "elder_policy_benefit",
+      "intent_desc": "common / elder_policy_benefit：补贴、津贴、长护险、养老金",
+      "examples": [
+        "补贴",
+        "津贴",
+        "长护险"
+      ],
+      "tags": [
+        "common"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "common",
+        "template_id": "policy_benefit_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "补贴",
+          "津贴",
+          "长护险",
+          "养老金",
+          "养老保险"
+        ]
+      }
+    },
+    {
+      "intent_id": "elder_policy_consult",
+      "intent_desc": "养老政策补贴适老化咨询",
+      "examples": [
+        "有什么养老补贴",
+        "适老化政策"
+      ],
+      "tags": [
+        "policy"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "common",
+        "template_id": "policy_card"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "elder_policy_detail",
+      "intent_desc": "common / elder_policy_detail：详细内容、具体内容、政策解读、全文",
+      "examples": [
+        "详细内容",
+        "具体内容",
+        "政策解读"
+      ],
+      "tags": [
+        "common"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "common",
+        "template_id": "policy_detail_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "详细内容",
+          "具体内容",
+          "政策解读",
+          "全文",
+          "原文",
+          "详细解读",
+          "是什么意思",
+          "怎么理解",
+          "主要内容",
+          "要点"
+        ]
+      }
+    },
+    {
+      "intent_id": "elder_policy_list",
+      "intent_desc": "common / elder_policy_list：有哪些、汇总、一览、列表",
+      "examples": [
+        "有哪些",
+        "汇总",
+        "一览"
+      ],
+      "tags": [
+        "common"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "common",
+        "template_id": "policy_list_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "有哪些",
+          "汇总",
+          "一览",
+          "列表",
+          "政策汇总",
+          "政策一览"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_catalog",
+      "intent_desc": "find_service / catalog：目录、全部、分类、有哪些服务",
+      "examples": [
+        "目录",
+        "全部",
+        "分类"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_catalog"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "目录",
+          "全部",
+          "分类",
+          "有哪些服务",
+          "有哪些"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_detail",
+      "intent_desc": "find_service / detail：特色、介绍、详情、怎么样",
+      "examples": [
+        "特色",
+        "介绍",
+        "详情"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_detail"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "特色",
+          "介绍",
+          "详情",
+          "怎么样"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_discover",
+      "intent_desc": "发现推荐家政护工等服务",
+      "examples": [
+        "找个护工",
+        "附近家政服务"
+      ],
+      "tags": [
+        "service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_recommend"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "find_service_expand",
+      "intent_desc": "find_service / expand：其他、拓展、空闲、环境",
+      "examples": [
+        "其他",
+        "拓展",
+        "空闲"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_expand"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "其他",
+          "拓展",
+          "空闲",
+          "环境",
+          "响应",
+          "优质"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_guess_like",
+      "intent_desc": "find_service / guess_like：猜、精选、喜欢",
+      "examples": [
+        "猜",
+        "精选",
+        "喜欢"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_guess_like"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "猜",
+          "精选",
+          "喜欢"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_order",
+      "intent_desc": "find_service / order：预约、我要预定、我要订、预定",
+      "examples": [
+        "预约",
+        "我要预定",
+        "我要订"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_order_form"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "预约",
+          "我要预定",
+          "我要订",
+          "预定",
+          "帮我下单",
+          "我要下单",
+          "安排"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_order_preview",
+      "intent_desc": "find_service / order_preview：确认订单、预览、查看订单信息、提交前",
+      "examples": [
+        "确认订单",
+        "预览",
+        "查看订单信息"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "order_preview"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "确认订单",
+          "预览",
+          "查看订单信息",
+          "提交前"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_order_ticket",
+      "intent_desc": "find_service / order_ticket：下单成功、订单号、预定完成、下单完成",
+      "examples": [
+        "下单成功",
+        "订单号",
+        "预定完成"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_order_ticket"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "下单成功",
+          "订单号",
+          "预定完成",
+          "下单完成"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_order_view",
+      "intent_desc": "find_service / order_view：订单、我的订单、服务订单、查看订单",
+      "examples": [
+        "订单",
+        "我的订单",
+        "服务订单"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "order_status"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "订单",
+          "我的订单",
+          "服务订单",
+          "查看订单",
+          "订单到哪",
+          "订单进度"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_org",
+      "intent_desc": "find_service / org：养老院、养老机构、服务机构、养老服务机构",
+      "examples": [
+        "养老院",
+        "养老机构",
+        "服务机构"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "org_profile"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "养老院",
+          "养老机构",
+          "服务机构",
+          "养老服务机构",
+          "护理站",
+          "服务中心",
+          "居家养老",
+          "机构入住"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_review",
+      "intent_desc": "find_service / review：口碑、评价、好评、评分",
+      "examples": [
+        "口碑",
+        "评价",
+        "好评"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_review"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "口碑",
+          "评价",
+          "好评",
+          "评分",
+          "差评",
+          "评论"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_trace",
+      "intent_desc": "find_service / trace：服务追溯、追溯、过程、时间线",
+      "examples": [
+        "服务追溯",
+        "追溯",
+        "过程"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "service_trace"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "服务追溯",
+          "追溯",
+          "过程",
+          "时间线",
+          "做了什么",
+          "服务记录",
+          "服务过程"
+        ]
+      }
+    },
+    {
+      "intent_id": "find_service_worker",
+      "intent_desc": "find_service / worker：护工资质、护理员介绍、查看护工、上门人员是谁",
+      "examples": [
+        "护工资质",
+        "护理员介绍",
+        "查看护工"
+      ],
+      "tags": [
+        "find_service"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "find_service",
+        "template_id": "worker_profile"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "护工资质",
+          "护理员介绍",
+          "查看护工",
+          "上门人员是谁"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.advice",
+      "intent_desc": "health_risk_warning / advice：调理方案、个性化调理、穴位调理、中药调理",
+      "examples": [
+        "调理方案",
+        "个性化调理",
+        "穴位调理"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "care_advice_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "调理方案",
+          "个性化调理",
+          "穴位调理",
+          "中药调理",
+          "照护建议",
+          "护理建议"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.assess",
+      "intent_desc": "健康风险评估总览入口",
+      "examples": [
+        "帮我做健康评估",
+        "打开健康风险预警"
+      ],
+      "tags": [
+        "health"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "health_warning_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "健康风险评估",
+          "健康风险预警总览"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.assessment",
+      "intent_desc": "health_risk_warning / assessment：综合风险评估、风险评估详情、风险总评",
+      "examples": [
+        "综合风险评估",
+        "风险评估详情",
+        "风险总评"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "risk_assessment_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "综合风险评估",
+          "风险评估详情",
+          "风险总评"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.constitution",
+      "intent_desc": "health_risk_warning / constitution：体质辨识、中医体质、主体质、九种体质",
+      "examples": [
+        "体质辨识",
+        "中医体质",
+        "主体质"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "constitution_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "体质辨识",
+          "中医体质",
+          "主体质",
+          "九种体质"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.dietary",
+      "intent_desc": "health_risk_warning / dietary：膳食调养、调养、宜食、忌食",
+      "examples": [
+        "膳食调养",
+        "调养",
+        "宜食"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "dietary_regimen_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "膳食调养",
+          "调养",
+          "宜食",
+          "忌食",
+          "食疗"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.elder_confirm",
+      "intent_desc": "health_risk_warning / elder_confirm：同名、选择老人、哪一位",
+      "examples": [
+        "同名",
+        "选择老人",
+        "哪一位"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "elder_duplicate_confirm_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "同名",
+          "选择老人",
+          "哪一位"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.face",
+      "intent_desc": "health_risk_warning / face：面诊详情、查看面诊、面象",
+      "examples": [
+        "面诊详情",
+        "查看面诊",
+        "面象"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "face_observation_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "面诊详情",
+          "查看面诊",
+          "面象"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.help",
+      "intent_desc": "health_risk_warning / help：使用帮助、怎么用、如何使用",
+      "examples": [
+        "使用帮助",
+        "怎么用",
+        "如何使用"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "help_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "使用帮助",
+          "怎么用",
+          "如何使用",
+          "帮助说明",
+          "使用说明"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.manual_review",
+      "intent_desc": "health_risk_warning / manual_review：转人工、复核、人工复核",
+      "examples": [
+        "转人工",
+        "复核",
+        "人工复核"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "health_manual_review_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "转人工",
+          "复核",
+          "人工复核"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.report",
+      "intent_desc": "health_risk_warning / report：完整健康报告、健康报告、体检报告、风险报告",
+      "examples": [
+        "完整健康报告",
+        "健康报告",
+        "体检报告"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "health_report_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "完整健康报告",
+          "健康报告",
+          "体检报告",
+          "风险报告",
+          "健康评估报告"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.risk_level",
+      "intent_desc": "health_risk_warning / risk_level：风险等级标准、五级标准、等级说明",
+      "examples": [
+        "风险等级标准",
+        "风险等级判定",
+        "等级说明"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "risk_level_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "风险等级标准",
+          "五级标准",
+          "等级说明",
+          "风险等级判定",
+          "风险等级"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.rule_detail",
+      "intent_desc": "health_risk_warning / rule_detail：规则明细、命中规则、研判规则",
+      "examples": [
+        "规则明细",
+        "命中规则",
+        "健康风险规则"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "health_risk_rule_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "规则明细",
+          "命中规则",
+          "研判规则",
+          "健康风险规则"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.signal_detail",
+      "intent_desc": "health_risk_warning / signal_detail：设备信号明细、健康风险信号",
+      "examples": [
+        "健康风险信号",
+        "信号明细",
+        "查看信号"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "health_risk_signal_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "设备信号明细",
+          "信号明细",
+          "查看信号",
+          "健康风险信号",
+          "风险信号"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.syndrome",
+      "intent_desc": "health_risk_warning / syndrome：中医证候、证型、证候",
+      "examples": [
+        "中医证候",
+        "证型",
+        "证候"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "tcm_syndrome_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "中医证候",
+          "证型",
+          "证候"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.tongue",
+      "intent_desc": "health_risk_warning / tongue：舌诊详情、查看舌诊、舌象",
+      "examples": [
+        "舌诊详情",
+        "查看舌诊",
+        "舌象"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "tongue_diagnosis_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "舌诊详情",
+          "查看舌诊",
+          "舌象"
+        ]
+      }
+    },
+    {
+      "intent_id": "health_risk_warning.warning",
+      "intent_desc": "health_risk_warning / warning：风险提示、预警提示、有什么风险",
+      "examples": [
+        "风险提示",
+        "预警提示",
+        "有什么风险"
+      ],
+      "tags": [
+        "health_risk_warning"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "health_risk_warning",
+        "template_id": "risk_warning_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "风险提示",
+          "预警提示",
+          "有什么风险",
+          "中医风险预警",
+          "风险预警"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_advice",
+      "intent_desc": "膳食饮食建议与控糖食谱",
+      "examples": [
+        "给我做个食谱",
+        "糖尿病饮食建议"
+      ],
+      "tags": [
+        "meal"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "diet_card"
+      },
+      "enabled": true
+    },
+    {
+      "intent_id": "meal_plan_breakfast_advice",
+      "intent_desc": "meal_plan / breakfast_advice：早餐、早饭、breakfast",
+      "examples": [
+        "早餐",
+        "早饭",
+        "breakfast"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "diet_breakfast_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "早餐",
+          "早饭",
+          "breakfast"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_condition_advice",
+      "intent_desc": "meal_plan / condition_advice：糖尿病、血糖、低糖、控糖",
+      "examples": [
+        "糖尿病",
+        "血糖",
+        "低糖"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "diet_condition_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "糖尿病",
+          "血糖",
+          "低糖",
+          "控糖",
+          "高血压",
+          "血压",
+          "低盐",
+          "痛风",
+          "尿酸",
+          "肾病",
+          "高血脂",
+          "血脂"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_texture_advice",
+      "intent_desc": "软烂易咀嚼膳食调整",
+      "examples": [
+        "软烂",
+        "牙口不好吃什么",
+        "咬不动"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "diet_texture_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "软烂",
+          "易咀嚼",
+          "好咀嚼",
+          "牙口不好",
+          "咬不动",
+          "嚼不烂",
+          "吞咽困难",
+          "呛咳",
+          "假牙",
+          "剁碎",
+          "打成泥",
+          "糊状"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_dashboard",
+      "intent_desc": "meal_plan / dashboard：看板、仪表盘、数据看板、膳食数据",
+      "examples": [
+        "看板",
+        "仪表盘",
+        "数据看板"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "meal_dashboard_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "看板",
+          "仪表盘",
+          "数据看板",
+          "膳食数据"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_dinner_advice",
+      "intent_desc": "meal_plan / dinner_advice：晚餐、晚饭、dinner",
+      "examples": [
+        "晚餐",
+        "晚饭",
+        "dinner"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "diet_dinner_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "晚餐",
+          "晚饭",
+          "dinner"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_lunch_advice",
+      "intent_desc": "meal_plan / lunch_advice：午餐、午饭、lunch",
+      "examples": [
+        "午餐",
+        "午饭",
+        "lunch"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "diet_lunch_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "午餐",
+          "午饭",
+          "lunch"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_overview",
+      "intent_desc": "meal_plan / overview：总览、概览",
+      "examples": [
+        "总览",
+        "概览"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "meal_overview_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "总览",
+          "概览"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_timeline",
+      "intent_desc": "meal_plan / timeline：时间线、按时间、几点吃",
+      "examples": [
+        "时间线",
+        "按时间",
+        "几点吃"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "meal_timeline_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "时间线",
+          "按时间",
+          "几点吃"
+        ]
+      }
+    },
+    {
+      "intent_id": "meal_plan_weekly_plan",
+      "intent_desc": "meal_plan / weekly_plan：一周、七天、周计划、本周",
+      "examples": [
+        "一周",
+        "七天",
+        "周计划"
+      ],
+      "tags": [
+        "meal_plan"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "meal_plan",
+        "template_id": "weekly_plan"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "一周",
+          "七天",
+          "周计划",
+          "本周",
+          "下周",
+          "weekly",
+          "one week",
+          "7 days"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.all",
+      "intent_desc": "查询周边康养生活圈综合配套",
+      "examples": [
+        "附近有什么",
+        "周边配套"
+      ],
+      "tags": [
+        "poi"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_map_overview"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "附近",
+          "周边",
+          "生活圈"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.category",
+      "intent_desc": "nearby_resource / category：只看、分类、单类",
+      "examples": [
+        "只看",
+        "分类",
+        "单类"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_map_category"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "只看",
+          "分类",
+          "单类"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.compare",
+      "intent_desc": "nearby_resource / compare：对比、哪家好、比较",
+      "examples": [
+        "对比",
+        "哪家好",
+        "比较"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_compare"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "对比",
+          "哪家好",
+          "比较"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.food",
+      "intent_desc": "查询周边餐饮餐馆美食",
+      "examples": [
+        "附近有什么好吃的",
+        "周边餐厅"
+      ],
+      "tags": [
+        "poi",
+        "food"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_food_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "吃",
+          "餐厅",
+          "美食"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.leisure",
+      "intent_desc": "nearby_resource / leisure：垂钓、钓鱼、休闲、娱乐",
+      "examples": [
+        "垂钓",
+        "钓鱼",
+        "休闲"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_leisure_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "垂钓",
+          "钓鱼",
+          "休闲",
+          "娱乐",
+          "健身",
+          "leisure"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.list",
+      "intent_desc": "nearby_resource / list：清单、列出来、列出",
+      "examples": [
+        "清单",
+        "列出来",
+        "列出"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_list"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "清单",
+          "列出来",
+          "列出"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.medical",
+      "intent_desc": "nearby_resource / medical：只看医疗、医疗资源",
+      "examples": [
+        "只看医疗",
+        "医疗资源"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_medical_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "只看医疗",
+          "医疗资源"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.radar",
+      "intent_desc": "nearby_resource / radar：走路、步行、可达、遛弯",
+      "examples": [
+        "走路",
+        "步行",
+        "可达"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_radar"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "走路",
+          "步行",
+          "可达",
+          "遛弯"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.recommend",
+      "intent_desc": "nearby_resource / recommend：推荐几个、推荐、精选",
+      "examples": [
+        "推荐几个",
+        "推荐",
+        "精选"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_recommend"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "推荐几个",
+          "推荐",
+          "精选"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.route",
+      "intent_desc": "nearby_resource / route：路线、一日游、怎么玩",
+      "examples": [
+        "路线",
+        "一日游",
+        "怎么玩"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_map_route"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "路线",
+          "一日游",
+          "怎么玩"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.shop",
+      "intent_desc": "nearby_resource / shop：购物、特产、买、超市",
+      "examples": [
+        "购物",
+        "特产",
+        "买"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_shop_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "购物",
+          "特产",
+          "买",
+          "超市",
+          "市场",
+          "shop",
+          "shopping"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.spot",
+      "intent_desc": "nearby_resource / spot：景区、滨海、海边、海滩",
+      "examples": [
+        "景区",
+        "滨海",
+        "海边"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_spot_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "景区",
+          "滨海",
+          "海边",
+          "海滩",
+          "逛",
+          "spot",
+          "tour",
+          "scenic"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.stay",
+      "intent_desc": "nearby_resource / stay：民宿、住宿、住、康养小院",
+      "examples": [
+        "民宿",
+        "住宿",
+        "住"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_stay_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "民宿",
+          "住宿",
+          "住",
+          "康养小院",
+          "stay",
+          "hotel"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.summary",
+      "intent_desc": "nearby_resource / summary：简单、一句话、语音、小结",
+      "examples": [
+        "简单",
+        "一句话",
+        "语音"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_summary"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "简单",
+          "一句话",
+          "语音",
+          "小结",
+          "概括"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.transit",
+      "intent_desc": "nearby_resource / transit：包车、交通、出行、怎么去",
+      "examples": [
+        "包车",
+        "交通",
+        "出行"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_transit_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "包车",
+          "交通",
+          "出行",
+          "怎么去",
+          "transit"
+        ]
+      }
+    },
+    {
+      "intent_id": "nearby_resource.wellness",
+      "intent_desc": "nearby_resource / wellness：医疗、卫生所、药店、诊所",
+      "examples": [
+        "医疗",
+        "卫生所",
+        "药店"
+      ],
+      "tags": [
+        "nearby_resource"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "nearby_resource",
+        "template_id": "nearby_wellness"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "医疗",
+          "卫生所",
+          "药店",
+          "诊所",
+          "卫生院",
+          "医养",
+          "康养配套",
+          "养老设施",
+          "wellness",
+          "medical",
+          "hospital"
+        ]
+      }
+    },
+    {
+      "intent_id": "service_quality_eval.complaint",
+      "intent_desc": "service_quality_eval / complaint：投诉详情、投诉工单、工单详情、投诉记录",
+      "examples": [
+        "投诉详情",
+        "投诉工单",
+        "工单详情"
+      ],
+      "tags": [
+        "service_quality_eval"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "service_quality_eval",
+        "template_id": "complaint_detail"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "投诉详情",
+          "投诉工单",
+          "工单详情",
+          "投诉记录"
+        ]
+      }
+    },
+    {
+      "intent_id": "service_quality_eval.org_rank",
+      "intent_desc": "service_quality_eval / org_rank：机构排名、机构排行、榜单、排名榜",
+      "examples": [
+        "机构排名",
+        "机构排行",
+        "榜单"
+      ],
+      "tags": [
+        "service_quality_eval"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "service_quality_eval",
+        "template_id": "org_quality_ranking"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "机构排名",
+          "机构排行",
+          "榜单",
+          "排名榜",
+          "辖区排名"
+        ]
+      }
+    },
+    {
+      "intent_id": "service_quality_eval.rectify",
+      "intent_desc": "service_quality_eval / rectify：整改、改进、建议、归因",
+      "examples": [
+        "整改",
+        "改进",
+        "建议"
+      ],
+      "tags": [
+        "service_quality_eval"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "service_quality_eval",
+        "template_id": "rectification_suggestion"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "整改",
+          "改进",
+          "建议",
+          "归因",
+          "成因",
+          "补训",
+          "复检"
+        ]
+      }
+    },
+    {
+      "intent_id": "service_quality_eval.report",
+      "intent_desc": "service_quality_eval / report：质量报告、评估报告、综合评分、服务质量评估报告",
+      "examples": [
+        "质量报告",
+        "评估报告",
+        "综合评分"
+      ],
+      "tags": [
+        "service_quality_eval"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "service_quality_eval",
+        "template_id": "institution_quality_report"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "质量报告",
+          "评估报告",
+          "综合评分",
+          "服务质量评估报告",
+          "机构",
+          "投诉",
+          "巡检",
+          "回访",
+          "满意度",
+          "检查",
+          "评估",
+          "评价"
+        ]
+      }
+    },
+    {
+      "intent_id": "service_quality_eval.staff",
+      "intent_desc": "service_quality_eval / staff：人员、护理员、评估档案、个人评估",
+      "examples": [
+        "人员",
+        "护理员",
+        "评估档案"
+      ],
+      "tags": [
+        "service_quality_eval"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "service_quality_eval",
+        "template_id": "staff_quality_report"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "人员",
+          "护理员",
+          "评估档案",
+          "个人评估",
+          "这位护理员"
+        ]
+      }
+    },
+    {
+      "intent_id": "service_quality_eval.staff_rank",
+      "intent_desc": "service_quality_eval / staff_rank：人员排名、人员排行、护理员排名",
+      "examples": [
+        "人员排名",
+        "人员排行",
+        "护理员排名"
+      ],
+      "tags": [
+        "service_quality_eval"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "service_quality_eval",
+        "template_id": "staff_quality_ranking"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "人员排名",
+          "人员排行",
+          "护理员排名"
+        ]
+      }
+    },
+    {
+      "intent_id": "service_quality_eval.standard",
+      "intent_desc": "service_quality_eval / standard：维度、标准、权重、口径",
+      "examples": [
+        "维度",
+        "标准",
+        "权重"
+      ],
+      "tags": [
+        "service_quality_eval"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "service_quality_eval",
+        "template_id": "evaluation_standard"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "维度",
+          "标准",
+          "权重",
+          "口径",
+          "评分标准"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_base",
+      "intent_desc": "travel_route / base：基地、康养基地、住哪个基地",
+      "examples": [
+        "基地",
+        "康养基地",
+        "住哪个基地"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "sojourn_base"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "基地",
+          "康养基地",
+          "住哪个基地"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_booking",
+      "intent_desc": "travel_route / booking：预订、预约、下单、报名",
+      "examples": [
+        "预订",
+        "预约",
+        "下单"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "travel_plan_summary_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "预订",
+          "预约",
+          "下单",
+          "报名",
+          "可订",
+          "余量",
+          "入住",
+          "付款"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_budget",
+      "intent_desc": "travel_route / budget：预算、多少钱、费用、价格",
+      "examples": [
+        "预算",
+        "多少钱",
+        "费用"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "travel_budget_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "预算",
+          "多少钱",
+          "费用",
+          "价格",
+          "套餐",
+          "优惠",
+          "零售价",
+          "立减"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_compare",
+      "intent_desc": "travel_route / compare：对比、比较、哪个更适合",
+      "examples": [
+        "对比",
+        "比较",
+        "哪个更适合"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "route_compare_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "对比",
+          "比较",
+          "哪个更适合"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_itinerary",
+      "intent_desc": "travel_route / itinerary：行程、安排、日程、行程表",
+      "examples": [
+        "行程",
+        "安排",
+        "日程"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "travel_itinerary_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "行程",
+          "安排",
+          "日程",
+          "行程表",
+          "时间安排"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_medical",
+      "intent_desc": "travel_route / medical：医疗、医院、买药、就医",
+      "examples": [
+        "医疗",
+        "医院",
+        "买药"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "travel_medical_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "医疗",
+          "医院",
+          "买药",
+          "就医"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_plan",
+      "intent_desc": "规划或推荐旅居旅游线路",
+      "examples": [
+        "防城港三日游",
+        "推荐巴马旅居线路"
+      ],
+      "tags": [
+        "travel"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "route_svg"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "线路",
+          "旅居",
+          "行程"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_query",
+      "intent_desc": "travel_route / query：详情、介绍、适合谁、适配人群",
+      "examples": [
+        "详情",
+        "介绍",
+        "适合谁"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "route_detail_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "详情",
+          "介绍",
+          "适合谁",
+          "适配人群",
+          "线路",
+          "路线"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_spot",
+      "intent_desc": "travel_route / spot：景点、景区、游玩、适合老人",
+      "examples": [
+        "景点",
+        "景区",
+        "游玩"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "travel_spot_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "景点",
+          "景区",
+          "游玩",
+          "适合老人"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_transport",
+      "intent_desc": "travel_route / transport：交通、接驳、怎么去、高铁",
+      "examples": [
+        "交通",
+        "接驳",
+        "怎么去"
+      ],
+      "tags": [
+        "travel_route"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "travel_transport_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "交通",
+          "接驳",
+          "怎么去",
+          "高铁",
+          "机场",
+          "高铁票"
+        ]
+      }
+    },
+    {
+      "intent_id": "travel_route_weather_risk",
+      "intent_desc": "查询旅居目的地天气与出行风险",
+      "examples": [
+        "明天天气怎么样",
+        "线路天气风险"
+      ],
+      "tags": [
+        "travel",
+        "weather"
+      ],
+      "entry": {
+        "kind": "template",
+        "skill_key": "travel_route",
+        "template_id": "travel_weather_risk_card"
+      },
+      "enabled": true,
+      "match_hints": {
+        "keywords": [
+          "天气",
+          "下雨",
+          "温度"
+        ]
+      }
+    }
+  ]
+}
