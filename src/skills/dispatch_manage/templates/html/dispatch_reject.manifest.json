@@ -2,7 +2,7 @@
   "id": "dispatch_reject",
   "description": "拒接订单原因选择页，列出可选拒接原因供确认",
   "layout": "vertical",
-  "match": "拒接、拒单、拒绝订单、拒接原因、不接这个单",
+  "match": "【拒单】拒接、拒单、拒绝订单、拒接原因、不接这个单",
   "required": [
     "order_no",
     "reasons"

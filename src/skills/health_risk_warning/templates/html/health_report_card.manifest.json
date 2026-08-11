@@ -9,7 +9,7 @@
     "overall_score"
   ],
   "optional_fields": [],
-  "match": "展示完整健康/风险评估报告（多模块），非单卡预警结果",
+  "match": "【健康报告】展示完整健康/风险评估报告（多模块），非单卡预警结果",
   "layout": "vertical",
   "followup_actions": [],
   "version": "1.0"

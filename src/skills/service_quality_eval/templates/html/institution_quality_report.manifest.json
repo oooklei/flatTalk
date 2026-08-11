@@ -1,0 +1,18 @@
+{
+  "id": "institution_quality_report",
+  "name": "机构服务质量评估报告",
+  "description": "机构服务质量评估报告主卡：综合评分、行业百分位与环比，汇总诉求与口碑（投诉/评价/失分项），给出 AI 分析与建议并标注末位预警。",
+  "product_domain": "service_quality_eval",
+  "intent_id": "service_quality_eval.report",
+  "required": [
+    "orgName",
+    "totalScore",
+    "percentile",
+    "complaintsMonth"
+  ],
+  "optional_fields": [],
+  "match": "【机构质量报告】展示机构综合质量评估报告（评分/百分位/投诉口碑/AI建议），非人员报告或排名榜",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
+}

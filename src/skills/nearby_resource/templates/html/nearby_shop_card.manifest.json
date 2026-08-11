@@ -1,0 +1,15 @@
+{
+  "id": "nearby_shop_card",
+  "layout": "list",
+  "match": "【周边购物】仅展示周边购物类资源的清单卡",
+  "required": [
+    "markers",
+    "centerName",
+    "radiusKm",
+    "total"
+  ],
+  "description": "周边购物资源清单：超市/菜市场/便利店，含距离与营业状态",
+  "derived_from": "nearby_list",
+  "intent_id": "nearby_resource.shop",
+  "name": "周边购物"
+}

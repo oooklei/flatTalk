@@ -2,7 +2,7 @@
   "id": "travel_weather_risk_card",
   "template_id": "travel_weather_risk_card",
   "layout": "vertical",
-  "match": "旅居路线目的地天气风险研判（腾讯天气实时数据）",
+  "match": "【天气风险】旅居路线目的地天气风险研判（腾讯天气实时数据）",
   "description": "展示目的地实时天气、未来几天预报与长者专属风险提示，供旅居出行决策参考",
   "required": ["city"],
   "fields": [

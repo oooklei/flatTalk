@@ -1,0 +1,44 @@
+{
+  "id": "route_detail_card",
+  "name": "线路详情",
+  "description": "单条旅居线路详情卡：亮点/适配人群/包含项与注意事项",
+  "product_domain": "sojourn_route",
+  "required": [
+    "routeTitle",
+    "destination",
+    "days",
+    "static_svg"
+  ],
+  "optional_fields": [
+    "season",
+    "budgetLevel",
+    "suitable",
+    "bookingStatus",
+    "highlights",
+    "itinerary",
+    "healthNotice",
+    "waypoints_json",
+    "spots_json",
+    "centerLat",
+    "centerLng",
+    "centerName",
+    "center_json",
+    "map_key",
+    "map_mode",
+    "static_svg_url",
+    "polyline_path_json"
+  ],
+  "slot_hints": {
+    "routeTitle": "路线标题，如：巴马5天4晚康养旅居路线",
+    "destination": "目的地名称",
+    "days": "行程天数，如：5天4晚",
+    "static_svg": "预制作SVG内容（内联）",
+    "highlights": "行程亮点列表",
+    "itinerary": "行程时间线"
+  },
+  "render_priority": 1,
+  "version": "1.0",
+  "match": "【线路详情】展示单条线路详细介绍的卡片",
+  "derived_from": "route_svg",
+  "intent_id": "travel_route_query"
+}

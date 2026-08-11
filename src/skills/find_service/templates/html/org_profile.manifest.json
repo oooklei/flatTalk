@@ -2,7 +2,7 @@
   "id": "org_profile",
   "description": "养老机构详情页，展示机构信息/设施/评级/联系方式",
   "layout": "vertical",
-  "match": "养老机构、养老院、护理站、服务中心、机构详情、入住机构",
+  "match": "【机构详情】养老机构、养老院、护理站、服务中心、机构详情、入住机构",
   "required": [
     "orgName",
     "orgType",

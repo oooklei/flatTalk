@@ -1,0 +1,20 @@
+{
+  "id": "dispatch_accept",
+  "description": "接单确认卡：供应商接受订单后的确认信息，含预约人/地址/时间/执行机构/人员与预计上门时间。",
+  "layout": "vertical",
+  "match": {
+    "intent": "dispatch_accept",
+    "scene": "dispatch_manage",
+    "min_score": 0.4
+  },
+  "required": [
+    "orderNo",
+    "serviceName",
+    "name",
+    "supplier"
+  ],
+  "followup_actions": [],
+  "intent_id": "dispatch_accept",
+  "product_domain": "dispatch_manage",
+  "name": "接单确认卡：供应商接受订单后的确认信息，含预约人"
+}

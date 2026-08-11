@@ -11,7 +11,7 @@
     "indicators"
   ],
   "optional_fields": [],
-  "match": "展示综合风险评估详情（多模块指标），非简版预警结果卡",
+  "match": "【风险评估详情】展示综合风险评估详情（多模块指标），非简版预警结果卡",
   "layout": "vertical",
   "followup_actions": [],
   "version": "1.0"

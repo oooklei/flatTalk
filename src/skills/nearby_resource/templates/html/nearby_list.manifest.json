@@ -1,7 +1,7 @@
 {
   "id": "nearby_list",
   "layout": "list",
-  "match": "清单|列表|罗列|有哪些|周边资源|配套",
+  "match": "【周边清单】清单|列表|罗列|有哪些|周边资源|配套",
   "required": ["markers", "centerName", "radiusKm", "total"],
   "description": "嘉路康养生活圈通用资源清单：七类筛选胶囊 + 距离升序列表，每行展示图标/距离/状态/标签/电话与导航触点。"
 }

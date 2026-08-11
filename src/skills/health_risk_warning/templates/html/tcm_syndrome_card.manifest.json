@@ -1,0 +1,16 @@
+{
+  "id": "tcm_syndrome_card",
+  "name": "中医证候",
+  "description": "中医证候单卡：证型名称与综合判读描述",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.syndrome",
+  "required": [
+    "syndrome_name",
+    "syndrome_desc"
+  ],
+  "optional_fields": [],
+  "match": "【中医证候】展示中医证候/证型，非体质辨识卡",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
+}

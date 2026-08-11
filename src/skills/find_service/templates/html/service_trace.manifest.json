@@ -1,0 +1,19 @@
+{
+  "id": "service_trace",
+  "description": "服务追溯卡：展示某笔订单的服务过程追溯时间线（派单→签到→服务节点→离岗→评价），标注关键节点与异常。原型'服务过程全程可追溯'的对话化呈现。",
+  "layout": "vertical",
+  "match": {
+    "intent": "find_service_trace",
+    "scene": "find_service",
+    "min_score": 0.4
+  },
+  "required": [
+    "orderNo",
+    "serviceName",
+    "traceNodes"
+  ],
+  "followup_actions": [],
+  "intent_id": "find_service_trace",
+  "product_domain": "find_service",
+  "name": "服务追溯卡：展示某笔订单的服务过程追溯时间线（派"
+}

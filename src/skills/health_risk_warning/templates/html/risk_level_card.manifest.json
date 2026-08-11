@@ -1,0 +1,15 @@
+{
+  "id": "risk_level_card",
+  "name": "风险等级标准",
+  "description": "风险等级标准单卡：5级风险（无/低/中/高/紧急）的分值与说明对照表",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.risk_level",
+  "required": [
+    "risk_levels"
+  ],
+  "optional_fields": [],
+  "match": "【等级标准】展示风险等级五级标准说明，非当前评估结果卡",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
+}

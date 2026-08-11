@@ -1,0 +1,18 @@
+{
+  "id": "complaint_detail",
+  "name": "投诉详情",
+  "description": "投诉详情卡：单条投诉工单的基本信息、描述、处理流程时间线、处理结果及评估影响分析。",
+  "product_domain": "service_quality_eval",
+  "intent_id": "service_quality_eval.complaint",
+  "required": [
+    "title",
+    "no",
+    "status",
+    "org"
+  ],
+  "optional_fields": [],
+  "match": "【投诉详情】展示单条投诉工单详情与处理时间线，非机构报告或整改清单",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
+}

@@ -2,7 +2,7 @@
   "id": "service_order_form",
   "description": "服务预定表单，含服务/预约人/电话/地址/日期/时段字段",
   "layout": "vertical",
-  "match": "预定、下单、预约、填写信息、确认预约、服务预定、提交预定",
+  "match": "【预约表单】预定、下单、预约、填写信息、确认预约、服务预定、提交预定",
   "required": [
     "service_name",
     "name",

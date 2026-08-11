@@ -1,7 +1,7 @@
 {
   "id": "nearby_spot_card",
   "layout": "card",
-  "match": "游|景区|景点|滨海|海边|游玩|玩",
+  "match": "【周边景点】游|景区|景点|滨海|海边|游玩|玩",
   "required": ["markers", "centerName", "radiusKm", "total"],
   "description": "景区专题卡：突出开放时间、适老无障碍提示与最佳时段建议，配套导航触点。"
 }

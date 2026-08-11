@@ -1,0 +1,22 @@
+{
+  "id": "booking_reschedule",
+  "name": "改期选择",
+  "product_domain": "find_service",
+  "intent_id": "find_service_booking_reschedule",
+  "description": "预约改期选日卡：列出可选改期日期供用户选择。",
+  "match": "【改期】改期、修改预约日期、换个时间上门；非预约确认、非下单确认、非订单进度",
+  "required": [
+    "serviceName",
+    "altDates"
+  ],
+  "optional_fields": [
+    "pageTitle",
+    "cardEyebrow",
+    "heroSub",
+    "contactNote",
+    "footSource"
+  ],
+  "layout": "vertical",
+  "version": "2.0",
+  "derived_from": "find-service/booking-reschedule"
+}

@@ -2,7 +2,7 @@
   "id": "dispatch_transfer",
   "description": "订单转交页，列出可转交对象及其空闲率/环境/人数对比",
   "layout": "vertical",
-  "match": "转交、转派、改派、转给、移交订单、转交对象",
+  "match": "【转派】转交、转派、改派、转给、移交订单、转交对象",
   "required": [
     "order_no",
     "targets"

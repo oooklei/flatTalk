@@ -1,0 +1,13 @@
+{
+  "id": "travel_h5_embed_card",
+  "match": "【H5嵌入】旅居产品H5页面嵌入展示（金跳动预订/产品详情页iframe内嵌）",
+  "description": "在卡片内直接嵌入金跳动H5预订页面，用户无需跳转即可完成查看和下单",
+  "required": ["h5Url", "productName"],
+  "fields": [
+    { "name": "h5Url", "type": "string", "default": "", "description": "金跳动H5页面地址（产品页或下单页）" },
+    { "name": "productName", "type": "string", "default": "旅居产品" },
+    { "name": "destination", "type": "string", "default": "" },
+    { "name": "priceLabel", "type": "string", "default": "" },
+    { "name": "productId", "type": "string", "default": "" }
+  ]
+}

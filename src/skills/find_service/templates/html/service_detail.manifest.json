@@ -4,7 +4,7 @@
   "product_domain": "find_service",
   "intent_id": "find_service_detail",
   "description": "单项养老服务详情卡：简介/标签/特色/机构指标/时段/热线，支持一键咨询与预定。",
-  "match": "展示单项服务详情（介绍/特色/热线），非服务目录、非订单确认、非预约改期",
+  "match": "【服务详情】展示单项服务详情（介绍/特色/热线），非服务目录、非订单确认、非预约改期",
   "required": [
     "name",
     "summary",

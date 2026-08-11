@@ -1,0 +1,14 @@
+{
+  "id": "travel_budget_card",
+  "description": "旅居费用预算明细卡：交通/住宿/餐饮/门票分项与合计",
+  "layout": "vertical",
+  "match": "【旅居预算】仅展示费用预算分项与合计的卡片，不含预定入口",
+  "required": [
+    "title",
+    "rows",
+    "totalPrice"
+  ],
+  "derived_from": "travel_plan_summary_card",
+  "intent_id": "travel_route_budget",
+  "name": "旅居预算明细"
+}

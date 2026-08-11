@@ -1,0 +1,16 @@
+{
+  "id": "tongue_diagnosis_card",
+  "name": "舌象辨识",
+  "description": "舌象辨识单卡：舌象总述+舌诊六项指标+舌体面积+异常项解析+风险预警",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.tongue",
+  "required": [
+    "tongue_summary",
+    "tongue_indicators"
+  ],
+  "optional_fields": [],
+  "match": "【舌诊】展示舌诊/舌象指标，非面诊或体质卡",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
+}

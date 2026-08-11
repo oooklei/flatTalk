@@ -1,0 +1,25 @@
+{
+  "id": "booking_success",
+  "name": "预约成功",
+  "product_domain": "find_service",
+  "intent_id": "find_service_booking_success",
+  "description": "轻量预约成功回执：突出预约日期与联系提示，不含订单编号。",
+  "match": "【预约成功】预约成功、预约已安排；非正式预定成功订单凭证、非改期、非预约确认",
+  "required": [
+    "serviceName",
+    "dateDisplay"
+  ],
+  "optional_fields": [
+    "pageTitle",
+    "cardTitle",
+    "cardSub",
+    "dateLabel",
+    "dateValue",
+    "recommendTag",
+    "contactNote",
+    "footSource"
+  ],
+  "layout": "vertical",
+  "version": "2.0",
+  "derived_from": "find-service/booking-success"
+}

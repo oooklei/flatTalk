@@ -1,7 +1,7 @@
 {
   "id": "service_emergency",
   "layout": "vertical",
-  "match": "紧急求助、SOS、拨打120、我已安全、救命、紧急情况、危急",
+  "match": "【紧急求助】紧急求助、SOS、拨打120、我已安全、救命、紧急情况、危急",
   "required": [
     "alert_text",
     "body"

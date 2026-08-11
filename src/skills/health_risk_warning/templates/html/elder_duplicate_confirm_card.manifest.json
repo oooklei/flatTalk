@@ -1,0 +1,16 @@
+{
+  "id": "elder_duplicate_confirm_card",
+  "name": "同名老人确认",
+  "description": "同名老人确认单卡：列出同名候选人供用户选择正确评估对象",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.elder_confirm",
+  "required": [
+    "name",
+    "candidates"
+  ],
+  "optional_fields": [],
+  "match": "【同名确认】展示同名老人候选确认，非风险评估结果",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
+}

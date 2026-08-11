@@ -2,7 +2,7 @@
   "id": "service_card",
   "description": "单个服务推荐项，含图标/评分/价格/服务商可信指标",
   "layout": "vertical",
-  "match": "单个服务、一个服务、这项服务、推荐一项、服务卡片",
+  "match": "【单项服务】单个服务、一个服务、这项服务、推荐一项、服务卡片",
   "required": [
     "name",
     "price",

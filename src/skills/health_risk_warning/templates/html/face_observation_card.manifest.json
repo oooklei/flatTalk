@@ -1,0 +1,15 @@
+{
+  "id": "face_observation_card",
+  "name": "面象辨识",
+  "description": "面象辨识单卡：面色/光泽/眼神等多维面象指标与异常项解析",
+  "product_domain": "health_risk_warning",
+  "intent_id": "health_risk_warning.face",
+  "required": [
+    "face_indicators"
+  ],
+  "optional_fields": [],
+  "match": "【面诊】展示面诊/面象指标，非舌诊或体质卡",
+  "layout": "vertical",
+  "followup_actions": [],
+  "version": "1.0"
+}

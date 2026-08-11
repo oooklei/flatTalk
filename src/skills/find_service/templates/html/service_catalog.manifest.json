@@ -2,7 +2,7 @@
   "id": "service_catalog",
   "description": "养老服务目录全览，按分类展示全部可用服务",
   "layout": "vertical",
-  "match": "养老服务目录、全部服务、服务分类、有哪些服务、服务清单",
+  "match": "【服务目录】养老服务目录、全部服务、服务分类、有哪些服务、服务清单",
   "required": [
     "sceneTitle",
     "total",

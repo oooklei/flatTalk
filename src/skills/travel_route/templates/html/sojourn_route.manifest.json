@@ -1,0 +1,13 @@
+{
+  "id": "sojourn_route",
+  "description": "旅居走线主卡：带腾讯地图折线、途经点、行程亮点、预算与预订动作的竖向卡片（技能默认模板）",
+  "layout": "vertical",
+  "match": "【旅居走线】展示旅居线路规划、目的地走线地图、天数亮点、适老提示、预算区间与预订/可订检查动作的主卡片",
+  "required": [
+    "routeTitle",
+    "destination",
+    "days",
+    "highlights"
+  ],
+  "followup_actions": []
+}

@@ -2,6 +2,6 @@
   "id": "meal_dashboard_card",
   "description": "膳食数据仪表盘，含画像卡+营养环+禁忌标签+膳食明细表，适合管理端",
   "layout": "grid",
-  "match": "膳食数据仪表盘：侧栏画像卡+营养环+禁忌标签，主区膳食明细表+相关建议，数据驱动式布局，适合管理端查看。字段：profileName,profileDesc,profileStats[{val,lbl}],donutTotal,ratios[{name,pct,kcal,color}],tags[{tagIcon,tagLabel}],tableBadge,meals[{mealName,mealEmoji,mealTotal,foods[{foodName,cal}]}],grandTotal,related[{relIcon,relTitle,relDesc}]",
+  "match": "【膳食仪表盘】膳食数据仪表盘：侧栏画像卡+营养环+禁忌标签，主区膳食明细表+相关建议，数据驱动式布局，适合管理端查看。字段：profileName,profileDesc,profileStats[{val,lbl}],donutTotal,ratios[{name,pct,kcal,color}],tags[{tagIcon,tagLabel}],tableBadge,meals[{mealName,mealEmoji,mealTotal,foods[{foodName,cal}]}],grandTotal,related[{relIcon,relTitle,relDesc}]",
   "required": ["meals", "profileName"]
 }

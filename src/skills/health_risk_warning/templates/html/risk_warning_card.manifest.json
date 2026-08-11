@@ -9,7 +9,7 @@
     "warnings"
   ],
   "optional_fields": [],
-  "match": "展示风险提示/预警列表短卡，非完整评估报告",
+  "match": "【预警短卡】展示风险提示/预警列表短卡，非完整评估报告",
   "layout": "vertical",
   "followup_actions": [],
   "version": "1.0"

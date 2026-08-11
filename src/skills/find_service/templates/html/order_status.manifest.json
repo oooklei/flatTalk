@@ -2,7 +2,7 @@
   "id": "order_status",
   "description": "订单状态进度跟踪，展示服务订单全流程状态",
   "layout": "vertical",
-  "match": "我的订单、订单状态、订单进度、服务订单列表",
+  "match": "【服务订单】我的订单、订单状态、订单进度、服务订单列表",
   "required": [
     "total",
     "orders"

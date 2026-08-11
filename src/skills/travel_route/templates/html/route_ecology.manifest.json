@@ -1,0 +1,59 @@
+{
+  "id": "route_ecology",
+  "name": "生态山水线路模板",
+  "description": "以自然山水、喀斯特地貌、原始森林为主题的生态观光线路，含溶洞、瀑布、梯田、湿地等元素",
+  "match": "【生态线路】以自然山水生态观光为主题的旅居线路图（喀斯特/溶洞/瀑布/梯田/湿地/原始森林），非康养疗养线路、非文化体验线路、非滨海度假线路",
+  "product_domain": "sojourn_route",
+  "template_html": "route_svg.html",
+  "route_type": "ecology",
+  "typical_days": "4天3晚",
+  "typical_budget": "经济型",
+  "target_audience": "户外爱好者、摄影爱好者",
+  "required": [
+    "routeTitle",
+    "destination",
+    "days",
+    "static_svg"
+  ],
+  "optional_fields": [
+    "season",
+    "budgetLevel",
+    "suitable",
+    "bookingStatus",
+    "highlights",
+    "itinerary",
+    "healthNotice",
+    "priceLabel"
+  ],
+  "waypoint_types": {
+    "arrival": "抵达点（县城/景区入口）",
+    "spot": "自然景点（溶洞/瀑布/梯田）",
+    "wellness": "生态体验（漂流/徒步/观鸟）",
+    "departure": "返程"
+  },
+  "line_color": {
+    "forward": "#FF7826",
+    "return": "#1976D2"
+  },
+  "match_keywords": [
+    "生态",
+    "山水",
+    "喀斯特",
+    "溶洞",
+    "瀑布",
+    "梯田",
+    "森林",
+    "湿地",
+    "漂流",
+    "徒步"
+  ],
+  "known_destinations": [
+    "桂林",
+    "崇左",
+    "百色",
+    "河池",
+    "巴马"
+  ],
+  "followup_actions": [],
+  "version": "1.0"
+}

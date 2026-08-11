@@ -1,7 +1,7 @@
 {
   "id": "nearby_summary",
   "layout": "summary",
-  "match": "简单|语音|摘要|概括|小结|告诉我有什么|一句话",
+  "match": "【周边摘要】简单|语音|摘要|概括|小结|告诉我有什么|一句话",
   "required": ["summaryText", "statsLabels", "centerName", "radiusKm"],
   "description": "语音播报式纯文本摘要卡：无地图，适合弱网/无障碍场景，附分类统计与朗读/看图触点。"
 }
