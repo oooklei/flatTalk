@@ -6,7 +6,7 @@
  */
 
 import { createFeedbackClient } from '../../third/gxy/feedback-client.js';
-import { ok, err, toPlatformResult } from './shared.js';
+import { err, toPlatformResult } from './shared.js';
 
 export async function submitFeedback(payload = {}) {
   if (!payload.feedbackType) {

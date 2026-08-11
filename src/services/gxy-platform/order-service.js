@@ -8,7 +8,7 @@
  */
 
 import * as gxyOrderSdk from '../../third/order/gxy-order-sdk.js';
-import { ok, err, toPlatformResult, generateOrderNo } from './shared.js';
+import { err, toPlatformResult, generateOrderNo } from './shared.js';
 
 /**
  * 同步订单（创建/更新）。orderNo 缺省时自动生成，保证幂等。
@@ -24,7 +24,7 @@ export async function syncOrder(payload = {}) {
     const resp = await gxyOrderSdk.sync(payload);
     return toPlatformResult(resp, '订单同步成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -36,7 +36,7 @@ export async function getOrderDetail(orderId) {
     const resp = await gxyOrderSdk.getDetail(orderId);
     return toPlatformResult(resp, '查询订单详情成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -45,7 +45,7 @@ export async function getOrderPage(payload = {}) {
     const resp = await gxyOrderSdk.page(payload);
     return toPlatformResult(resp, '查询订单列表成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -57,7 +57,7 @@ export async function cancelOrder(orderId, reason = '') {
     const resp = await gxyOrderSdk.cancel({ orderId, cancelReason: reason });
     return toPlatformResult(resp, '订单取消成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -75,7 +75,7 @@ export async function evaluateOrder(orderId, rating, evaluateContent = '', tags 
     const resp = await gxyOrderSdk.evaluate({ orderId, rating, evaluateContent, evaluateTags: tags });
     return toPlatformResult(resp, '订单评价成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -87,6 +87,6 @@ export async function getOrderTimeline(orderId) {
     const resp = await gxyOrderSdk.getTimeline(orderId);
     return toPlatformResult(resp, '查询订单时间轴成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }

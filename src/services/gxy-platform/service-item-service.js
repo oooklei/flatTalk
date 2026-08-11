@@ -5,7 +5,7 @@
  */
 
 import { createServiceItemClient } from '../../third/gxy/service-item-client.js';
-import { ok, err, toPlatformResult } from './shared.js';
+import { err, toPlatformResult } from './shared.js';
 
 const STRING_PARAMS = ['serviceTypeId', 'itemName', 'regionCode', 'userLong', 'userLat'];
 const NUMBER_PARAMS = ['minPrice', 'maxPrice', 'maxDistance'];

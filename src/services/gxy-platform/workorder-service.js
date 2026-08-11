@@ -8,7 +8,7 @@
  */
 
 import * as gxyWorkorderSdk from '../../third/workorder/gxy-workorder-sdk.js';
-import { ok, err, toPlatformResult, generateWorkOrderNo } from './shared.js';
+import { err, toPlatformResult, generateWorkOrderNo } from './shared.js';
 
 export async function syncWorkorder(payload = {}) {
   if (!payload.elderId) {
@@ -21,7 +21,7 @@ export async function syncWorkorder(payload = {}) {
     const resp = await gxyWorkorderSdk.sync(payload);
     return toPlatformResult(resp, '工单同步成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -33,7 +33,7 @@ export async function getWorkorderDetail(workOrderId) {
     const resp = await gxyWorkorderSdk.getDetail(workOrderId);
     return toPlatformResult(resp, '查询工单详情成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -42,7 +42,7 @@ export async function getWorkorderPage(payload = {}) {
     const resp = await gxyWorkorderSdk.page(payload);
     return toPlatformResult(resp, '查询工单列表成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -54,7 +54,7 @@ export async function cancelWorkorder(workOrderId, reason = '') {
     const resp = await gxyWorkorderSdk.cancel({ workOrderId, cancelReason: reason });
     return toPlatformResult(resp, '工单取消成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -66,7 +66,7 @@ export async function getWorkorderProgress(workOrderId) {
     const resp = await gxyWorkorderSdk.getProgress(workOrderId);
     return toPlatformResult(resp, '查询工单进度成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
 
@@ -78,6 +78,6 @@ export async function getWorkorderTimeline(workOrderId) {
     const resp = await gxyWorkorderSdk.getTimeline(workOrderId);
     return toPlatformResult(resp, '查询工单时间轴成功');
   } catch (e) {
-    return err('FIELD_INVALID', e.message);
+    return err('PLATFORM_ERROR', e.message);
   }
 }
