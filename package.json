@@ -12,8 +12,9 @@
     "smoke:chat": "node scripts/smoke-chat.js",
     "check:weekly": "node scripts/check-weekly-plan.mjs",
     "check:templates": "node scripts/check-template-layout.mjs",
+    "check:match": "node scripts/verify-manifest-match.js",
     "check:intents": "node scripts/audit-intent-pipeline.mjs",
-    "check:pipeline": "npm run check:templates && npm run check:intents",
+    "check:pipeline": "npm run check:templates && npm run check:match && npm run check:intents",
     "check": "npm run validate:no-source-links && npm run validate:assets && npm test"
   },
   "dependencies": {
