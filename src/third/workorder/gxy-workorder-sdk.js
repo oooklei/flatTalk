@@ -99,7 +99,6 @@ export async function getDetail(workOrderId) {
 }
 
 export async function page(payload) {
-  if (!payload?.elderId) throw new Error('page() 缺少必填字段: elderId');
   return post('/openapi/workorder/page', payload);
 }
 

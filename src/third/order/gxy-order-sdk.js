@@ -76,7 +76,6 @@ export async function getDetail(orderId) {
 }
 
 export async function page(payload) {
-  if (!payload?.elderId) throw new Error('page() 缺少必填字段: elderId');
   return post('/openapi/order/page', payload);
 }
 

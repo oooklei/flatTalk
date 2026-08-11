@@ -29,23 +29,14 @@ export function createTableDataService(options = {}) {
       };
     },
 
-    async getFindServiceTables() {
-      return {
-        service_catalog: await repository.list('fs_service_catalog'),
-        orgs: await repository.list('fs_org'),
-        workers: await repository.list('fs_worker'),
-        orders: await repository.list('fs_service_order'),
-        source: 'flatTalk_table_data',
-      };
+    async getFindServiceTables(params = {}) {
+      const { assembleFindServiceData } = await import('../../skills/find_service/lib/data-assembler.js');
+      return assembleFindServiceData(params);
     },
 
-    async getDispatchManageTables() {
-      return {
-        dispatch_orders: await repository.list('dm_dispatch_order'),
-        orders: await repository.list('fs_service_order'),
-        workers: await repository.list('fs_worker'),
-        source: 'flatTalk_table_data',
-      };
+    async getDispatchManageTables(params = {}) {
+      const { assembleDispatchData } = await import('../../skills/dispatch_manage/lib/data-assembler.js');
+      return assembleDispatchData(params);
     },
 
     async getSkillConfigs() {
