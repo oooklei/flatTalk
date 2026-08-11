@@ -1,0 +1,14 @@
+{
+  "icon": "🛡️",
+  "badge_class": "availability",
+  "badge_icon": "📈",
+  "badge_text": "空闲率最高",
+  "name": "康复护理服务",
+  "summary": "术后/慢病专业护理，护士上门",
+  "timeRange": "全天可约",
+  "provider_name": "桂林乐颐家政服务公司",
+  "provider_env": "4.2",
+  "provider_avail_text": "空闲92%",
+  "price": "220",
+  "unit": "次"
+}

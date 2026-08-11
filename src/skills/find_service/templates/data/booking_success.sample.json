@@ -1,0 +1,14 @@
+{
+  "id": "booking_success_001",
+  "template": "booking-success",
+  "pageTitle": "预约成功",
+  "cardTitle": "预约成功",
+  "cardSub": "已为您安排服务，请注意接听来电",
+  "dateLabel": "预约日期",
+  "dateDisplay": "明天（8月11日）",
+  "serviceName": "居家深度清洁",
+  "dateValue": "8月11日",
+  "recommendTag": "AI智能推荐",
+  "contactNote": "服务人员将于服务前 30 分钟电话与您确认，如需调整请提前联系客服。",
+  "footSource": "AI预约确认"
+}

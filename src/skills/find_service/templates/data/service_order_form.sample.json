@@ -1,0 +1,16 @@
+{
+  "service_name": "居家深度清洁",
+  "service_price": "180",
+  "service_unit": "次",
+  "name": "张大爷",
+  "name_source": "来自健康档案",
+  "phone": "13800005678",
+  "phone_source": "来自注册手机号",
+  "address": "桂林市秀峰区丽君路123号",
+  "address_source": "来自历史订单地址",
+  "date": "2026-08-12",
+  "date_source": "AI智能推荐：明天上午",
+  "time_slot": "明天 09:00-11:00",
+  "time_reason": "您过去5次都选择上午",
+  "notes": "厨房油烟机需重点清洁"
+}

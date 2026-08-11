@@ -1,0 +1,38 @@
+{
+  "total": 4,
+  "pending": 2,
+  "orders": [
+    {
+      "dispatchId": "dp_2001",
+      "orderId": "so_1001",
+      "workerName": "韦芳",
+      "skill": "上门护理",
+      "status": "待接单",
+      "createdAt": "2026-08-10 09:12"
+    },
+    {
+      "dispatchId": "dp_2002",
+      "orderId": "so_1002",
+      "workerName": "黄丽",
+      "skill": "陪诊就医",
+      "status": "待接单",
+      "createdAt": "2026-08-10 08:42"
+    },
+    {
+      "dispatchId": "dp_2003",
+      "orderId": "so_1003",
+      "workerName": "梁春花",
+      "skill": "康复护理",
+      "status": "已接单",
+      "createdAt": "2026-08-09 14:30"
+    },
+    {
+      "dispatchId": "dp_2004",
+      "orderId": "so_1004",
+      "workerName": "覃玉梅",
+      "skill": "居家助浴",
+      "status": "服务中",
+      "createdAt": "2026-08-09 07:00"
+    }
+  ]
+}

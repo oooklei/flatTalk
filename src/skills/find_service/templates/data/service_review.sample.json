@@ -1,0 +1,16 @@
+{
+  "orgName": "阳光社区养老服务中心",
+  "level": "B级·良好",
+  "totalScore": 85.2,
+  "complaintCount": 2,
+  "dims": [
+    { "name": "用户评价评分", "score": 92.1, "pct": 92 },
+    { "name": "工单满意度", "score": 88.0, "pct": 88 },
+    { "name": "工单服务质量", "score": 90.5, "pct": 90 },
+    { "name": "投诉率", "score": 76.3, "pct": 76 }
+  ],
+  "reviews": [
+    { "who": "张***", "text": "护理员很耐心，按时上门。" },
+    { "who": "李***", "text": "服务专业，沟通顺畅。" }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "alert_text": "检测到紧急情况",
+  "body": "检测到您可能遇到紧急状况（跌倒、无法起身）。请保持冷静，立即采取行动：",
+  "matched_keywords": "跌倒、无法起身",
+  "emergency_phone": "13877981234",
+  "emergency_name": "张明（儿子）"
+}

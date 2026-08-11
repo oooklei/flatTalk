@@ -1,0 +1,15 @@
+{
+  "id": "booking_reschedule_001",
+  "template": "booking-reschedule",
+  "pageTitle": "修改预约日期",
+  "cardEyebrow": "修改预约",
+  "serviceName": "居家深度清洁",
+  "heroSub": "为您推荐以下可预约日期，点击即可改期",
+  "contactNote": "以上日期均可预约，确认后服务人员将致电与您核对上门时间。",
+  "footSource": "AI预约确认",
+  "altDates": [
+    { "day": "8月11日", "week": "周二 · 明天" },
+    { "day": "8月12日", "week": "周三" },
+    { "day": "8月13日", "week": "周四" }
+  ]
+}

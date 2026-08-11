@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>find_service template previews</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:24px;background:#f6f7f9;color:#17202a}
+h1{font-size:24px;margin:0 0 16px}
+article{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:12px 0}
+a{color:#0f766e;text-decoration:none}
+p{line-height:1.6;margin:6px 0;color:#4b5563}
+</style>
+</head>
+<body>
+<h1>find_service 模板预览</h1>
+
+    <article>
+      <h2><a href="./booking_reschedule.preview.html">booking_reschedule</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> serviceName, altDates</p>
+      <p>改期、修改预约日期、换个时间上门；非预约确认、非下单确认、非订单进度</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./booking_success.preview.html">booking_success</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> serviceName, dateDisplay</p>
+      <p>预约成功、预约已安排；非正式预定成功订单凭证、非改期、非预约确认</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./contact_confirm.preview.html">contact_confirm</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> contactName, contactPhone, contactAddress</p>
+      <p>确认联系人、确认上门地址、联系人信息；非订单全量确认、非预约日期确认</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./order_preview.preview.html">order_preview</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> serviceName, contactName, contactPhone</p>
+      <p>确认下单、订单信息汇总确认；非预约日期确认、非下单成功凭证、非联系人单独确认</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./order_status.preview.html">order_status</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> total, orders</p>
+      <p>我的订单、订单状态、订单进度、服务订单列表</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./org_profile.preview.html">org_profile</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> orgName, orgType, address, scope, certified</p>
+      <p>养老机构、养老院、护理站、服务中心、机构详情、入住机构</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_booking_confirm.preview.html">service_booking_confirm</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> serviceName, dateDisplay</p>
+      <p>预约确认、确认预约日期、AI推荐上门时间；非正式确认下单、非改期选日、非下单成功</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_card.preview.html">service_card</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> name, price, unit, provider_name</p>
+      <p>单个服务、一个服务、这项服务、推荐一项、服务卡片</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_catalog.preview.html">service_catalog</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> sceneTitle, total, categories</p>
+      <p>养老服务目录、全部服务、服务分类、有哪些服务、服务清单</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_detail.preview.html">service_detail</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> name, summary, hotline</p>
+      <p>展示单项服务详情（介绍/特色/热线），非服务目录、非订单确认、非预约改期</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_emergency.preview.html">service_emergency</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> alert_text, body</p>
+      <p>紧急求助、SOS、拨打120、我已安全、救命、紧急情况、危急</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_expand.preview.html">service_expand</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> badge_text, name, price, unit</p>
+      <p>拓展推荐、其他优质选择、空闲率最高、环境得分高、响应最快、维度推荐</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_guess_like.preview.html">service_guess_like</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> name, price, unit, provider_name</p>
+      <p>猜你喜欢、精选、旅居路线、个性化推荐、为您精选</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_intent.preview.html">service_intent</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> badge_type, badge_label, confidence</p>
+      <p>意图识别、AI理解、置信度、识别到的信息、紧急级别、需求类型</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_order_form.preview.html">service_order_form</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> service_name, name, phone, address</p>
+      <p>预定、下单、预约、填写信息、确认预约、服务预定、提交预定</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_order_ticket.preview.html">service_order_ticket</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> orderNo, serviceName, status</p>
+      <p>预定成功、下单成功、订单凭证；非轻量预约成功、非订单预览确认</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_recommend.preview.html">service_recommend</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> sceneTitle, total, services, highlightOrg, highlightWorker</p>
+      <p>养老服务推荐、服务匹配、找护工、找养老机构、上门护理、助浴、陪诊、助餐、康复训练、认知症照护</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_review.preview.html">service_review</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> orgName, totalScore, dims</p>
+      <p>[object Object]</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_thinking.preview.html">service_thinking</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> title, steps</p>
+      <p>AI思考中、正在分析、处理中、加载、意图识别步骤</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./service_trace.preview.html">service_trace</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> orderNo, serviceName, traceNodes</p>
+      <p>[object Object]</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./worker_profile.preview.html">worker_profile</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> name, certLevel, area, skillTags, available</p>
+      <p>护工、护理人员、护理员、推荐人员、上门人员、服务人员详情</p>
+    </article>
+  
+</body>
+</html>

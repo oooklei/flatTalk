@@ -1,0 +1,16 @@
+{
+  "badge_type": "service",
+  "badge_icon": "🧹",
+  "badge_label": "服务查询",
+  "confidence": "88%",
+  "conf_class": "",
+  "entities": [
+    { "type": "时间", "value": "明天" },
+    { "type": "人群", "value": "老人" }
+  ],
+  "show_entities": true,
+  "show_emergency": true,
+  "emergency_bg": "#E8F2EC",
+  "emergency_color": "#3D6B4D",
+  "emergency_text": "绿色（提示）"
+}

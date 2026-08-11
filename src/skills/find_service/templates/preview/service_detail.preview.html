@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537; --warn-soft:#FBF3DD; --warn-deep:#9C7715;
+  --danger:#D4604E; --danger-soft:#FAEAE8; --danger-deep:#A23A2C;
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:999px;
+  --sh-sm:0 1px 3px rgba(62,56,50,.08); --sh-md:0 4px 12px rgba(62,56,50,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-sans);background:var(--n0);color:var(--n800);
+  font-size:16px;line-height:1.6;padding:12px;
+  overflow-wrap:anywhere;word-break:break-word;-webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--primary);text-decoration:none}
+
+/* 一体卡片 */
+.card{
+  max-width:430px;width:100%;margin:0 auto;background:#fff;border:1px solid var(--n100);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-md);
+}
+
+/* 头部 */
+.hero{
+  display:flex;align-items:center;gap:12px;padding:16px;
+  color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-deep));
+}
+.hero-icon{
+  width:54px;height:54px;flex-shrink:0;border-radius:var(--r-md);
+  background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
+  font-size:30px;line-height:1;
+}
+.hero-body{flex:1;min-width:0}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--r-full);
+  background:rgba(255,255,255,.18);font-size:12px;font-weight:600;
+}
+.hero-title{font-family:var(--font-serif);margin:8px 0 0;font-size:22px;line-height:1.18;letter-spacing:.5px}
+.hero-price{margin-top:6px;display:flex;align-items:baseline;gap:4px;color:rgba(255,255,255,.92)}
+.price-num{font-family:var(--font-serif);font-size:20px;font-weight:800}
+.price-unit{font-size:13px;font-weight:600}
+
+/* 区块 */
+.section{padding:13px 14px;border-top:1px solid var(--n100)}
+.section-title{
+  margin:0 0 10px;display:flex;align-items:center;gap:7px;color:var(--n800);
+  font-size:15px;font-weight:800;font-family:var(--font-serif);
+}
+.section-title::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--primary)}
+
+/* 摘要 / 描述 */
+.summary{font-size:13px;color:var(--n600);line-height:1.6}
+.desc{font-size:13px;color:var(--n600);line-height:1.6}
+
+/* 标签 */
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{
+  padding:4px 9px;border-radius:var(--r-md);
+  background:var(--primary-soft);color:var(--primary-deep);
+  border:1px solid #F5CDAE;font-size:12px;font-weight:700;
+}
+
+/* 特色列表 */
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.feat-item{
+  position:relative;padding-left:24px;font-size:13px;color:var(--n700);line-height:1.5;
+}
+.feat-item::before{
+  content:'✓';position:absolute;left:0;top:1px;width:18px;height:18px;
+  background:var(--ok);color:#fff;border-radius:var(--r-full);
+  font-size:11px;display:flex;align-items:center;justify-content:center;
+}
+
+/* 服务机构 */
+.provider-name{font-size:14px;font-weight:700;color:var(--n800);margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stat{min-width:0;padding:10px 9px;background:var(--n50);border:1px solid var(--n100);border-radius:var(--r-md);text-align:center}
+.stat .num{color:var(--primary-deep);font-size:20px;font-weight:800;line-height:1.1;font-family:var(--font-serif)}
+.stat .lbl{margin-top:4px;color:var(--n500);font-size:11px}
+
+/* 信息行 */
+.row{display:flex;justify-content:space-between;gap:12px;padding:8px 0}
+.row + .row{border-top:1px dashed var(--n100)}
+.row .k{color:var(--n500);flex:0 0 auto;font-size:13px}
+.row .v{font-weight:700;text-align:right;min-width:0;font-size:13px}
+.row .v.link{color:var(--accent);text-decoration:none}
+
+/* 卡片内操作区（非固定底部） */
+.action{padding:12px 14px;border-top:1px solid var(--n100)}
+.btn-row{display:flex;gap:10px}
+.btn{
+  flex:1;min-height:46px;border-radius:var(--r-md);border:none;
+  font-size:15px;font-weight:700;letter-spacing:1px;font-family:var(--font-sans);
+  display:flex;align-items:center;justify-content:center;
+}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-deep));color:#fff}
+.btn-ghost{background:#fff;color:var(--primary-deep);border:1.5px solid var(--primary)}
+
+/* 卡片底部来源 */
+.foot{padding:10px 14px;border-top:1px solid var(--n100);color:var(--n400);font-size:11px;text-align:center}
+
+@media (max-width:360px){
+  body{padding:10px} .hero-title{font-size:20px}
+}
+
+
+.tc-deck{box-sizing:border-box;}
+.tc-deck[data-layout="horizontal"]{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;overflow-x:auto;padding:8px 0;}
+.tc-deck[data-layout="vertical"]{display:flex;flex-direction:column;gap:16px;}
+.tc-card{flex:0 0 auto;}
+.tc-pager{margin-top:12px;font:13px/1.4 system-ui,sans-serif;color:#666;}
+
+.tc-followups{box-sizing:border-box;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.tc-followups-label{font:13px/1.4 system-ui,sans-serif;color:#8a8a8a;margin-right:2px;}
+.tc-followup-btn{appearance:none;cursor:pointer;font:13px/1.3 system-ui,sans-serif;padding:8px 14px;border-radius:999px;border:1px solid var(--primary,#2c7be5);background:#fff;color:var(--primary,#2c7be5);transition:.15s;}
+.tc-followup-btn:hover{background:var(--primary,#2c7be5);color:#fff;}
+</style>
+</head>
+<body>
+<div class="tc-deck" data-layout="vertical"><div class="tc-card">
+<div class="card" data-template="service_detail" data-layout="vertical">
+
+  <!-- 头部 -->
+  <div class="hero">
+    <div class="hero-icon">🧹</div>
+    <div class="hero-body">
+      <div class="eyebrow"></div>
+      <h1 class="hero-title">居家深度清洁</h1>
+      <div class="hero-price"><span class="price-num">180</span><span class="price-unit">元/次</span></div>
+    </div>
+  </div>
+
+  <!-- 摘要 -->
+  <div class="section">
+    <div class="section-title">📌 服务简介</div>
+    <p class="summary">包含做饭、洗衣、洗澡协助、全屋打扫卫生等日常照料</p>
+  </div>
+
+  <!-- 标签 -->
+  <div class="section">
+    <div class="section-title">🏷 服务标签</div>
+    <div class="tags">
+      <span class="tag">实名认证</span><span class="tag">专业培训</span><span class="tag">即时响应</span>
+      
+    </div>
+  </div>
+
+  <!-- 服务介绍 -->
+  <div class="section">
+    <div class="section-title">📝 服务介绍</div>
+    <p class="desc"></p>
+  </div>
+
+  <!-- 服务特色 -->
+  <div class="section">
+    <div class="section-title">✨ 服务特色</div>
+    <ul class="feat-list">
+      
+      <li class="feat-item">暂无特色说明</li>
+    </ul>
+  </div>
+
+  <!-- 服务机构 -->
+  <div class="section">
+    <div class="section-title">🏢 服务机构</div>
+    <div class="provider-name"></div>
+    <div class="grid four">
+      <div class="stat"><div class="num"></div><div class="lbl">综合评分</div></div>
+      <div class="stat"><div class="num"></div><div class="lbl">空闲率</div></div>
+      <div class="stat"><div class="num">分</div><div class="lbl">响应时间</div></div>
+      <div class="stat"><div class="num">人</div><div class="lbl">服务团队</div></div>
+    </div>
+  </div>
+
+  <!-- 服务时间 / 热线 -->
+  <div class="section">
+    <div class="section-title">🕒 服务信息</div>
+    <div class="row"><span class="k">服务时间</span><span class="v">08:00-18:00</span></div>
+    <div class="row"><span class="k">服务热线</span><a class="v link" href="tel:"></a></div>
+  </div>
+
+  <!-- 卡片内操作区（非固定底部） -->
+  <div class="action">
+    <div class="btn-row">
+      <a class="btn btn-ghost" href="tel:">一键咨询</a>
+      <a class="btn btn-primary" href="#">一键预定</a>
+    </div>
+  </div>
+
+  <div class="foot">来源：</div>
+</div>
+</div></div>
+
+
+<script>window.__MAP_KEY__="KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH";</script><script id="card-bridge-script">/**
+ * Card Interaction Bridge — injected into card iframe for universal button dispatch
+ */
+(function () {
+  if (window.__cardBridgeInitialized) return;
+  window.__cardBridgeInitialized = true;
+
+  function telHrefToPhone(href) {
+    return String(href || '').replace(/^tel:/i, '').split(/[?#]/)[0].trim();
+  }
+
+  function handleClick(e) {
+    var btn = e.target.closest('[data-action-key]');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    var payload = {
+      type: 'flattalk_card_action',
+      action_key: btn.getAttribute('data-action-key') || '',
+      action_type: btn.getAttribute('data-action-type') || 'dispatch',
+      user_prompt: btn.getAttribute('data-user-prompt') || '',
+      skill_key: btn.getAttribute('data-skill-key') || '',
+      params: {},
+    };
+
+    var paramsStr = btn.getAttribute('data-params');
+    if (paramsStr) {
+      try { payload.params = JSON.parse(paramsStr); } catch {}
+    }
+
+    if (payload.action_type === 'form_submit') {
+      var form = btn.closest('form');
+      if (form) {
+        var formData = new FormData(form);
+        var data = {};
+        formData.forEach(function (val, key) { data[key] = val; });
+        payload.params.form_data = data;
+      }
+    }
+
+    window.parent.postMessage(payload, '*');
+  }
+
+  document.addEventListener('click', handleClick, true);
+
+  document.addEventListener('click', function (e) {
+    var telLink = e.target.closest('a[href^="tel:"]');
+    if (!telLink) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var href = telLink.getAttribute('href') || '';
+    window.parent.postMessage({
+      type: 'flattalk_phone_dial',
+      phone: telHrefToPhone(href),
+      href: href,
+      label: (telLink.textContent || '').trim(),
+    }, '*');
+  }, true);
+
+  document.addEventListener('click', function (e) {
+    var mapLink = e.target.closest('[data-action-type="external_map"]');
+    if (!mapLink) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var url = mapLink.getAttribute('data-href') || mapLink.getAttribute('href') || '';
+
+    // 已有 TMap 实例的卡片：直接复用
+    if (typeof TMap !== 'undefined' && window.__nbMapInstance) {
+      var params0 = mapLink.getAttribute('data-params');
+      if (params0) {
+        try {
+          var poi0 = JSON.parse(params0);
+          if (poi0.lat && poi0.lng) {
+            showInCardRoute(window.__nbMapInstance, poi0);
+            return;
+          }
+        } catch {}
+      }
+    }
+
+    // 无 TMap 实例：在按钮下方动态展开迷你地图
+    var poi = null;
+    var paramsStr = mapLink.getAttribute('data-params');
+    if (paramsStr) {
+      try { poi = JSON.parse(paramsStr); } catch {}
+    }
+
+    var container = mapLink.parentElement;
+    var existing = container.querySelector('.nb-mini-map');
+    if (existing) { existing.remove(); return; } // 再次点击收起
+
+    if (poi && poi.lat && poi.lng) {
+      // 动态加载 TMap SDK + 迷你地图
+      showMiniMap(container, poi, url);
+    } else {
+      // 无坐标：只能新窗口打开 URI API
+      window.parent.postMessage({ type: 'flattalk_open_map', url: url }, '*');
+    }
+  }, true);
+
+  /**
+   * 在卡片内动态展开迷你地图（按需加载 TMap SDK）
+   */
+  function showMiniMap(container, poi, fallbackUrl) {
+    var wrap = document.createElement('div');
+    wrap.className = 'nb-mini-map';
+    wrap.style.cssText = 'width:100%;height:240px;border:1px solid #e0e0e0;border-radius:8px;margin-top:8px;position:relative;overflow:hidden;';
+    var canvas = document.createElement('div');
+    canvas.style.cssText = 'width:100%;height:100%;';
+    wrap.appendChild(canvas);
+
+    // 底部按钮栏：在新窗口打开完整导航
+    var bar = document.createElement('div');
+    bar.style.cssText = 'padding:6px 8px;background:#f5f5f5;border-top:1px solid #e0e0e0;display:flex;gap:8px;justify-content:flex-end;';
+    var openBtn = document.createElement('button');
+    openBtn.textContent = '打开完整导航 →';
+    openBtn.style.cssText = 'background:#2f6f4e;color:#fff;border:none;padding:4px 12px;border-radius:4px;font-size:13px;cursor:pointer;';
+    openBtn.onclick = function (ev) {
+      ev.stopPropagation();
+      window.parent.postMessage({ type: 'flattalk_open_map', url: fallbackUrl }, '*');
+    };
+    bar.appendChild(openBtn);
+    wrap.appendChild(bar);
+
+    container.appendChild(wrap);
+
+    // 从模板变量获取地图 Key（注入在 window.__MAP_KEY__）
+    var key = window.__MAP_KEY__ || '';
+    if (!key) {
+      canvas.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:13px;">地图加载失败（缺少Key）</div>';
+      return;
+    }
+
+    // 动态加载 TMap SDK（竞态保护：避免与模板自身的加载器冲突）
+    if (typeof TMap === 'undefined') {
+      // 如果已有加载请求在进行中，挂载回调而非二次加载
+      if (window.__tmapLoadingQueue) {
+        window.__tmapLoadingQueue.push(function () { initMiniMap(canvas, poi); });
+      } else {
+        window.__tmapLoadingQueue = [function () { initMiniMap(canvas, poi); }];
+        var script = document.createElement('script');
+        // 不带 visualization：部分 Key 未开通该库会整页 GLJS 加载失败
+        script.src = 'https://map.qq.com/api/gljs?v=1.exp&key=' + key;
+        script.onload = function () {
+          var queue = window.__tmapLoadingQueue || [];
+          window.__tmapLoadingQueue = null;
+          queue.forEach(function (cb) { try { cb(); } catch {} });
+        };
+        script.onerror = function () {
+          window.__tmapLoadingQueue = null;
+          canvas.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:13px;">地图加载失败</div>';
+        };
+        document.head.appendChild(script);
+      }
+    } else {
+      initMiniMap(canvas, poi);
+    }
+  }
+
+  function initMiniMap(canvas, poi) {
+    try {
+      var map = new TMap.Map(canvas, {
+        center: new TMap.LatLng(poi.lat, poi.lng),
+        zoom: 14,
+        baseMap: { type: 'vector', features: ['base', 'label'] },
+      });
+      // 目的地标记
+      new TMap.MultiMarker({
+        map: map,
+        geometries: [{
+          id: 'dest',
+          position: new TMap.LatLng(poi.lat, poi.lng),
+        }],
+      });
+      // 信息窗
+      new TMap.InfoWindow({
+        map: map,
+        position: new TMap.LatLng(poi.lat, poi.lng),
+        content: '<div style="padding:4px 8px;font-size:13px;">' + (poi.name || '目的地') + '</div>',
+      });
+    } catch {
+      canvas.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:13px;">地图渲染失败</div>';
+    }
+  }
+
+  function showInCardRoute(map, poi) {
+    try {
+      map.setCenter(new TMap.LatLng(poi.lat, poi.lng));
+      map.setZoom(15);
+      var info = new TMap.InfoWindow({
+        map: map,
+        position: new TMap.LatLng(poi.lat, poi.lng),
+        content: '<div style="padding:4px 8px;font-size:13px;">' + (poi.name || '目的地') + '</div>'
+      });
+    } catch {
+      // TMap 操作失败，忽略
+    }
+  }
+})();
+</script></body>
+</html>

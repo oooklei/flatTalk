@@ -1,0 +1,16 @@
+{
+  "id": "booking_confirm_001",
+  "template": "service-booking-confirm",
+  "pageTitle": "预约确认",
+  "cardEyebrow": "预约确认",
+  "serviceName": "居家深度清洁",
+  "heroSub": "AI 已为您推荐最优服务时间",
+  "dateLabel": "预约日期",
+  "dateDisplay": "明天（8月11日）",
+  "dateValue": "2026-08-11",
+  "recommendTag": "AI智能推荐",
+  "hintText": "您可以说\"好的\"确认，或告诉我其他日期，如\"后天\"、\"下周三\"。",
+  "confirmBtnText": "确认",
+  "modifyBtnText": "修改",
+  "footSource": "AI预约确认"
+}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dispatch_manage template previews</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:24px;background:#f6f7f9;color:#17202a}
+h1{font-size:24px;margin:0 0 16px}
+article{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:12px 0}
+a{color:#0f766e;text-decoration:none}
+p{line-height:1.6;margin:6px 0;color:#4b5563}
+</style>
+</head>
+<body>
+<h1>dispatch_manage 模板预览</h1>
+
+    <article>
+      <h2><a href="./dispatch_accept.preview.html">dispatch_accept</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> orderNo, serviceName, name, supplier</p>
+      <p>[object Object]</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./dispatch_detail.preview.html">dispatch_detail</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> dispatchId, orderId, workerName, status</p>
+      <p>派单详情、处理派单、接单、拒单、改派、这条派单</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./dispatch_list.preview.html">dispatch_list</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> total, pending, orders</p>
+      <p>派单列表、我的派单、待接单、调度中心；非单条派单详情、非接拒单</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./dispatch_reject.preview.html">dispatch_reject</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> order_no, reasons</p>
+      <p>拒接、拒单、拒绝订单、拒接原因、不接这个单</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./dispatch_status.preview.html">dispatch_status</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> dispatchId, status, changedAt</p>
+      <p>派单进度、状态更新、催单、改约、状态查询</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./dispatch_supplier_action.preview.html">dispatch_supplier_action</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> order_no, service_name, name</p>
+      <p>派单处理、接单、供应商、一票否决权、待确认订单、拒接、转交、接受</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./dispatch_transfer.preview.html">dispatch_transfer</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> order_no, targets</p>
+      <p>转交、转派、改派、转给、移交订单、转交对象</p>
+    </article>
+  
+
+    <article>
+      <h2><a href="./work_order.preview.html">work_order</a></h2>
+      <p><strong>layout:</strong> vertical</p>
+      <p><strong>required:</strong> orderId, elderName, serviceName, status</p>
+      <p>服务工单、工单详情、订单工单、工单</p>
+    </article>
+  
+</body>
+</html>
