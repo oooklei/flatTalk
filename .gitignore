@@ -9,7 +9,7 @@ node_modules/
 .env.prod
 .env.deploy
 data/api-keys.json
-# 部署脚本生成的临时 env
+# 部署脚本生成的临�?env
 scripts/deploy/.env.gen
 
 # Logs
@@ -128,3 +128,11 @@ docs/**/*.docx
 docs/**/*.zip
 docs/**/*.html
 docs/flatTalk*
+
+
+
+# Probe / test outputs (may contain tokens)
+scripts/test-output/
+scripts/test-result*.json
+�þ���·��ȫ.txt
+ģ��װ��.txt

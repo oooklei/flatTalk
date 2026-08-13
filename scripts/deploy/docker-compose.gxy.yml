@@ -1,0 +1,183 @@
+# GXY 四服务统一编排 —— 部署在 192.168.1.2:/mnt/llgj/apps/gxy
+#
+# 复用现有中间件（不新建）：
+#   flattalk-postgres  网络别名 postgres  (tag_system/tag_system/tag_system)
+#   flattalk-redis     网络别名 redis
+#   两者均在外部网络 flattalk_flattalk-network
+#
+# 端口分配（避开已占用的 5298/5299/5300/5432/15432）：
+#   gxy-flattalk   5301 (HTTP) / 5446 (HTTPS)   ← 主入口
+#   gxy-lis        8100  （管理页 /admin/ui/）
+#   gxy-tag        8011 → 容器 8010（管理页 /admin/ui/）
+#   gxy-local-kb   9016  （管理页 /admin/）
+#   gxy-bge        仅内网 9987，不映射宿主机
+
+services:
+  # ── 意图分拣服务 ─────────────────────────────────────
+  gxy-lis:
+    build:
+      context: ./LIS-System
+      dockerfile: Dockerfile
+    image: gxy-lis:latest
+    container_name: gxy-lis
+    restart: unless-stopped
+    ports:
+      - "8100:8100"
+    environment:
+      LIS_SCORER: hybrid
+      LIS_ENCODER: onnx
+      LIS_ADMIN_TOKEN: ${LIS_ADMIN_TOKEN:-gxy-admin-2026}
+      LIS_REDIS_URL: redis://redis:6379/9
+      LIS_PG_URL: postgresql://tag_system:tag_system@postgres:5432/tag_system
+      LIS_RATE_LIMIT_PER_MIN: "600"
+      LIS_CACHE_TTL: "300"
+      LIS_METRICS_ENABLED: "true"
+      LIS_CORPUS_AUTOCOLLECT: "true"
+    volumes:
+      # 意图知识库与语料落盘持久化，重建容器不丢标注
+      - ./LIS-System/data:/app/data
+    networks:
+      - flattalk-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8100/health',timeout=3)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 5
+
+  # ── 标签服务（容器内 8010）───────────────────────────
+  gxy-tag:
+    build:
+      context: ./Tag-System
+      dockerfile: Dockerfile
+    image: gxy-tag:latest
+    container_name: gxy-tag
+    restart: unless-stopped
+    ports:
+      - "8011:8010"
+    environment:
+      DATABASE_URL: postgresql+psycopg://tag_system:tag_system@postgres:5432/tag_system
+      POSTGRES_ADMIN_URL: postgresql://tag_system:tag_system@postgres:5432/postgres
+      POSTGRES_APP_DB: tag_system
+      REDIS_URL: redis://redis:6379/10
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-gxy-tag-jwt-2026}
+      DEFAULT_ADMIN_USERNAME: admin
+      DEFAULT_ADMIN_PASSWORD: ${TAG_ADMIN_PASSWORD:-admin123456}
+      SSO_JWT_SECRET: ${SSO_JWT_SECRET:-gxy-sso-2026}
+      ENVIRONMENT: production
+    networks:
+      - flattalk-net
+
+  # ── BGE-M3 向量服务（local-kb 的硬依赖）─────────────
+  # embedder.py 在 BGE 不可用时会抛异常导致 local-kb 无法启动，故必须先就绪
+  gxy-bge:
+    build:
+      context: ./flatTalk/local-kb
+      dockerfile: Dockerfile.bge
+    image: gxy-bge:latest
+    container_name: gxy-bge
+    restart: unless-stopped
+    environment:
+      HF_ENDPOINT: https://hf-mirror.com
+    volumes:
+      # TrueNAS Docker 对部分 named volume 有挂载限制，改用宿主机目录
+      - ./data/bge-cache:/root/.cache/huggingface
+    networks:
+      - flattalk-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:9987/health',timeout=5)"]
+      interval: 30s
+      timeout: 20s
+      start_period: 420s
+      retries: 10
+
+  # ── 本地知识库服务（替代 43.138.143.130:9015）───────
+  gxy-local-kb:
+    build:
+      context: ./flatTalk/local-kb
+      dockerfile: Dockerfile
+    image: gxy-local-kb:latest
+    container_name: gxy-local-kb
+    restart: unless-stopped
+    ports:
+      - "9016:9016"
+    environment:
+      LOCAL_KB_HOST: 0.0.0.0
+      LOCAL_KB_PORT: "9016"
+      LOCAL_KB_TICKET: local-kb-ticket
+      BGE_M3_URL: http://gxy-bge:9987/v1/embeddings
+      BGE_M3_MODEL: bge-m3
+      LOCAL_KB_DB_PATH: /data/kb_data.db
+    volumes:
+      - ./data/kb-data:/data
+    depends_on:
+      gxy-bge:
+        condition: service_healthy
+    networks:
+      - flattalk-net
+
+  # ── 对话服务（主入口）────────────────────────────────
+  gxy-flattalk:
+    build:
+      context: ./flatTalk
+      dockerfile: Dockerfile
+      target: production
+    image: gxy-flattalk:latest
+    container_name: gxy-flattalk
+    restart: unless-stopped
+    ports:
+      - "5301:5298"
+      - "5446:5444"
+    environment:
+      NODE_ENV: production
+      FLATTALK_HOST: 0.0.0.0
+      FLATTALK_PORT: "5298"
+      FLATTALK_SSL_PORT: "5444"
+      # HTTPS（话筒等安全上下文）：证书来自旧 flatTalk 项目
+      FLATTALK_SSL_KEY: /app/ssl/server.key
+      FLATTALK_SSL_CERT: /app/ssl/server.crt
+      # 复用现有 PG / Redis（服务名直连）
+      FLATTALK_PG_URL: postgresql://tag_system:tag_system@postgres:5432/tag_system
+      FLATTALK_TAG_SYSTEM_PG_URL: postgresql://tag_system:tag_system@postgres:5432/tag_system
+      # gxy-platform/elder-service.js 用的是 DATABASE_URL，必须显式给
+      DATABASE_URL: postgresql://tag_system:tag_system@postgres:5432/tag_system
+      FLATTALK_REDIS_URL: redis://redis:6379/8
+      # 内网服务发现
+      FLATTALK_LIS_BASE_URL: http://gxy-lis:8100
+      LIS_BASE_URL: http://gxy-lis:8100
+      FLATTALK_TAG_SYSTEM_BASE_URL: http://gxy-tag:8010
+      # 知识库切到本地 local-kb（彻底摘掉 43.138.143.130）
+      FLATTALK_KB_BASE_URL: http://gxy-local-kb:9016
+      FLATTALK_KB_SEARCH_PATH: /api/knowledge/query
+      FLATTALK_KB_TICKET: local-kb-ticket
+      FLATTALK_KB_TIMEOUT_MS: "8000"
+      FLATTALK_KB_DEFAULT_COLLECTIONS: 广西养老办事指引知识库,广西养老政策知识库
+      FLATTALK_KB_MEAL_PLAN_COLLECTIONS: 膳食知识库
+      FLATTALK_KB_TRAVEL_ROUTE_COLLECTIONS: 旅居知识库
+      # 停用 flatTalk 进程内本地知识，统一走 gxy-local-kb
+      FLATTALK_KB_REMOTE_ONLY: "1"
+      ENABLE_TAG_SYSTEM: "true"
+    env_file:
+      - ./flatTalk/.env.deploy
+    volumes:
+      # 旧项目证书：含 SAN IP 192.168.1.2
+      - ./flatTalk/ssl:/app/ssl:ro
+    depends_on:
+      gxy-lis:
+        condition: service_healthy
+      gxy-tag:
+        condition: service_started
+    networks:
+      - flattalk-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:5298/api/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 5
+
+networks:
+  # 复用 flatTalk 现有网络，直接用 postgres / redis 服务名
+  flattalk-net:
+    external: true
+    name: flattalk_flattalk-network
