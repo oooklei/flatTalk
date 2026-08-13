@@ -9,7 +9,7 @@ node_modules/
 .env.prod
 .env.deploy
 data/api-keys.json
-# 閮ㄧ讲鑴氭湰鐢熸垚鐨勪复鏃?env
+# ??????????env
 scripts/deploy/.env.gen
 
 # Logs
@@ -134,5 +134,6 @@ docs/flatTalk*
 # Probe / test outputs (may contain tokens)
 scripts/test-output/
 scripts/test-result*.json
-旅居线路补全.txt
-模板装载.txt
+
+# Root one-off note dumps (CJK filenames / local scratch)
+/*.txt
