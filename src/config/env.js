@@ -15,7 +15,18 @@ export function loadEnv() {
     redisUrl: process.env.FLATTALK_REDIS_URL || process.env.TAG_SYSTEM_REDIS_URL || "",
     tagSystemBaseUrl: process.env.FLATTALK_TAG_SYSTEM_BASE_URL || "http://10.21.202.9:8010",
     tagSystemPgUrl: process.env.FLATTALK_TAG_SYSTEM_PG_URL || process.env.FLATTALK_PG_URL || process.env.TAG_SYSTEM_PG_URL || "",
-    tagSystemToken: process.env.FLATTALK_TAG_SYSTEM_TOKEN || process.env.TAG_SYSTEM_SSO_TOKEN || "",
+    // 文档认证：X-API-Key。兼容旧 TOKEN / SSO 变量名。
+    tagSystemApiKey:
+      process.env.FLATTALK_TAG_SYSTEM_API_KEY
+      || process.env.FLATTALK_TAG_SYSTEM_TOKEN
+      || process.env.TAG_SYSTEM_CLIENT_KEY
+      || process.env.TAG_SYSTEM_SSO_TOKEN
+      || "",
+    tagSystemToken:
+      process.env.FLATTALK_TAG_SYSTEM_API_KEY
+      || process.env.FLATTALK_TAG_SYSTEM_TOKEN
+      || process.env.TAG_SYSTEM_SSO_TOKEN
+      || "",
     knowledgeBaseUrl: process.env.FLATTALK_KB_BASE_URL || "http://43.138.143.130:9015",
     knowledgeSearchPath: process.env.FLATTALK_KB_SEARCH_PATH || "/api/knowledge/query",
     knowledgeApiKey: process.env.FLATTALK_KB_API_KEY || "",

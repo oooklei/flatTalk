@@ -20,6 +20,8 @@ import { createOrderService } from '../../services/order/order-service.js';
 import { createWorkorderService } from '../../services/workorder/workorder-service.js';
 import { describeLibrary, discoverTemplates } from '../../template-card/index.js';
 import { getTraceLogger } from '../observability/trace-logger.js';
+import { createDataAccessTracer } from '../observability/data-access-tracer.js';
+import { recordKeepOk } from '../observability/degradation-monitor.js';
 import { getJialuFacilities, getJialuCenter } from '../../data/jialu_kangyang_center/index.js';
 import { enrich as nearbyEnrich } from '../../services/nearby-resource/nearby-augmentor.js';
 import { TencentMapAdapter } from '../../services/map/tencent-map-adapter.js';
@@ -36,7 +38,7 @@ import { logSceneDecision } from '../scene-router/decision-log.js';
 import { buildSnapshot } from '../../core/conversation/context-snapshot.js';
 import { understandAndAdapt, emptySemantic, SEMANTIC_SOURCES } from '../semantic/index.js';
 import { createSupervisor } from '../agents/supervisor.js';
-import { mockElders, getMockUserByToken } from '../../services/interface-data/mock-collaboration.js';
+import { mockElders, getMockUserByToken, isMockEldersAllowed } from '../../services/interface-data/mock-collaboration.js';
 import {
   isLisGateEnabled,
   getLisBaseUrl,
@@ -44,6 +46,15 @@ import {
   loadCatalogEntries,
 } from '../lis/lis-gate-hook.js';
 import { createLisClient } from '../lis/lis-client.js';
+import { runPreRoute } from '../pipeline/run-pre-route.js';
+import { runPostRoute } from '../pipeline/run-post-route.js';
+import { mergePendingIntoInteractions } from '../pipeline/pending-intents.js';
+import { readBus } from '../context-bus/store.js';
+import {
+  extractMentionedName,
+  hasTravelSignal,
+  isWeakOrChitchatUtterance,
+} from '../lis/utterance-guards.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(moduleDir, '../../..');
@@ -106,7 +117,12 @@ export function createChatOrchestrator(options = {}) {
       const t0 = Date.now();
       const stages = [];
       const mark = (stage, label, detail) => {
-        stages.push({ stage, label, ms: Date.now() - t0, detail: detail == null ? '' : (typeof detail === 'string' ? detail : JSON.stringify(detail)) });
+        stages.push({
+          stage,
+          label,
+          ms: Date.now() - t0,
+          detail: detail == null ? '' : detail,
+        });
       };
       const traceQuestion = (typeof request.message === 'string' && request.message)
         ? request.message
@@ -212,15 +228,118 @@ export function createChatOrchestrator(options = {}) {
         const semanticOpts = {};
         if (options.semanticLlmCall) semanticOpts.llmCall = options.semanticLlmCall;
         if (options.semanticTimeoutMs != null) semanticOpts.timeoutMs = options.semanticTimeoutMs;
-        const semantic = await understandAndAdapt(sceneInput, semanticOpts);
-        mark('semantic', '语义enrichment', {
-          source: semantic.source,
-          category: semantic.adapted?.category || '',
-          destination: semantic.adapted?.destination || '',
-          ms: semantic.latency_ms,
-        });
+        // 闲聊/弱输入：跳过语义 LLM，避免固定等 ~1.2s
+        let semantic;
+        if (isWeakOrChitchatUtterance(sceneInput.text) && !request.context?.action_key) {
+          semantic = emptySemantic(SEMANTIC_SOURCES.RULES_FALLBACK);
+          semantic.latency_ms = 0;
+          mark('semantic', '语义enrichment跳过', { source: 'chitchat_skip', ms: 0 });
+        } else {
+          semantic = await understandAndAdapt(sceneInput, semanticOpts);
+          mark('semantic', '语义enrichment', {
+            source: semantic.source,
+            category: semantic.adapted?.category || '',
+            destination: semantic.adapted?.destination || '',
+            ms: semantic.latency_ms,
+          });
+        }
         sceneInput.semantic = semantic;
         request.semantic = semantic;
+
+        // ★ Context Bus pre-route（默认 ON；FLATTALK_CONTEXT_BUS=0 关闭）
+        const contextBusOn = String(process.env.FLATTALK_CONTEXT_BUS ?? '1').trim() !== '0';
+        let contextProfile = null;
+        let contextExtracted = null;
+        if (contextBusOn && options.session && sceneInput.text) {
+          const pre = await runPreRoute({
+            session: options.session,
+            message: sceneInput.text,
+            llmCall: options.contextBusLlmCall || null,
+            mark,
+          });
+          if (options.sessionStore?.save) {
+            try { await options.sessionStore.save(options.session); } catch { /* best-effort */ }
+          }
+          if (pre.halt && pre.envelopeHint) {
+            const hint = pre.envelopeHint;
+            const answerText = hint.message || '';
+            const safetyEnvelopeOut = buildEnvelope({
+              request_id: request.request_id,
+              conversation_id: request.conversation_id,
+              turn_id: request.turn_id,
+              skill_key: hint.skill_key || 'common',
+              agent_key: hint.skill_key || 'common',
+              intent: `common.${hint.template_id || 'safety'}`,
+              template_id: hint.template_id || 'answer',
+              template_key: hint.template_id || 'answer',
+              answer_text: answerText,
+              data: { safety: pre.safety || null },
+              actions: [],
+              followup_suggestions: [],
+              evidence: [],
+              route: {
+                source: 'flatTalk.context_bus_safety',
+                scene_key: 'common',
+                decision: 'halt',
+                confidence: 1,
+                routed: false,
+                intent_context: intentContext,
+              },
+            });
+            mark('safety_halt', '安全门短路', { action: pre.safety?.action });
+            return {
+              ...safetyEnvelopeOut,
+              answer: answerText,
+              context_snapshot: buildSnapshot({ ...safetyEnvelopeOut, semantic: request.semantic || sceneInput.semantic }),
+              stages,
+              debug: { safety: pre.safety },
+            };
+          }
+          if (pre.halt && pre.error) {
+            const answerText = pre.error.message || '请将问题控制在500字以内，并分段提问。';
+            const errEnvelope = buildEnvelope({
+              request_id: request.request_id,
+              conversation_id: request.conversation_id,
+              turn_id: request.turn_id,
+              skill_key: 'common',
+              agent_key: 'common',
+              intent: 'common.text_too_long',
+              template_id: 'answer',
+              template_key: 'answer',
+              answer_text: answerText,
+              data: { normalize_error: pre.error },
+              actions: [],
+              followup_suggestions: [],
+              evidence: [],
+              route: {
+                source: 'flatTalk.context_bus_normalize',
+                scene_key: 'common',
+                decision: 'halt',
+                confidence: 1,
+                routed: false,
+                intent_context: intentContext,
+              },
+            });
+            return {
+              ...errEnvelope,
+              answer: answerText,
+              context_snapshot: buildSnapshot({ ...errEnvelope, semantic: request.semantic || sceneInput.semantic }),
+              stages,
+              debug: { normalize_error: pre.error },
+            };
+          }
+          if (pre.normalized_text) {
+            sceneInput.text = pre.normalized_text;
+            request.message = pre.normalized_text;
+          }
+          contextExtracted = pre.extracted || null;
+          if (contextExtracted?.intents?.length) {
+            mark('intent_extract', '抽取意图(不覆盖路由)', {
+              intents: contextExtracted.intents,
+              override: String(process.env.FLATTALK_INTENT_EXTRACT_OVERRIDE || '').trim() === '1',
+            });
+          }
+        }
 
         // 加载 per-skill 场景阈值（来自 skill_configs 表），使各技能可独立调节 accept/review 门槛
         let thresholdsByScene = options.thresholdsByScene ?? null;
@@ -244,7 +363,7 @@ export function createChatOrchestrator(options = {}) {
         let skillKey;
         let acceptedScene;
 
-        // ★ LIS 纯 SORT 门控（默认关闭；LIS_GATE_ENABLED=1 时在 identifyScene 之前介入）
+        // ★ LIS 纯 SORT 门控（默认开启；LIS_GATE_ENABLED=0 时回退 scene-router）
         let lisGateResult = null;
         let lisSession = null;
         if (isLisGateEnabled()) {
@@ -346,13 +465,36 @@ export function createChatOrchestrator(options = {}) {
           };
         }
 
-        // LIS 不可达 / 未命中：禁止 identifyScene 业务摆渡，直接 common 兜底卡
+        // LIS 不可达 / 未命中 / 闲聊低置信：common + LLM 兜底（禁止再摆渡业务技能）
         if (isLisGateEnabled() && !lisGateResult?.handled) {
           const unreachable = ['lis_unreachable', 'lis_unavailable', 'lis_client_missing']
             .includes(String(lisGateResult?.reason || ''));
-          const answerText = unreachable
+          const fbReason = lisGateResult?.reason || 'unhandled';
+          let answerText = unreachable
             ? '网络或系统暂时异常，请稍后重试。如需紧急帮助请拨打 SOS。'
             : '暂时没能准确理解您的需求，您可以换个说法，或直接选择常用服务。';
+          let modelUsed = 'static';
+          let modelStatus = 'static_fallback';
+
+          // 非网络故障：调 LLM 生成自然语言 answer（技能覆盖不了时的真正兜底）
+          if (!unreachable && smartFallbackHandler?.generateNaturalAnswer) {
+            try {
+              const llmFb = await smartFallbackHandler.generateNaturalAnswer({
+                message: sceneInput.text,
+                skill_key: 'common',
+                conversation_id: request.conversation_id,
+                conversation_history: await injectHistory(request, contextManager, 'common'),
+              });
+              if (llmFb?.answer_text || llmFb?.answer) {
+                answerText = String(llmFb.answer_text || llmFb.answer).trim() || answerText;
+                modelUsed = llmFb.model_used || 'smart_fallback';
+                modelStatus = llmFb.model_status || 'smart_fallback';
+              }
+            } catch (err) {
+              mark('lis_fallback_llm', 'LLM兜底失败用静态文案', { error: err?.message || String(err) });
+            }
+          }
+
           const fbEnvelope = buildEnvelope({
             request_id: request.request_id,
             conversation_id: request.conversation_id,
@@ -363,7 +505,7 @@ export function createChatOrchestrator(options = {}) {
             template_id: 'answer',
             template_key: 'answer',
             answer_text: answerText,
-            data: { lis_reason: lisGateResult?.reason || 'unhandled' },
+            data: { lis_reason: fbReason, title: '桂小养答复', answer_text: answerText },
             actions: [],
             followup_suggestions: [],
             evidence: [],
@@ -374,17 +516,37 @@ export function createChatOrchestrator(options = {}) {
               confidence: 0,
               routed: false,
               intent_context: intentContext,
+              model_used: modelUsed,
+              model_status: modelStatus,
+              fallback_reason: fbReason,
             },
           });
-          mark('lis_fallback', 'LIS兜底common', { reason: lisGateResult?.reason || 'unhandled' });
+          mark('lis_fallback', 'LIS兜底common+LLM', {
+            reason: fbReason,
+            model: modelUsed,
+            status: modelStatus,
+          });
           const fbTemplates = resolveSkillTemplates('common');
           const fbRender = renderTemplateCardResult({
             templateDir: fbTemplates.templateDir,
-            modelResult: { template_id: 'answer', answer_text: answerText, data: fbEnvelope.data },
+            modelResult: {
+              template_id: 'answer',
+              answer_text: answerText,
+              data: fbEnvelope.data,
+              model_used: modelUsed,
+              model_status: modelStatus,
+            },
             actions: [],
             followupSuggestions: [],
             compactFollowups: [],
           });
+          try {
+            getTraceLogger().write({
+              level: 'ok', kind: traceKind, question: traceQuestion,
+              conversation_id: request.conversation_id, turn_id: request.turn_id,
+              route: fbEnvelope.route, stages,
+            });
+          } catch { /* trace best-effort */ }
           return {
             ...fbEnvelope,
             answer: answerText,
@@ -394,7 +556,7 @@ export function createChatOrchestrator(options = {}) {
             html_fallback: fbRender.html_fallback,
             context_snapshot: buildSnapshot({ ...fbEnvelope, semantic: request.semantic || sceneInput.semantic }),
             stages,
-            debug: { lis_common_fallback: true, reason: lisGateResult?.reason || 'unhandled' },
+            debug: { lis_common_fallback: true, reason: fbReason, model: modelUsed },
           };
         }
 
@@ -489,6 +651,75 @@ export function createChatOrchestrator(options = {}) {
           }
           skillKey = acceptedScene?.scene_key || 'common';
         }
+
+        // Optional: extract intent override (default off — LIS/scene remain权威)
+        if (
+          contextBusOn
+          && String(process.env.FLATTALK_INTENT_EXTRACT_OVERRIDE || '').trim() === '1'
+          && contextExtracted?.intents?.[0]?.skill_key
+          && Number(contextExtracted.intents[0].confidence) >= 0.75
+        ) {
+          const overrideKey = String(contextExtracted.intents[0].skill_key);
+          mark('intent_extract_override', '抽取意图覆盖路由', {
+            from: skillKey,
+            to: overrideKey,
+            confidence: contextExtracted.intents[0].confidence,
+          });
+          skillKey = overrideKey;
+          if (acceptedScene) acceptedScene.scene_key = overrideKey;
+        }
+
+        // ★ Context Bus post-route：detectors + profile inject（skillKey 已定）
+        if (contextBusOn && options.session && skillKey) {
+          const post = await runPostRoute({
+            session: options.session,
+            skillKey,
+            utterance: sceneInput.text,
+            mark,
+          });
+          if (options.sessionStore?.save) {
+            try { await options.sessionStore.save(options.session); } catch { /* best-effort */ }
+          }
+          contextProfile = post.profile;
+          if (post.detected?.need_location) {
+            const answerText = '请开启定位或选择位置后，我再帮您查找附近资源。';
+            const locEnvelope = buildEnvelope({
+              request_id: request.request_id,
+              conversation_id: request.conversation_id,
+              turn_id: request.turn_id,
+              skill_key: skillKey || 'nearby_resource',
+              agent_key: skillKey || 'nearby_resource',
+              intent: 'nearby.need_location',
+              template_id: 'answer',
+              template_key: 'answer',
+              answer_text: answerText,
+              data: {
+                need_location: true,
+                reason: post.detected.reason || 'missing_latlng',
+                context_profile: contextProfile,
+              },
+              actions: [],
+              followup_suggestions: [],
+              evidence: [],
+              route: {
+                source: 'flatTalk.context_bus_location',
+                scene_key: skillKey || 'nearby_resource',
+                decision: 'need_location',
+                confidence: 1,
+                routed: false,
+                intent_context: intentContext,
+              },
+            });
+            return {
+              ...locEnvelope,
+              answer: answerText,
+              context_snapshot: buildSnapshot({ ...locEnvelope, semantic: request.semantic || sceneInput.semantic }),
+              stages,
+              debug: { need_location: true, detected: post.detected },
+            };
+          }
+        }
+
         const skillTemplates = resolveSkillTemplates(skillKey);
         if (skillKey === 'health_risk_warning' && typeof dataService.remoteHealth?.syncAll === 'function') {
           // ★ 异步触发同步，不阻塞主链路（写入知识库已在 writeQueue 后台执行）
@@ -510,7 +741,7 @@ export function createChatOrchestrator(options = {}) {
 
         const knowledge = (isWeatherAction || !acceptedScene)
           ? { source: isWeatherAction ? 'weather_action_skip' : 'scene_rejected', status: 'skipped', matches: [] }
-          : await retrieveMultiKnowledge(ragService, {
+          : await retrieveMultiKnowledgeWithTimeout(ragService, {
               skill_keys: Array.from(new Set([skillKey, ...(acceptedScene.required_knowledge || [])])),
               query: sceneInput.text,
               limit: 3,
@@ -519,7 +750,7 @@ export function createChatOrchestrator(options = {}) {
                 role_key: request.role || request.roleKey || '',
               },
             });
-        mark('knowledge', '知识检索', { status: knowledge.status, source: knowledge.source, local_status: knowledge.local_status, remote_status: knowledge.remote_status, local_count: knowledge.local_count, remote_count: knowledge.remote_count });
+        mark('knowledge', '知识检索', { status: knowledge.status, source: knowledge.source, local_status: knowledge.local_status, remote_status: knowledge.remote_status, local_count: knowledge.local_count, remote_count: knowledge.remote_count, timed_out: Boolean(knowledge.timed_out) });
         const businessData = isWeatherAction
           ? (() => {
             const params = request.context?.action_params || request.params || {};
@@ -538,8 +769,43 @@ export function createChatOrchestrator(options = {}) {
               city,
             };
           })()
-          : await loadBusinessData({ sceneDecision: acceptedScene || sceneDecision, request, dataService });
-        mark('business_data', '业务数据', { loaded: !!(businessData && Object.keys(businessData).length), skipped: isWeatherAction });
+          : await loadBusinessData({
+              sceneDecision: acceptedScene || sceneDecision,
+              request,
+              dataService,
+              mark,
+            });
+        // 自报姓名写入业务上下文，供卡片与后续记忆使用
+        const mentionedName = extractMentionedName(sceneInput.text);
+        if (mentionedName && businessData && typeof businessData === 'object') {
+          if (!businessData.elder_name) businessData.elder_name = mentionedName;
+          businessData.mentioned_elder_name = mentionedName;
+          request.context = {
+            ...(request.context || {}),
+            mentioned_elder_name: mentionedName,
+          };
+          mark('identity_mention', '身份提及提取', { name: mentionedName });
+        }
+        if (contextProfile && businessData && typeof businessData === 'object') {
+          Object.assign(businessData, {
+            role_key: contextProfile.role_key,
+            elder_id: contextProfile.elder_id,
+            has_elder: contextProfile.has_elder,
+            context_profile: contextProfile,
+          });
+        }
+        const accessSummary = businessData?._access || null;
+        if (businessData && businessData._access) delete businessData._access;
+        mark('business_data', '业务数据', {
+          loaded: !!(businessData && Object.keys(businessData).length),
+          skipped: isWeatherAction,
+          has_elder: Boolean(businessData?.elder_id || businessData?.elder_name),
+          role_key: businessData?.role_key || '',
+          destination: businessData?.destination || businessData?.primary_city || '',
+          product_id: businessData?.jtd?.selected_product?.product_id || '',
+          mentioned_elder_name: mentionedName || '',
+          access: accessSummary,
+        });
         // 旅居：把上一轮快照里的城市/目的地写回 businessData，避免追问句不含地名时丢城市
         if (skillKey === 'travel_route' && businessData && typeof businessData === 'object') {
           const params = request.context?.action_params || request.params || {};
@@ -559,23 +825,33 @@ export function createChatOrchestrator(options = {}) {
             if (!businessData.city) businessData.city = lockedCity;
           }
         }
-        // 城市预提取（仅 travel_route 场景，非天气 action）：从消息+业务数据+对话历史中提取城市
+        // 城市预提取（仅 travel_route 场景，非天气 action）：无旅居信号且无锁定城市时跳过 LLM
         if (skillKey === 'travel_route' && !isWeatherAction) {
           try {
-            const cityHistory = request.history && request.history.length > 0
-              ? request.history
-              : (contextManager ? await injectHistory(request, contextManager, skillKey) : []);
-            const cityResult = await extractCities({
-              message: request.message || sceneInput.text,
-              business_data: businessData,
-              conversation_history: cityHistory,
-            });
-            if (cityResult?.primary) {
-              businessData.primary_city = cityResult.primary;
-              businessData.cities = cityResult.cities;
-              if (!businessData.destination) businessData.destination = cityResult.primary;
+            const lockedCity = firstNonEmpty(
+              businessData?.primary_city,
+              businessData?.destination,
+              businessData?.city,
+            );
+            const msg = request.message || sceneInput.text || '';
+            if (!lockedCity && !hasTravelSignal(msg)) {
+              mark('city_extract', '城市提取跳过', { reason: 'no_travel_signal' });
+            } else {
+              const cityHistory = request.history && request.history.length > 0
+                ? request.history
+                : (contextManager ? await injectHistory(request, contextManager, skillKey) : []);
+              const cityResult = await extractCities({
+                message: msg,
+                business_data: businessData,
+                conversation_history: cityHistory,
+              });
+              if (cityResult?.primary) {
+                businessData.primary_city = cityResult.primary;
+                businessData.cities = cityResult.cities;
+                if (!businessData.destination) businessData.destination = cityResult.primary;
+              }
+              mark('city_extract', '城市提取', { primary: cityResult?.primary, cities: cityResult?.cities, source: cityResult?.source });
             }
-            mark('city_extract', '城市提取', { primary: cityResult?.primary, cities: cityResult?.cities, source: cityResult?.source });
           } catch (e) {
             mark('city_extract', '城市提取', { error: e.message });
           }
@@ -740,6 +1016,8 @@ export function createChatOrchestrator(options = {}) {
           ? 'travel_weather_risk_card'
           : request.context?.action_key === 'travel_route.booking_handoff'
           ? 'travel_h5_embed_card'
+          : request.context?.action_key === 'travel_route.calculate_budget'
+          ? 'travel_budget_card'
           : '';
         const actionResourceMap = options.actionResourceMap ?? loadActionResourceMap();
 
@@ -781,7 +1059,7 @@ export function createChatOrchestrator(options = {}) {
             fallbackEvidence = ev.matches || [];
           }
           const fallbackPrompt = buildFallbackActionPrompt(
-            resource || { action_key: fallbackActionKey, label: fallbackActionKey, target: 'bff', endpoint: '（未知资源）', params_schema: {}, param_sources: {} },
+            resource || { action_key: fallbackActionKey, label: fallbackActionKey, target: 'flattalk', endpoint: '（未知资源）', params_schema: {}, param_sources: {} },
             buildFallbackContext(businessData, request),
             skillResources,
             { evidence: fallbackEvidence.map((m) => `[${m.collection || '知识库'}] ${m.text || ''}`).join('\n') },
@@ -830,13 +1108,20 @@ export function createChatOrchestrator(options = {}) {
         }
         const staticFollowups = loadStaticFollowups(skillKey, modelResult.template_id || routedTemplateId);
         const interactionScene = acceptedScene || sceneDecision;
-        const interactions = composeInteractions({
+        let interactions = composeInteractions({
           sceneDecision: interactionScene,
           modelResult,
           staticFollowups,
           // LIS 次意图（role=secondary 且 confidence>=0.6）转追问建议
           lisSuggestions: lisGateResult?.intent_suggestions || [],
         });
+        if (contextBusOn && options.session) {
+          const pending = readBus(options.session).turn?.pending_intents;
+          if (Array.isArray(pending) && pending.length) {
+            interactions = mergePendingIntoInteractions(interactions, pending);
+            mark('pending_intents', '挂起意图追问', { count: pending.length });
+          }
+        }
         const renderResult = renderTemplateCardResult({
           templateDir: skillTemplates.templateDir,
           modelResult,
@@ -1032,12 +1317,21 @@ function normalizeRequest(request) {
 
 async function injectHistory(request, contextManager, skillKey) {
   // ★ 优先使用前端传来的对话历史（最完整、跨场景不丢）
+  // 同 skill-key 优先取最近 5 轮（约 10 条消息）；无 skill 标记则取最近 5 轮全局
   const clientHistory = Array.isArray(request.history) ? request.history : [];
   if (clientHistory.length > 0) {
-    return clientHistory
-      .filter((m) => m && m.role && String(m.content || '').trim())
-      .slice(-10)
-      .map((m) => ({ role: m.role === 'user' ? 'user' : 'assistant', content: String(m.content).trim() }));
+    const normalized = clientHistory
+      .filter((m) => m && (m.role || m.type) && String(m.content || m.message || m.text || '').trim())
+      .map((m) => ({
+        role: (m.role === 'user' || m.type === 'user') ? 'user' : 'assistant',
+        content: String(m.content || m.message || m.text || '').trim(),
+        skill_key: m.skill_key || m.meta?.skill_key || '',
+      }));
+    const sameSkill = skillKey
+      ? normalized.filter((m) => !m.skill_key || m.skill_key === skillKey || m.skill_key === 'common')
+      : normalized;
+    const pool = sameSkill.length ? sameSkill : normalized;
+    return pool.slice(-10).map(({ role, content }) => ({ role, content }));
   }
   // 回退到后端 sessionStore
   if (!contextManager || !request.conversation_id) return [];
@@ -1047,21 +1341,40 @@ async function injectHistory(request, contextManager, skillKey) {
     if (history.length === 0 && skillKey !== 'common') {
       history = await contextManager.buildHistory(request.conversation_id, 'common');
     }
-    return history;
+    return history.slice(-10);
   } catch { return []; }
 }
 
 async function applySmartFallback(modelResult, input, smartFallbackHandler, contextManager) {
-  if (!smartFallbackHandler || !smartFallbackHandler.shouldFallback(modelResult)) return modelResult;
+  if (!smartFallbackHandler) return modelResult;
+  const msg = input.message || '';
+  const tpl = modelResult?.template_id || '';
+  // 闲聊却出了业务卡：强制走 answer
+  const mismatchChitchat = isWeakOrChitchatUtterance(msg)
+    && tpl
+    && tpl !== 'answer'
+    && !String(tpl).startsWith('assistant');
+  if (!mismatchChitchat && !smartFallbackHandler.shouldFallback(modelResult)) return modelResult;
   let history = [];
   if (contextManager && input.conversation_id) {
     try { history = await contextManager.buildHistory(input.conversation_id, input.skill_key); } catch {}
   }
   const fallback = await smartFallbackHandler.generateNaturalAnswer({
-    message: input.message || '',
-    skill_key: input.skill_key || 'common',
+    message: msg,
+    skill_key: mismatchChitchat ? 'common' : (input.skill_key || 'common'),
     conversation_history: history,
   });
+  // 闲聊错配：直接用 answer，不要保留错误业务卡数据
+  if (mismatchChitchat && fallback) {
+    return {
+      ...fallback,
+      template_id: 'answer',
+      template_key: 'answer',
+      model_used: fallback.model_used || 'smart_fallback',
+      model_status: 'smart_fallback_chitchat',
+      template_fit_notes: [...(modelResult?.template_fit_notes || []), 'chitchat_mismatch_forced_answer'],
+    };
+  }
   // ★ 如果原始 modelResult 有完整模板数据（如 nearby 地图 markers），只借用 fallback 的 answer 文本，
   //   保留原始 data/template_id，避免数据丢失导致地图/卡片空白
   if (fallback?.template_id === 'answer' && modelResult?.template_id && modelResult.template_id !== 'answer' && modelResult.data) {
@@ -1344,19 +1657,56 @@ async function retrieveKnowledge(ragService, request) {
   return { source: 'knowledge_unavailable', status: 'not_configured', matches: [] };
 }
 
+async function retrieveMultiKnowledgeWithTimeout(ragService, args = {}) {
+  const timeoutMs = Math.max(
+    1500,
+    Number(process.env.FLATTALK_KB_HARD_TIMEOUT_MS || process.env.FLATTALK_KB_TIMEOUT_MS || 8000),
+  );
+  let timer;
+  try {
+    const result = await Promise.race([
+      retrieveMultiKnowledge(ragService, args),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(Object.assign(new Error('kb_hard_timeout'), { code: 'kb_hard_timeout' })), timeoutMs);
+      }),
+    ]);
+    return result;
+  } catch (err) {
+    return {
+      source: 'timeout',
+      status: 'timeout',
+      local_status: 'skipped',
+      local_count: 0,
+      remote_status: 'timeout',
+      remote_count: 0,
+      remote_error: err?.message || 'kb_hard_timeout',
+      matches: [],
+      timed_out: true,
+    };
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 async function retrieveMultiKnowledge(ragService, { skill_keys = [], query, limit = 3, filters = {} } = {}) {
-  // 多技能合并时仍保持「本地优先」：本地(origin=local)排前，远程(origin=remote)补后，同类按 score 降序
+  const remoteOnly = String(process.env.FLATTALK_KB_REMOTE_ONLY || '').trim() === '1';
+  // 多技能合并：REMOTE_ONLY 时只认远程；否则本地排前、远程补后
   const allMatches = [];
   let remoteStatus = 'disabled';
   let remoteError = null;
+  let sourceHint = remoteOnly ? 'remote_knowledge' : 'local_first';
   for (const skill_key of skill_keys) {
     const r = await retrieveKnowledge(ragService, { skill_key, query, limit, filters });
     if (r && Array.isArray(r.matches)) allMatches.push(...r.matches);
     if (r) {
-      const rs = r.remote_status || (r.source === 'remote_knowledge' ? 'remote_hit' : 'disabled');
-      if (rs === 'remote_error') remoteStatus = 'remote_error';
+      if (r.source) sourceHint = r.source;
+      const rs = r.remote_status || (r.source === 'remote_knowledge' || r.origin === 'remote' ? 'remote_hit' : 'disabled');
+      if (rs === 'remote_error' || rs === 'remote_failed') remoteStatus = 'remote_error';
       else if (rs !== 'disabled' && remoteStatus !== 'remote_error') remoteStatus = rs;
       if (r.remote_error && !remoteError) remoteError = r.remote_error;
+      if (r.local_status === 'local_disabled' && remoteOnly) {
+        // keep
+      }
     }
   }
   const seen = new Set();
@@ -1366,23 +1716,30 @@ async function retrieveMultiKnowledge(ragService, { skill_keys = [], query, limi
     const key = String(m.content || m.text || '').trim();
     if (!key || seen.has(key)) continue;
     seen.add(key);
-    (m.origin === 'remote' ? remote : local).push(m);
+    const isRemote = m.origin === 'remote' || remoteOnly;
+    (isRemote ? remote : local).push({ ...m, origin: isRemote ? 'remote' : (m.origin || 'local') });
   }
   const byScore = (a, b) => (b.score || 0) - (a.score || 0);
-  const merged = [...local.sort(byScore), ...remote.sort(byScore)].slice(0, Math.max(1, Number(limit) || 3));
-  const localCount = local.length;
+  const merged = remoteOnly
+    ? remote.sort(byScore).slice(0, Math.max(1, Number(limit) || 3))
+    : [...local.sort(byScore), ...remote.sort(byScore)].slice(0, Math.max(1, Number(limit) || 3));
+  const localCount = remoteOnly ? 0 : local.length;
   const remoteCount = remote.length;
   let status;
-  if (localCount) status = 'local_hit';
+  if (remoteOnly) {
+    if (remoteCount) status = 'remote_hit';
+    else if (remoteStatus === 'remote_error') status = 'remote_error';
+    else status = 'remote_empty';
+  } else if (localCount) status = 'local_hit';
   else if (remoteCount) status = 'remote_hit';
   else if (remoteStatus === 'remote_error') status = 'remote_error';
   else status = 'empty';
   return {
-    source: 'local_first',
+    source: remoteOnly ? (sourceHint || 'remote_knowledge') : 'local_first',
     status,
-    local_status: localCount ? 'local_hit' : 'local_empty',
+    local_status: remoteOnly ? 'local_disabled' : (localCount ? 'local_hit' : 'local_empty'),
     local_count: localCount,
-    remote_status: remoteStatus,
+    remote_status: remoteStatus === 'disabled' && remoteCount ? 'remote_hit' : remoteStatus,
     remote_count: remoteCount,
     remote_error: remoteError,
     matches: merged,
@@ -1391,18 +1748,42 @@ async function retrieveMultiKnowledge(ragService, { skill_keys = [], query, limi
 
 // ★ 公共函数：根据请求中的 elder_id / userToken 解析当前登录用户关联的老人档案
 //   所有需要身份数据的技能都应调用此函数，不使用 mock 默认值
+function normalizeFindServiceOrders(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) {
+    return raw.map((o) => ({
+      order_id: o.order_id || o.orderId || o.order_no || o.orderNo || '',
+      elder_name: o.elder_name || o.elderName || '',
+      elder_id: o.elder_id || o.elderId || '',
+      service_name: o.service_name || o.serviceName || o.service_item_name || '',
+      service_id: o.service_id || o.serviceItemId || '',
+      org_name: o.org_name || o.orgName || '',
+      org_id: o.org_id || o.orgId || '',
+      status: o.status || o.order_status || o.orderStatus || o.order_status_name || '',
+      expected_time: o.expected_time || o.reserve_date || o.reserveDate || o.expectedTime || '',
+      time_slot: o.time_slot || o.reserve_time || o.reserveTime || '',
+    })).filter((o) => o.order_id || o.service_name);
+  }
+  if (Array.isArray(raw.records)) return normalizeFindServiceOrders(raw.records);
+  if (Array.isArray(raw.list)) return normalizeFindServiceOrders(raw.list);
+  if (raw.order_id || raw.orderId || raw.order_no) return normalizeFindServiceOrders([raw]);
+  return [];
+}
+
 function resolveElderProfile(request) {
   const actionParams = request.context?.action_params || request.params || {};
   const elderId = actionParams.elder_id || request.elder_id || request.context?.elder_id || request.elderScope || '';
   const userToken = request.user_token || request.context?.user_token || '';
   let elderProfile = null;
-  if (elderId) {
-    elderProfile = mockElders.find((e) => e.elder_id === elderId) || null;
-  }
-  if (!elderProfile && userToken) {
-    const user = getMockUserByToken(userToken);
-    if (user?.elder_scope) {
-      elderProfile = mockElders.find((e) => e.elder_id === user.elder_scope) || null;
+  if (isMockEldersAllowed()) {
+    if (elderId) {
+      elderProfile = mockElders.find((e) => e.elder_id === elderId) || null;
+    }
+    if (!elderProfile && userToken) {
+      const user = getMockUserByToken(userToken);
+      if (user?.elder_scope) {
+        elderProfile = mockElders.find((e) => e.elder_id === user.elder_scope) || null;
+      }
     }
   }
   return {
@@ -1414,202 +1795,379 @@ function resolveElderProfile(request) {
     address_label: elderProfile?.address_label || '',
     care_level: elderProfile?.care_level || '',
     ability_status: elderProfile?.ability_status || '',
+    profile_source: elderProfile ? 'mock_elder' : (elderId || actionParams.elder_name ? 'request_params' : 'empty'),
   };
 }
 
-async function loadBusinessData({ sceneDecision, request, dataService }) {
+async function loadBusinessData({ sceneDecision, request, dataService, mark } = {}) {
   if (sceneDecision?.decision !== 'accept') return {};
+  const tracer = createDataAccessTracer(mark);
+  const skill = sceneDecision?.scene_key || '';
 
-  if (sceneDecision?.scene_key === 'meal_plan') {
-    return dataService.tableData.getMealPlanTables({
-      elder_id: request.elder_id || request.context?.elder_id || 'demo_elder_1',
+  const withAccess = (payload) => {
+    if (!payload || typeof payload !== 'object') return payload;
+    return { ...payload, _access: tracer.summary() };
+  };
+
+  const accessMeta = (r = {}) => ({
+    method: r.method,
+    url: r.url,
+    sql: r.sql,
+    http_status: r.http_status,
+    provider: r.provider,
+  });
+
+  if (skill === 'meal_plan') {
+    const tableData = await tracer.span({
+      kind: 'db',
+      name: 'elder_profile+meal_rules+diet_contraindications',
+      meta: { skill, tables: ['elder_profile', 'meal_rules', 'diet_contraindications'] },
+      run: () => dataService.tableData.getMealPlanTables({
+        elder_id: request.elder_id || request.context?.elder_id || 'demo_elder_1',
+      }),
+    });
+    return withAccess(tableData || { source: 'error' });
+  }
+
+  if (skill === 'travel_route' && typeof dataService.tableData.getTravelRouteTables === 'function') {
+    const tableData = await tracer.span({
+      kind: 'db',
+      name: 'gxy_travel_route_plan',
+      meta: { skill },
+      run: () => dataService.tableData.getTravelRouteTables(),
+    }) || {};
+    const jtd = await tracer.span({
+      kind: 'http',
+      name: 'jintiaodong.buildRouteProductContext',
+      meta: { skill, integration: 'jintiaodong', provider: 'jintiaodong' },
+      run: async () => {
+        if (typeof dataService.travelData?.jtd?.buildRouteProductContext !== 'function') {
+          recordKeepOk('jtd_skipped', 'jtd_service_not_configured');
+          return {
+            provider: 'jintiaodong',
+            required: true,
+            source_status: 'unavailable',
+            products: [],
+            selected_product: null,
+            warnings: ['jtd_service_not_configured'],
+            skipped: true,
+            skip_reason: 'jtd_service_not_configured',
+          };
+        }
+        return dataService.travelData.jtd.buildRouteProductContext(request);
+      },
+    });
+    const elder = resolveElderProfile(request);
+    const actionParams = request.context?.action_params || request.params || {};
+    return withAccess({
+      ...tableData,
+      jtd,
+      ...elder,
+      role_key: request.role || request.roleKey || request.context?.role_key || '',
+      auth_level: request.authLevel || request.auth_level || request.context?.auth_level || '',
+      user_name: request.userName || request.user_name || request.context?.user_name || '',
+      org_name: request.orgName || request.org_name || request.context?.org_name || '',
+      terminal: request.terminal || request.context?.terminal || '',
+      channel: request.channel || request.context?.channel || 'mobile',
+      user_token: request.user_token || request.userToken || '',
+      action_params: actionParams,
+      destination: firstNonEmpty(
+        actionParams.destination,
+        actionParams.city,
+        request.context?.previous_destination,
+        request.context?.previous_city,
+        jtd?.selected_product?.destination,
+        jtd?.selected_product?.city,
+      ),
+      primary_city: firstNonEmpty(
+        actionParams.city,
+        actionParams.destination,
+        request.context?.previous_city,
+        request.context?.previous_destination,
+        jtd?.selected_product?.city,
+        jtd?.selected_product?.destination,
+      ),
     });
   }
 
-  if (sceneDecision?.scene_key === 'travel_route' && typeof dataService.tableData.getTravelRouteTables === 'function') {
-    const tableData = await dataService.tableData.getTravelRouteTables();
-    const jtd = typeof dataService.travelData?.jtd?.buildRouteProductContext === 'function'
-      ? await dataService.travelData.jtd.buildRouteProductContext(request)
-      : {
-          provider: 'jintiaodong',
-          required: true,
-          source_status: 'unavailable',
-          products: [],
-          selected_product: null,
-          warnings: ['jtd_service_not_configured'],
-        };
-    return {
-      ...tableData,
-      jtd,
-    };
-  }
-
-  if (sceneDecision?.scene_key === 'health_risk_warning' && typeof dataService.tableData.getHealthRiskWarningTables === 'function') {
-    const tableData = await dataService.tableData.getHealthRiskWarningTables();
-    const remote = typeof dataService.remoteHealth?.buildRiskRemoteContext === 'function'
-      ? await dataService.remoteHealth.buildRiskRemoteContext(request)
-      : {
-          provider: 'yunzhen365',
-          required: false,
-          source_status: 'unavailable',
-          metrics: [],
-          warnings: ['remote_health_service_not_configured'],
-        };
-    // ★ 注入当前登录用户关联的老人档案
-    return {
+  if (skill === 'health_risk_warning' && typeof dataService.tableData.getHealthRiskWarningTables === 'function') {
+    const tableData = await tracer.span({
+      kind: 'db',
+      name: 'health_risk_warning_business',
+      meta: { skill },
+      run: () => dataService.tableData.getHealthRiskWarningTables(),
+    }) || {};
+    const remote = await tracer.span({
+      kind: 'http',
+      name: 'yunzhen365.buildRiskRemoteContext',
+      meta: { skill, integration: 'yunzhen365' },
+      run: async () => {
+        if (typeof dataService.remoteHealth?.buildRiskRemoteContext !== 'function') {
+          return {
+            provider: 'yunzhen365',
+            required: false,
+            source_status: 'unavailable',
+            metrics: [],
+            warnings: ['remote_health_service_not_configured'],
+            skipped: true,
+            skip_reason: 'remote_health_service_not_configured',
+          };
+        }
+        return dataService.remoteHealth.buildRiskRemoteContext(request);
+      },
+    });
+    return withAccess({
       ...tableData,
       remote,
       ...resolveElderProfile(request),
-    };
+    });
   }
 
-  if (sceneDecision?.scene_key === 'find_service' && typeof dataService.tableData.getFindServiceTables === 'function') {
-    const tableData = await dataService.tableData.getFindServiceTables();
-    // 远程订单取数即入库（容错，不阻塞主流程）；service 内部已写入 find_service 知识库
-    let orders = null;
+  if (skill === 'find_service' && typeof dataService.tableData.getFindServiceTables === 'function') {
     const params = { ...(request.context?.action_params || request.params || {}) };
     params.elderId = params.elderId || request.elder_id || request.context?.elder_id || '';
     params.orgId = params.orgId || request.org_id || request.context?.org_id || '';
+    params.action = request.context?.action_key || params.action || '';
+    params.intent = sceneDecision?.intent || params.intent || '';
+    const tableData = await tracer.span({
+      kind: 'db',
+      name: 'fs_catalog+org+worker+order',
+      meta: { skill, via: 'assembleFindServiceData' },
+      run: () => dataService.tableData.getFindServiceTables(params),
+    }) || {};
+
+    let orders = Array.isArray(tableData.orders) ? tableData.orders : [];
+    let orders_meta = { source: tableData.source || 'flatTalk_table_data' };
+    const orderRes = await tracer.span({
+      kind: 'tag_system',
+      name: params.orderId ? 'getServiceOrder' : 'listServiceOrders',
+      meta: { skill, elderId: params.elderId || '', orderId: params.orderId || '' },
+      run: async () => {
+        const orderSvc = createOrderService();
+        if (params.orderId) return orderSvc.getOrderDetail(params.orderId);
+        if (!params.elderId) return { ok: false, skipped: true, source: 'skipped', error: 'no_elder_id', skip_reason: 'no_elder_id' };
+        return orderSvc.getOrderPage(params);
+      },
+    });
     try {
-      const orderSvc = createOrderService();
-      // elderId 为空时跳过远程订单查询（测试环境无真实老人绑定）
-      if (params.orderId) {
-        const res = await orderSvc.getOrderDetail(params.orderId);
-        if (res?.ok) orders = { ok: true, source_status: res.source_status || 'real_data', data: res.data };
-      } else if (params.elderId) {
-        const res = await orderSvc.getOrderPage(params);
-        if (res?.ok) orders = { ok: true, source_status: res.source_status || 'real_data', data: res.data };
+      if (orderRes?.ok) {
+        const normalized = normalizeFindServiceOrders(orderRes.data);
+        if (normalized.length) {
+          orders = normalized;
+          orders_meta = { source: orderRes.source_status || 'real_data', ok: true };
+        } else {
+          orders_meta = { source: orderRes.source_status || 'real_data', ok: true, empty: true };
+        }
+      } else if (orderRes?.skipped) {
+        orders_meta = { source: 'skipped', ok: false, error: orderRes.error };
       }
     } catch (err) {
-      console.warn('[orchestrator] order remote fetch failed:', err.message);
+      orders_meta = { source: 'error', error: err.message };
     }
-    // 服务质量评价：直连 tag-system 的 service_order + work_order 取评价字段；失败降级本地知识
-    let qualityEvaluation = { source: 'unavailable' };
-    try {
-      const q = await dataService.quality.getEvaluation({ elderId: params.elderId, orgId: params.orgId, limit: 50 });
-      if (q.ok) qualityEvaluation = { source: q.source, rowCount: q.rowCount, rows: q.data };
-    } catch (e) {
-      qualityEvaluation = { source: 'error', error: e && e.message };
-    }
-    // 投诉/建议/咨询：直连 tag-system.feedback 计算服务质量指标
-    let feedbackMetrics = { source: 'unavailable' };
-    try {
-      const f = await dataService.quality.getFeedbackMetrics({ orgId: params.orgId, userId: params.elderId, limit: 50 });
-      if (f.ok) feedbackMetrics = { source: f.source, metrics: f.metrics, samples: f.samples };
-    } catch (e) {
-      feedbackMetrics = { source: 'error', error: e && e.message };
-    }
-    return { ...tableData, orders, quality_evaluation: qualityEvaluation, feedback_metrics: feedbackMetrics, ...resolveElderProfile(request) };
+
+    const qualityEvaluation = await tracer.span({
+      kind: 'tag_system',
+      name: 'getEvaluationRecords',
+      meta: { skill },
+      run: async () => {
+        try {
+          const q = await dataService.quality.getEvaluation({ elderId: params.elderId, orgId: params.orgId, limit: 50 });
+          if (q.ok) return { source: q.source, rowCount: q.rowCount, rows: q.data, ok: true, ...accessMeta(q) };
+          return { source: 'unavailable', ok: false, ...accessMeta(q) };
+        } catch (e) {
+          return { source: 'error', error: e && e.message, ok: false };
+        }
+      },
+    });
+
+    const feedbackMetrics = await tracer.span({
+      kind: 'tag_system',
+      name: 'getFeedbackMetrics',
+      meta: { skill },
+      run: async () => {
+        try {
+          const f = await dataService.quality.getFeedbackMetrics({ orgId: params.orgId, userId: params.elderId, limit: 50 });
+          if (f.ok) return { source: f.source, metrics: f.metrics, samples: f.samples, ok: true, ...accessMeta(f) };
+          return { source: 'unavailable', ok: false, ...accessMeta(f) };
+        } catch (e) {
+          return { source: 'error', error: e && e.message, ok: false };
+        }
+      },
+    });
+
+    return withAccess({
+      ...tableData,
+      orders,
+      orders_meta,
+      quality_evaluation: qualityEvaluation || { source: 'unavailable' },
+      feedback_metrics: feedbackMetrics || { source: 'unavailable' },
+      ...resolveElderProfile(request),
+    });
   }
 
-  if (sceneDecision?.scene_key === 'dispatch_manage' && typeof dataService.tableData.getDispatchManageTables === 'function') {
-    const tableData = await dataService.tableData.getDispatchManageTables();
-    // 远程工单取数即入库（容错，不阻塞主流程）；service 内部已写入 dispatch_manage 知识库
-    let workorders = null;
+  if (skill === 'dispatch_manage' && typeof dataService.tableData.getDispatchManageTables === 'function') {
+    const tableData = await tracer.span({
+      kind: 'db',
+      name: 'dm_dispatch_order',
+      meta: { skill, via: 'assembleDispatchData' },
+      run: () => dataService.tableData.getDispatchManageTables(),
+    }) || {};
     const params = { ...(request.context?.action_params || request.params || {}) };
     params.elderId = params.elderId || request.elder_id || request.context?.elder_id;
     params.orgId = params.orgId || request.org_id || request.context?.org_id;
-    try {
-      const wSvc = createWorkorderService();
-      const res = params.workOrderId
-        ? await wSvc.getWorkorderDetail(params.workOrderId)
-        : await wSvc.getWorkorderPage(params);
-      if (res?.ok) {
-        workorders = { ok: true, source_status: res.source_status || 'real_data', data: res.data };
-      }
-    } catch (err) {
-      console.warn('[orchestrator] workorder remote fetch failed:', err.message);
-    }
-    // 服务质量评价：直连 tag-system 的 work_order 取服务质量字段（含 service_order 关联）
-    let qualityEvaluation = { source: 'unavailable' };
-    try {
-      const q = await dataService.quality.getEvaluation({ elderId: params.elderId, orgId: params.orgId, limit: 50 });
-      if (q.ok) qualityEvaluation = { source: q.source, rowCount: q.rowCount, rows: q.data };
-    } catch (e) {
-      qualityEvaluation = { source: 'error', error: e && e.message };
-    }
-    // 投诉/建议/咨询：直连 tag-system.feedback 计算服务质量指标
-    let feedbackMetrics = { source: 'unavailable' };
-    try {
-      const f = await dataService.quality.getFeedbackMetrics({ orgId: params.orgId, userId: params.elderId, limit: 50 });
-      if (f.ok) feedbackMetrics = { source: f.source, metrics: f.metrics, samples: f.samples };
-    } catch (e) {
-      feedbackMetrics = { source: 'error', error: e && e.message };
-    }
-    return { ...tableData, workorders, quality_evaluation: qualityEvaluation, feedback_metrics: feedbackMetrics, ...resolveElderProfile(request) };
+
+    const workorders = await tracer.span({
+      kind: 'tag_system',
+      name: params.workOrderId ? 'getWorkOrder' : 'listWorkOrders',
+      meta: { skill },
+      run: async () => {
+        try {
+          const wSvc = createWorkorderService();
+          const res = params.workOrderId
+            ? await wSvc.getWorkorderDetail(params.workOrderId)
+            : await wSvc.getWorkorderPage(params);
+          if (res?.ok) return { ok: true, source_status: res.source_status || 'real_data', data: res.data };
+          return { ok: false, source: 'unavailable' };
+        } catch (err) {
+          return { ok: false, source: 'error', error: err.message };
+        }
+      },
+    });
+
+    const qualityEvaluation = await tracer.span({
+      kind: 'tag_system',
+      name: 'getEvaluationRecords',
+      meta: { skill },
+      run: async () => {
+        try {
+          const q = await dataService.quality.getEvaluation({ elderId: params.elderId, orgId: params.orgId, limit: 50 });
+          if (q.ok) return { source: q.source, rowCount: q.rowCount, rows: q.data, ok: true, ...accessMeta(q) };
+          return { source: 'unavailable', ok: false, ...accessMeta(q) };
+        } catch (e) {
+          return { source: 'error', error: e && e.message, ok: false };
+        }
+      },
+    });
+
+    const feedbackMetrics = await tracer.span({
+      kind: 'tag_system',
+      name: 'getFeedbackMetrics',
+      meta: { skill },
+      run: async () => {
+        try {
+          const f = await dataService.quality.getFeedbackMetrics({ orgId: params.orgId, userId: params.elderId, limit: 50 });
+          if (f.ok) return { source: f.source, metrics: f.metrics, samples: f.samples, ok: true, ...accessMeta(f) };
+          return { source: 'unavailable', ok: false, ...accessMeta(f) };
+        } catch (e) {
+          return { source: 'error', error: e && e.message, ok: false };
+        }
+      },
+    });
+
+    return withAccess({
+      ...tableData,
+      workorders,
+      quality_evaluation: qualityEvaluation || { source: 'unavailable' },
+      feedback_metrics: feedbackMetrics || { source: 'unavailable' },
+      ...resolveElderProfile(request),
+    });
   }
 
-  if (sceneDecision?.scene_key === 'service_quality_eval') {
+  if (skill === 'service_quality_eval') {
     const params = { ...(request.context?.action_params || request.params || {}) };
     params.elderId = params.elderId || request.elder_id || request.context?.elder_id;
     params.orgId = params.orgId || request.org_id || request.context?.org_id;
     params.staffId = params.staffId || request.staff_id || request.context?.staff_id;
 
-    let qualityEvaluation = { source: 'unavailable', rows: [], rowCount: 0 };
-    try {
-      const q = await dataService.quality.getEvaluation({
-        elderId: params.elderId,
-        orgId: params.orgId,
-        staffId: params.staffId,
-        orderId: params.orderId,
-        limit: 100,
-      });
-      if (q.ok) qualityEvaluation = { source: q.source, rowCount: q.rowCount, rows: q.data, degradeNote: q.degradeNote };
-    } catch (e) {
-      qualityEvaluation = { source: 'error', rows: [], rowCount: 0, error: e && e.message };
-    }
+    const qualityEvaluation = await tracer.span({
+      kind: 'tag_system',
+      name: 'getEvaluationRecords',
+      meta: { skill },
+      run: async () => {
+        try {
+          const q = await dataService.quality.getEvaluation({
+            elderId: params.elderId,
+            orgId: params.orgId,
+            staffId: params.staffId,
+            orderId: params.orderId,
+            limit: 100,
+          });
+          if (q.ok) return { source: q.source, rowCount: q.rowCount, rows: q.data, degradeNote: q.degradeNote, ok: true, ...accessMeta(q) };
+          return { source: 'unavailable', rows: [], rowCount: 0, ok: false, ...accessMeta(q) };
+        } catch (e) {
+          return { source: 'error', rows: [], rowCount: 0, error: e && e.message, ok: false };
+        }
+      },
+    });
 
-    let feedbackMetrics = { source: 'unavailable', metrics: {}, samples: [] };
-    try {
-      const f = await dataService.quality.getFeedbackMetrics({
-        orgId: params.orgId,
-        staffId: params.staffId,
-        userId: params.elderId,
-        limit: 100,
-      });
-      if (f.ok) feedbackMetrics = { source: f.source, metrics: f.metrics, samples: f.samples, degradeNote: f.degradeNote };
-    } catch (e) {
-      feedbackMetrics = { source: 'error', metrics: {}, samples: [], error: e && e.message };
-    }
+    const feedbackMetrics = await tracer.span({
+      kind: 'tag_system',
+      name: 'getFeedbackMetrics',
+      meta: { skill },
+      run: async () => {
+        try {
+          const f = await dataService.quality.getFeedbackMetrics({
+            orgId: params.orgId,
+            staffId: params.staffId,
+            userId: params.elderId,
+            limit: 100,
+          });
+          if (f.ok) return { source: f.source, metrics: f.metrics, samples: f.samples, degradeNote: f.degradeNote, ok: true, ...accessMeta(f) };
+          return { source: 'unavailable', metrics: {}, samples: [], ok: false, ...accessMeta(f) };
+        } catch (e) {
+          return { source: 'error', metrics: {}, samples: [], error: e && e.message, ok: false };
+        }
+      },
+    });
 
-    return {
+    return withAccess({
       source: 'flatTalk_quality_data',
       params,
-      quality_evaluation: qualityEvaluation,
-      feedback_metrics: feedbackMetrics,
-    };
+      quality_evaluation: qualityEvaluation || { source: 'unavailable', rows: [], rowCount: 0 },
+      feedback_metrics: feedbackMetrics || { source: 'unavailable', metrics: {}, samples: [] },
+      ...resolveElderProfile(request),
+    });
   }
 
+  // fall through to remaining scene handlers below (nearby etc.) without tracer if unchanged
+  return loadBusinessDataLegacyTail({ sceneDecision, request, dataService, tracer, withAccess });
+}
+
+/** Preserve nearby_resource and other scene tails with data-access spans */
+async function loadBusinessDataLegacyTail({ sceneDecision, request, dataService, tracer, withAccess }) {
+  void dataService;
   if (sceneDecision?.scene_key === 'nearby_resource') {
     const userMessage = request.message || request.text || '';
     const intent = request.context?.intent || request.context?.action_key || 'all';
 
-    // ★ 从消息中提取城市，如果非嘉路城市则用腾讯地图实时搜索
     const cityResult = tryExtractNonJialuCity(userMessage);
     if (cityResult) {
-      console.log('[orchestrator] nearby city extraction:', JSON.stringify(cityResult));
-      try {
-        const poiResult = await searchPoisForCity(cityResult.city, cityResult.category || intent, cityResult.coord);
-        if (poiResult && poiResult.facilities.length > 0) {
-          return {
-            jialu_facilities: poiResult.facilities,
-            jialu_center: poiResult.center,
-            _is_default_location: false,
-            _data_source: 'tencent_map_poi',
-            _enrich_stats: null,
-          };
-        }
-      } catch (err) {
-        console.warn('[orchestrator] city POI search failed, falling back to jialu:', err.message);
+      const poiResult = await tracer.span({
+        kind: 'http',
+        name: 'tencent_map.searchPoisForCity',
+        meta: { skill: 'nearby_resource', integration: 'tencent_map', city: cityResult.city },
+        run: async () => {
+          try {
+            return await searchPoisForCity(cityResult.city, cityResult.category || intent, cityResult.coord);
+          } catch (err) {
+            return { ok: false, source: 'error', error: err.message, facilities: [] };
+          }
+        },
+      });
+      if (poiResult && poiResult.facilities?.length > 0) {
+        return withAccess({
+          jialu_facilities: poiResult.facilities,
+          jialu_center: poiResult.center,
+          _is_default_location: false,
+          _data_source: 'tencent_map_poi',
+          _enrich_stats: null,
+        });
       }
     }
 
-    // 默认：拉取嘉路康养中心周边配套
     const facilities = getJialuFacilities({ type: '', maxDistance: 0, limit: 0 });
     const requestLocation = request.context?.location || request.location;
     const isDefaultLocation = !requestLocation || requestLocation.source === 'default';
-    // 消息点名嘉路/防城港等本地数据区时，不以远端 GPS 覆盖中心，
-    // 否则会出现「您的位置在南宁 + 嘉路配套按 15km 过滤 → 全 0 + 空地图」
     const namedLocalCenter = /嘉路|防城港|东兴|港口区|江山镇/.test(String(userMessage || ''));
     const center = (namedLocalCenter)
       ? getJialuCenter()
@@ -1618,26 +2176,34 @@ async function loadBusinessData({ sceneDecision, request, dataService }) {
         : getJialuCenter());
     const resolvedDefaultLocation = namedLocalCenter ? false : isDefaultLocation;
 
-    // ★ 三层富化：静态数据 + 腾讯地图补充 + Tavily 富化
     let enrichedFacilities = facilities;
     let enrichStats = null;
-    try {
-      const enrichResult = await nearbyEnrich(facilities, center, intent);
+    const enrichResult = await tracer.span({
+      kind: 'http',
+      name: 'nearbyEnrich(tencent_map+tavily)',
+      meta: { skill: 'nearby_resource', integration: 'tencent_map' },
+      run: async () => {
+        try {
+          return await nearbyEnrich(facilities, center, intent);
+        } catch (err) {
+          return { facilities, stats: null, source: 'error', error: err.message, ok: false };
+        }
+      },
+    });
+    if (enrichResult?.facilities) {
       enrichedFacilities = enrichResult.facilities;
       enrichStats = enrichResult.stats;
-    } catch (err) {
-      console.warn('[orchestrator] nearby enrichment failed, using raw facilities:', err.message);
     }
 
-    return {
+    return withAccess({
       jialu_facilities: enrichedFacilities,
       jialu_center: center,
       _is_default_location: resolvedDefaultLocation,
       _enrich_stats: enrichStats,
-    };
+    });
   }
 
-  return {};
+  return withAccess({});
 }
 
 // ★ 嘉路康养中心所在城市（这些城市用本地数据，其余城市走腾讯地图实时搜索）
@@ -1768,6 +2334,10 @@ async function searchPoisForCity(cityName, category, cityCoord) {
   return {
     facilities,
     center: { lat: cityCoord.lat, lng: cityCoord.lng, name: `${cityCoord.name}·${cityName}中心` },
+    method: 'GET',
+    url: 'https://apis.map.qq.com/ws/place/v1/search',
+    provider: 'tencent_map',
+    ok: facilities.length > 0,
   };
 }
 

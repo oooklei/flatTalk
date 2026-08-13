@@ -20,6 +20,8 @@ import { classifyIntent } from './core/intent-classifier/index.js';
 import { createTemplateCardModelService } from './core/model-runtime/template-card-llm-service.js';
 import { pickChatModel, publicModelName } from './core/model-runtime/model-registry.js';
 import { createRuntimeLogger, summarizeEnvelope } from './core/observability/logger.js';
+import { recordKeepOk } from './core/observability/degradation-monitor.js';
+import { buildAcceptanceView } from './admin/acceptance-view.js';
 import { runLocalSkill } from './runtime/local-skill-runtime.js';
 import { createRedisStateStore } from './services/cache/redis-state-store.js';
 import { createDataService } from './services/data-service.js';
@@ -29,6 +31,7 @@ import {
   getDevSsoPresets,
   getMobileBootstrap,
   getMockUserByToken,
+  isMockEldersAllowed,
 } from './services/interface-data/mock-collaboration.js';
 import { TABLE_SCHEMAS } from './services/table-data/schemas.js';
 import {
@@ -39,6 +42,9 @@ import {
 } from './core/lis/lis-gate-hook.js';
 import { createLisClient } from './core/lis/lis-client.js';
 import { lisBreaker } from './core/lis/lis-breaker.js';
+import { ensureLoginOnSession } from './core/context-bus/ensure-login.js';
+import { assertWithinLimit } from './core/pipeline/input-normalizer.js';
+import { createTagSystemAdapter } from './services/interface-data/tag-system-adapter.js';
 
 // Re-export LIS gate env helpers for operators / diagnostics
 export { LIS_GATE_ENABLED, LIS_BASE_URL, isLisGateEnabled, getLisBaseUrl };
@@ -160,6 +166,10 @@ export function createApp(env = { runtimeMode: 'local' }) {
         return handleQueueAction(req, res, { chatState });
       }
 
+      if (req.method === 'GET' && url.pathname === '/api/input/voice/health') {
+        return handleVoiceAsrHealth(req, res, { asrEndpoint: env.asrEndpoint, json, integrations: loadIntegrations() });
+      }
+
       if (req.method === 'POST' && url.pathname === '/api/input/voice') {
         return handleVoiceInput(req, res, { asrEndpoint: env.asrEndpoint, json, readJson, integrations: loadIntegrations() });
       }
@@ -227,8 +237,14 @@ export function createApp(env = { runtimeMode: 'local' }) {
       }
 
       // ── 外部系统 AES 加密 SSO 入口（支持 GET 和 POST） ──
-      if ((req.method === 'GET' || req.method === 'POST') && url.pathname === '/gxy-assistant') {
+      // /assistant 为对外别名，与 /gxy-assistant 完全等价
+      if ((req.method === 'GET' || req.method === 'POST')
+        && (url.pathname === '/gxy-assistant' || url.pathname === '/assistant')) {
         return handleGxyAssistant(req, res, url, { json });
+      }
+
+      if (req.method === 'GET' && url.pathname === '/api/login/presets') {
+        return handleLoginPresets(req, res);
       }
 
       if (req.method === 'POST' && url.pathname === '/api/intent/classify') {
@@ -256,11 +272,23 @@ export function createApp(env = { runtimeMode: 'local' }) {
       }
 
       if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/mobile.html') && !hasAuthQuery(url)) {
-        return redirectToDefaultMobile(res);
+        return redirectToLogin(res);
       }
 
       if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/mobile.html')) {
-        return serveFile(res, 'src/public/mobile.html', 'text/html; charset=utf-8', req);
+        return serveMobileHtml(res, req);
+      }
+
+      if (req.method === 'GET' && url.pathname === '/login.html') {
+        return serveFile(res, 'src/public/login.html', 'text/html; charset=utf-8', req);
+      }
+
+      if (req.method === 'GET' && url.pathname === '/login.css') {
+        return serveFile(res, 'src/public/login.css', 'text/css; charset=utf-8', req);
+      }
+
+      if (req.method === 'GET' && url.pathname === '/login.js') {
+        return serveFile(res, 'src/public/login.js', 'application/javascript; charset=utf-8', req);
       }
 
       if (req.method === 'GET' && (url.pathname === '/favicon.ico' || url.pathname === '/favicon.svg')) {
@@ -294,6 +322,16 @@ export function createApp(env = { runtimeMode: 'local' }) {
       }
 
       if (url.pathname.startsWith('/api/admin/')) {
+        if (req.method === 'POST' && url.pathname === '/api/admin/accept-chat') {
+          return handleAcceptChat(req, res, {
+            dataService,
+            chatState,
+            modelService,
+            weatherService,
+            contextManager,
+            smartFallbackHandler,
+          });
+        }
         return void handleAdminApi(req, res, url);
       }
 
@@ -351,9 +389,10 @@ function buildDataServiceOptions(env) {
     },
     interfaceData: {
       tagSystem: {
-        baseUrl: env.tagSystemBaseUrl || 'http://10.21.202.9:8010',
+        baseUrl: env.tagSystemBaseUrl || 'http://127.0.0.1:8010',
         pgUrl: env.tagSystemPgUrl || env.pgUrl || '',
-        token: env.tagSystemToken || '',
+        apiKey: env.tagSystemApiKey || env.tagSystemToken || '',
+        token: env.tagSystemApiKey || env.tagSystemToken || '',
       },
     },
     knowledgeData: {
@@ -416,11 +455,21 @@ function buildLisHealth() {
 }
 
 async function handleDevLogin(req, res) {
+  if (!isMockEldersAllowed()) {
+    return json(res, 403, {
+      ok: false,
+      error: 'mock_elders_disabled',
+      message: '演示身份已禁用；请配置真实 SSO，或设置 FLATTALK_ALLOW_MOCK_ELDERS=1',
+    });
+  }
   const body = await readJson(req);
   const preset = DEV_PRESET_MAP.get(body.presetKey) || DEV_PRESET_MAP.get('c_elder') || DEV_PRESETS[0];
   const roleKey = body.roleKey || preset.roleKey;
   const elderScope = body.elderScope || preset.elderScope;
   const user = getMockUserByToken(preset.token, roleKey);
+  if (!user) {
+    return json(res, 404, { ok: false, error: 'mock_user_not_found' });
+  }
   return json(res, 200, {
     ok: true,
     mode: 'dev_sso',
@@ -459,10 +508,10 @@ function handleMobileBootstrap(req, res, url) {
 function resolveAsrConfig({ integrations, asrEndpoint }) {
   const items = integrations?.items || [];
 
-  // 1. 优先查找 status=active 的 ASR 集成（volc_asr 或 tencent_asr）
-  const asrItem = items.find((it) =>
-    (it.key === 'volc_asr' || it.key === 'tencent_asr') && it.status === 'active',
-  );
+  // 优先腾讯 ASR；火山 SAUC 作备用
+  const tencentItem = items.find((it) => it.key === 'tencent_asr' && it.status === 'active');
+  const volcItem = items.find((it) => it.key === 'volc_asr' && it.status === 'active');
+  const asrItem = tencentItem || volcItem;
 
   if (asrItem) {
     // 从集成配置解析 base_url 和 secret
@@ -488,31 +537,90 @@ function resolveAsrConfig({ integrations, asrEndpoint }) {
     }
 
     if (asrItem.key === 'tencent_asr') {
+      // ASR_ENDPOINT 可能已带 /api/v1/asr/sentence，归一化为服务根
+      const fromEnv = String(process.env.TENCENT_ASR_ENDPOINT || process.env.ASR_ENDPOINT || '').replace(/\/api\/v1\/asr\/sentence\/?$/i, '');
       return {
         provider: 'tencent',
-        endpoint: baseUrl || 'http://10.21.202.9:8020',
+        endpoint: (baseUrl || fromEnv || 'http://gxy-tencent-asr:8020').replace(/\/api\/v1\/asr\/sentence\/?$/i, ''),
         auth_type: asrItem.auth_type || 'none',
         secret,
         app_id: asrItem.config?.app_id || process.env.TENCENT_ASR_APP_ID || '',
       };
     }
 
-    // volc_asr：支持 HTTP 文件上传端点（sauc-api /asr/file）
+    // volc_asr：sauc-api HTTP /asr/file + WS /asr/stream
     return {
       provider: 'volc',
-      endpoint: baseUrl || asrEndpoint || '',
-      auth_type: asrItem.auth_type || 'bearer',
+      endpoint: (baseUrl || process.env.VOLC_ASR_BASE_URL || asrEndpoint || 'http://gxy-sauc-api:8000').replace(/\/asr\/file\/?$/i, ''),
+      auth_type: asrItem.auth_type || 'none',
       secret,
-      app_id: asrItem.config?.app_id || process.env.VOLCENGINE_APP_ID || '',
+      app_id: asrItem.config?.app_id || process.env.VOLCENGINE_APP_ID || process.env.ASR_APP_KEY || '',
     };
   }
 
-  // 2. fallback：环境变量 ASR_ENDPOINT（兼容旧部署）
+  // 2. fallback：环境变量 ASR_ENDPOINT
   if (asrEndpoint) {
+    if (/8020|tencent|\/asr\/sentence/i.test(asrEndpoint)) {
+      return {
+        provider: 'tencent',
+        endpoint: String(asrEndpoint).replace(/\/api\/v1\/asr\/sentence\/?$/i, ''),
+        auth_type: 'none',
+        secret: '',
+      };
+    }
+    if (/9080|sauc|\/asr\/file/i.test(asrEndpoint)) {
+      return {
+        provider: 'volc',
+        endpoint: String(asrEndpoint).replace(/\/asr\/file\/?$/i, ''),
+        auth_type: 'none',
+        secret: '',
+      };
+    }
     return { provider: 'generic', endpoint: asrEndpoint, auth_type: 'none', secret: '' };
   }
 
   return null;
+}
+
+async function handleVoiceAsrHealth(req, res, { asrEndpoint, json, integrations }) {
+  const asrConfig = resolveAsrConfig({ integrations, asrEndpoint });
+  if (!asrConfig) {
+    return json(res, 200, {
+      ok: false,
+      provider: null,
+      realtimePreferred: false,
+      message: '语音识别服务未配置',
+    });
+  }
+
+  let upstreamOk = false;
+  let upstreamStatus = null;
+  let upstreamError = '';
+  try {
+    const healthUrl = asrConfig.provider === 'tencent'
+      ? `${asrConfig.endpoint}/health`
+      : `${String(asrConfig.endpoint).replace(/\/$/, '')}/health`;
+    const resp = await fetch(healthUrl, { method: 'GET', signal: AbortSignal.timeout(4000) });
+    upstreamStatus = resp.status;
+    upstreamOk = resp.ok;
+    if (!upstreamOk) {
+      const errText = await resp.text().catch(() => '');
+      upstreamError = errText.slice(0, 120);
+    }
+  } catch (err) {
+    upstreamError = err.message || String(err);
+  }
+
+  return json(res, 200, {
+    ok: upstreamOk,
+    provider: asrConfig.provider,
+    endpoint: asrConfig.endpoint,
+    // 腾讯 sentence / 火山 SAUC 均可分片准实时；火山另有 /asr/stream
+    realtimePreferred: asrConfig.provider === 'tencent' || asrConfig.provider === 'volc',
+    mode: asrConfig.provider === 'volc' ? 'volc_progressive' : (asrConfig.provider === 'tencent' ? 'tencent_progressive' : 'record_then_transcribe'),
+    upstreamStatus,
+    message: upstreamOk ? 'ok' : (upstreamError || 'upstream unreachable'),
+  });
 }
 
 /**
@@ -554,7 +662,17 @@ async function callTencentAsr(audioBuffer, config) {
   // 兼容多种响应字段
   const text = result.transcript_text || result.transcriptText || result.text || result.result?.text || '';
   const confidence = result.confidence ?? null;
-  return { text, confidence, raw: result };
+  if (!text) {
+    console.warn(`[ASR] tencent empty status=${result.status || ''} code=${result.error_code || ''} msg=${(result.error_message || '').slice(0, 120)}`);
+  } else {
+    console.log(`[ASR] tencent ok chars=${text.length} confidence=${confidence}`);
+  }
+  return {
+    text,
+    confidence,
+    warning: result.error_message || result.error_code || '',
+    raw: result,
+  };
 }
 
 /**
@@ -562,10 +680,14 @@ async function callTencentAsr(audioBuffer, config) {
  * 支持 multipart/form-data 文件上传
  */
 async function callVolcAsr(audioBuffer, config) {
-  // sauc-api 的 /asr/file 端点接收文件上传
+  // sauc-api：multipart 字段名为 file；stream=false 返回 JSON {text}
   const boundary = `----flattalk${Date.now()}`;
   const formData = Buffer.concat([
-    Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="audio"; filename="voice.wav"\r\nContent-Type: audio/wav\r\n\r\n`),
+    Buffer.from(
+      `--${boundary}\r\nContent-Disposition: form-data; name="stream"\r\n\r\nfalse\r\n`
+      + `--${boundary}\r\nContent-Disposition: form-data; name="format"\r\n\r\nwav\r\n`
+      + `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="voice.wav"\r\nContent-Type: audio/wav\r\n\r\n`,
+    ),
     audioBuffer,
     Buffer.from(`\r\n--${boundary}--\r\n`),
   ]);
@@ -575,7 +697,8 @@ async function callVolcAsr(audioBuffer, config) {
     headers.authorization = `Bearer ${config.secret}`;
   }
 
-  const resp = await fetch(`${config.endpoint}/asr/file`, {
+  const endpoint = String(config.endpoint || '').replace(/\/$/, '');
+  const resp = await fetch(`${endpoint}/asr/file`, {
     method: 'POST',
     headers,
     body: formData,
@@ -591,9 +714,76 @@ async function callVolcAsr(audioBuffer, config) {
   return { text, confidence: null, raw: result };
 }
 
+/** 解析上传 WAV 的能量，用于区分「静音采集」与「有声但 ASR 空转写」 */
+function analyzeWavPcm(audioBuffer) {
+  try {
+    if (!Buffer.isBuffer(audioBuffer) || audioBuffer.length < 44) {
+      return { ok: false, reason: 'too_short' };
+    }
+    const riff = audioBuffer.toString('ascii', 0, 4);
+    const wave = audioBuffer.toString('ascii', 8, 12);
+    if (riff !== 'RIFF' || wave !== 'WAVE') {
+      return { ok: false, reason: 'not_wav', head: audioBuffer.slice(0, 12).toString('hex') };
+    }
+    let offset = 12;
+    let sampleRate = 0;
+    let bitsPerSample = 16;
+    let channels = 1;
+    let dataOffset = -1;
+    let dataSize = 0;
+    while (offset + 8 <= audioBuffer.length) {
+      const id = audioBuffer.toString('ascii', offset, offset + 4);
+      const size = audioBuffer.readUInt32LE(offset + 4);
+      const next = offset + 8 + size;
+      if (id === 'fmt ' && size >= 16) {
+        channels = audioBuffer.readUInt16LE(offset + 10);
+        sampleRate = audioBuffer.readUInt32LE(offset + 12);
+        bitsPerSample = audioBuffer.readUInt16LE(offset + 22);
+      } else if (id === 'data') {
+        dataOffset = offset + 8;
+        dataSize = size;
+        break;
+      }
+      offset = next + (size % 2); // word align
+    }
+    if (dataOffset < 0 || bitsPerSample !== 16) {
+      return { ok: false, reason: 'no_pcm16', sampleRate, bitsPerSample };
+    }
+    const sampleBytes = 2;
+    const sampleCount = Math.floor(Math.min(dataSize, audioBuffer.length - dataOffset) / sampleBytes);
+    if (sampleCount <= 0) return { ok: false, reason: 'no_samples', sampleRate };
+    let sumSq = 0;
+    let peak = 0;
+    let nonZero = 0;
+    for (let i = 0; i < sampleCount; i += 1) {
+      const s = audioBuffer.readInt16LE(dataOffset + i * 2);
+      const a = Math.abs(s);
+      if (a > peak) peak = a;
+      if (a > 32) nonZero += 1;
+      sumSq += s * s;
+    }
+    const rms = Math.sqrt(sumSq / sampleCount) / 32768;
+    const peakNorm = peak / 32768;
+    const durationMs = sampleRate ? Math.round((sampleCount / channels / sampleRate) * 1000) : 0;
+    return {
+      ok: true,
+      sampleRate,
+      channels,
+      sampleCount,
+      durationMs,
+      rms: Number(rms.toFixed(6)),
+      peak: Number(peakNorm.toFixed(6)),
+      nonZeroRatio: Number((nonZero / sampleCount).toFixed(4)),
+    };
+  } catch (err) {
+    return { ok: false, reason: String(err.message || err) };
+  }
+}
+
 async function handleVoiceInput(req, res, { asrEndpoint, json, readJson, integrations }) {
   const body = await readJson(req);
   const audioBase64 = body.audioBase64 || '';
+  const mode = body.mode || '';
 
   if (!audioBase64) {
     return json(res, 200, { ok: true, input: { voiceOk: false, warning: '未收到有效录音数据' } });
@@ -608,13 +798,22 @@ async function handleVoiceInput(req, res, { asrEndpoint, json, readJson, integra
   // 从 data URL 中提取纯 base64 音频数据
   const base64Data = audioBase64.replace(/^data:audio\/[^;]+;base64,/, '');
   const audioBuffer = Buffer.from(base64Data, 'base64');
+  const audioStats = analyzeWavPcm(audioBuffer);
+  console.log(`[ASR] audioStats mode=${mode} bytes=${audioBuffer.length} ${JSON.stringify(audioStats)}`);
+  try {
+    fs.writeFileSync('/tmp/last_voice.wav', audioBuffer);
+  } catch (err) {
+    console.warn('[ASR] dump wav failed:', err.message);
+  }
 
   try {
     let asrResult;
 
     if (asrConfig.provider === 'tencent') {
+      console.log(`[ASR] tencent request bytes=${audioBuffer.length} endpoint=${asrConfig.endpoint}`);
       asrResult = await callTencentAsr(audioBuffer, asrConfig);
     } else if (asrConfig.provider === 'volc') {
+      console.log(`[ASR] volc request bytes=${audioBuffer.length} endpoint=${asrConfig.endpoint}`);
       asrResult = await callVolcAsr(audioBuffer, asrConfig);
     } else {
       // generic：旧的直接 POST audio/wav 方式（兼容旧部署）
@@ -636,20 +835,32 @@ async function handleVoiceInput(req, res, { asrEndpoint, json, readJson, integra
     }
 
     if (asrResult.text) {
-      const input = { voiceOk: true, text: asrResult.text };
+      const input = { voiceOk: true, text: asrResult.text, audioStats };
       if (asrResult.confidence != null) input.confidence = asrResult.confidence;
       return json(res, 200, { ok: true, input });
     }
-    return json(res, 200, { ok: true, input: { voiceOk: false, warning: '语音未识别出有效文字，请靠近麦克风再试' } });
+    const silent = audioStats?.ok && audioStats.rms < 0.001;
+    const warning = silent
+      ? '录音几乎是静音（麦克风未采到声音），请检查浏览器麦克风权限/设备后重试'
+      : (asrResult.warning || asrResult.raw?.error_message || '语音未识别出有效文字，请靠近麦克风再试');
+    return json(res, 200, {
+      ok: true,
+      input: {
+        voiceOk: false,
+        warning,
+        audioStats,
+      },
+    });
   } catch (err) {
     console.error(`[ASR] ${asrConfig.provider} 请求失败:`, err.message);
-    return json(res, 200, { ok: true, input: { voiceOk: false, warning: `语音识别服务连接失败：${err.message}` } });
+    return json(res, 200, { ok: true, input: { voiceOk: false, warning: `语音识别服务连接失败：${err.message}`, audioStats } });
   }
 }
 
 /**
  * 解析 OCR 集成配置（从管理页面「第三方 API」读取）
  * 优先级：integrations.json 中 status=active 的 ocr 条目 > 环境变量 OCR_ENDPOINT
+ * 默认指向 gxy-tencent-asr 的 Tesseract OCR（已替代旧 htmlfuns MixOCR）
  */
 function resolveOcrConfig({ integrations }) {
   const items = integrations?.items || [];
@@ -677,39 +888,44 @@ function resolveOcrConfig({ integrations }) {
     }
 
     return {
-      endpoint: baseUrl || process.env.OCR_ENDPOINT || '',
-      path: ocrItem.test_path || '/ocr/general',
+      endpoint: baseUrl || process.env.OCR_ENDPOINT || 'http://gxy-tencent-asr:8020',
+      path: ocrItem.test_path || '/api/v1/ocr/general',
       auth_type: ocrItem.auth_type || 'none',
       secret,
     };
   }
 
-  // fallback：环境变量
   if (process.env.OCR_ENDPOINT) {
-    return { endpoint: process.env.OCR_ENDPOINT, path: '/ocr/general', auth_type: 'none', secret: '' };
+    return { endpoint: process.env.OCR_ENDPOINT, path: '/api/v1/ocr/general', auth_type: 'none', secret: '' };
   }
 
-  return null;
+  // 默认走 ASR 同容器 OCR
+  return { endpoint: 'http://gxy-tencent-asr:8020', path: '/api/v1/ocr/general', auth_type: 'none', secret: '' };
 }
 
 /**
  * 处理图片 OCR 识别请求
- * 前端发送 imageBase64，后端调用 OCR 服务，返回识别文字
+ * 兼容：
+ * 1) 新 Tesseract 服务：{ status:'ok', text:'...' }
+ * 2) 旧 MixOCR：{ code:0, data:{ text|lines|... } }
  */
 async function handleOcrNormalize(req, res, { json, readJson, integrations }) {
   const body = await readJson(req);
   const imageBase64 = body.imageBase64 || '';
+  const softFail = (warning) => {
+    recordKeepOk('ocr_soft_fail', warning);
+    return json(res, 200, { ok: true, input: { ocrOk: false, warning } });
+  };
 
   if (!imageBase64) {
-    return json(res, 200, { ok: true, input: { ocrOk: false, warning: '未收到有效图片数据' } });
+    return softFail('未收到有效图片数据');
   }
 
   const ocrConfig = resolveOcrConfig({ integrations });
   if (!ocrConfig || !ocrConfig.endpoint) {
-    return json(res, 200, { ok: true, input: { ocrOk: false, warning: 'OCR 服务未配置（管理页面「第三方API」中未启用 ocr 条目，且 OCR_ENDPOINT 环境变量缺失）' } });
+    return softFail('OCR 服务未配置');
   }
 
-  // 从 data URL 中提取纯 base64 数据
   const base64Data = imageBase64.replace(/^data:image\/[^;]+;base64,/, '');
 
   try {
@@ -730,24 +946,32 @@ async function handleOcrNormalize(req, res, { json, readJson, integrations }) {
     if (!ocrResponse.ok) {
       const errText = await ocrResponse.text().catch(() => '');
       console.error('[OCR] 服务返回错误:', ocrResponse.status, errText);
-      return json(res, 200, { ok: true, input: { ocrOk: false, warning: `OCR 服务异常（HTTP ${ocrResponse.status}）` } });
+      return softFail(`OCR 服务异常（HTTP ${ocrResponse.status}）`);
     }
 
     const result = await ocrResponse.json().catch(() => ({}));
 
-    // MixOCR 响应格式：{ code:0, data:{...}, msg } 或 { code:-3, msg:"失败" }
-    if (result.code !== 0 && result.code !== '0') {
-      const msg = result.msg || result.message || 'OCR 识别失败';
-      return json(res, 200, { ok: true, input: { ocrOk: false, warning: msg } });
+    // 新格式：Tesseract /api/v1/ocr/general
+    if (Object.prototype.hasOwnProperty.call(result, 'status') || Object.prototype.hasOwnProperty.call(result, 'text')) {
+      const text = String(result.text || '').trim();
+      if (result.status === 'ok' && text) {
+        return json(res, 200, { ok: true, input: { ocrOk: true, text, formattedText: text } });
+      }
+      const warn = result.error_message || result.error_code || 'OCR 未识别出有效文字，请上传更清晰的图片';
+      return softFail(warn);
     }
 
-    // 兼容多种响应字段：data.text / data.results / data.words_result / data.lines
+    // 旧 MixOCR 格式兼容
+    if (result.code !== 0 && result.code !== '0' && result.code != null) {
+      const msg = result.msg || result.message || 'OCR 识别失败';
+      return softFail(msg);
+    }
+
     const d = result.data || result;
     let text = '';
     if (typeof d === 'string') {
       text = d;
     } else if (Array.isArray(d)) {
-      // 数组：每项可能是 {text} 或纯字符串
       text = d.map((item) => (typeof item === 'string' ? item : item.text || item.content || '')).join('\n');
     } else if (d) {
       text = d.text || d.full_text || d.result || d.content || '';
@@ -766,10 +990,10 @@ async function handleOcrNormalize(req, res, { json, readJson, integrations }) {
     if (text) {
       return json(res, 200, { ok: true, input: { ocrOk: true, text, formattedText: text } });
     }
-    return json(res, 200, { ok: true, input: { ocrOk: false, warning: 'OCR 未识别出有效文字，请上传更清晰的图片' } });
+    return softFail('OCR 未识别出有效文字，请上传更清晰的图片');
   } catch (err) {
     console.error('[OCR] 请求失败:', err.message);
-    return json(res, 200, { ok: true, input: { ocrOk: false, warning: `OCR 服务连接失败：${err.message}` } });
+    return softFail(`OCR 服务连接失败：${err.message}`);
   }
 }
 
@@ -807,6 +1031,9 @@ async function handleConversationDelete(req, res, url, { stateStore }) {
 async function handleConversationHarvestSync(req, res, { stateStore }) {
   const body = await readJson(req);
   const conversationId = body.conversationId || body.conversation_id || body.id;
+  if (!conversationId) {
+    return json(res, 400, { ok: false, error: 'conversation_id_required' });
+  }
   const sessionStore = createSessionStore({ stateStore });
   const harvest = await sessionStore.markHarvested(conversationId, {
     source: body.source || 'mobile',
@@ -818,6 +1045,143 @@ async function handleConversationHarvestSync(req, res, { stateStore }) {
   });
 }
 
+function isTagCorrectorEnabled() {
+  return String(process.env.FLATTALK_TAG_CORRECTOR || '').trim() === '1';
+}
+
+function getOrCreateTagReader(chatState) {
+  if (!isTagCorrectorEnabled() || !chatState) return null;
+  if (!chatState.tagReader) {
+    chatState.tagReader = createTagSystemAdapter({
+      baseUrl: process.env.FLATTALK_TAG_SYSTEM_BASE_URL || '',
+      apiKey: process.env.FLATTALK_TAG_SYSTEM_API_KEY
+        || process.env.FLATTALK_TAG_SYSTEM_TOKEN
+        || '',
+      pgUrl: process.env.FLATTALK_TAG_SYSTEM_PG_URL || process.env.FLATTALK_PG_URL || '',
+    });
+  }
+  return chatState.tagReader;
+}
+
+async function bindSessionLoginSafe(session, body, chatState, sessionStore) {
+  if (!session) return null;
+  try {
+    return await ensureLoginOnSession(session, {
+      user_id: body.user_id || body.userId,
+      userId: body.user_id || body.userId,
+      roleId: body.roleId || body.role_id,
+      role: body.role || body.roleKey,
+      roleKey: body.roleKey || body.role_key,
+      role_key: body.roleKey || body.role_key,
+      elder_id: body.elder_id,
+      elderScope: body.elderScope,
+      orgId: body.orgId || body.org_id,
+      orgName: body.orgName || body.org_name,
+      location: body.location || body.context?.location || null,
+    }, {
+      tagReader: getOrCreateTagReader(chatState),
+      sessionStore,
+    });
+  } catch {
+    // Tag correction / login bind must never fail the chat turn
+    return null;
+  }
+}
+
+async function handleAcceptChat(req, res, {
+  dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler,
+} = {}) {
+  const body = await readJson(req);
+  const message = String(body.message || body.user_prompt || '').trim();
+  if (!message) return json(res, 400, { ok: false, error: 'message_required' });
+  const lim = assertWithinLimit(message);
+  if (!lim.ok) return json(res, 400, lim);
+
+  const startedAt = Date.now();
+  const conversationId = body.conversation_id || body.conversationId || makeId('accept');
+  const turnId = body.turn_id || makeId('turn');
+  const sessionStore = chatState.sessionStore;
+  const previous = await sessionStore.getPreviousTurn(conversationId);
+  const runningKey = `${conversationId}:${turnId}`;
+
+  if (chatState?.busyConversations?.has(conversationId)) {
+    return json(res, 409, { ok: false, error: 'conversation_busy', conversation_id: conversationId });
+  }
+  chatState?.busyConversations?.set(conversationId, { turn_id: turnId, started_at: new Date().toISOString() });
+  chatState?.running?.set(runningKey, {
+    conversation_id: conversationId,
+    turn_id: turnId,
+    status: 'running',
+    message,
+    started_at: new Date().toISOString(),
+  });
+
+  try {
+    const lisGateOn = isLisGateEnabled();
+    const session = await sessionStore.getOrCreate(conversationId);
+    await bindSessionLoginSafe(session, body, chatState, sessionStore);
+    const envelope = await runLocalSkill({
+      request_id: body.request_id || makeId('req'),
+      conversation_id: conversationId,
+      turn_id: turnId,
+      skill_key: body.skill_key || body.skillKey || '',
+      template_id: body.template_id || body.templateId || '',
+      intent: body.intent || '',
+      message,
+      history: Array.isArray(body.conversationHistory) ? body.conversationHistory : [],
+      role: body.role || body.roleKey || 'elder_family',
+      elder_id: body.elder_id || '',
+      context: {
+        active_agent: previous?.envelope?.agent_key || previous?.envelope?.skill_key || '',
+        last_template: previous?.envelope?.template_id || '',
+        ...(body.context || {}),
+        action_key: body.action_key || body.actionKey || '',
+        action_params: body.params || {},
+        location: body.location || body.context?.location || null,
+        ...injectSnapshot({}, previous?.envelope?.context_snapshot),
+      },
+    }, {
+      dataService,
+      modelService,
+      weatherService,
+      contextManager,
+      smartFallbackHandler,
+      sessionStore,
+      session,
+      ...(lisGateOn ? {
+        lisClient: createLisClient({ baseUrl: getLisBaseUrl() }),
+      } : {}),
+    });
+
+    await sessionStore.appendTurn(conversationId, { turn_id: turnId, user_message: message, envelope });
+    chatState.logger?.write?.({ type: 'accept_chat', ...summarizeEnvelope(envelope, startedAt) });
+
+    const acceptance = buildAcceptanceView(envelope);
+    return json(res, 200, {
+      ok: true,
+      latency_ms: Math.max(0, Date.now() - startedAt),
+      acceptance,
+      envelope: {
+        ok: envelope.ok !== false,
+        conversation_id: envelope.conversation_id,
+        turn_id: envelope.turn_id,
+        skill_key: envelope.skill_key,
+        template_id: envelope.template_id,
+        answer_text: envelope.answer_text || envelope.answer,
+        route: envelope.route,
+        debug: envelope.debug,
+        data: envelope.data,
+        stages: envelope.stages,
+      },
+    });
+  } catch (err) {
+    return json(res, 500, { ok: false, error: err.message || String(err) });
+  } finally {
+    chatState?.running?.delete(runningKey);
+    chatState?.busyConversations?.delete(conversationId);
+  }
+}
+
 async function handleChat(req, res, { followup = false, dataService, chatState, modelService, weatherService, contextManager, smartFallbackHandler } = {}) {
   const body = await readJson(req);
   const startedAt = Date.now();
@@ -826,11 +1190,14 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
   const previous = await sessionStore.getPreviousTurn(conversationId);
   const turnId = body.turn_id || makeId('turn');
   const message = body.message || body.user_prompt || body.prompt || '';
+  const lim = assertWithinLimit(message);
+  if (!lim.ok) return json(res, 400, lim);
   const runningKey = `${conversationId}:${turnId}`;
   const reenterChat = body.reenter_chat === true || body.reenterChat === true || body.execute_action === false;
 
   // 会话级互斥：同一会话正在处理时拒绝新请求
   if (chatState?.busyConversations?.has(conversationId)) {
+    recordKeepOk('conversation_busy', 'chat');
     return json(res, 409, {
       ok: false,
       error: 'conversation_busy',
@@ -850,7 +1217,8 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
 
   try {
     const lisGateOn = isLisGateEnabled();
-    const session = lisGateOn ? await sessionStore.getOrCreate(conversationId) : null;
+    const session = await sessionStore.getOrCreate(conversationId);
+    await bindSessionLoginSafe(session, body, chatState, sessionStore);
     const envelope = await runLocalSkill({
       request_id: body.request_id,
       conversation_id: conversationId,
@@ -890,9 +1258,9 @@ async function handleChat(req, res, { followup = false, dataService, chatState, 
       weatherService,
       contextManager,
       smartFallbackHandler,
+      sessionStore,
+      session,
       ...(lisGateOn ? {
-        sessionStore,
-        session,
         lisClient: createLisClient({ baseUrl: getLisBaseUrl() }),
       } : {}),
     });
@@ -920,6 +1288,7 @@ async function handleChatAction(req, res, { dataService, modelService, logger, c
 
   // 会话级互斥
   if (chatState?.busyConversations?.has(conversationId)) {
+    recordKeepOk('conversation_busy', 'chat_action');
     return json(res, 409, {
       ok: false,
       error: 'conversation_busy',
@@ -931,6 +1300,9 @@ async function handleChatAction(req, res, { dataService, modelService, logger, c
 
   const previous = await sessionStore?.getPreviousTurn(conversationId);
   try {
+    const lisGateOn = isLisGateEnabled();
+    const session = sessionStore ? await sessionStore.getOrCreate(conversationId) : null;
+    if (session) await bindSessionLoginSafe(session, body, chatState, sessionStore);
     const result = await dispatchAction({
       ...body,
       conversation_id: conversationId,
@@ -955,7 +1327,16 @@ async function handleChatAction(req, res, { dataService, modelService, logger, c
         role: request.role || request.roleKey || 'elder_family',
         elder_id: request.elder_id || request.params?.elder_id,
         context: request.context || {},
-      }, { dataService, modelService, weatherService }),
+      }, {
+        dataService,
+        modelService,
+        weatherService,
+        sessionStore,
+        session,
+        ...(lisGateOn ? {
+          lisClient: createLisClient({ baseUrl: getLisBaseUrl() }),
+        } : {}),
+      }),
     });
     if (result.envelope && sessionStore) {
       await sessionStore.appendTurn(conversationId, {
@@ -1221,7 +1602,7 @@ function handleSkillTemplates(res, url) {
 }
 
 /**
- * 处理外部系统 AES 加密 SSO 入口 /gxy-assistant
+ * 处理外部系统 AES 加密 SSO 入口 /assistant | /gxy-assistant
  * 支持 GET 和 POST 两种方式
  * 成功后返回 JSON（包含 mobileUrl、token、userToken）
  */
@@ -1256,7 +1637,7 @@ async function handleGxyAssistant(req, res, url, { json }) {
 
   // ★ 协议判定优先级：X-Forwarded-Proto > req.socket.encrypted > 端口推断
   //   Nginx 配置 proxy_set_header X-Forwarded-Proto $scheme; 即可透传真实协议
-  const sslPorts = [String(env.sslPort), '5444', '5445', '443'];
+  const sslPorts = [String(env.sslPort), '5444', '5445', '5446', '443'];
   const useHttps = xForwardedProto === 'https'
     || req.socket?.encrypted === true
     || sslPorts.includes(reqPort);
@@ -1279,24 +1660,28 @@ async function handleGxyAssistant(req, res, url, { json }) {
   return json(res, 200, result);
 }
 
+async function handleLoginPresets(req, res) {
+  try {
+    const { listLoginPresets } = await import('./services/login/login-presets.js');
+    const data = await listLoginPresets({ limit: 48 });
+    return json(res, 200, data);
+  } catch (e) {
+    return json(res, 500, { ok: false, error: e.message || String(e) });
+  }
+}
+
 function hasAuthQuery(url) {
   return Boolean(url.searchParams.get('token') || url.searchParams.get('userToken') || url.searchParams.get('roleKey'));
 }
 
-function redirectToDefaultMobile(res) {
-  const preset = DEV_PRESET_MAP.get('c_family') || DEV_PRESETS[0];
-  const params = new URLSearchParams({
-    userToken: preset.token,
-    roleKey: preset.roleKey,
-    elderScope: preset.elderScope,
-    terminal: preset.terminal,
-    authLevel: preset.authLevel,
-    userName: preset.userName,
-    orgName: preset.orgName,
-    presetKey: preset.key,
-  });
-  res.writeHead(302, { location: `/mobile.html?${params}` });
+function redirectToLogin(res) {
+  res.writeHead(302, { location: '/login.html' });
   res.end();
+}
+
+/** @deprecated 保留给旧测试；现网无 token 统一进登录前导页 */
+function redirectToDefaultMobile(res) {
+  return redirectToLogin(res);
 }
 
 const MAX_BODY_SIZE = 2 * 1024 * 1024; // 2MB
@@ -1344,6 +1729,34 @@ function readJsonFileSafe(filePath) {
 function json(res, status, payload) {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(payload));
+}
+
+function serveMobileHtml(res, req) {
+  const filePath = path.join(process.cwd(), 'src/public/mobile.html');
+  if (!fs.existsSync(filePath)) {
+    json(res, 404, { ok: false, error: 'static_file_not_found' });
+    return;
+  }
+  const allowDefault = process.env.FLATTALK_ALLOW_DEFAULT_LOCATION === '1' ? '1' : '';
+  let html = fs.readFileSync(filePath, 'utf8');
+  html = html.replace(
+    /window\.__FT_ALLOW_DEFAULT_LOCATION\s*=\s*window\.__FT_ALLOW_DEFAULT_LOCATION\s*\|\|\s*'';/,
+    `window.__FT_ALLOW_DEFAULT_LOCATION = '${allowDefault}'`,
+  );
+  const body = Buffer.from(html, 'utf8');
+  const etag = `"${crypto.createHash('sha1').update(body).digest('hex').slice(0, 16)}"`;
+  if (req?.headers?.['if-none-match'] === etag) {
+    res.writeHead(304);
+    res.end();
+    return;
+  }
+  res.writeHead(200, {
+    'content-type': 'text/html; charset=utf-8',
+    etag,
+    'cache-control': 'no-cache',
+    'content-length': body.length,
+  });
+  res.end(body);
 }
 
 function serveFile(res, relativePath, contentType, req) {

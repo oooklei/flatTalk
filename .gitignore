@@ -5,6 +5,11 @@ node_modules/
 .env
 .env.local
 .env.*.local
+.env.dev
+.env.prod
+.env.deploy
+# 部署脚本生成的临时 env
+scripts/deploy/.env.gen
 
 # Logs
 *.log
@@ -47,10 +52,16 @@ assets/source-copies/
 tmp/
 temp/
 *.tmp
+scripts/__pycache__/
+scripts/_out_tag_api_verify.json
+scripts/_out_*.json
 
 # FlyAI KB raw snapshots (keep normalized docs + seeds)
 data/flyai-kb/raw/**
 data/flyai-kb/*.raw.json
+
+# 本地知识库服务（已弃用，改用远程 gxy-local-kb）
+local-kb/
 
 # 原型文件 - 严禁删除
 proto/
