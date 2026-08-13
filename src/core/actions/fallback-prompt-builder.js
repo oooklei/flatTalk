@@ -12,8 +12,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const ACTION_RESOURCE_MAP_PATH = path.join(__dirname, 'action-resource-map.json');
 
-/** 特例白名单：这些 action 在 orchestrator 走硬编码分支，不走通用兜底。 */
-export const SPECIAL_CASE_ACTION_KEYS = ['travel_route.check_weather_risk', 'travel_route.check_availability'];
+/** 特例白名单：这些 action 在 orchestrator 走硬编码/本地填槽分支，不走通用 LLM 兜底。 */
+export const SPECIAL_CASE_ACTION_KEYS = [
+  'travel_route.check_weather_risk',
+  'travel_route.check_availability',
+  'travel_route.calculate_budget',
+  'travel_route.booking_handoff',
+];
 
 /** 加载资源清单（action-resource-map.json）。 */
 export function loadActionResourceMap(customPath) {
@@ -80,7 +85,7 @@ function listParams(paramsSchema = {}, paramSources = {}) {
 export function buildFallbackActionPrompt(action = {}, context = {}, skillResources = [], extra = {}) {
   const label = labelForActionKey(action.action_key, action.label || '未知按钮');
   const description = action.description || '';
-  const target = action.target || 'bff';
+  const target = action.target || 'flattalk';
   const endpoint = action.endpoint || '（无明确接口地址）';
   const paramsSchema = action.params_schema || {};
   const paramSources = action.param_sources || {};
@@ -119,7 +124,7 @@ export function buildFallbackActionPrompt(action = {}, context = {}, skillResour
     '',
     '请基于以上资源与上下文执行该动作：',
     '- 若【有什么资源】含「知识库」类（target=knowledge），已为你注入相关证据（evidence），请基于证据推理作答；',
-    '- 若含接口类资源（target=bff/business_system/HTTP），请依据接口地址与参数说明，结合上下文给出可执行方案与要点（当前不要求你直接发起 HTTP 请求）；',
+    '- 若含业务接口类资源（target=jintiaodong/HTTP/flattalk），请依据接口地址与参数说明，结合上下文给出可执行方案与要点；',
     `最终以结构化 JSON 返回，匹配模板 ${nextTemplateId} 的字段结构（含 title、summary、要点列表、风险提示、后续建议）。`,
     evidenceText,
   ].join('\n');

@@ -1,7 +1,8 @@
 const API = '/api/admin';
 const TITLES = {
-  models: '模型治理', templates: '模板工作台', validate: '资源校验', logs: '运行日志',
-  knowledge: '知识导入', dialogue: '对话运行',
+  readiness: '上线就绪',
+  models: '模型治理', templates: '模板工作台', validate: '资源校验', 'biz-deps': '业务依赖', 'degrade-monitor': '降级监控', logs: '运行日志',
+  knowledge: '知识导入', dialogue: '验收对话',
   integrations: '第三方API', openapi: 'Open API', authaccess: '认证接入', embeds: '第三方嵌入',
   permissions: '权限矩阵', config: '系统配置', mapstudio: '地图工坊',
 };
@@ -76,7 +77,9 @@ async function showModule(mod) {
   topbarActions.innerHTML = '';
   view.innerHTML = '';
   const map = {
-    models: renderModels, templates: renderTemplates, validate: renderValidate,
+    readiness: renderReadiness,
+    models: renderModels, templates: renderTemplates, validate: renderValidate, 'biz-deps': renderBizDeps,
+    'degrade-monitor': renderDegradeMonitor,
     logs: renderLogs, knowledge: () => renderCrud(CRUD.knowledge), dialogue: renderDialogue,
     integrations: renderIntegrations, openapi: renderOpenApi,
     authaccess: renderAuthAccess, embeds: renderEmbeds,
@@ -84,6 +87,38 @@ async function showModule(mod) {
     mapstudio: renderMapStudio,
   };
   (map[mod] || (() => { view.innerHTML = `<div class="placeholder">模块「${TITLES[mod]}」待开发</div>`; }))();
+}
+
+/** 跨页跳转（降级 → 日志等） */
+function jumpToModule(mod, opts = {}) {
+  if (mod === 'logs') {
+    logsFilter = {
+      data_kind: opts.data_kind != null ? opts.data_kind : (logsFilter?.data_kind || ''),
+      q: opts.q != null ? opts.q : (logsFilter?.q || ''),
+    };
+  }
+  document.querySelectorAll('.nav-item').forEach((b) => {
+    b.classList.toggle('active', b.dataset.mod === mod);
+  });
+  showModule(mod);
+}
+
+function degradeMetricLogQuery(id) {
+  const map = {
+    lis_unreachable: 'lis',
+    lis_breaker_open: 'lis',
+    lis_breaker_suppress: 'lis',
+    match_ok_marginal: 'MATCH_OK_MARGINAL',
+    kb_remote_failed: 'knowledge',
+    kb_local_hit: 'knowledge',
+    llm_fallback_mock: 'fallback_mock',
+    gxy_soft_err: 'gxy',
+    tag_pg_error: 'pg',
+    map_key_exhausted: 'map',
+    map_pool_exhausted: 'map',
+    map_unconfigured: 'map',
+  };
+  return map[id] || String(id || '').replace(/^keep_ok:/, '');
 }
 
 /* ============ 模型治理 ============ */
@@ -551,6 +586,7 @@ async function renderValidate() {
   const count = { error: 0, warn: 0, ok: 0 };
   (reports || []).forEach((r) => count[r.level]++);
   topbarActions.append(btn('刷新', renderValidate));
+  topbarActions.append(btn('业务依赖扫描', () => jumpToModule('biz-deps')));
   view.append(el('div', { class: 'summary' },
     el('span', { class: 'badge danger', html: `错误 ${count.error}` }),
     el('span', { class: 'badge warn', html: `警告 ${count.warn}` }),
@@ -559,24 +595,397 @@ async function renderValidate() {
   view.append(el('div', { class: 'report' }, ...(reports || []).map((x) => el('div', { class: 'report-row ' + x.level }, `[${x.level}] ${x.module}: ${x.message}`))));
 }
 
+/* ============ 业务依赖全扫描 ============ */
+async function renderBizDeps() {
+  const data = await api('/biz-deps');
+  topbarActions.append(btn('刷新', renderBizDeps));
+  const s = data.summary || {};
+  view.append(el('div', { class: 'summary' },
+    el('span', { class: 'badge ok', html: `技能 ${s.skill_count || 0}` }),
+    el('span', { class: 'badge ok', html: `动作 ${s.action_count || 0}` }),
+    el('span', { class: 'badge ok', html: `表schema ${s.table_schema_count || 0}` }),
+    el('span', { class: 'badge warn', html: `warn ${s.warn || 0}` }),
+    el('span', { class: 'badge danger', html: `error ${s.error || 0}` }),
+  ));
+  view.append(el('p', { class: 'hint' }, '按技能声明：数据表 / tag-system 接口 / 第三方 integrations。运行时实际命中见会话 trace 的 data.db / data.tag_system / data.http 节点。'));
+  const jump = el('div', { class: 'log-filters' });
+  for (const [kind, label] of [['any', '运行日志·有数据访问'], ['db', '筛选 data.db'], ['tag_system', '筛选 tag_system'], ['http', '筛选 HTTP'], ['error', '筛选数据失败']]) {
+    jump.append(el('button', {
+      class: 'chip',
+      type: 'button',
+      onclick: () => jumpToModule('logs', { data_kind: kind, q: '' }),
+    }, label));
+  }
+  view.append(jump);
+
+  for (const sk of (data.skills || [])) {
+    const card = el('div', { class: 'card' });
+    card.append(el('h3', {}, `${sk.label || sk.skill_key} (${sk.skill_key})`));
+    if (sk.notes) card.append(el('p', { class: 'hint' }, sk.notes));
+    const tables = (sk.tables || []).map((t) => `${t.name}${t.in_schema ? '' : '⚠未登记'}`).join(', ') || '—';
+    const tags = (sk.tag_system || []).map((t) => t.name).join(', ') || '—';
+    const integs = (sk.integrations || []).map((i) => `${i.key}[${i.status}]`).join(', ') || '—';
+    card.append(el('div', {}, `表：${tables}`));
+    card.append(el('div', {}, `tag-system：${tags}`));
+    card.append(el('div', {}, `第三方：${integs}`));
+    view.append(card);
+  }
+
+  if ((data.actions || []).length) {
+    view.append(el('h3', {}, '按钮动作资源'));
+    const rows = (data.actions || []).map((a) => {
+      const integ = a.integration ? `${a.integration.key}[${a.integration.status}]` : '—';
+      return el('div', { class: 'report-row ok' }, `${a.action_key} · ${a.skill_key} · target=${a.target || '-'} · ${integ} · → ${a.next_template_id || '-'}`);
+    });
+    view.append(el('div', { class: 'report' }, ...rows));
+  }
+
+  if ((data.reports || []).length) {
+    view.append(el('h3', {}, '扫描报告'));
+    view.append(el('div', { class: 'report' }, ...(data.reports || []).map((x) => el('div', { class: 'report-row ' + x.level }, `[${x.level}] ${x.module}: ${x.message}`))));
+  }
+}
+
+/* ============ 上线就绪 Dashboard ============ */
+function gateIsBad(k, v) {
+  if (k === 'JTD_API_MODE') return v !== 'real';
+  if (k === 'FLATTALK_RUNTIME_MODE') return v !== 'production' && v !== 'prod';
+  if (k === 'LIS_GATE_ENABLED') return v === '0' || v === 'false' || v === 'off';
+  if (k === 'FLATTALK_DISABLE_SIM_FALLBACK') return v !== '1' && v !== 'true';
+  if (k.startsWith('FLATTALK_ALLOW_')) return v === '1' || v === 'true';
+  return false;
+}
+
+async function renderReadiness() {
+  topbarActions.append(btn('刷新', renderReadiness));
+  topbarActions.append(btn('全部检测', async () => {
+    lastDegradeProbe = await api('/degrade-monitor/probe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ probe: 'all' }),
+    });
+    renderReadiness();
+  }));
+  topbarActions.append(btn('验收对话', () => jumpToModule('dialogue'), 'btn'));
+  topbarActions.append(btn('数据失败日志', () => jumpToModule('logs', { data_kind: 'error', q: '' }), 'btn'));
+
+  const [snap, logs] = await Promise.all([
+    api('/degrade-monitor'),
+    api('/logs?data_kind=error'),
+  ]);
+
+  const gates = snap.env_gates || {};
+  const gateEntries = Object.entries(gates);
+  const badGates = gateEntries.filter(([k, v]) => gateIsBad(k, v));
+  const hot = snap.hot || [];
+  const errTraces = (logs.traces || []).slice(0, 8);
+  const upMin = Math.round((snap.uptime_ms || 0) / 60000);
+
+  view.append(el('div', { class: 'summary' },
+    el('span', { class: 'badge ' + (badGates.length ? 'danger' : 'ok'), html: badGates.length ? `闸门偏离 ${badGates.length}` : '闸门对齐' }),
+    el('span', { class: 'badge ' + (hot.length ? 'warn' : 'ok'), html: `热降级 ${hot.length}` }),
+    el('span', { class: 'badge ' + (errTraces.length ? 'warn' : 'ok'), html: `近期数据失败 ${errTraces.length}` }),
+    el('span', { class: 'badge ok', html: `进程 ${upMin} 分钟` }),
+  ));
+  view.append(el('p', { class: 'hint' },
+    '上线巡检首页：一眼看闸门 / 热降级 / 数据失败。点指标可下钻运行日志；「全部检测」触发 KEEP_WITH_MONITOR 探针。'));
+
+  // gates
+  view.append(el('h3', { class: 'section-title' }, '生产闸门'));
+  const gateBox = el('div', { class: 'report' });
+  for (const [k, v] of gateEntries) {
+    const bad = gateIsBad(k, v);
+    gateBox.append(el('div', { class: 'report-row ' + (bad ? 'warn' : 'ok') }, `${k}=${v}`));
+  }
+  view.append(gateBox);
+
+  // hot metrics
+  view.append(el('h3', { class: 'section-title' }, '热降级指标（KEEP_WITH_MONITOR）'));
+  if (!hot.length) {
+    view.append(el('div', { class: 'placeholder' }, '暂无降级命中。'));
+  } else {
+    const grid = el('div', { class: 'degrade-grid' });
+    for (const m of hot.slice(0, 8)) {
+      const card = el('div', { class: 'card degrade-metric clickable' });
+      card.append(el('div', { class: 'summary' },
+        el('span', { class: 'badge warn', html: String(m.count || 0) }),
+        el('strong', {}, m.label || m.id),
+      ));
+      card.append(el('div', { class: 'hint' }, `${m.group || '-'} · 点击查看日志`));
+      card.onclick = () => jumpToModule('logs', {
+        data_kind: m.group === 'tag' ? 'db' : (m.group === 'gxy' || m.group === 'kb' || m.group === 'map' ? 'http' : 'any'),
+        q: degradeMetricLogQuery(m.id),
+      });
+      grid.append(card);
+    }
+    view.append(grid);
+  }
+
+  // recent probe
+  if (lastDegradeProbe) {
+    const pr = lastDegradeProbe;
+    view.append(el('h3', { class: 'section-title' }, `最近检测 · ${pr.ok ? '通过' : '有失败'}`));
+    view.append(el('div', { class: 'report' }, ...(pr.results || []).map((r) => el(
+      'div',
+      { class: 'report-row ' + (r.ok ? 'ok' : 'err') },
+      `${r.ok ? 'OK' : 'FAIL'} [${r.id}] ${r.detail || ''}`,
+    ))));
+  }
+
+  // error traces
+  view.append(el('h3', { class: 'section-title' }, '最近数据失败会话'));
+  if (!errTraces.length) {
+    view.append(el('div', { class: 'placeholder' }, '暂无 data.* 失败追踪。'));
+  } else {
+    const box = el('div', { class: 'traces compact' });
+    for (const t of errTraces) {
+      const card = el('div', { class: 'trace warn clickable' });
+      card.innerHTML = `
+        <div class="trace-hd">
+          <span class="badge warn">数据失败</span>
+          <span class="trace-time">${esc(t.ts_bj || fmtBJ(t.ts))}</span>
+          <span class="trace-q">${esc(t.question)}</span>
+        </div>
+        <div class="hint">点击打开运行日志并定位该问题</div>`;
+      card.onclick = () => jumpToModule('logs', {
+        data_kind: 'error',
+        q: String(t.conversation_id || t.question || '').slice(0, 40),
+      });
+      box.append(card);
+    }
+    view.append(box);
+  }
+
+  // quick links
+  view.append(el('h3', { class: 'section-title' }, '快捷入口'));
+  const links = el('div', { class: 'log-filters' });
+  for (const [mod, label, opts] of [
+    ['degrade-monitor', '降级监控（含 KEEP_OK）', {}],
+    ['biz-deps', '业务依赖声明', {}],
+    ['dialogue', '验收对话', {}],
+    ['logs', '全部数据访问', { data_kind: 'any', q: '' }],
+  ]) {
+    links.append(el('button', {
+      class: 'chip',
+      type: 'button',
+      onclick: () => jumpToModule(mod, opts),
+    }, label));
+  }
+  view.append(links);
+}
+
+/* ============ KEEP_WITH_MONITOR 降级监控 ============ */
+let lastDegradeProbe = null;
+
+async function renderDegradeMonitor() {
+  const data = await api('/degrade-monitor');
+  topbarActions.append(btn('刷新', renderDegradeMonitor));
+  topbarActions.append(btn('全部检测', async () => {
+    lastDegradeProbe = await api('/degrade-monitor/probe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ probe: 'all' }),
+    });
+    renderDegradeMonitor();
+  }));
+  topbarActions.append(btn('清零计数', async () => {
+    if (!confirm('确认清零进程内降级计数与近期事件？')) return;
+    await api('/degrade-monitor/reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    lastDegradeProbe = null;
+    renderDegradeMonitor();
+  }));
+  topbarActions.append(btn('上线就绪', () => jumpToModule('readiness'), 'btn'));
+
+  const upMin = Math.round((data.uptime_ms || 0) / 60000);
+  view.append(el('div', { class: 'summary' },
+    el('span', { class: 'badge ok', html: `累计事件 ${data.total_events || 0}` }),
+    el('span', { class: 'badge ok', html: `进程运行 ${upMin} 分钟` }),
+    el('span', { class: 'badge warn', html: `热项 ${(data.hot || []).length}` }),
+  ));
+  view.append(el('p', { class: 'hint' },
+    'KEEP_WITH_MONITOR：保留合法韧性，并在此查看计数 / 近期事件 / 主动检测。点击指标可跳转运行日志。计数为进程内内存，重启清零。'));
+
+  // env gates
+  const gates = data.env_gates || {};
+  const gateCard = el('div', { class: 'card' });
+  gateCard.append(el('h3', {}, '生产闸门（只读）'));
+  gateCard.append(el('div', { class: 'report' },
+    ...Object.entries(gates).map(([k, v]) => {
+      const bad = gateIsBad(k, v);
+      return el('div', { class: 'report-row ' + (bad ? 'warn' : 'ok') }, `${k}=${v}`);
+    }),
+  ));
+  view.append(gateCard);
+
+  // KEEP_OK catalog (read-only)
+  view.append(el('h3', { class: 'section-title' }, 'KEEP_OK 合法兜底（只读盘点）'));
+  view.append(el('p', { class: 'hint' },
+    '以下路径按产品决策默认保留，不提供关闭开关。点击有计数的项可跳转日志检索。'));
+  const keepOk = data.keep_ok || [];
+  const keepGrid = el('div', { class: 'degrade-grid' });
+  for (const row of keepOk) {
+    const card = el('div', { class: 'card degrade-metric keep-ok-card' + (row.count ? ' clickable' : '') });
+    card.append(el('div', { class: 'summary' },
+      el('span', { class: 'badge ok', html: String(row.count || 0) }),
+      el('strong', {}, row.label || row.id),
+      el('span', { class: 'badge ok', html: 'KEEP_OK' }),
+    ));
+    card.append(el('div', { class: 'hint' }, row.how || ''));
+    card.append(el('div', { class: 'hint' }, `代码：${row.where || '-'}`));
+    card.append(el('div', { class: 'hint' }, `查看：${row.view || '-'}`));
+    if (row.last_at) {
+      card.append(el('div', { class: 'hint' }, `最近：${new Date(row.last_at).toLocaleString()} ${row.last_detail || ''}`));
+    }
+    if (row.count) {
+      card.onclick = () => jumpToModule('logs', { data_kind: 'any', q: row.id });
+    }
+    keepGrid.append(card);
+  }
+  view.append(keepGrid);
+
+  // metrics grid
+  view.append(el('h3', { class: 'section-title' }, '监控指标'));
+  const grid = el('div', { class: 'degrade-grid' });
+  for (const m of (data.metrics || [])) {
+    const sev = m.count > 0 ? (m.severity === 'error' ? 'danger' : (m.severity === 'warn' ? 'warn' : 'ok')) : 'ok';
+    const card = el('div', { class: 'card degrade-metric' + (m.count ? ' clickable' : '') });
+    card.append(el('div', { class: 'summary' },
+      el('span', { class: 'badge ' + sev, html: String(m.count || 0) }),
+      el('strong', {}, m.label || m.id),
+    ));
+    card.append(el('div', { class: 'hint' }, `${m.group || '-'} · ${m.id}`));
+    if (m.last_at) {
+      card.append(el('div', { class: 'hint' }, `最近：${new Date(m.last_at).toLocaleString()} ${m.last_detail || ''}`));
+    }
+    if (m.count) {
+      card.append(el('div', { class: 'hint' }, '点击 → 运行日志'));
+      card.onclick = () => jumpToModule('logs', {
+        data_kind: m.group === 'tag' ? 'db' : 'any',
+        q: degradeMetricLogQuery(m.id),
+      });
+    }
+    grid.append(card);
+  }
+  view.append(grid);
+
+  // probes
+  view.append(el('h3', { class: 'section-title' }, '检测操作'));
+  const probeBar = el('div', { class: 'log-filters' });
+  for (const p of (data.probes || []).filter((x) => x.id !== 'all')) {
+    probeBar.append(el('button', {
+      class: 'chip',
+      type: 'button',
+      onclick: async () => {
+        lastDegradeProbe = await api('/degrade-monitor/probe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ probe: p.id }),
+        });
+        renderDegradeMonitor();
+      },
+    }, p.label || p.id));
+  }
+  view.append(probeBar);
+
+  if (lastDegradeProbe) {
+    const pr = lastDegradeProbe;
+    view.append(el('h3', { class: 'section-title' }, `最近检测 · ${pr.probe || ''} · ${pr.ok ? '通过' : '有失败'}`));
+    const rows = (pr.results || []).map((r) => el(
+      'div',
+      {
+        class: 'report-row ' + (r.ok ? 'ok' : 'err') + (!r.ok ? ' clickable' : ''),
+        onclick: !r.ok ? () => jumpToModule('logs', { data_kind: 'any', q: r.id || '' }) : undefined,
+      },
+      `${r.ok ? 'OK' : 'FAIL'} [${r.id}] ${r.detail || ''} (${r.latency_ms ?? '-'}ms)` + (!r.ok ? ' · 点此查日志' : ''),
+    ));
+    view.append(el('div', { class: 'report' }, ...rows));
+  }
+
+  // recent events
+  view.append(el('h3', { class: 'section-title' }, '近期事件'));
+  const recent = data.recent || [];
+  if (!recent.length) {
+    view.append(el('div', { class: 'placeholder' }, '暂无降级事件。对话触发 LIS/KB/地图失败后会出现在此。'));
+  } else {
+    view.append(el('div', { class: 'report' }, ...recent.map((e) => el(
+      'div',
+      {
+        class: 'report-row warn clickable',
+        onclick: () => jumpToModule('logs', {
+          data_kind: 'any',
+          q: degradeMetricLogQuery(String(e.id || '').replace(/^keep_ok:/, '')),
+        }),
+      },
+      `${new Date(e.ts).toLocaleString()} · ${e.id} · ${e.detail || ''} → 日志`,
+    ))));
+  }
+}
+
 /* ============ 运行日志 ============ */
+let logsFilter = { data_kind: '', q: '' };
+
 async function renderLogs() {
   topbarActions.append(btn('🗑 清空日志', async () => {
     if (!confirm('确认清空运行日志（问题追踪 + 原始请求）？')) return;
     await api('/logs/clear', { method: 'POST' });
     renderLogs();
   }));
-  topbarActions.append(btn('刷新', renderLogs));
-  const { lines = [], traces = [], total_traces = 0, total = 0 } = await api('/logs');
+  topbarActions.append(btn('刷新', () => renderLogs()));
+
+  const qs = new URLSearchParams();
+  if (logsFilter.data_kind) qs.set('data_kind', logsFilter.data_kind);
+  if (logsFilter.q) qs.set('q', logsFilter.q);
+  const { lines = [], traces = [], total_traces = 0, total = 0 } = await api('/logs' + (qs.toString() ? `?${qs}` : ''));
   topbarActions.append(el('span', { class: 'hint' }, `问题追踪 ${total_traces} 条 · 原始请求 ${total} 条`));
+
+  const filterBar = el('div', { class: 'log-filters' });
+  const chips = [
+    ['', '全部'],
+    ['any', '有数据访问'],
+    ['db', 'data.db'],
+    ['tag_system', 'data.tag_system'],
+    ['http', 'data.http'],
+    ['error', '数据失败'],
+  ];
+  for (const [val, label] of chips) {
+    const active = logsFilter.data_kind === val;
+    filterBar.append(el('button', {
+      class: 'chip' + (active ? ' active' : ''),
+      type: 'button',
+      onclick: () => { logsFilter.data_kind = val; renderLogs(); },
+    }, label));
+  }
+  const search = el('input', {
+    class: 'log-search',
+    type: 'search',
+    placeholder: '筛选 URL / SQL / 表名 / 失败原因 / 问题…',
+    value: logsFilter.q || '',
+  });
+  search.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      logsFilter.q = search.value.trim();
+      renderLogs();
+    }
+  });
+  filterBar.append(search);
+  filterBar.append(btn('搜索', () => { logsFilter.q = search.value.trim(); renderLogs(); }, 'btn'));
+  view.append(filterBar);
+  view.append(el('p', { class: 'hint' }, '筛选 data.db / tag_system / http：查看 SQL、HTTP URL、行数、失败原因。'));
 
   const box = el('div', { class: 'traces' });
   if (!traces.length) {
-    box.append(el('div', { class: 'placeholder' }, '暂无问题追踪日志。发起对话或动作后，将自动记录每个问题的全环节耗时与路由。'));
+    box.append(el('div', { class: 'placeholder' }, logsFilter.data_kind || logsFilter.q
+      ? '当前筛选下无匹配追踪。'
+      : '暂无问题追踪日志。发起对话或动作后，将自动记录每个问题的全环节耗时与路由。'));
   } else {
     for (const t of traces) {
       const lvlCls = t.level === 'error' ? 'err' : (t.level === 'warn' ? 'warn' : 'ok');
       const lvlText = t.level === 'error' ? '异常' : (t.level === 'warn' ? '警告' : '正常');
+      const dataSpans = collectDataSpans(t);
       const card = el('div', { class: 'trace ' + lvlCls });
       card.innerHTML = `
         <div class="trace-hd">
@@ -589,9 +998,10 @@ async function renderLogs() {
           <div class="sec-t">路由</div>
           <div class="kvbox">${routeRows(t.route)}</div>
         </div>
+        ${dataSpans.length ? `<div class="trace-sec"><div class="sec-t">数据访问（DB / tag / HTTP）</div><div class="data-spans">${dataSpans.map(dataSpanHtml).join('')}</div></div>` : ''}
         <div class="trace-sec">
           <div class="sec-t">环节（耗时）</div>
-          <div class="stages">${(t.stages || []).map((s) => `<div class="trace-stage"><span class="st">${esc(s.label)}</span><span class="ms">+${s.ms}ms</span><span class="sd">${esc(typeof s.detail === 'string' ? s.detail : JSON.stringify(s.detail || ''))}</span></div>`).join('')}</div>
+          <div class="stages">${(t.stages || []).map(stageHtml).join('')}</div>
         </div>
         ${t.error ? `<div class="trace-err">异常：${esc(t.error)}</div>` : ''}
         <div class="trace-ids">${esc([t.conversation_id, t.turn_id, t.request_id].filter(Boolean).join(' · '))}</div>
@@ -605,6 +1015,80 @@ async function renderLogs() {
   details.append(el('summary', {}, `原始请求日志（${lines.length}）`));
   details.append(el('pre', { class: 'rawlog' }, lines.map((o) => `${fmtBJ(o.ts)}  ${o.method || ''}  ${o.path || ''}  ${o.ip || ''}`).join('\n')));
   view.append(details);
+}
+
+function parseStageDetail(detail) {
+  if (detail == null || detail === '') return {};
+  if (typeof detail === 'object') return detail;
+  if (typeof detail === 'string') {
+    try {
+      const parsed = JSON.parse(detail);
+      return (parsed && typeof parsed === 'object') ? parsed : { raw: detail };
+    } catch {
+      return { raw: detail };
+    }
+  }
+  return {};
+}
+
+function collectDataSpans(trace) {
+  const out = [];
+  for (const s of (trace.stages || [])) {
+    if (!String(s.stage || '').startsWith('data.')) continue;
+    const d = parseStageDetail(s.detail);
+    out.push({
+      stage: s.stage,
+      label: s.label,
+      ms: s.ms,
+      ...d,
+    });
+  }
+  if (!out.length) {
+    const bd = (trace.stages || []).find((s) => s.stage === 'business_data');
+    const bdDetail = parseStageDetail(bd?.detail);
+    for (const d of (bdDetail?.access?.spans || [])) {
+      out.push({ stage: `data.${d.kind}`, label: d.name, ...d });
+    }
+  }
+  return out;
+}
+
+function dataSpanHtml(d) {
+  const st = d.status || 'ok';
+  const stCls = st === 'error' ? 'err' : (st === 'ok' ? 'ok' : 'warn');
+  const bits = [];
+  if (d.method) bits.push(`<span class="ds-m">${esc(d.method)}</span>`);
+  if (d.url) bits.push(`<span class="ds-u" title="${esc(d.url)}">${esc(d.url)}</span>`);
+  if (d.sql) bits.push(`<span class="ds-sql" title="${esc(d.sql)}">${esc(d.sql)}</span>`);
+  if (Array.isArray(d.tables) && d.tables.length) bits.push(`<span class="ds-t">表:${esc(d.tables.join(','))}</span>`);
+  if (d.row_count != null) bits.push(`<span class="ds-r">行数 ${esc(d.row_count)}</span>`);
+  if (d.elapsed_ms != null) bits.push(`<span class="ds-ms">${esc(d.elapsed_ms)}ms</span>`);
+  if (d.source) bits.push(`<span class="ds-src">${esc(d.source)}</span>`);
+  const fail = d.failure_reason || d.error;
+  if (fail) bits.push(`<span class="ds-err">失败:${esc(fail)}</span>`);
+  return `<div class="data-span ${stCls}">
+    <span class="badge ${stCls}">${esc(st)}</span>
+    <span class="ds-kind">${esc(d.kind || d.stage || '')}</span>
+    <span class="ds-name">${esc(d.name || d.label || '')}</span>
+    ${bits.join(' ')}
+  </div>`;
+}
+
+function stageHtml(s) {
+  const stage = String(s.stage || '');
+  const d = parseStageDetail(s.detail);
+  if (stage.startsWith('data.') && Object.keys(d).length) {
+    const short = [
+      d.status,
+      d.method,
+      d.url || d.sql,
+      d.row_count != null ? `rows=${d.row_count}` : '',
+      d.failure_reason || d.error || '',
+    ].filter(Boolean).join(' · ');
+    return `<div class="trace-stage data"><span class="st">${esc(s.label)}</span><span class="ms">+${s.ms}ms</span><span class="sd">${esc(short)}</span></div>`;
+  }
+  const detail = typeof s.detail === 'string' ? s.detail : JSON.stringify(s.detail || '');
+  return `<div class="trace-stage"><span class="st">${esc(s.label)}</span><span class="ms">+${s.ms}ms</span><span class="sd">${esc(detail)}</span></div>`;
 }
 
 function routeRows(route) {
@@ -627,23 +1111,143 @@ function routeRows(route) {
     .map(([k, v]) => `<div class="kv"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`).join('');
 }
 
-/* ============ 对话运行 ============ */
+/* ============ 验收对话 ============ */
 async function renderDialogue() {
-  const { items: models } = await api('/models');
-  const sel = el('select', { name: 'modelId' }, ...models.map((m) => el('option', { value: m.id, ...(m.is_default ? { selected: '' } : {}) }, `${m.name}（${m.is_active ? '启用' : '停用'}）`)));
-  const ta = el('textarea', { name: 'message', rows: '4', placeholder: '输入测试消息，查看模型回复信封…' });
-  const out = el('pre', { class: 'result' }, '（回复将显示在这里）');
-  const send = btn('发送', async () => {
-    out.textContent = '请求中…';
-    const r = await api('/dialogue', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: ta.value, modelId: sel.value }) });
-    out.textContent = JSON.stringify(r, null, 2);
+  topbarActions.append(btn('上线就绪', () => jumpToModule('readiness'), 'btn'));
+  topbarActions.append(btn('运行日志', () => jumpToModule('logs', { data_kind: 'any', q: '' }), 'btn'));
+
+  view.append(el('p', { class: 'hint' },
+    '走完整 chat 流水线（含 LIS / 业务数据 / 渲染）。右侧看路由、数据访问、空态与 degradeNote——用于验收「来源可解释、失败可感知」。'));
+
+  const convId = 'accept_' + Date.now().toString(36);
+  const ta = el('textarea', {
+    name: 'message',
+    rows: '3',
+    placeholder: '例如：附近有什么餐厅 / 防城港旅居天气怎么样 / 帮我看看订单',
   });
-  view.append(el('div', { class: 'formcard' },
-    el('label', {}, '模型'), sel,
-    el('label', {}, '消息'), ta,
-    el('div', { class: 'modal-actions' }, send),
-    out,
+  const panels = el('div', { class: 'accept-panels' });
+  const left = el('div', { class: 'accept-left' });
+  const right = el('div', { class: 'accept-right' }, el('div', { class: 'placeholder' }, '发送后显示验收视图'));
+
+  const samples = el('div', { class: 'log-filters' });
+  for (const s of ['附近有什么餐厅', '防城港旅居天气怎么样', '帮我查一下服务订单', '你好']) {
+    samples.append(el('button', {
+      class: 'chip',
+      type: 'button',
+      onclick: () => { ta.value = s; },
+    }, s));
+  }
+
+  const send = btn('发送验收', async () => {
+    const message = ta.value.trim();
+    if (!message) return;
+    right.innerHTML = '<div class="placeholder">请求中…</div>';
+    try {
+      const r = await api('/accept-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, conversation_id: convId }),
+      });
+      right.innerHTML = '';
+      if (!r.ok) {
+        right.append(el('div', { class: 'report-row err' }, `失败：${r.error || JSON.stringify(r)}`));
+        return;
+      }
+      right.append(renderAcceptancePanel(r));
+    } catch (e) {
+      right.innerHTML = '';
+      right.append(el('div', { class: 'report-row err' }, `请求异常：${e.message}`));
+    }
+  }, 'btn primary');
+
+  left.append(samples, el('label', {}, '消息'), ta, el('div', { class: 'modal-actions' }, send));
+  panels.append(left, right);
+  view.append(panels);
+
+  // 保留旧「纯模型」入口折叠
+  const legacy = el('details', { class: 'accept-legacy' });
+  legacy.append(el('summary', {}, '高级：仅调模型（不含业务流水线）'));
+  const sel = el('select', { name: 'modelId' });
+  try {
+    const { items: models } = await api('/models');
+    for (const m of (models || [])) {
+      sel.append(el('option', { value: m.id, ...(m.is_default ? { selected: '' } : {}) }, `${m.name}`));
+    }
+  } catch { /* ignore */ }
+  const out = el('pre', { class: 'result' }, '（纯模型回复）');
+  const sendModel = btn('仅调模型', async () => {
+    out.textContent = '请求中…';
+    const r = await api('/dialogue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: ta.value, modelId: sel.value }),
+    });
+    out.textContent = JSON.stringify(r, null, 2);
+  }, 'btn');
+  legacy.append(el('div', { class: 'formcard' }, el('label', {}, '模型'), sel, el('div', { class: 'modal-actions' }, sendModel), out));
+  view.append(legacy);
+}
+
+function renderAcceptancePanel(r) {
+  const a = r.acceptance || {};
+  const flags = a.trust_flags || {};
+  const wrap = el('div', { class: 'accept-result' });
+  wrap.append(el('div', { class: 'summary' },
+    el('span', { class: 'badge ' + (flags.has_simulated ? 'danger' : 'ok'), html: flags.has_simulated ? '疑似仿真/Mock' : '无仿真标记' }),
+    el('span', { class: 'badge ' + (flags.has_data_error ? 'warn' : 'ok'), html: flags.has_data_error ? '有数据失败' : '数据访问正常' }),
+    el('span', { class: 'badge ' + (flags.has_empty ? 'warn' : 'ok'), html: flags.has_empty ? '有空态/skip' : '无空态' }),
+    el('span', { class: 'badge ok', html: `${r.latency_ms ?? '-'}ms` }),
   ));
+
+  wrap.append(el('h3', { class: 'section-title' }, '路由'));
+  const route = a.route || {};
+  wrap.append(el('div', { class: 'kvbox', html: routeRows(route) }));
+  wrap.append(el('div', { class: 'hint' },
+    `技能 ${a.skill_key || '-'} · 模板 ${a.template_id || '-'} · conv ${a.conversation_id || '-'}`));
+
+  wrap.append(el('h3', { class: 'section-title' }, '回答摘要'));
+  wrap.append(el('div', { class: 'accept-answer' }, a.answer_preview || '（无回答文本）'));
+
+  wrap.append(el('h3', { class: 'section-title' }, '数据访问'));
+  const spans = a.data_spans || [];
+  if (!spans.length) {
+    wrap.append(el('div', { class: 'placeholder' }, '本回合无 data.* span（可能未打外部数据）。'));
+  } else {
+    const box = el('div', { class: 'data-spans' });
+    box.innerHTML = spans.map(dataSpanHtml).join('');
+    wrap.append(box);
+  }
+
+  wrap.append(el('h3', { class: 'section-title' }, '空态 / 警告'));
+  const reasons = a.empty_reasons || [];
+  const notes = a.degrade_notes || [];
+  if (!reasons.length && !notes.length) {
+    wrap.append(el('div', { class: 'placeholder' }, '无空态或 degradeNote。'));
+  } else {
+    const report = el('div', { class: 'report' });
+    for (const x of reasons) {
+      report.append(el('div', { class: 'report-row warn' }, `[${x.kind}] ${x.path}: ${x.reason}`));
+    }
+    for (const n of notes) {
+      report.append(el('div', { class: 'report-row warn' }, `degradeNote ${n.path}: ${n.note}`));
+    }
+    wrap.append(report);
+  }
+
+  wrap.append(el('div', { class: 'modal-actions' },
+    btn('在日志中打开本会话', () => jumpToModule('logs', {
+      data_kind: 'any',
+      q: a.conversation_id || '',
+    }), 'btn'),
+    btn('查看原始信封', () => {
+      openModal(el('div', { class: 'modal-card wide' },
+        el('h3', {}, 'Envelope'),
+        el('pre', { class: 'codebox' }, JSON.stringify(r.envelope, null, 2)),
+        el('div', { class: 'modal-actions' }, btn('关闭', closeModal, 'btn primary')),
+      ));
+    }, 'btn'),
+  ));
+  return wrap;
 }
 
 /* ============ 权限矩阵 ============ */
@@ -1079,4 +1683,4 @@ async function renderMapStudio() {
   }
 }
 
-showModule('models');
+showModule('readiness');

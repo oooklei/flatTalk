@@ -77,10 +77,21 @@ export async function generateRouteHtml(routeName, routeDescription, options = {
   // 2. 确定 waypoints
   let waypoints = options.waypoints || parseWaypointsFromDescription(routeDescription, destination);
   if (!waypoints || waypoints.length === 0) {
-    // 兜底：用目的地中心点生成一个占位 waypoint
-    const center = DESTINATION_CENTER[destination];
-    waypoints = center ? [{ name: destination, lat: center.lat, lng: center.lng, type: 'arrival', day: 'Day1', plan: '抵达' + destination }] : [];
-    warnings.push('未找到 waypoints，使用目的地中心点兜底');
+    // SHOULD：禁止单点假路线；返回占位说明
+    warnings.push('未找到 waypoints，已禁止单点假路线');
+    const placeholder = `<div class="route-map-empty" data-status="no_waypoints" style="padding:16px;color:#666;font-size:14px;line-height:1.6;">暂无线路途经点，无法绘制路线图。请补充行程点后再试。</div>`;
+    return {
+      html: placeholder,
+      svg: '',
+      routeData: {
+        routeTitle: toSimplified(routeName),
+        destination,
+        waypoints: [],
+        map_status: 'no_waypoints',
+        days: options.days || inferDays(routeName),
+      },
+      warnings,
+    };
   }
 
   // 3. 获取行政区边界

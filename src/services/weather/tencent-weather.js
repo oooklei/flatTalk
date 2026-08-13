@@ -41,6 +41,9 @@ const CITY_ADCODE = {
   成都: '510100',
 };
 
+/** P0：默认不仿真；options.allowSimFallback 或 FLATTALK_ALLOW_SIM_FALLBACK=1 才允许。 */
+const ALLOW_SIM_FALLBACK = process.env.FLATTALK_ALLOW_SIM_FALLBACK === '1'
+  || process.env.FLATTALK_WEATHER_ALLOW_SIM_FALLBACK === '1';
 const DISABLE_SIM_FALLBACK = process.env.FLATTALK_DISABLE_SIM_FALLBACK === '1'
   || process.env.FLATTALK_WEATHER_DISABLE_SIM_FALLBACK === '1';
 
@@ -50,7 +53,8 @@ export function createTencentWeatherAdapter(options = {}) {
   const key = fixedKey ? options.key : (process.env.TENCENT_MAP_KEY || '');
   const sk = options.sk != null ? options.sk : (process.env.TENCENT_MAP_SK || '');
   const timeoutMs = Number(options.timeoutMs) || 6000;
-  const allowSimFallback = options.allowSimFallback !== false && !DISABLE_SIM_FALLBACK;
+  const allowSimFallback = options.allowSimFallback === true
+    || (ALLOW_SIM_FALLBACK && !DISABLE_SIM_FALLBACK && options.allowSimFallback !== false);
 
   function getAdcode(cityName) {
     const normalized = normalizeCityName(cityName);

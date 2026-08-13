@@ -30,7 +30,7 @@ export function handleAdminApi(req, res, url) {
   if (parts[0] === 'mapstudio') {
     return handleMapStudioApi(req, res, method, parts.slice(1));
   }
-  return handleModuleApi(req, res, method, parts);
+  return handleModuleApi(req, res, method, parts, url);
 }
 
 // /admin/* → 静态资源（SPA 回退到 index.html）

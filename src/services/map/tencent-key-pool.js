@@ -11,6 +11,7 @@
  * - 与 TENCENT_MAP_JS_KEY（前端 JS API）无关，禁止混用
  */
 import crypto from 'node:crypto';
+import { recordDegrade } from '../../core/observability/degradation-monitor.js';
 
 /** @typedef {{ id: string, key: string, sk: string }} WsKeyPair */
 
@@ -56,6 +57,11 @@ export function markWsKeyExhausted(pairOrId, { reason = 'quota', ttlMs } = {}) {
   if (!id) return;
   const ttl = Number.isFinite(Number(ttlMs)) ? Number(ttlMs) : defaultQuotaCooldownMs();
   exhaustedUntil.set(id, nowMs() + ttl);
+  recordDegrade('map_key_exhausted', { detail: String(reason || 'quota'), key_id: id });
+  const pairs = listWsKeyPairs();
+  if (pairs.length && pairs.every((p) => isExhausted(p.id))) {
+    recordDegrade('map_pool_exhausted', { detail: String(reason || 'quota') });
+  }
   try {
     console.warn(`[tencent-key-pool] mark exhausted id=${id} reason=${reason} ttlMs=${ttl}`);
   } catch {
@@ -176,6 +182,7 @@ export async function withWsKeyFailover(fn) {
     }
   }
   if (lastResult) return lastResult;
+  recordDegrade('map_pool_exhausted', { detail: lastError?.message || 'tencent_key_pool_exhausted' });
   throw lastError || new Error('tencent_key_pool_exhausted');
 }
 

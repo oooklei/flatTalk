@@ -23,8 +23,10 @@ import { decryptSessionToken } from './external-aes-sso.js';
  */
 const WHITELIST_PATHS = new Set([
   '/mobile.html',
+  '/login.html',
   '/api/health',
   '/gxy-assistant',
+  '/assistant',
 ]);
 
 /**
@@ -32,6 +34,8 @@ const WHITELIST_PATHS = new Set([
  */
 const WHITELIST_PREFIXES = [
   '/api/sso/',
+  '/api/login/',
+  '/api/admin/', // 管理台自身接口（页面在内网，不走移动端 SSO token）
 ];
 
 /**

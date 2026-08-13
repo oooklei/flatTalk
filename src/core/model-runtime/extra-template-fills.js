@@ -13,6 +13,7 @@ import {
   travelEntityParams,
   elderEntityParams,
 } from '../conversation/entity-params.js';
+import { listReferenceTravelProducts, selectProduct } from '../../services/travel/jtd-service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../../..');
@@ -262,31 +263,38 @@ export function fillTravelNeedSummaryCard({ message, business_data } = {}) {
 
 export function fillTravelPlanSummaryCard({ message, business_data } = {}) {
   const jtd = business_data?.jtd || {};
-  const product = jtd.selected_product || {};
-  const dest = text(
+  const destHint = text(
     business_data?.destination
     || business_data?.primary_city
-    || product.destination
+    || jtd.selected_product?.destination
+    || jtd.selected_product?.city
     || inferDest(message),
     '',
-  ) || '防城港';
-  const name = text(product.product_name || product.name || business_data?.route_title, `${dest}旅居套餐`);
-  const price = text(product.combo_price || product.price || product.retail_price, '待确认');
+  );
+  const product = resolveTravelPlanProduct(business_data, message, destHint);
+  const dest = text(product.destination || product.city || destHint, '') || '目的地待确认';
+  const name = text(
+    product.product_name || product.name || business_data?.route_title,
+    dest && dest !== '目的地待确认' ? `${dest.replace(/^广西/, '')}旅居套餐` : '旅居套餐',
+  );
+  const daysLabel = formatTravelDays(product);
+  const priceLabel = formatTravelPlanPrice(product, business_data, jtd);
   return {
     template_id: 'travel_plan_summary_card',
     answer_text: `已汇总「${name}」方案确认信息。`,
     data: {
       title: '旅居方案确认',
-      destination: dest,
+      destination: dest.replace(/^广西/, '') || dest,
       route_id: business_data?.route_id || product.product_id || '',
       rows: [
         { label: '方案名称', value: name },
-        { label: '目的地', value: dest },
-        { label: '建议天数', value: text(product.days || product.duration, '3天2晚') },
-        { label: '适配人群', value: text(product.suitable || '适老康养') },
+        { label: '目的地', value: dest.replace(/^广西/, '') || dest },
+        { label: '建议天数', value: daysLabel || '详询行程' },
+        { label: '适配人群', value: text(product.suitable || (Array.isArray(product.tags) ? product.tags.slice(0, 2).join('·') : ''), '适老康养') },
       ],
       totalLabel: '参考总价',
-      totalPrice: String(price).includes('元') ? String(price) : `${price}元起`,
+      // 模板自带 ¥ 前缀；勿再拼「待确认元起」
+      totalPrice: priceLabel || '面议',
       totalNote: '最终以金跳动可订校验与下单页为准',
     },
     actions: [],
@@ -299,6 +307,122 @@ export function fillTravelPlanSummaryCard({ message, business_data } = {}) {
       route_title: name,
     }, business_data)),
   };
+}
+
+/** 旅居预算卡：基于已选产品/目的地做分项测算（本地填槽，不走 BFF） */
+export function fillTravelBudgetCard({ message, business_data } = {}) {
+  const jtd = business_data?.jtd || {};
+  const destHint = text(
+    business_data?.destination
+    || business_data?.primary_city
+    || jtd.selected_product?.destination
+    || jtd.selected_product?.city
+    || inferDest(message),
+    '',
+  );
+  const product = resolveTravelPlanProduct(business_data, message, destHint);
+  const dest = text(product.destination || product.city || destHint, '') || '目的地待确认';
+  const city = dest.replace(/^广西/, '') || dest;
+  const days = Number(product.days) || (() => {
+    const m = String(product.product_name || message || '').match(/(\d+)\s*[天日]/);
+    return m ? parseInt(m[1], 10) : 7;
+  })();
+  const headcount = Number(business_data?.headcount || business_data?.action_params?.headcount || 2) || 2;
+  const unit = Number(product.price_amount) > 0 ? Number(product.price_amount) : 1680;
+  const lodging = Math.round(unit * Math.max(1, days) / 3);
+  const transport = Math.round(180 * headcount);
+  const meal = Math.round(80 * headcount * Math.max(1, days));
+  const ticket = Math.round(60 * headcount * Math.max(1, Math.min(days, 5)));
+  const total = lodging + transport + meal + ticket;
+  const name = text(product.product_name || product.name, `${city}旅居`);
+  return {
+    template_id: 'travel_budget_card',
+    answer_text: `已按「${name}」测算${city}约${days}天、${headcount}人参考预算。`,
+    data: {
+      title: '旅居预算明细',
+      destination: city,
+      rows: [
+        { label: '目的地', value: city },
+        { label: '旅居天数', value: `${days}天` },
+        { label: '出行人数', value: `${headcount}人` },
+        { label: '首选产品', value: name },
+        { label: '住宿参考', value: `${lodging}元` },
+        { label: '交通参考', value: `${transport}元` },
+        { label: '餐食参考', value: `${meal}元` },
+        { label: '门票/体验', value: `${ticket}元` },
+      ],
+      totalLabel: '预估总费用',
+      totalPrice: `${total}起`,
+      totalNote: '仅供参考，最终以金跳动可订与下单页为准',
+    },
+    actions: [],
+    followup_suggestions: withEntityParams([
+      { label: '检查可订状态', user_prompt: '请检查这条旅居路线近期是否可预订', action_key: 'travel_route.check_availability' },
+      { label: '去预订', user_prompt: '我想继续预订这条旅居产品', action_key: 'travel_route.booking_handoff' },
+    ], travelEntityParams({
+      destination: dest,
+      product_id: product.product_id,
+      route_title: name,
+    }, business_data)),
+  };
+}
+
+/** 方案确认卡：优先已选产品，其次会话产品池，再回退参考价目录（含巴马/北海 mock） */
+function resolveTravelPlanProduct(business_data = {}, message = '', destHint = '') {
+  const jtd = business_data?.jtd || {};
+  const selected = jtd.selected_product;
+  if (selected && (selected.price_amount || selected.price_label || selected.product_id || selected.combo_price)) {
+    return selected;
+  }
+  const pool = [];
+  const seen = new Set();
+  for (const p of [...(Array.isArray(jtd.products) ? jtd.products : []), ...listReferenceTravelProducts()]) {
+    if (!p) continue;
+    const id = String(p.product_id || p.product_name || '');
+    if (id && seen.has(id)) continue;
+    if (id) seen.add(id);
+    pool.push(p);
+  }
+  const picked = selectProduct(pool, message, {
+    params: {
+      product_id: business_data?.product_id || selected?.product_id || '',
+      destination: destHint || business_data?.destination || business_data?.primary_city || '',
+    },
+  });
+  return picked || selected || {};
+}
+
+function formatTravelDays(product = {}) {
+  let days = Number(product.days);
+  if (!Number.isFinite(days) || days <= 0) {
+    const name = String(product.product_name || product.name || '');
+    const m = name.match(/(\d+)\s*[天日]|([三四五六七八九十]+)\s*[天日]/);
+    if (m?.[1]) days = parseInt(m[1], 10);
+    else if (m?.[2]) {
+      const map = { 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
+      days = map[m[2]] || NaN;
+    }
+  }
+  const nights = product.nights != null ? Number(product.nights) : (Number.isFinite(days) ? Math.max(0, days - 1) : NaN);
+  if (Number.isFinite(days) && days > 0 && Number.isFinite(nights)) return `${days}天${nights}晚`;
+  if (Number.isFinite(days) && days > 0) return `${days}天`;
+  return text(product.duration || product.days_label, '');
+}
+
+function formatTravelPlanPrice(product = {}, business_data = {}, jtd = {}) {
+  const amount = Number(product.price_amount ?? product.price ?? product.retail_price ?? business_data.price_amount);
+  if (Number.isFinite(amount) && amount > 0) return `${amount}起`;
+  const raw = text(
+    product.price_label
+    || product.combo_price
+    || product.retail_price
+    || business_data.price_label
+    || jtd.combo_price
+    || jtd.price_label,
+    '',
+  );
+  if (!raw || /待确认|价格待确认/.test(raw)) return '';
+  return raw.replace(/^¥\s*/, '');
 }
 
 export function fillFindServiceExtra({ message, business_data, selectedTemplateId } = {}) {
@@ -932,7 +1056,7 @@ export const LOCAL_FILL_TEMPLATE_IDS = new Set([
   'weekly_plan', 'diet_card', 'meal_timeline_card', 'meal_overview_card', 'meal_dashboard_card',
   'sojourn_route', 'sojourn_base', 'travel_itinerary_card', 'travel_availability_card',
   'travel_h5_embed_card', 'travel_weather_risk_card', 'travel_spot_card', 'travel_medical_card',
-  'travel_transport_card', 'travel_need_summary_card', 'travel_plan_summary_card',
+  'travel_transport_card', 'travel_need_summary_card', 'travel_plan_summary_card', 'travel_budget_card',
   'health_warning_card', 'health_risk_signal_card', 'health_risk_rule_card', 'risk_assessment_card',
   'health_report_card', 'risk_warning_card', 'dietary_regimen_card',
   'constitution_card', 'tongue_diagnosis_card', 'face_observation_card', 'tcm_syndrome_card',

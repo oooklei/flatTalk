@@ -5,6 +5,7 @@
  */
 
 import crypto from 'node:crypto';
+import { recordDegrade } from '../../core/observability/degradation-monitor.js';
 
 export const CODE_OK = 'OK';
 
@@ -13,6 +14,9 @@ export function ok(data, message = '操作成功') {
 }
 
 export function err(code, message) {
+  if (code && code !== CODE_OK && code !== 'FIELD_INVALID') {
+    recordDegrade('gxy_soft_err', { detail: `${code}: ${message || ''}` });
+  }
   return { code, message, data: null };
 }
 
@@ -28,13 +32,24 @@ export function toPlatformResult(resp, okMessage) {
     const result = (body && typeof body === 'object')
       ? (body.result ?? body.data ?? body)
       : body;
-    return ok(result, okMessage);
+    return {
+      ...ok(result, okMessage),
+      method: resp.method,
+      url: resp.url,
+      http_status: resp.http_status ?? resp.status,
+    };
   }
   const data = resp?.data;
   const message = (data && typeof data === 'object')
     ? (data.message || '调用桂小养平台失败')
     : String(data || '调用桂小养平台失败');
-  return err('PLATFORM_ERROR', message);
+  return {
+    ...err('PLATFORM_ERROR', message),
+    method: resp?.method,
+    url: resp?.url,
+    http_status: resp?.http_status ?? resp?.status,
+    error: message,
+  };
 }
 
 /**

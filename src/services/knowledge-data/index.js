@@ -229,8 +229,10 @@ export function createKnowledgeDataService(options = {}) {
       : {}),
   });
   // 注入本地知识库服务（同步加载，避免对调用方产生 async 影响）
+  // FLATTALK_KB_REMOTE_ONLY=1：禁止第二套本地旅居知识，全走 gxy-local-kb
+  const remoteOnly = String(process.env.FLATTALK_KB_REMOTE_ONLY || '').trim() === '1';
   const injectedLocalKnowledge = options.localKnowledgeService
-    ?? (options.disableLocalKnowledge ? null : getLocalKnowledgeService());
+    ?? ((options.disableLocalKnowledge || remoteOnly) ? null : getLocalKnowledgeService());
   const remoteAdapter = options.remoteAdapter ?? createRemoteKnowledgeAdapter({
     ...(options.remote ?? {}),
     localKnowledgeService: injectedLocalKnowledge,

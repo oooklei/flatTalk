@@ -1,6 +1,7 @@
 import { loadPrompt } from '../model-runtime/prompt-loader.js';
 import { callOpenAiCompatibleModel } from '../model-runtime/openai-compatible-client.js';
 import { pickChatModel, publicModelName } from '../model-runtime/model-registry.js';
+import { recordKeepOk } from '../observability/degradation-monitor.js';
 
 const SCENE_LABELS = {
   meal_plan: '膳食推荐',
@@ -28,8 +29,10 @@ export function createSmartFallbackHandler(options = {}) {
   return {
     shouldFallback(modelResult = {}) {
       if (modelResult.model_status === 'fallback_mock') return true;
+      if (modelResult.model_status === 'smart_fallback_chitchat') return true;
       const notes = Array.isArray(modelResult.template_fit_notes) ? modelResult.template_fit_notes : [];
       if (notes.includes('fallback_common_answer')) return true;
+      if (notes.includes('chitchat_mismatch_forced_answer')) return true;
       const answerText = String(modelResult.answer_text || '').trim();
       if (answerText.startsWith('抱歉')) return true;
       return false;
@@ -39,6 +42,7 @@ export function createSmartFallbackHandler(options = {}) {
       const skillKey = input.skill_key || 'common';
       const skillLabel = SCENE_LABELS[skillKey] || '通用咨询';
       const history = Array.isArray(input.conversation_history) ? input.conversation_history : [];
+      recordKeepOk('smart_fallback', skillKey);
 
       if (modelClient && modelClient.model) {
         try {

@@ -5,6 +5,7 @@ import { callOpenAiCompatibleModel } from './openai-compatible-client.js';
 import { loadPrompt } from './prompt-loader.js';
 import { createKnowledgeDataService } from '../../services/knowledge-data/index.js';
 import { createTencentWeatherAdapter } from '../../services/weather/tencent-weather.js';
+import { recordDegrade } from '../observability/degradation-monitor.js';
 
 function shouldForceLocalFill(requestedId, skillKey) {
   // 旧模板已废弃，按新主卡处理
@@ -19,7 +20,15 @@ function shouldForceLocalFill(requestedId, skillKey) {
 }
 
 export function createTemplateCardModelService(options = {}) {
-  const mode = options.modelMode || process.env.FLATTALK_MODEL_MODE || 'admin';
+  let mode = options.modelMode || process.env.FLATTALK_MODEL_MODE || 'admin';
+  const allowModelMock = process.env.FLATTALK_ALLOW_MODEL_MOCK === '1'
+    || options.runtimeMode === 'test'
+    || process.env.FLATTALK_RUNTIME_MODE === 'test';
+  // SHOULD：生产禁止 mock 填槽；未显式允许时强制回落 admin
+  if (mode === 'mock' && !allowModelMock) {
+    console.warn('[template-card-llm] FLATTALK_MODEL_MODE=mock 已忽略（需 FLATTALK_ALLOW_MODEL_MOCK=1）');
+    mode = 'admin';
+  }
   const useMock = mode === 'mock' || options.runtimeMode === 'test';
   const knowledgeService = options.knowledgeService || createKnowledgeDataService();
   const weatherService = options.weatherService || createTencentWeatherAdapter();
@@ -149,6 +158,7 @@ function buildFallbackMockAnswer(input = {}, status = 'mock_mode', rawReply = ''
   const templateId = input.template_id || input.templateId || 'answer';
   const label = input.label || '该按钮动作';
   const answerText = `[兜底动作] 已收到动作「${label}」，当前为离线/无模型模式，暂无法调用大模型生成内容。该动作将：${input.endpoint || '依据资源清单处理'}。${rawReply ? `\n（模型原始返回：${String(rawReply).slice(0, 200)}）` : ''}`;
+  recordDegrade('llm_fallback_mock', { detail: status, template_id: templateId });
   return {
     template_id: templateId,
     template_key: templateId,
@@ -236,6 +246,7 @@ function parseModelJson(text) {
 
 async function fallback(input, status, error, modelName = '', rawReply = '') {
   const result = await fillTemplateSlotsMock(input);
+  recordDegrade('llm_fallback_mock', { detail: status || error || 'fallback', template_id: input.template_id || input.templateId });
   return {
     ...result,
     model_status: 'fallback_mock',

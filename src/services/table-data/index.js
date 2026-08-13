@@ -1,7 +1,9 @@
 import { createTableDataRepository } from './repository.js';
+import { getTagSystemBiz } from '../interface-data/tag-system-biz.js';
 
 export function createTableDataService(options = {}) {
   const repository = createTableDataRepository(options);
+  const tagBiz = options.tagSystemBiz || getTagSystemBiz();
 
   return {
     repository,

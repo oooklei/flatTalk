@@ -5,35 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>flatTalk 管理后台</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="stylesheet" href="/admin/admin.css?v=20260806-vi" />
+  <link rel="stylesheet" href="/admin/admin.css?v=20260813-admin-p0" />
 </head>
 <body>
   <aside class="sidebar">
     <div class="brand">flatTalk<small>管理后台</small></div>
     <nav id="nav">
-      <button class="nav-item active" data-mod="models">模型治理</button>
-      <button class="nav-item" data-mod="templates">模板工作台</button>
-      <button class="nav-item" data-mod="validate">资源校验</button>
+      <div class="nav-group">运行与可信</div>
+      <button class="nav-item active" data-mod="readiness">上线就绪</button>
+      <button class="nav-item" data-mod="degrade-monitor">降级监控</button>
       <button class="nav-item" data-mod="logs">运行日志</button>
+      <button class="nav-item" data-mod="biz-deps">业务依赖</button>
+      <button class="nav-item" data-mod="validate">资源校验</button>
+      <button class="nav-item" data-mod="dialogue">验收对话</button>
+      <div class="nav-group">技能与模板</div>
+      <button class="nav-item" data-mod="models">模型治理</button>
+      <button class="nav-item" data-mod="templates">模板工作台</button>
       <button class="nav-item" data-mod="knowledge">知识导入</button>
-      <button class="nav-item" data-mod="dialogue">对话运行</button>
+      <button class="nav-item" data-mod="permissions">权限矩阵</button>
+      <div class="nav-group">接入与安全</div>
       <button class="nav-item" data-mod="integrations">第三方API</button>
       <button class="nav-item" data-mod="openapi">Open API</button>
       <button class="nav-item" data-mod="authaccess">认证接入</button>
       <button class="nav-item" data-mod="embeds">第三方嵌入</button>
-      <button class="nav-item" data-mod="mapstudio">地图工坊</button>
-      <button class="nav-item" data-mod="permissions">权限矩阵</button>
       <button class="nav-item" data-mod="config">系统配置</button>
+      <div class="nav-group">工具</div>
+      <button class="nav-item" data-mod="mapstudio">地图工坊</button>
     </nav>
   </aside>
   <main class="content">
     <header class="topbar">
-      <h1 id="title">模型治理</h1>
+      <h1 id="title">上线就绪</h1>
       <div id="topbar-actions"></div>
     </header>
     <section id="view"></section>
   </main>
   <div id="modal-root"></div>
-  <script type="module" src="/admin/admin.js?v=20260804-d"></script>
+  <script type="module" src="/admin/admin.js?v=20260813-admin-p0"></script>
 </body>
 </html>

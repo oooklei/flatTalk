@@ -1,9 +1,8 @@
 # flatTalk 服务容器化部署配置
-# 使用国内镜像加速器
+# 使用目标机本地 node 镜像，避免轩辕代理 429
 
 # ==================== 构建阶段 ====================
-# 使用轩辕镜像（docker.xuanyuan.me）作为 Docker Hub 代理
-FROM docker.xuanyuan.me/library/node:20-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -20,14 +19,15 @@ RUN npm ci
 COPY . .
 
 # ==================== 生产阶段 ====================
-FROM docker.xuanyuan.me/library/node:20-alpine AS production
+FROM node:20-alpine AS production
 
 # 安装 tini 作为进程管理器（优雅退出）
 RUN apk add --no-cache tini
 
 # 创建非 root 用户运行应用
-RUN addgroup -g 1000 flattalk && \
-    adduser -u 1000 -G flattalk -s /bin/sh -D flattalk
+# node:20-alpine 已占用 uid/gid 1000，改用 1001
+RUN addgroup -g 1001 flattalk && \
+    adduser -u 1001 -G flattalk -s /bin/sh -D flattalk
 
 WORKDIR /app
 
