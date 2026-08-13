@@ -112,3 +112,19 @@ src/services/_copied-source/
 
 # Skill package dumps
 src/skills/*.zip
+
+# More local dumps / generated docs
+data/flyai-kb/*.json
+data/sojourn-maps/**/*.svg
+docs/_extracted/
+docs/diagrams/
+docs/reports/
+docs/LIS-System/*.backup.json
+docs/LIS-System/*.candidates.json
+docs/LIS-System/baseline-report.txt
+docs/**/*.xlsx
+docs/**/*.csv
+docs/**/*.docx
+docs/**/*.zip
+docs/**/*.html
+docs/flatTalk*
