@@ -2,7 +2,7 @@
  * LIS pure-SORT gate — feature-flagged pre-scene-router consumer.
  *
  * Env:
- *   LIS_GATE_ENABLED — set to '1' to enable (default off)
+ *   LIS_GATE_ENABLED — 默认开启；设为 `0`/`false` 关闭（回退 scene-router）
  *   LIS_BASE_URL     — LIS HTTP base (default http://127.0.0.1:8100)
  *   LIS_TIMEOUT_MS   — per-call timeout (default 2000, see lis-client.js)
  *   LIS_SORT_RETRIES — extra sort attempts after first failure (default 2)
@@ -19,6 +19,13 @@ import { decideRoute } from './routing-gate.js';
 import { projectDialogueView, projectBizHints } from './context-projector.js';
 import { matchSupplyToCatalog } from './matcher.js';
 import { lisBreaker } from './lis-breaker.js';
+import {
+  hasSkillAnchor,
+  isWeakOrChitchatUtterance,
+  strongAcceptThreshold,
+} from './utterance-guards.js';
+import { reportLowConfidenceToCorpus } from './corpus-reporter.js';
+import { recordDegrade, recordKeepOk } from '../observability/degradation-monitor.js';
 
 /** @type {const} */
 export const LIS_GATE_ENABLED = 'LIS_GATE_ENABLED';
@@ -43,7 +50,12 @@ let _catalogStamp = null;
  * @returns {boolean}
  */
 export function isLisGateEnabled(env = process.env) {
-  return String(env?.[LIS_GATE_ENABLED] ?? '') === '1';
+  const raw = env?.[LIS_GATE_ENABLED];
+  // SHOULD：默认开启；显式 0/false/off 才关闭
+  if (raw === undefined || raw === null || String(raw).trim() === '') return true;
+  const v = String(raw).trim().toLowerCase();
+  if (v === '0' || v === 'false' || v === 'off' || v === 'no') return false;
+  return v === '1' || v === 'true' || v === 'on' || v === 'yes';
 }
 
 /**
@@ -51,7 +63,11 @@ export function isLisGateEnabled(env = process.env) {
  * @returns {string}
  */
 export function getLisBaseUrl(env = process.env) {
-  return String(env?.[LIS_BASE_URL] || DEFAULT_LIS_BASE_URL).replace(/\/$/, '');
+  return String(
+    env?.[LIS_BASE_URL]
+    || env?.FLATTALK_LIS_BASE_URL
+    || DEFAULT_LIS_BASE_URL,
+  ).replace(/\/$/, '');
 }
 
 /**
@@ -181,6 +197,17 @@ export async function tryLisGate({
   }
 
   const utterance = String(request.message || request.text || '').trim();
+
+  // 闲聊预检：不调 LIS.sort，直接 LLM 兜底（省 1～2s + 避免 MATCH_OK 误锁）
+  if (isWeakOrChitchatUtterance(utterance) && !request.context?.action_key && !selectedIntentId) {
+    recordKeepOk('chitchat_llm_fallback', 'precheck_skip_sort');
+    return {
+      handled: false,
+      mode: 'SORT',
+      reason: 'chitchat_llm_fallback',
+    };
+  }
+
   const dialogue = projectDialogueView(sess, { ticket: null });
   const biz_hints = projectBizHints({
     request,
@@ -200,6 +227,7 @@ export async function tryLisGate({
   });
 
   if (breaker.shouldSkip()) {
+    recordDegrade('lis_breaker_suppress', 'sort_skipped');
     return { handled: false, mode: 'SORT', reason: 'lis_unavailable' };
   }
 
@@ -208,6 +236,7 @@ export async function tryLisGate({
   let lastErr = null;
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     if (attempt > 1 && breaker.shouldSkip()) {
+      recordDegrade('lis_breaker_suppress', `sort_retry_skipped attempt=${attempt}`);
       return { handled: false, mode: 'SORT', reason: 'lis_unavailable' };
     }
     try {
@@ -233,6 +262,7 @@ export async function tryLisGate({
   }
 
   if (lastErr || !supply) {
+    recordDegrade('lis_unreachable', lastErr?.message || 'no_supply');
     return { handled: false, mode: 'SORT', reason: 'lis_unreachable' };
   }
 
@@ -240,17 +270,63 @@ export async function tryLisGate({
   sess.global_context.routing_ticket = null;
 
   const decisionStatus = String(supply?.decision?.status || '');
+
+  // 闲聊 / 纯标点：禁止业务场景锁死，交给 orchestrator LLM+answer 兜底
+  if (isWeakOrChitchatUtterance(utterance) && !request.context?.action_key) {
+    sess.global_context.pending_clarify_supply = null;
+    recordKeepOk('chitchat_llm_fallback', 'after_sort');
+    return {
+      handled: false,
+      mode: 'SORT',
+      reason: 'chitchat_llm_fallback',
+      supply,
+    };
+  }
+
   if (decisionStatus === 'MATCH_OK') {
     sess.global_context.pending_clarify_supply = null;
     const hit = matchSupplyToCatalog(supply, entries);
     if (hit.ok && hit.entry) {
+      const maxConf = Number(
+        supply?.decision?.max_confidence
+        ?? hit.intent?.confidence
+        ?? 0,
+      );
+      const strongFloor = strongAcceptThreshold();
+      const skillKey = hit.entry.skill_key || '';
+      const anchored = hasSkillAnchor(utterance, skillKey);
+
+      // 低置信且话语无该技能锚点 → 不锁业务，走 LLM 通用兜底（避免「你是谁」→旅居）
+      if (Number.isFinite(maxConf) && maxConf < strongFloor && !anchored) {
+        reportLowConfidenceToCorpus({
+          utterance,
+          predicted_intent_id: hit.intent?.intent_id || null,
+          predicted_confidence: maxConf,
+          decision_status: 'MATCH_OK_MARGINAL',
+          reason: 'low_confidence_llm_fallback',
+          trace_id: supply?.trace_id || null,
+        });
+        recordDegrade('match_ok_marginal', {
+          detail: hit.intent?.intent_id || '',
+          confidence: maxConf,
+        });
+        return {
+          handled: false,
+          mode: 'SORT',
+          reason: 'low_confidence_llm_fallback',
+          supply,
+          intent: hit.intent,
+          intent_suggestions: hit.suggestions || [],
+        };
+      }
+
       // Persist last LIS-locked scene for next-turn BizHints soft bias
-      sess.global_context.lis_locked_scene = hit.entry.skill_key || '';
+      sess.global_context.lis_locked_scene = skillKey;
       sess.global_context.lis_locked_intent = hit.intent?.intent_id || '';
       sess.global_context.lis_locked_template = hit.entry.template_id || '';
       return {
         handled: true,
-        skill_key: hit.entry.skill_key,
+        skill_key: skillKey,
         template_id: hit.entry.template_id,
         intent: hit.intent,
         intent_suggestions: hit.suggestions || [],
@@ -276,11 +352,23 @@ export async function tryLisGate({
 
   if (decisionStatus === 'NEED_CLARIFY') {
     sess.global_context.pending_clarify_supply = null;
+    recordKeepOk('need_clarify_empty_to_llm', 'empty_clarify_options');
   }
 
   if (decisionStatus === 'LLM_FALLBACK_HINT') {
     sess.global_context.pending_clarify_supply = null;
   }
+
+  // LIS 未锁技能的有意义输入：双保险上报语料（LIS 侧通常已采；此处补 catalog 未命中等漏网）
+  const topIntent = Array.isArray(supply?.intents) ? supply.intents[0] : null;
+  reportLowConfidenceToCorpus({
+    utterance,
+    predicted_intent_id: topIntent?.intent_id || null,
+    predicted_confidence: Number(supply?.decision?.max_confidence ?? topIntent?.confidence ?? 0),
+    decision_status: decisionStatus || 'unmatched',
+    reason: decisionStatus || 'unmatched',
+    trace_id: supply?.trace_id || null,
+  });
 
   return { handled: false, mode: 'SORT', supply, reason: decisionStatus || 'unmatched' };
 }

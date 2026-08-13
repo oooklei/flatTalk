@@ -167,10 +167,10 @@ export class SessionStore {
       }
     }
 
-    // 清理失效索引
+    // 清理失效索引（保持 Redis LIST 语义，禁止 setJson 写成 STRING）
     if (staleIds.length > 0) {
       const validIds = ids.filter((id) => !staleIds.includes(id));
-      await this.stateStore.setJson('conversations:index', validIds);
+      await this.stateStore.replaceListJson('conversations:index', validIds);
     }
 
     return conversations;
@@ -190,11 +190,11 @@ export class SessionStore {
   async deleteConversation(conversationId) {
     if (!conversationId) return false;
     await this.stateStore.clear(conversationKey(conversationId));
-    // 清理索引中的已删除 ID
+    // 清理索引中的已删除 ID（保持 LIST）
     const ids = await this.stateStore.listJson('conversations:index');
     const filtered = ids.filter((id) => id !== conversationId);
     if (filtered.length !== ids.length) {
-      await this.stateStore.setJson('conversations:index', filtered);
+      await this.stateStore.replaceListJson('conversations:index', filtered);
     }
     return true;
   }

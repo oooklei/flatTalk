@@ -6,17 +6,15 @@ import { json, readJsonSafe, maskApiKey } from './util.js';
 
 const REG = 'integrations';
 
+/** 已下线集成：启动时从登记表强制剔除，避免旧数据残留 */
+const REMOVED_INTEGRATION_KEYS = new Set([
+  'nuwax',
+  'business_system',
+  'ext_svc_1',
+  'ext_svc_2',
+]);
+
 const SEEDS = [
-  {
-    key: 'nuwax',
-    name: '女娲平台 NuwaX',
-    category: 'AI平台',
-    base_url: 'http://43.138.143.130:9015',
-    auth_type: 'none',
-    test_path: '/',
-    env_keys: ['NUWAX_BASE_URL', 'NUWAX_ACCOUNT', 'NUWAX_PASSWORD', 'NUWAX_SPACE_ID'],
-    description: '远程智能体对话、技能和知识库编排。',
-  },
   {
     key: 'tavily',
     name: 'Tavily 网页搜索',
@@ -56,35 +54,35 @@ const SEEDS = [
     base_url: 'https://devapi.qweather.com',
     auth_type: 'header',
     auth_name: 'X-QW-Api-Key',
-    test_path: '/v7/warning/now?location=101300101',
+    test_path: '/v7/weather/now?location=101300101',
     env_keys: ['QWEATHER_KEY', 'QWEATHER_BASE_URL'],
-    description: '灾害预警查询。',
+    description: '天气与灾害预警查询。',
   },
   {
     key: 'ocr',
     name: 'OCR 通用识别',
     category: '感知',
-    base_url: '',
+    base_url: 'http://gxy-tencent-asr:8020',
     auth_type: 'none',
-    test_path: '/',
+    test_path: '/api/v1/ocr/general',
     env_keys: ['OCR_ENDPOINT'],
-    description: '图片文字识别。',
+    description: '图片文字识别（Tesseract，部署在 gxy-tencent-asr）。',
   },
   {
     key: 'volc_asr',
     name: '火山引擎 ASR',
     category: '感知',
-    base_url: 'https://10.21.202.9:9080',
-    auth_type: 'bearer',
-    test_path: '/asr/file',
-    env_keys: ['ASR_ENDPOINT', 'VOLCENGINE_APP_ID', 'VOLCENGINE_ACCESS_TOKEN', 'VOLCENGINE_RESOURCE_ID'],
-    description: '语音转写（文件上传 /asr/file，流式 /asr/stream）。sauc-api 容器，端口 9080(HTTPS)。',
+    base_url: 'http://gxy-sauc-api:8000',
+    auth_type: 'none',
+    test_path: '/health',
+    env_keys: ['VOLC_ASR_BASE_URL', 'ASR_APP_KEY', 'ASR_ACCESS_KEY'],
+    description: '语音转写（文件上传 /asr/file，流式 /asr/stream）。sauc-api 容器。',
   },
   {
     key: 'tencent_asr',
     name: '腾讯云一句话识别',
     category: '感知',
-    base_url: 'http://10.21.202.9:8020',
+    base_url: 'http://gxy-tencent-asr:8020',
     auth_type: 'none',
     test_path: '/health',
     env_keys: ['TENCENT_ASR_ENDPOINT', 'TENCENT_ASR_APP_ID', 'TENCENT_ASR_SECRET_ID', 'TENCENT_ASR_SECRET_KEY'],
@@ -94,7 +92,7 @@ const SEEDS = [
     key: 'profile_tags',
     name: '老人画像标签',
     category: '业务数据',
-    base_url: '',
+    base_url: 'http://gxy-tag:8010',
     auth_type: 'bearer',
     test_path: '/',
     env_keys: ['PROFILE_TAG_API_BASE_URL', 'PROFILE_TAG_SSO_USERNAME', 'PROFILE_TAG_SSO_PASSWORD', 'PROFILE_TAG_API_TOKEN'],
@@ -104,12 +102,19 @@ const SEEDS = [
     key: 'tag_system',
     name: '统一标签系统',
     category: '业务数据',
-    base_url: 'http://10.21.202.9:8010',
+    base_url: 'http://gxy-tag:8010',
     auth_type: 'header',
-    auth_name: 'X-Client-Key',
-    test_path: '/',
-    env_keys: ['TAG_SYSTEM_SSO_TOKEN', 'TAG_SYSTEM_CLIENT_KEY', 'FLATTALK_TAG_SYSTEM_PG_URL'],
-    description: '实体标签读取。',
+    auth_name: 'X-API-Key',
+    test_path: '/api/v1/health',
+    env_keys: [
+      'FLATTALK_TAG_SYSTEM_API_KEY',
+      'FLATTALK_TAG_SYSTEM_TOKEN',
+      'FLATTALK_TAG_SYSTEM_BASE_URL',
+      'FLATTALK_TAG_SYSTEM_PG_URL',
+      'TAG_SYSTEM_CLIENT_KEY',
+      'TAG_SYSTEM_SSO_TOKEN',
+    ],
+    description: '实体标签 HTTP API（X-API-Key）与可选 PG 回退。',
   },
   {
     key: 'jtd',
@@ -131,16 +136,6 @@ const SEEDS = [
     env_keys: ['UNIFIED_AUTH_BASE_URL', 'UNIFIED_AUTH_USERNAME', 'UNIFIED_AUTH_PASSWORD', 'ORDER_SYSTEM_BASE_URL'],
     description: '统一认证、订单和工单查询。',
   },
-  {
-    key: 'business_system',
-    name: '业务系统接口',
-    category: '业务数据',
-    base_url: '',
-    auth_type: 'bearer',
-    test_path: '/',
-    env_keys: ['GXY_BUSINESS_SYSTEM_BASE_URL', 'GXY_BUSINESS_SYSTEM_TOKEN'],
-    description: 'current-user、工单动作和消息发布。',
-  },
 ];
 
 export function loadIntegrations() {
@@ -150,6 +145,9 @@ export function loadIntegrations() {
     data.items = SEEDS.map((seed, index) => ({ id: index + 1, status: 'active', config: {}, ...seed }));
     dirty = true;
   }
+  const before = data.items.length;
+  data.items = data.items.filter((item) => item && !REMOVED_INTEGRATION_KEYS.has(item.key));
+  if (data.items.length !== before) dirty = true;
   if (migrateExternalServices(data)) dirty = true;
   if (dirty) writeReg(REG, data);
   return data;
@@ -167,6 +165,8 @@ function migrateExternalServices(data) {
   let changed = false;
   for (const service of legacy) {
     if (!service || !service.name) continue;
+    // 占位/已下线外部服务不再迁入
+    if (/天气服务|医保查询/i.test(service.name) || /api\.weather\.com|api\.medical\.gov/i.test(service.base_url || '')) continue;
     if (data.items.some((item) => item.name === service.name || (service.base_url && item.base_url === service.base_url))) continue;
     data.items.push({
       id: nextId(data.items),

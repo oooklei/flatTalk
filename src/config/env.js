@@ -13,7 +13,7 @@ export function loadEnv() {
     runtimeMode: process.env.FLATTALK_RUNTIME_MODE || "local",
     pgUrl: process.env.FLATTALK_PG_URL || process.env.FLATTALK_TAG_SYSTEM_PG_URL || process.env.TAG_SYSTEM_PG_URL || "",
     redisUrl: process.env.FLATTALK_REDIS_URL || process.env.TAG_SYSTEM_REDIS_URL || "",
-    tagSystemBaseUrl: process.env.FLATTALK_TAG_SYSTEM_BASE_URL || "http://10.21.202.9:8010",
+    tagSystemBaseUrl: process.env.FLATTALK_TAG_SYSTEM_BASE_URL || "http://127.0.0.1:8010",
     tagSystemPgUrl: process.env.FLATTALK_TAG_SYSTEM_PG_URL || process.env.FLATTALK_PG_URL || process.env.TAG_SYSTEM_PG_URL || "",
     // 文档认证：X-API-Key。兼容旧 TOKEN / SSO 变量名。
     tagSystemApiKey:

@@ -15,6 +15,8 @@
  * 且各实例到 LIS 的网络状况本就可能不同。
  */
 
+import { recordDegrade } from '../observability/degradation-monitor.js';
+
 /** 连续失败多少次后开启熔断 */
 const FAILURE_THRESHOLD = 3;
 
@@ -79,6 +81,7 @@ export function createLisBreaker({
       // 试探失败 → 重新熔断，冷却时间重新计时
       halfOpen = false;
       openedAt = now();
+      recordDegrade('lis_breaker_open', { detail: message, op, probe: true });
       logger.warn?.('[LIS-GATE] probe failed, reopening breaker', { op, error: message });
       return;
     }
@@ -92,6 +95,7 @@ export function createLisBreaker({
 
     if (consecutiveFailures >= threshold && openedAt === 0) {
       openedAt = now();
+      recordDegrade('lis_breaker_open', { detail: message, op, failures: consecutiveFailures });
       logger.warn?.('[LIS-GATE] breaker opened — skipping LIS until cooldown elapses', {
         threshold,
         cooldown_ms: cooldownMs,

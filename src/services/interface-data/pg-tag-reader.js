@@ -1,4 +1,5 @@
 import pg from 'pg';
+import { recordDegrade } from '../../core/observability/degradation-monitor.js';
 
 const { Pool } = pg;
 
@@ -40,6 +41,7 @@ export class PgTagReader {
       );
       return { ok: true, source_status: 'real_pg', data: result.rows[0] || null };
     } catch (error) {
+      recordDegrade('tag_pg_error', { detail: error.message, code: error.code });
       return { ok: false, source_status: 'pg_error', error: error.message, code: error.code || 'TAG_SYSTEM_PG_ERROR' };
     }
   }
@@ -65,6 +67,7 @@ export class PgTagReader {
       );
       return { ok: true, source_status: 'real_pg', data: result.rows };
     } catch (error) {
+      recordDegrade('tag_pg_error', { detail: error.message, code: error.code });
       return { ok: false, source_status: 'pg_error', error: error.message, code: error.code || 'TAG_SYSTEM_PG_ERROR' };
     }
   }
