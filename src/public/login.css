@@ -1,0 +1,123 @@
+:root {
+  --bg0: #eef3ef;
+  --bg1: #dfe8e2;
+  --ink: #1c2a22;
+  --muted: #5c6b62;
+  --line: #c5d2c9;
+  --card: #f7faf8;
+  --accent: #2f6b4f;
+  --accent-soft: #e4f0e9;
+  --danger: #a33;
+  --serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--sans);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #c9ddd0 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #d7e4dc 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+}
+
+.login-shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 28px 18px 48px;
+}
+
+.login-hero {
+  margin-bottom: 18px;
+}
+.brand {
+  font-family: var(--serif);
+  font-size: 28px;
+  letter-spacing: .06em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.login-hero h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 600;
+}
+.sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.sub code {
+  font-size: 12px;
+  background: var(--accent-soft);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.status {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 12px 0 8px;
+}
+.status.err { color: var(--danger); }
+.meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.preset-card {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 14px 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
+}
+.preset-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.preset-card:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+.preset-card .name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.preset-card .role {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-bottom: 8px;
+}
+.preset-card .org,
+.preset-card .uid {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.login-foot {
+  margin-top: 28px;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}

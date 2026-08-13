@@ -1,0 +1,53 @@
+# flatTalk2 服务编排配置（独立端口，复用 flatTalk 的 PG/Redis）
+# 端口: HTTP 5299 / HTTPS 5445（避免与 flatTalk 的 5298/5444 冲突）
+# 网络: 加入 flatTalk 的外部网络 flattalk_flattalk-network，复用 postgres/redis 服务名
+
+version: '3.8'
+
+services:
+  flattalk2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: flattalk2:latest
+    container_name: flattalk2-app
+    restart: unless-stopped
+    ports:
+      # HTTP 端口（宿主机 5299 → 容器 5298）
+      - "5299:5298"
+      # HTTPS 端口（宿主机 5445 → 容器 5444）
+      - "5445:5444"
+    environment:
+      - NODE_ENV=production
+      - FLATTALK_HOST=0.0.0.0
+      - FLATTALK_PORT=5298
+      - FLATTALK_SSL_PORT=5444
+      - FLATTALK_SSL_KEY=/app/ssl/server.key
+      - FLATTALK_SSL_CERT=/app/ssl/server.crt
+      # 复用 flatTalk 的 PG/Redis（通过服务名访问，需在同一网络）
+      - FLATTALK_PG_URL=postgresql://tag_system:tag_system@postgres:5432/tag_system
+      - FLATTALK_TAG_SYSTEM_PG_URL=postgresql://tag_system:tag_system@postgres:5432/tag_system
+      - FLATTALK_REDIS_URL=redis://redis:6379/8
+    env_file:
+      - .env
+    volumes:
+      - ./ssl:/app/ssl:ro
+    networks:
+      - flattalk-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5298/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  flattalk-net:
+    external: true
+    name: flattalk_flattalk-network

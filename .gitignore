@@ -1,13 +1,14 @@
 # Dependencies
 node_modules/
 
-# Environment files (contain secrets)
+# Environment files / secrets (never commit)
 .env
 .env.local
 .env.*.local
 .env.dev
 .env.prod
 .env.deploy
+data/api-keys.json
 # 部署脚本生成的临时 env
 scripts/deploy/.env.gen
 
@@ -16,6 +17,8 @@ scripts/deploy/.env.gen
 npm-debug.log*
 logs/
 data/*.log
+data/flattalk.err
+data/*.err
 
 # Build artifacts
 dist/
@@ -38,6 +41,9 @@ coverage/
 # Development
 .codebuddy/
 .claude/
+.comate/
+.superpowers/
+.worktrees/
 
 # SSL certificates (private keys)
 ssl/server.key
@@ -48,29 +54,61 @@ ssl/server.crt
 # Asset copies
 assets/source-copies/
 
-# Temporary files
+# Temporary / scratch
 tmp/
 temp/
 *.tmp
 scripts/__pycache__/
 scripts/_out_tag_api_verify.json
 scripts/_out_*.json
+scripts/_*/
+scripts/_*.py
+scripts/_*.cjs
+scripts/_*.mjs
+scripts/_*.js
+scripts/_*.json
+scripts/_*.bat
+scripts/_*.txt
+_*.txt
+_*.mjs
+_*.py
+_proto_cards/
+.deploy-filelist.txt
+.flattalk.pid
+criptstest-remote.py
 
-# FlyAI KB raw snapshots (keep normalized docs + seeds)
+# Local dumps / caches
 data/flyai-kb/raw/**
 data/flyai-kb/*.raw.json
-
-# 本地知识库服务（已弃用，改用远程 gxy-local-kb）
+data/remote_health_*.json
+data/shezhen_report_*
+data/shezhen_reports/
+data/sojourn-map-art-batch-report.json
+data/sojourn-map-art-cache/
+data/spot-images/
+data/sojourn-maps/**/art_meta.json
 local-kb/
 
-# 原型文件 - 严禁删除
+# Archives / accidental root dumps (keep out of git)
+*.zip
+*.tar.gz
+*.tgz
+/*.xlsx
+/*.csv
+/*.docx
+docker-images/
+geographicSVG/
 proto/
-.worktrees/
 
-# Local scratch / runtime
-.flattalk.pid
-_*.txt
-_proto_cards/
-_proto_extract.mjs
-.deploy-filelist.txt
-.comate/
+# Accidental shell-capture filenames
+StrictHostKeyChecking=*
+h ===*
+ole.log*
+ervice_detail*
+
+# Public test frames / copied sources
+src/public/_test_frames/
+src/services/_copied-source/
+
+# Skill package dumps
+src/skills/*.zip
