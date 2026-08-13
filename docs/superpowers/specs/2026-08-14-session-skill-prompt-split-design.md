@@ -2,7 +2,7 @@
 
 **日期**: 2026-08-14  
 **范围**: flatTalk 模板卡 LLM 提示（`template-card` system / user）  
-**状态**: 待用户审阅  
+**状态**: **已实现**  
 **前置**: Context Bus `shared` 会话级 hydrate（姓名/角色/画像/天气，会话缓存）
 
 ## 1. 背景与目标

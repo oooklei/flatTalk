@@ -211,10 +211,11 @@ function buildMessages(input) {
   const businessData = input.business_data || {};
   const session_context_text = input.session_context_text
     || buildSessionContextText(businessData);
-  const split = input.session_profiles || input.skill_business_data
+  // Only honor explicit split when both halves are provided; otherwise auto-split.
+  const split = input.session_profiles && input.skill_business_data
     ? {
-        session_profiles: input.session_profiles || {},
-        skill_business_data: input.skill_business_data || {},
+        session_profiles: input.session_profiles,
+        skill_business_data: input.skill_business_data,
       }
     : splitBusinessDataForPrompt(businessData);
 
