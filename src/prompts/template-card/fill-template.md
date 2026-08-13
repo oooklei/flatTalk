@@ -17,8 +17,11 @@
 【知识库证据】
 {{evidence}}
 
-【业务表数据】
-{{business_data}}
+【会话画像】
+{{session_profiles}}
+
+【技能业务数据】
+{{skill_business_data}}
 
 【技能专属指令】
 {{skill_instruction}}
