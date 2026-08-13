@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN" data-template="travel_availability_card" data-layout="vertical">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>旅居可订状态</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --primary: #E8843C;
+      --primary-gradient: linear-gradient(135deg, #E8843C 0%, #F0B487 100%);
+      --bg: #FFFDF9;
+      --bg-white: #ffffff;
+      --ink: #3D3A36;
+      --ink-light: #666;
+      --muted: #8A8278;
+      --border: #E4E0D8;
+      --divider: #E4E0D8;
+      --primary-light: #FDF6F0;
+      --warn: #9a5b00;
+      --danger: #a53838;
+      --ok: #1f7a4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 14px;
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .card {
+      width: min(100%, 430px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 18px 16px 20px;
+      background: var(--bg-white);
+    }
+    header {
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    .status {
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--primary-light);
+    }
+    .status strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.2;
+      color: var(--primary);
+    }
+    .status[data-level="available"] strong { color: var(--ok); }
+    .status[data-level="unavailable"] strong { color: var(--danger); }
+    .status[data-level="mock"] strong,
+    .status[data-level="unknown"] strong { color: var(--warn); }
+    .message {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .metric {
+      min-height: 76px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-white);
+    }
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .metric strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    section {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      line-height: 1.3;
+    }
+    .rows {
+      display: grid;
+      gap: 8px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .row span { color: var(--muted); }
+    .row strong { font-weight: 650; overflow-wrap: anywhere; }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .action {
+      min-height: 36px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      background: var(--bg-white);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s, color .15s;
+    }
+    .action:hover { background: var(--primary); color: #fff; }
+  </style>
+</head>
+<body>
+  <article class="card">
+    <header>
+      <p class="eyebrow">金跳动可订校验</p>
+      <h1>{{availabilityTitle}}</h1>
+    </header>
+
+    <div class="status" data-level="{{availabilityLevel}}">
+      <strong>{{availabilityStatus}}</strong>
+      <p class="message">{{availabilityMessage}}</p>
+    </div>
+
+    <div class="grid">
+      <div class="metric"><span>库存余量</span><strong>{{stockLabel}}</strong></div>
+      <div class="metric"><span>校验价格</span><strong>{{priceLabel}}</strong></div>
+      <div class="metric"><span>入住日期</span><strong>{{checkWindow}}</strong></div>
+      <div class="metric"><span>数据来源</span><strong>{{sourceLabel}}</strong></div>
+    </div>
+
+    <section>
+      <h2>产品信息</h2>
+      <div class="rows">
+        <div class="row"><span>产品</span><strong>{{productName}}</strong></div>
+        <div class="row"><span>目的地</span><strong>{{destination}}</strong></div>
+        <div class="row"><span>产品ID</span><strong>{{productId}}</strong></div>
+        <div class="row"><span>SKU</span><strong>{{skuId}}</strong></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>下一步</h2>
+      <p class="message">{{nextStep}}</p>
+    </section>
+
+    <script type="application/json" id="sample-data">
+      {
+        "availabilityTitle": "广西北海旅居产品可订状态",
+        "availabilityStatus": "厂家联调 mock，可订结果仅供流程验证",
+        "availabilityLevel": "mock",
+        "availabilityMessage": "当前结果来自联调 mock 数据，不可作为真实下单依据。",
+        "stockLabel": "3",
+        "priceLabel": "约1380元/人",
+        "checkWindow": "待确认入住日期",
+        "sourceLabel": "金跳动 mock_vendor_data",
+        "productName": "广西北海暖冬海滨旅居四日",
+        "destination": "广西北海",
+        "productId": "jtd_mock_beihai_001",
+        "skuId": "sku_beihai_4d",
+        "nextStep": "如需正式预订，请接入金跳动真实环境并完成日期、人数、库存复核。"
+      }
+    </script>
+  </article>
+</body>
+</html>

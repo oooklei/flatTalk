@@ -1,0 +1,28 @@
+{
+  "status": "已处理",
+  "title": "护理员上门迟到32分钟，未提前通知",
+  "complaintId": "CP-20260801-003",
+  "createdAt": "2026-08-01 14:30",
+  "severity": "一般",
+  "complainant": "陈**家属",
+  "orgName": "阳光社区养老服务中心",
+  "staffName": "张美丽",
+  "complaintType": "服务时效",
+  "workOrderNo": "WO-20260801-003",
+  "description": "预约上门护理时间为下午 2 点，护理员实际到达时间为 2 点 32 分，且未提前电话通知，影响老人午休后的护理安排。",
+  "timeline": [
+    { "time": "08-01 14:30", "node": "投诉提交", "detail": "家属通过老人端提交投诉", "stepClass": "bad" },
+    { "time": "08-01 15:00", "node": "系统分派", "detail": "投诉自动派发至机构管理员", "stepClass": "" },
+    { "time": "08-01 17:00", "node": "联系投诉人", "detail": "机构电话回访并说明原因", "stepClass": "" },
+    { "time": "08-02 09:00", "node": "处理完成", "detail": "投诉人确认满意，工单关闭", "stepClass": "done" }
+  ],
+  "orgImpact": "-2.3",
+  "staffImpact": "-4.1",
+  "impactClass": "bad",
+  "impactAnalysis": "该投诉计入 T-1 投诉工单数，影响机构与人员 D4 投诉率；如连续出现同类投诉，应触发整改建议。",
+  "resultTitle": "已完成回访与规范提醒",
+  "satisfaction": "满意",
+  "satisfactionClass": "ok",
+  "resultText": "机构已对护理员进行谈话提醒，并建立迟到提前通知规范；投诉人确认不再追诉。",
+  "source": "服务质量评估 · 投诉详情"
+}

@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-CN" data-layout="vertical">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>康养基地推荐卡片模板</title>
+<style>
+  :root {
+    --primary: #E8843C;
+    --primary-gradient: linear-gradient(135deg, #E8843C 0%, #F0B487 100%);
+    --bg: #FFFDF9; --bg-white: #ffffff;
+    --ink: #3D3A36; --ink-light: #666; --muted: #8A8278;
+    --border: #E4E0D8; --divider: #E4E0D8; --price: #E8843C;
+    --pin: #E74C3C; --primary-light: #FDF6F0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+
+  .chat-section-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    margin: 0 0 10px;
+  }
+  .chat-section-title .ico {
+    width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+    background: linear-gradient(145deg, #F0B487, #E8843C);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+  }
+
+  .intro {
+    font-size: 13px; line-height: 1.7; color: var(--ink-light);
+    margin: 0 0 12px;
+  }
+  .intro .why-title {
+    color: var(--ink); font-weight: 600; margin-bottom: 4px;
+  }
+  .intro .why-list {
+    margin: 4px 0 10px; padding: 0; list-style: none;
+  }
+  .intro .why-list li {
+    position: relative; padding-left: 1.4em; margin: 2px 0;
+  }
+  .pick-line {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    margin: 0 0 10px;
+  }
+
+  .chat-hotel-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 12px 12px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .chat-hotel-card.primary {
+    border: 2px solid var(--primary);
+    box-shadow: 0 2px 10px rgba(255, 120, 38, 0.12);
+  }
+  .chat-hotel-badge {
+    position: absolute; top: 0; left: 0;
+    padding: 4px 10px 4px 8px;
+    background: var(--primary); color: #fff;
+    font-size: 11px; font-weight: 700;
+    border-radius: 14px 0 10px 0;
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+  .chat-hotel-card.primary { padding-top: 28px; }
+
+  .chat-hotel-name {
+    font-size: 16px; font-weight: 800; line-height: 1.35;
+    margin: 0 0 4px;
+  }
+  .chat-hotel-sub {
+    font-size: 12px; color: var(--muted); margin: 0 0 6px;
+  }
+  .chat-hotel-addr {
+    display: flex; align-items: flex-start; gap: 4px;
+    font-size: 12px; color: var(--ink-light); margin: 0 0 10px; line-height: 1.5;
+  }
+  .chat-hotel-addr .pin {
+    color: var(--pin); flex-shrink: 0; font-size: 12px; line-height: 1.5;
+  }
+
+  .chat-hotel-reason {
+    font-size: 12px; color: var(--ink-light); line-height: 1.65;
+    background: #F5F5F5; border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 10px;
+  }
+  .chat-hotel-reason b,
+  .chat-hotel-reason strong { color: var(--ink); font-weight: 700; }
+
+  .chat-hotel-facts { font-size: 12px; }
+  .fact-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 7px 0; border-bottom: 1px solid #F3F0EA;
+  }
+  .fact-row:last-child { border-bottom: none; }
+  .fact-label {
+    flex-shrink: 0; width: 56px; color: var(--muted); font-weight: 500;
+  }
+  .fact-value { flex: 1; color: var(--ink); line-height: 1.5; }
+
+  .chat-hotel-pricebox {
+    margin-top: 10px;
+    background: #FFF4E8;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .chat-hotel-price {
+    font-size: 13px; color: var(--price); font-weight: 700; line-height: 1.4;
+  }
+  .chat-hotel-price .num {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+  }
+  .chat-hotel-total {
+    margin-top: 2px; font-size: 12px; color: var(--price); font-weight: 600;
+  }
+  .chat-hotel-rating {
+    margin-top: 4px; font-size: 11px; color: var(--muted); font-weight: 400;
+  }
+
+  .note {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.6;
+  }
+  .note::before {
+    content: "!";
+    flex-shrink: 0; width: 14px; height: 14px; margin-top: 2px;
+    border-radius: 50%; background: var(--primary); color: #fff;
+    font-size: 10px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+
+  /* 地图区块 */
+  .map-section { margin-top: 12px; border-top: 1px solid var(--divider); padding-top: 10px; }
+  .map-section h3 {
+    display: flex; align-items: center; gap: 6px;
+    margin: 0 0 8px; font-size: 15px; font-weight: 700; color: var(--ink);
+  }
+  .map-wrap { position: relative; width: 100%; height: 220px; background: #F0EDE7; overflow: hidden; border-radius: 10px; }
+  .base-static-img { width: 100%; height: 220px; object-fit: cover; border-radius: 10px; display: block; }
+  .map-pin-label {
+    position: absolute; top: 8px; left: 10px;
+    background: rgba(255,120,38,.92); color: #fff;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; z-index: 10;
+  }
+  /* POI 列表 */
+  .poi-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .poi-item {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 8px 10px; background: #fff;
+    border: 1px solid #E4E0D8; border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(61,58,54,.08);
+  }
+  .poi-pin { flex-shrink: 0; font-size: 14px; line-height: 1.5; }
+  .poi-info { flex: 1; min-width: 0; }
+  .poi-name { font-size: 13px; font-weight: 700; color: #3D3A36; }
+  .poi-addr { font-size: 12px; color: #6B6660; margin-top: 2px; line-height: 1.5; }
+  .poi-coord { font-size: 11px; color: #8A8278; margin-top: 2px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="chat-section-title">
+      <span class="ico">🏨</span>
+      <span>{{title|旅居康养基地推荐}}</span>
+    </div>
+
+    <div class="intro">{{{intro|⏳ 为什么优先推荐康养基地而非普通酒店？}}}</div>
+
+    {{#bases}}
+    <div class="chat-hotel-card {{cardCls|}}">
+      {{#badge}}<div class="chat-hotel-badge">{{.}}</div>{{/badge}}
+      <div class="chat-hotel-name">{{name|康养基地}}</div>
+      <div class="chat-hotel-sub">{{sub|定位说明}}</div>
+      {{#address}}
+      <div class="chat-hotel-addr"><span class="pin">📍</span><span>{{.}}</span></div>
+      {{/address}}
+      <div class="chat-hotel-reason">{{{reason|推荐理由}}}</div>
+      <div class="chat-hotel-facts">
+        {{#facts}}
+        <div class="fact-row">
+          <span class="fact-label">{{label|项目}}</span>
+          <span class="fact-value">{{value|—}}</span>
+        </div>
+        {{/facts}}
+      </div>
+      <div class="chat-hotel-pricebox">
+        <div class="chat-hotel-price"><span class="num">¥{{price|—}}</span>{{priceUnit|/人/天}}</div>
+        {{#totalNote}}<div class="chat-hotel-total">{{.}}</div>{{/totalNote}}
+        <div class="chat-hotel-rating">平台评分: {{rating|4.8}}{{ratingNote|}}</div>
+      </div>
+    </div>
+    {{/bases}}
+
+    <div class="note">{{note|以上价格仅供参考，以下门店实时为准。已自动过滤无电梯、远离医疗机构、无食堂的住宿。}}</div>
+
+    <section class="map-section">
+      <h3>📍 基地位置分布</h3>
+      <div class="map-wrap">
+        <span class="map-pin-label">{{centerName|目的地}}</span>
+        {{#static_map_img}}<img class="base-static-img" src="{{static_map_img}}" alt="基地地图" referrerpolicy="no-referrer" loading="lazy" />{{/static_map_img}}
+        {{^static_map_img}}{{#static_map_url}}<img class="base-static-img" src="{{static_map_url}}" alt="基地地图" referrerpolicy="no-referrer" loading="lazy" />{{/static_map_url}}{{/static_map_img}}
+        {{^static_map_img}}{{^static_map_url}}<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#8A8278;font-size:13px;">地图加载中（{{centerName|目的地}}）</div>{{/static_map_url}}{{/static_map_img}}
+      </div>
+      <div class="poi-list">
+        {{#map_markers}}
+        <div class="poi-item">
+          <span class="poi-pin">📍</span>
+          <div class="poi-info">
+            <div class="poi-name">{{name|基地}}</div>
+            {{#address}}<div class="poi-addr">{{.}}</div>{{/address}}
+            <div class="poi-coord">{{lat}},{{lng}}</div>
+          </div>
+        </div>
+        {{/map_markers}}
+      </div>
+    </section>
+
+    <!-- 紧密追问区 -->
+    {{{compact_followups}}}
+  </div>
+<script type="application/json">
+{
+  "title": "旅居康养基地推荐",
+  "intro": "示例摘要",
+  "note": "以上价格仅供参考，以下门店实时为准。已自动过滤无电梯、远离医疗机构、无食堂的住宿。",
+  "centerName": "目的地",
+  "compact_followups": ""
+}
+</script>
+</body>
+</html>

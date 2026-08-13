@@ -1,0 +1,8 @@
+{
+  "skill_key": "common",
+  "name": "养老政策咨询与通用问答",
+  "version": "0.1.0",
+  "runtime": "flatTalk",
+  "default_template": "answer",
+  "description": "承接养老政策咨询、办事指引、系统使用帮助和无法归入专属技能的通用问答。"
+}

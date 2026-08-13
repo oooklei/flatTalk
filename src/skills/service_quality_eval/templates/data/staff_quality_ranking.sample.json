@@ -1,0 +1,22 @@
+{
+  "badge": "机构管理端 · 人员排名",
+  "orgName": "阳光社区养老服务中心",
+  "period": "2026-08-01",
+  "staffTotal": 58,
+  "adaptCount": 12,
+  "warningCount": 6,
+  "ranking": [
+    { "rank": 1, "noClass": "ok", "itemClass": "ok", "staffName": "李秀琴", "serviceType": "上门服务", "score": 96.1, "level": "A", "levelClass": "ok", "tag": "服务适配", "tagClass": "good", "workOrders": 92, "complaints": 0, "delta": "+1.4" },
+    { "rank": 2, "noClass": "ok", "itemClass": "ok", "staffName": "王桂芳", "serviceType": "院内服务", "score": 94.0, "level": "A", "levelClass": "ok", "tag": "服务适配", "tagClass": "good", "workOrders": 88, "complaints": 0, "delta": "+0.9" },
+    { "rank": 3, "noClass": "blue", "itemClass": "", "staffName": "张美丽", "serviceType": "上门服务", "score": 91.2, "level": "A", "levelClass": "blue", "tag": "常规归档", "tagClass": "", "workOrders": 86, "complaints": 1, "delta": "-0.4" },
+    { "rank": 58, "noClass": "bad", "itemClass": "bad", "staffName": "孙伟", "serviceType": "巡访服务", "score": 55.8, "level": "D", "levelClass": "bad", "tag": "预警推送", "tagClass": "bad", "workOrders": 47, "complaints": 3, "delta": "-4.1" }
+  ],
+  "complaintTopCount": 2,
+  "complaintTop": [
+    { "staffName": "孙伟", "count": 3, "summary": "服务态度与巡访记录缺失集中出现", "itemClass": "bad", "pillClass": "bad" },
+    { "staffName": "陈建华", "count": 2, "summary": "签到签退不完整，影响 D2 流程完成度", "itemClass": "warn", "pillClass": "warn" }
+  ],
+  "alertClass": "warn",
+  "supervisionNote": "后 10% 人员建议由机构管理员发起谈话与复训，并在 7 日内复评；连续两期预警需调整排班。",
+  "source": "服务质量评估 · 人员排名"
+}

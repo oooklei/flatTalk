@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>人工复核申请（由 health_warning_card 派生，样式一致）</title>
+  <link rel="stylesheet" href="_health_warning.css" />
+</head>
+<body>
+<div class="card health-warning-card" data-template="health_warning_card">
+  <div class="hw-banner" style="background:linear-gradient(135deg,{{levelColor|#E8843C}},{{levelColor|#E8843C}}cc)">
+    <div class="hw-banner-left">
+      <div class="hw-badge">{{badge|健康风险预警}}</div>
+      <div class="hw-level">{{levelIcon|⚠️}} 风险等级：{{level|关注}}</div>
+    </div>
+    <div class="hw-banner-right">
+      <div class="hw-elder">{{elderName}} · {{elderAge}}</div>
+      <div class="hw-time">{{assessTime|2026-07-30 18:20}}</div>
+    </div>
+  </div>
+
+  <div class="hw-block">
+    <div class="hw-section-title">📋 综合研判</div>
+    <div class="hw-text">{{summary|结合老人近 7 天设备信号与风险规则，当前风险等级为“关注”，建议加强居家观察并补充远程指标。}}</div>
+  </div>
+
+  <div class="hw-block">
+    <div class="hw-section-title">📡 触发信号（{{signals_count|2}}）</div>
+    {{#signals}}
+    <div class="hw-signal-row">
+      <span class="hw-signal-type">{{type|血压}}</span>
+      <span class="hw-signal-value">{{value|148/92 mmHg}}</span>
+      <span class="hw-signal-status hw-status-{{status|abnormal}}">{{status_label|异常}}</span>
+      <span class="hw-signal-source">{{source|本地设备}}</span>
+    </div>
+    {{/signals}}
+  </div>
+
+  <div class="hw-block">
+    <div class="hw-section-title">⚖️ 命中风险规则（{{rules_count|1}}）</div>
+    {{#rules}}
+    <div class="hw-rule-row">
+      <div class="hw-rule-name">{{ruleName|血压持续偏高}}</div>
+      <div class="hw-rule-meta">
+        <span class="hw-rule-level hw-status-{{ruleLevelStatus|abnormal}}">{{riskLevel|关注}}</span>
+        <span class="hw-rule-cond">{{condition|收缩压≥140 且持续≥3天}}</span>
+      </div>
+    </div>
+    {{/rules}}
+  </div>
+
+  <div class="hw-block">
+    <div class="hw-section-title">✅ 处置建议（{{actions_count|2}}）</div>
+    {{#recommendedActions}}
+    <div class="hw-action-row">
+      <span class="hw-action-prio hw-prio-{{priorityStatus|high}}">{{priority|高}}</span>
+      <span class="hw-action-text">{{action|每日测量血压并记录}}</span>
+      <span class="hw-action-owner">{{owner|家属/护理员}}</span>
+    </div>
+    {{/recommendedActions}}
+  </div>
+
+  {{#nextSteps}}
+  <div class="hw-block hw-next">
+    <div class="hw-section-title">➡️ 下一步</div>
+    <div class="hw-text">{{nextSteps|建议补充远程体检指标（云诊365）以提升判定置信度；如信号持续异常请转人工复核。}}</div>
+  </div>
+  {{/nextSteps}}
+
+  {{#remoteGap}}
+  <div class="hw-block hw-gap">
+    <div class="hw-section-title">⚠️ 远程数据缺口</div>
+    <div class="hw-text">{{remoteGap|远程体检指标（云诊365）暂不可用，判定基于本地设备信号，置信度有限。}}</div>
+  </div>
+  {{/remoteGap}}
+
+  <div class="hw-foot">来源：{{sourceLabel|本地设备信号 + 风险规则}} · 健康风险预警仅作辅助提示，急症请立即就医</div>
+</div>
+
+<script type="application/json">
+{
+  "badge": "健康风险预警",
+  "elderName": "张阿姨",
+  "elderAge": "72岁",
+  "assessTime": "2026-07-30 18:20",
+  "level": "关注",
+  "levelColor": "#E8843C",
+  "levelIcon": "⚠️",
+  "summary": "结合老人近 7 天设备信号与风险规则，当前风险等级为“关注”，建议加强居家观察并补充远程指标。",
+  "signals_count": 2,
+  "signals": [
+    { "type": "血压", "value": "148/92 mmHg", "status": "abnormal", "status_label": "异常", "source": "本地设备" },
+    { "type": "心率", "value": "92 次/分", "status": "normal", "status_label": "正常", "source": "本地设备" }
+  ],
+  "rules_count": 1,
+  "rules": [
+    { "ruleName": "血压持续偏高", "riskLevel": "关注", "ruleLevelStatus": "abnormal", "condition": "收缩压≥140 且持续≥3天" }
+  ],
+  "actions_count": 2,
+  "recommendedActions": [
+    { "action": "每日测量血压并记录", "owner": "家属/护理员", "priority": "高", "priorityStatus": "high" },
+    { "action": "减少高盐饮食、保证作息规律", "owner": "护理员", "priority": "中", "priorityStatus": "mid" }
+  ],
+  "nextSteps": "建议补充远程体检指标（云诊365）以提升判定置信度；如信号持续异常请转人工复核。",
+  "remoteGap": "",
+  "sourceLabel": "本地设备信号 + 风险规则"
+}
+</script>
+</body>
+</html>

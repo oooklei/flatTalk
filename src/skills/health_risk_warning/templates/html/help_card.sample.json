@@ -1,0 +1,32 @@
+{
+  "badge": "使用帮助",
+  "title": "健康风险评估师",
+  "subtitle": "对话式中医体质复合风险助手",
+  "version": "v2.6",
+  "intro": "直接用日常口语提问即可，我会自动识别意图并调取对应的评估结果；也可以点右上角随时切换评估对象。",
+  "helps_count": 7,
+  "helps": [
+    { "cmd": "总体 / 总评", "scene": "综合研判", "pillClass": "blue", "text": "查看老人的综合风险评估结论与总分。" },
+    { "cmd": "舌象 / 面象", "scene": "中医四诊", "pillClass": "blue", "text": "查看舌诊、面诊的观察要点与提示信息。" },
+    { "cmd": "体质 / 证型", "scene": "中医辨识", "pillClass": "blue", "text": "查看中医体质类型判定与主要证型分析。" },
+    { "cmd": "调理 / 建议", "scene": "康养方案", "pillClass": "ok", "text": "获取饮食、起居、运动等个性化康养调理建议。" },
+    { "cmd": "报告 / 生成", "scene": "报告导出", "pillClass": "ok", "text": "导出完整风险评估报告，共八大模块。" },
+    { "cmd": "风险等级", "scene": "标准说明", "pillClass": "warn", "text": "了解五级风险划分标准及各等级处置口径。" },
+    { "cmd": "切换 / 换老人", "scene": "对象管理", "pillClass": "warn", "text": "切换当前评估对象，也可点击右上角按钮操作。" }
+  ],
+  "keywords": ["总体", "舌象", "面象", "体质", "证型", "调理", "报告", "风险等级", "换老人"],
+  "levels": [
+    { "name": "良好", "range": "0-19 分", "pillClass": "ok", "itemClass": "ok", "desc": "各项指标稳定，保持现有生活方式并定期随访。" },
+    { "name": "注意", "range": "20-39 分", "pillClass": "ok", "itemClass": "", "desc": "存在轻微偏差，建议加强日常观察与作息调整。" },
+    { "name": "关注", "range": "40-59 分", "pillClass": "warn", "itemClass": "warn", "desc": "出现持续异常信号，需家属或护理员重点跟进。" },
+    { "name": "预警", "range": "60-79 分", "pillClass": "bad", "itemClass": "warn", "desc": "多项风险叠加，建议尽快安排线下复查。" },
+    { "name": "高危", "range": "80-100 分", "pillClass": "bad", "itemClass": "bad", "desc": "风险显著升高，请立即联系家庭医生或就医。" }
+  ],
+  "steps": [
+    { "stage": "第 1 步", "node": "确认评估对象", "detail": "输入老人姓名，若存在同名会弹出确认卡片，请选择正确的一位。", "stepClass": "done" },
+    { "stage": "第 2 步", "node": "按需提问", "detail": "说「总体」「体质」「调理」等关键词，查看对应模块结果。", "stepClass": "done" },
+    { "stage": "第 3 步", "node": "生成完整报告", "detail": "说「生成报告」导出八大模块完整风险评估报告并分享给家属。", "stepClass": "" }
+  ],
+  "disclaimer": "本报告由人工智能分析生成，仅供参考，不构成医疗诊断依据；如有不适请及时就医。",
+  "sourceLabel": "桂颐智养 · 健康风险评估师"
+}

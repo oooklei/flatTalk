@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN" data-template="nearby_recommend" data-layout="recommend">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>周边休闲（由 nearby_recommend 派生，样式一致）</title>
+  <link rel="stylesheet" href="_design_tokens.css">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    :root{--primary:#E8843C;--primary-weak:#FDF6F0;--accent:#E8843C;--accent-weak:#FAE6D5;--card:#fff;--card-2:#FDF6F0;--bg:#FAF8F5;--ink:#3D3A36;--ink-2:#6B6660;--muted:#8A8278;--border:#E4E0D8;--line:#E4E0D8;--wellness:#E5484D;--radius:16px;--radius-sm:12px;--shadow:0 4px 18px rgba(62,56,50,.08);--shadow-sm:0 2px 8px rgba(62,56,50,.08);--tap:44px;}
+  </style>
+  <style>
+    .nb-row-desc { font-size: 12px; color: var(--ink-2); margin-top: 6px; line-height: 1.5; padding: 6px 8px; background: rgba(0,0,0,.02); border-radius: 6px; }
+    .nb-row-imgs { display: flex; gap: 6px; margin-top: 6px; }
+    .nb-row-imgs img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+    .nb-row-hint { font-size: 12px; color: #e6a23c; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="nb-wrap">
+    <section class="nb-card">
+      <div class="nb-head">
+        <div>
+          <h2 class="nb-title">✨ 为您精选推荐</h2>
+          <p class="nb-sub">{{centerName}} 周边 {{categoryLabel}} · 按适老与距离优先</p>
+        </div>
+        <span class="nb-badge" style="background:var(--accent-weak);color:var(--accent)">个性化</span>
+      </div>
+      <div class="nb-list">
+        {{#picks}}
+        <div class="nb-row">
+          <div class="nb-ico" style="background:{{color}}">{{emoji}}</div>
+          <div class="nb-row-main">
+            <div class="nb-row-top"><span class="nb-name">#{{rank}} {{name}}</span><span class="nb-dist">{{distance_text}}km</span></div>
+            <div class="nb-addr">{{address}}</div>
+            <div class="nb-row-meta"><span style="color:var(--primary);font-weight:600">💡 {{reason}}</span></div>
+            <div class="nb-tags">{{#tags}}<span class="nb-tag">{{.}}</span>{{/tags}}</div>
+            {{#enriched_description}}<div class="nb-row-desc">{{enriched_description}}</div>{{/enriched_description}}
+            {{#enriched_images}}<div class="nb-row-imgs">{{#.}}<img src="{{.}}" alt="" loading="lazy" />{{/.}}</div>{{/enriched_images}}
+            {{#enriched_rating_hint}}<div class="nb-row-hint">⭐ {{enriched_rating_hint}}</div>{{/enriched_rating_hint}}
+            <div class="nb-row-actions">
+              <button class="nb-btn nb-btn-primary action-btn" data-action-type="external_map" data-params='{{{nav_params}}}' data-href="https://apis.map.qq.com/uri/v1/routeplan?type=walk&from=coord:{{centerLat}},{{centerLng}};title:{{centerName}}&to=coord:{{lat}},{{lng}};title:{{name}}&policy=1&referer=KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH">🧭 导航</button>
+              {{#tel}}<a class="nb-btn" href="tel:{{tel}}">☎ 电话</a>{{/tel}}
+            </div>
+          </div>
+        </div>
+        {{/picks}}
+        {{^picks}}<div class="nb-empty">暂无可推荐的周边资源</div>{{/picks}}
+      </div>
+      <!-- 紧密追问区 -->
+      {{{compact_followups}}}
+    </section>
+  </div>
+<script type="application/json">
+{
+  "centerName": "嘉路康养中心",
+  "categoryLabel": "周边配套",
+  "compact_followups": ""
+}
+</script>
+</body>
+</html>

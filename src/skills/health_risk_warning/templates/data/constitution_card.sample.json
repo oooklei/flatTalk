@@ -1,0 +1,35 @@
+{
+  "badge": "中医九种体质辨识",
+  "elderName": "张阿姨",
+  "elderAge": "72岁",
+  "method": "舌诊 + 问卷",
+  "assessTime": "2026-07-30",
+  "primary_constitution": "血瘀质",
+  "primaryScore": 62,
+  "primaryLevel": "倾向明显",
+  "primaryDesc": "血瘀质以血行不畅、瘀血内停为主要特征，常见面色晦暗、唇色偏紫、肌肤干燥、易生瘀斑，宜活血化瘀、畅通气机。",
+  "constitutions_count": 9,
+  "constitutions": [
+    { "name": "血瘀质 ★", "level": "主体质", "score": 62, "barClass": "bad", "note": "得分最高，为本次判定的主体质" },
+    { "name": "阴虚质", "level": "兼夹", "score": 55, "barClass": "warn", "note": "口干咽燥、夜间盗汗倾向" },
+    { "name": "痰湿质", "level": "兼夹", "score": 45, "barClass": "warn", "note": "形体偏胖、肢体困重" },
+    { "name": "湿热质", "level": "轻度", "score": 40, "barClass": "", "note": "" },
+    { "name": "气郁质", "level": "轻度", "score": 35, "barClass": "", "note": "" },
+    { "name": "气虚质", "level": "轻度", "score": 35, "barClass": "", "note": "" },
+    { "name": "平和质", "level": "偏低", "score": 30, "barClass": "", "note": "平和质偏低，整体调养空间较大" },
+    { "name": "阳虚质", "level": "轻度", "score": 25, "barClass": "", "note": "" },
+    { "name": "特禀质", "level": "不明显", "score": 15, "barClass": "", "note": "" }
+  ],
+  "tendencies": [
+    { "name": "阴虚质", "score": 55, "pillClass": "warn", "itemClass": "warn", "desc": "与主体质血瘀相互影响，表现为舌暗少津、手足心热。" },
+    { "name": "痰湿质", "score": 45, "pillClass": "warn", "itemClass": "", "desc": "舌体偏胖、苔腻，建议控制油腻甜食并增加活动量。" }
+  ],
+  "suggestions_count": 3,
+  "suggestions": [
+    { "aspect": "饮食调养", "tagLabel": "优先", "pillClass": "ok", "content": "适量食用山楂、黑木耳、玫瑰花茶等活血食材，少食生冷油腻。" },
+    { "aspect": "起居运动", "tagLabel": "建议", "pillClass": "ok", "content": "每日快走或八段锦 30 分钟，避免久坐久卧，注意保暖防寒。" },
+    { "aspect": "情志调摄", "tagLabel": "建议", "pillClass": "blue", "content": "保持心情舒畅，避免郁怒；可通过书法、园艺等舒缓活动疏肝理气。" }
+  ],
+  "reminder": "体质辨识为阶段性倾向判断，若近期出现头晕头痛、胸闷心悸等不适，请及时到医疗机构就诊。",
+  "sourceLabel": "AI 生成 · 基于舌诊与问卷的中医九种体质辨识"
+}

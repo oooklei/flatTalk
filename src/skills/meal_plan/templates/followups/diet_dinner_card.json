@@ -1,0 +1,23 @@
+{
+  "template_id": "diet_dinner_card",
+  "followup_suggestions": [
+    {
+      "label": "生成一周计划",
+      "user_prompt": "请基于这份膳食建议生成一周三餐计划",
+      "action_key": "meal_plan.generate_weekly_plan",
+      "category": "tight"
+    },
+    {
+      "label": "按慢病调整",
+      "user_prompt": "请结合老人的健康状况调整这份膳食建议",
+      "action_key": "meal_plan.adjust_for_disease",
+      "category": "tight"
+    },
+    {
+      "label": "换成软烂版",
+      "user_prompt": "请把这份膳食建议调整为软烂易咀嚼版本",
+      "action_key": "meal_plan.adjust_for_texture",
+      "category": "tight"
+    }
+  ]
+}

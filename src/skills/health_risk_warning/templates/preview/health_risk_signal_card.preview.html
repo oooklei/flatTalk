@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>设备信号</title>
+  <style>
+
+:root{
+  
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537; --warn-soft:#FBF3DD; --warn-deep:#9C7715;
+  --danger:#E5484D; --danger-soft:#FDECEC; --danger-deep:#b91c1c;
+  
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:999px;
+  
+  --sh-sm:0 1px 3px rgba(62,56,50,.08); --sh-md:0 4px 12px rgba(62,56,50,.10); --sh-lg:0 8px 24px rgba(62,56,50,.12);
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--font-sans); background:var(--n0); color:var(--n800);
+  font-size:16px; line-height:1.6; padding:12px;
+  overflow-wrap:anywhere; word-break:break-word; -webkit-font-smoothing:antialiased;
+}
+img{ max-width:100%; height:auto; display:block; }
+a{ color:var(--primary); text-decoration:none; }
+
+
+.card{ max-width:430px; margin:0 auto; background:#fff; border:1px solid var(--n100);
+  border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-md); }
+
+
+.hero{ padding:16px; color:#fff; background:linear-gradient(135deg,var(--primary),var(--primary-deep)); }
+.hero.blue{ background:linear-gradient(135deg,var(--accent),var(--accent-deep)); }
+.eyebrow{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--r-full);
+  background:rgba(255,255,255,.18); font-size:12px; font-weight:600; }
+.hero h1{ font-family:var(--font-serif); margin:8px 0 0; font-size:22px; line-height:1.18; letter-spacing:.5px; }
+.hero .sub{ margin-top:6px; color:rgba(255,255,255,.88); font-size:13px; }
+.hero-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.score{ font-size:42px; font-weight:800; line-height:1; }
+.score small{ font-size:14px; font-weight:600; opacity:.82; }
+
+
+.section{ padding:13px 14px; border-top:1px solid var(--n100); }
+.section-title{ margin:0 0 10px; display:flex; align-items:center; gap:7px; color:var(--n800);
+  font-size:15px; font-weight:800; font-family:var(--font-serif); }
+.section-title::before{ content:""; width:4px; height:16px; border-radius:2px; background:var(--primary); }
+.section-title.blue::before{ background:var(--accent); }
+
+
+.pill{ display:inline-flex; align-items:center; justify-content:center; min-height:22px; padding:2px 9px;
+  border-radius:var(--r-full); background:var(--primary-soft); color:var(--primary-deep);
+  font-size:12px; font-weight:700; white-space:nowrap; }
+.pill.blue{ background:var(--accent-soft); color:var(--accent); }
+.pill.ok{ background:var(--ok-soft); color:var(--ok-deep); }
+.pill.warn{ background:var(--warn-soft); color:var(--warn-deep); }
+.pill.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.grid.three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.stat{ min-width:0; padding:10px 9px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.stat .num{ color:var(--primary-deep); font-size:20px; font-weight:800; line-height:1.1; }
+.stat .num.bad{ color:var(--danger); } .stat .num.warn{ color:var(--warn-deep); } .stat .num.ok{ color:var(--ok-deep); }
+.stat .lbl{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.dim{ padding:9px 0; border-bottom:1px dashed var(--n100); }
+.dim:last-child{ border-bottom:0; }
+.dim-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; font-size:13px; }
+.dim-name{ font-weight:700; } .dim-name small{ margin-left:5px; color:var(--n400); font-weight:600; }
+.dim-score{ color:var(--primary-deep); font-weight:800; white-space:nowrap; }
+.bar{ height:7px; margin-top:6px; border-radius:var(--r-full); background:var(--n200); overflow:hidden; }
+.bar > span{ display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+.bar > span.warn{ background:linear-gradient(90deg,var(--warn),#f97316); }
+.bar > span.bad{ background:linear-gradient(90deg,var(--danger),#fb7185); }
+.note{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.row{ display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed var(--n100); }
+.row:last-child{ border-bottom:0; }
+.row .k{ color:var(--n500); flex:0 0 auto; } .row .v{ font-weight:700; text-align:right; min-width:0; }
+
+
+.list{ display:flex; flex-direction:column; gap:8px; }
+.item{ padding:10px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.item.warn{ background:var(--warn-soft); border-color:#fde68a; }
+.item.bad{ background:var(--danger-soft); border-color:#fecaca; }
+.item.ok{ background:var(--ok-soft); border-color:#bbf7d0; }
+.item .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; }
+.item .txt{ margin-top:5px; color:var(--n600); font-size:12px; }
+
+
+.tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ padding:4px 8px; border-radius:var(--r-md); background:var(--n200); color:var(--n500); font-size:12px; font-weight:600; }
+.tag.good{ background:var(--ok-soft); color:var(--ok-deep); } .tag.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.timeline{ position:relative; padding-left:22px; }
+.timeline::before{ content:""; position:absolute; left:7px; top:7px; bottom:7px; width:2px; background:var(--n100); }
+.step{ position:relative; padding:7px 0 9px; }
+.step::before{ content:""; position:absolute; left:-20px; top:12px; width:10px; height:10px; border-radius:50%;
+  background:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.step.done::before{ background:var(--ok); box-shadow:0 0 0 3px var(--ok-soft); }
+.step.bad::before{ background:var(--danger); box-shadow:0 0 0 3px var(--danger-soft); }
+.step .time{ color:var(--n400); font-size:11px; } .step .node{ font-weight:800; } .step .detail{ color:var(--n600); font-size:12px; }
+
+
+.alert{ padding:10px; border-radius:var(--r-md); background:var(--warn-soft); border:1px solid #fde68a; color:var(--warn-deep); font-size:12px; }
+.alert.bad{ background:var(--danger-soft); border-color:#fecaca; color:var(--danger-deep); }
+
+
+.foot{ padding:10px 14px; border-top:1px solid var(--n100); color:var(--n400); font-size:11px; }
+
+
+.muted{ color:var(--n500); } .faint{ color:var(--n400); }
+.text{ font-size:13px; color:var(--n600); line-height:1.6; }
+
+@media (max-width:360px){
+  body{ padding:10px; } .hero h1{ font-size:20px; } .score{ font-size:36px; }
+  .grid.three{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+  </style>
+</head>
+<body>
+<div class="card" data-template="health_risk_signal_card" data-layout="vertical">
+  <div class="hero">
+    <div class="eyebrow">设备信号</div>
+    <div class="hero-row">
+      <div>
+        <h1>📡 张阿姨 信号总览</h1>
+        <p class="sub">居家监测设备 · 近 7 天</p>
+      </div>
+      <div class="sub" style="text-align:right">2026-07-30 18:20</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📊 采集概览</div>
+    <div class="grid three">
+      <div class="stat"><div class="num">4</div><div class="lbl">采集信号</div></div>
+      <div class="stat"><div class="num bad">2</div><div class="lbl">异常项</div></div>
+      <div class="stat"><div class="num ok">2</div><div class="lbl">正常项</div></div>
+    </div>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">📝 信号研判</div>
+    <p class="text">近 7 天共采集 4 项设备信号，其中血压、夜间心率两项持续偏离参考范围，建议加强居家观察并按时复测。</p>
+  </div>
+  
+
+  <div class="section">
+    <div class="section-title">📡 设备信号明细（4）</div>
+    <div class="list">
+    
+      <div class="item bad">
+        <div class="top">
+          <span>血压</span>
+          <span class="pill bad">异常</span>
+        </div>
+        <div class="txt">148/92 mmHg · 来源：本地血压计</div>
+        
+        <div class="note">参考范围：收缩压 90–139 / 舒张压 60–89 mmHg</div>
+        
+      </div>
+    
+      <div class="item warn">
+        <div class="top">
+          <span>夜间心率</span>
+          <span class="pill warn">偏低</span>
+        </div>
+        <div class="txt">58 次/分 · 来源：智能手环</div>
+        
+        <div class="note">参考范围：静息 60–100 次/分</div>
+        
+      </div>
+    
+      <div class="item ok">
+        <div class="top">
+          <span>空腹血糖</span>
+          <span class="pill ok">正常</span>
+        </div>
+        <div class="txt">6.1 mmol/L · 来源：本地血糖仪</div>
+        
+        <div class="note">参考范围：3.9–6.1 mmol/L</div>
+        
+      </div>
+    
+      <div class="item ok">
+        <div class="top">
+          <span>跌倒检测</span>
+          <span class="pill ok">正常</span>
+        </div>
+        <div class="txt">0 次 · 来源：居家雷达传感器</div>
+        
+        <div class="note">参考范围：7 天内 0 次</div>
+        
+      </div>
+    
+    </div>
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔧 采集信息</div>
+    <div class="row"><span class="k">采集设备</span><span class="v">智能血压计 · 血糖仪 · 手环 · 雷达传感器</span></div>
+    <div class="row"><span class="k">最近同步</span><span class="v">2026-07-30 18:05</span></div>
+    <div class="row"><span class="k">上报方式</span><span class="v">蓝牙自动上报（每日 3 次）</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🏷️ 异常标记</div>
+    <div class="tags">
+    
+      <span class="tag bad">血压持续偏高</span>
+    
+      <span class="tag bad">夜间心率偏低</span>
+    
+      <span class="tag ">作息不规律</span>
+    
+    </div>
+    
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">⚠️ 远程数据缺口</div>
+    <div class="alert">远程体检指标（云诊365）暂不可用，缺失项目：血脂趋势、糖化血红蛋白，建议线下补测。</div>
+  </div>
+  
+
+  <div class="foot">来源：本地设备信号 · 信号异常不代表确诊，请结合临床判断</div>
+</div>
+</body>
+</html>

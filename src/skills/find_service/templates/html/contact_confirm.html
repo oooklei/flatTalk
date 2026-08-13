@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<title>{{pageTitle}}</title>
+<style>
+:root{
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --ok:#6B9B7A; --ok-soft:#E8F2EC;
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  --r-md:10px; --r-lg:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-sans);background:var(--n0);color:var(--n800);
+  font-size:16px;line-height:1.6;padding:14px;
+  overflow-wrap:anywhere;word-break:break-word;-webkit-font-smoothing:antialiased;
+}
+.card{
+  max-width:430px;width:100%;margin:0 auto;background:#fff;border:1px solid var(--n100);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:0 4px 12px rgba(62,56,50,.10);
+}
+.section{padding:16px 14px}
+.section-title{
+  margin:0 0 12px;color:var(--primary);font-size:15px;font-weight:800;font-family:var(--font-serif);
+}
+.contact-info{
+  font-size:15px;color:var(--n800);line-height:1.75;font-weight:700;
+}
+.source-note{
+  margin-top:10px;font-size:12px;color:var(--ok);font-weight:600;
+}
+.btn-row{display:flex;gap:10px;margin-top:18px}
+.btn{
+  flex:1;min-height:46px;border-radius:var(--r-md);border:none;
+  font-size:15px;font-weight:700;letter-spacing:1px;font-family:var(--font-sans);
+  display:flex;align-items:center;justify-content:center;
+}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-deep));color:#fff}
+.btn-ghost{background:#fff;color:var(--primary-deep);border:1.5px solid var(--primary)}
+.foot{padding:10px 14px;border-top:1px solid var(--n100);color:var(--n400);font-size:11px;text-align:center}
+</style>
+</head>
+<body>
+<div class="card" data-template="contact_confirm" data-layout="vertical">
+  <div class="section">
+    <div class="section-title">{{cardTitle}}</div>
+    <div class="contact-info">
+      联系人：{{contactName}}，电话：{{contactPhone}}，地址：{{contactAddress}}
+    </div>
+    <div class="source-note">{{sourceNote}}</div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="#">{{confirmBtnText}}</a>
+      <a class="btn btn-ghost" href="#">{{modifyBtnText}}</a>
+    </div>
+  </div>
+  <div class="foot">来源：{{footSource}}</div>
+</div>
+<script type="application/json">
+{
+  "pageTitle": "联系人信息确认",
+  "cardTitle": "联系人信息",
+  "contactName": "张大爷",
+  "contactPhone": "138****5678",
+  "contactAddress": "桂林市秀峰区丽君路123号",
+  "sourceNote": "来自您的健康档案",
+  "confirmBtnText": "确认",
+  "modifyBtnText": "修改",
+  "footSource": "联系人确认"
+}
+</script>
+</body>
+</html>

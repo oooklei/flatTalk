@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>异常返回兜底卡片</title>
+<style>
+  :root {
+    --bg: #FAF8F5; --card: #fff; --ink: #3D3A36; --ink2: #8A8278; --line: #E4E0D8;
+    --danger: #E5484D; --danger-soft: #FDECEC; --o50: #FDF6F0;
+    --shadow: 0 4px 18px rgba(62,56,50,.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px; display: flex; justify-content: center;
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: linear-gradient(180deg, #FDECEC 0%, var(--bg) 55%);
+    color: var(--ink); min-height: 100vh;
+  }
+  .gxy-card {
+    width: 100%; max-width: 420px; background: var(--card);
+    border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .gxy-card__head {
+    display: flex; align-items: center; gap: 12px; padding: 16px 18px;
+    background: linear-gradient(135deg, #E5484D, #EB9B60); color: #fff;
+  }
+  .gxy-card__emoji {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.22); font-size: 22px;
+  }
+  .gxy-card__title { margin: 0; font-size: 17px; font-weight: 700; }
+  .gxy-card__sub { font-size: 12px; opacity: .92; margin-top: 2px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .gxy-card__body { padding: 16px 18px; background: var(--o50); }
+  .gxy-card__msg {
+    margin: 0 0 10px; padding: 14px; background: #fff; border: 1px solid var(--line);
+    border-radius: 12px; font-size: 15px; line-height: 1.7;
+  }
+  .gxy-card__block {
+    margin-top: 10px; padding: 12px 14px; background: var(--danger-soft);
+    border-left: 3px solid var(--danger); border-radius: 0 12px 12px 0;
+    font-size: 13.5px; color: var(--ink);
+  }
+  .gxy-card__block b { color: var(--danger); }
+  .gxy-card__foot {
+    padding: 10px 18px; border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--ink2); text-align: right; background: #fff;
+  }
+</style>
+</head>
+<body>
+<article class="gxy-card gxy-card--error" data-template-id="fallback_error" data-layout="vertical">
+  <header class="gxy-card__head">
+    <span class="gxy-card__emoji">{{emoji|⚠️}}</span>
+    <div>
+      <h3 class="gxy-card__title">{{title|出错了}}</h3>
+      <div class="gxy-card__sub">{{code|ERROR}}</div>
+    </div>
+  </header>
+  <div class="gxy-card__body">
+    <p class="gxy-card__msg">{{message|服务暂时不可用，请稍后重试。}}</p>
+    {{#detail}}
+    <div class="gxy-card__block">📋 <b>详情：</b>{{detail}}</div>
+    {{/detail}}
+    {{#suggestion}}
+    <div class="gxy-card__block">💡 <b>建议：</b>{{suggestion}}</div>
+    {{/suggestion}}
+  </div>
+  <footer class="gxy-card__foot">{{foot|桂颐智养 · 桂小养}}</footer>
+</article>
+<script type="application/json">
+{
+  "emoji": "⚠️",
+  "title": "出错了",
+  "code": "SERVICE_ERROR",
+  "message": "服务暂时不可用，请稍后重试。",
+  "detail": "",
+  "suggestion": "若问题持续，请查看运行日志或联系管理员。",
+  "foot": "桂颐智养 · 桂小养"
+}
+</script>
+</body>
+</html>

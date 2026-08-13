@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>中医证候</title>
+  <style>
+
+:root{
+  
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537; --warn-soft:#FBF3DD; --warn-deep:#9C7715;
+  --danger:#E5484D; --danger-soft:#FDECEC; --danger-deep:#b91c1c;
+  
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:999px;
+  
+  --sh-sm:0 1px 3px rgba(62,56,50,.08); --sh-md:0 4px 12px rgba(62,56,50,.10); --sh-lg:0 8px 24px rgba(62,56,50,.12);
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--font-sans); background:var(--n0); color:var(--n800);
+  font-size:16px; line-height:1.6; padding:12px;
+  overflow-wrap:anywhere; word-break:break-word; -webkit-font-smoothing:antialiased;
+}
+img{ max-width:100%; height:auto; display:block; }
+a{ color:var(--primary); text-decoration:none; }
+
+
+.card{ max-width:430px; margin:0 auto; background:#fff; border:1px solid var(--n100);
+  border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-md); }
+
+
+.hero{ padding:16px; color:#fff; background:linear-gradient(135deg,var(--primary),var(--primary-deep)); }
+.hero.blue{ background:linear-gradient(135deg,var(--accent),var(--accent-deep)); }
+.eyebrow{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--r-full);
+  background:rgba(255,255,255,.18); font-size:12px; font-weight:600; }
+.hero h1{ font-family:var(--font-serif); margin:8px 0 0; font-size:22px; line-height:1.18; letter-spacing:.5px; }
+.hero .sub{ margin-top:6px; color:rgba(255,255,255,.88); font-size:13px; }
+.hero-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.score{ font-size:42px; font-weight:800; line-height:1; }
+.score small{ font-size:14px; font-weight:600; opacity:.82; }
+
+
+.section{ padding:13px 14px; border-top:1px solid var(--n100); }
+.section-title{ margin:0 0 10px; display:flex; align-items:center; gap:7px; color:var(--n800);
+  font-size:15px; font-weight:800; font-family:var(--font-serif); }
+.section-title::before{ content:""; width:4px; height:16px; border-radius:2px; background:var(--primary); }
+.section-title.blue::before{ background:var(--accent); }
+
+
+.pill{ display:inline-flex; align-items:center; justify-content:center; min-height:22px; padding:2px 9px;
+  border-radius:var(--r-full); background:var(--primary-soft); color:var(--primary-deep);
+  font-size:12px; font-weight:700; white-space:nowrap; }
+.pill.blue{ background:var(--accent-soft); color:var(--accent); }
+.pill.ok{ background:var(--ok-soft); color:var(--ok-deep); }
+.pill.warn{ background:var(--warn-soft); color:var(--warn-deep); }
+.pill.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.grid.three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.stat{ min-width:0; padding:10px 9px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.stat .num{ color:var(--primary-deep); font-size:20px; font-weight:800; line-height:1.1; }
+.stat .num.bad{ color:var(--danger); } .stat .num.warn{ color:var(--warn-deep); } .stat .num.ok{ color:var(--ok-deep); }
+.stat .lbl{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.dim{ padding:9px 0; border-bottom:1px dashed var(--n100); }
+.dim:last-child{ border-bottom:0; }
+.dim-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; font-size:13px; }
+.dim-name{ font-weight:700; } .dim-name small{ margin-left:5px; color:var(--n400); font-weight:600; }
+.dim-score{ color:var(--primary-deep); font-weight:800; white-space:nowrap; }
+.bar{ height:7px; margin-top:6px; border-radius:var(--r-full); background:var(--n200); overflow:hidden; }
+.bar > span{ display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+.bar > span.warn{ background:linear-gradient(90deg,var(--warn),#f97316); }
+.bar > span.bad{ background:linear-gradient(90deg,var(--danger),#fb7185); }
+.note{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.row{ display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed var(--n100); }
+.row:last-child{ border-bottom:0; }
+.row .k{ color:var(--n500); flex:0 0 auto; } .row .v{ font-weight:700; text-align:right; min-width:0; }
+
+
+.list{ display:flex; flex-direction:column; gap:8px; }
+.item{ padding:10px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.item.warn{ background:var(--warn-soft); border-color:#fde68a; }
+.item.bad{ background:var(--danger-soft); border-color:#fecaca; }
+.item.ok{ background:var(--ok-soft); border-color:#bbf7d0; }
+.item .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; }
+.item .txt{ margin-top:5px; color:var(--n600); font-size:12px; }
+
+
+.tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ padding:4px 8px; border-radius:var(--r-md); background:var(--n200); color:var(--n500); font-size:12px; font-weight:600; }
+.tag.good{ background:var(--ok-soft); color:var(--ok-deep); } .tag.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.timeline{ position:relative; padding-left:22px; }
+.timeline::before{ content:""; position:absolute; left:7px; top:7px; bottom:7px; width:2px; background:var(--n100); }
+.step{ position:relative; padding:7px 0 9px; }
+.step::before{ content:""; position:absolute; left:-20px; top:12px; width:10px; height:10px; border-radius:50%;
+  background:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.step.done::before{ background:var(--ok); box-shadow:0 0 0 3px var(--ok-soft); }
+.step.bad::before{ background:var(--danger); box-shadow:0 0 0 3px var(--danger-soft); }
+.step .time{ color:var(--n400); font-size:11px; } .step .node{ font-weight:800; } .step .detail{ color:var(--n600); font-size:12px; }
+
+
+.alert{ padding:10px; border-radius:var(--r-md); background:var(--warn-soft); border:1px solid #fde68a; color:var(--warn-deep); font-size:12px; }
+.alert.bad{ background:var(--danger-soft); border-color:#fecaca; color:var(--danger-deep); }
+
+
+.foot{ padding:10px 14px; border-top:1px solid var(--n100); color:var(--n400); font-size:11px; }
+
+
+.muted{ color:var(--n500); } .faint{ color:var(--n400); }
+.text{ font-size:13px; color:var(--n600); line-height:1.6; }
+
+@media (max-width:360px){
+  body{ padding:10px; } .hero h1{ font-size:20px; } .score{ font-size:36px; }
+  .grid.three{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+  </style>
+</head>
+<body>
+<div class="card" data-template="tcm_syndrome_card" data-layout="vertical">
+  <div class="hero">
+    <div class="eyebrow">🌿 中医证候辨识</div>
+    <div class="hero-row">
+      <div>
+        <h1>肝阳上亢兼血瘀</h1>
+        <p class="sub">张阿姨 · 72岁 · 舌诊 + 脉诊 + 面诊</p>
+      </div>
+      <div class="sub" style="text-align:right">2026-07-30</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 证型判读</div>
+    <div class="tags">
+      <span class="tag bad">肝阳上亢</span>
+      <span class="tag">血瘀内停</span>
+      <span class="tag">置信度 中高</span>
+    </div>
+    <p class="text" style="margin-top:8px">肝阳偏亢，血行不畅。舌暗苔薄黄，脉弦细。多见头晕头痛，急躁易怒，面色晦暗，失眠多梦。</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 四诊依据</div>
+    
+    <div class="row"><span class="k">舌象</span><span class="v">舌质偏暗、苔薄黄</span></div>
+    
+    <div class="row"><span class="k">脉象</span><span class="v">弦细</span></div>
+    
+    <div class="row"><span class="k">面象</span><span class="v">面色晦暗、唇色暗紫</span></div>
+    
+    <div class="row"><span class="k">问诊</span><span class="v">头晕、夜寐不安、易急躁</span></div>
+    
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">🩺 主要表现（4）</div>
+    <div class="list">
+      
+      <div class="item bad">
+        <div class="top"><span>头晕头痛</span><span class="pill bad">突出</span></div>
+        <div class="txt">多于晨起或情绪激动后加重，与肝阳上亢相关。</div>
+      </div>
+      
+      <div class="item warn">
+        <div class="top"><span>急躁易怒</span><span class="pill warn">常见</span></div>
+        <div class="txt">情志不畅、肝气郁而化火的典型表现。</div>
+      </div>
+      
+      <div class="item ">
+        <div class="top"><span>失眠多梦</span><span class="pill warn">常见</span></div>
+        <div class="txt">入睡困难、夜间易醒，需关注睡眠质量。</div>
+      </div>
+      
+      <div class="item ">
+        <div class="top"><span>面色晦暗</span><span class="pill warn">轻度</span></div>
+        <div class="txt">血行不畅、瘀血内停的外在体现。</div>
+      </div>
+      
+      
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🍵 调理方向</div>
+    <div class="list">
+      
+      <div class="item">
+        <div class="top"><span>治法方向</span><span class="pill ok">核心</span></div>
+        <div class="txt">平肝潜阳、活血化瘀，兼顾养阴安神。</div>
+      </div>
+      
+      <div class="item">
+        <div class="top"><span>药膳食疗</span><span class="pill ok">建议</span></div>
+        <div class="txt">可用天麻炖鸡、菊花决明子茶；少食辛辣温燥之品。</div>
+      </div>
+      
+      <div class="item">
+        <div class="top"><span>外治调理</span><span class="pill blue">可选</span></div>
+        <div class="txt">按揉太冲、太溪、三阴交穴位，每次 3-5 分钟，早晚各一次。</div>
+      </div>
+      
+      
+    </div>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">⚠️ 关联健康风险</div>
+    <div class="alert">该证型与高血压、脑血管意外风险相关，建议每日监测血压并保持情绪平稳，血压持续偏高时及时就医。</div>
+  </div>
+  
+
+  <div class="foot">来源：AI 生成 · 基于舌诊、脉诊与面诊综合判读 · 证型判读仅供参考，用药请遵医嘱</div>
+</div>
+</body>
+</html>

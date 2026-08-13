@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务追溯卡</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：服务过程全程可追溯卡。展示某笔订单的服务追溯时间线（派单→上门签到→服务节点→离岗→评价），
+       标注关键节点与异常（如迟到）。原型"服务过程全程可追溯"诉求的对话化呈现。按钮已变通为追问。 -->
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <span class="eyebrow">服务追溯</span>
+      <h1>{{serviceName}}</h1>
+      <p class="subtitle">订单 {{orderNo}} · {{date}}</p>
+    </header>
+
+    <section class="nb-section trace-meta">
+      <div class="trace-row"><span class="k">服务人员</span><span class="v">{{staff}}</span></div>
+      <div class="trace-row"><span class="k">服务机构</span><span class="v">{{org}}</span></div>
+      <div class="trace-row"><span class="k">服务日期</span><span class="v">{{date}}</span></div>
+    </section>
+
+    <section class="nb-section">
+      <h2>追溯时间线</h2>
+      <div class="trace-list">
+        {{#traceNodes}}
+        <div class="trace-item {{itemClass}}">
+          <div class="t">{{time}}</div>
+          <div class="n">{{node}}</div>
+          <div class="d {{detailClass}}">{{detail}}</div>
+        </div>
+        {{/traceNodes}}
+      </div>
+    </section>
+
+    {{#showAnomaly}}
+    <section class="nb-section">
+      <div class="status-badge" style="background:#FDECEC;color:#E5484D;">异常：{{anomaly}}</div>
+    </section>
+    {{/showAnomaly}}
+
+    <div class="foot">AI 找服务 · 服务追溯 · 节点由上门/离岗打卡自动留痕</div>
+
+    <script type="application/json">
+    {
+      "orderNo": "FW-20260707-0183",
+      "serviceName": "居家深度清洁",
+      "staff": "张美丽",
+      "org": "桂林夕阳红养老服务中心",
+      "date": "2026-07-07",
+      "showAnomaly": false,
+      "anomaly": "",
+      "traceNodes": [
+        { "time": "09:00", "node": "系统派单", "detail": "自动分派至桂林夕阳红养老服务中心", "itemClass": "", "detailClass": "" },
+        { "time": "09:32", "node": "上门签到", "detail": "张美丽 准时签到", "itemClass": "", "detailClass": "ok" },
+        { "time": "09:35-11:10", "node": "清洁服务", "detail": "完成做饭、洗衣、全屋打扫 4 个节点", "itemClass": "", "detailClass": "" },
+        { "time": "11:12", "node": "离岗签退", "detail": "张美丽 签退", "itemClass": "", "detailClass": "" },
+        { "time": "11:30", "node": "用户评价", "detail": "王奶奶 评价 ★★★★★", "itemClass": "", "detailClass": "ok" }
+      ]
+    }
+    </script>
+  </article>
+</body>
+</html>

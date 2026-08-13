@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<title>{{pageTitle}}</title>
+<style>
+:root{
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-full:999px;
+  --sh-md:0 4px 12px rgba(62,56,50,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-sans);background:var(--n0);color:var(--n800);
+  font-size:16px;line-height:1.6;padding:12px;
+  overflow-wrap:anywhere;word-break:break-word;-webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--primary);text-decoration:none}
+
+.card{
+  max-width:430px;width:100%;margin:0 auto;background:#fff;border:1px solid var(--n100);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-md);
+}
+
+.hero{
+  padding:16px;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-deep));
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:var(--r-full);
+  background:rgba(255,255,255,.18);font-size:12px;font-weight:600;
+}
+.hero h1{font-family:var(--font-serif);margin:8px 0 0;font-size:22px;line-height:1.18;letter-spacing:.5px}
+.hero .sub{margin-top:6px;color:rgba(255,255,255,.88);font-size:13px}
+
+.section{padding:13px 14px;border-top:1px solid var(--n100)}
+.section-title{
+  margin:0 0 10px;display:flex;align-items:center;gap:7px;color:var(--n800);
+  font-size:15px;font-weight:800;font-family:var(--font-serif);
+}
+.section-title::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--primary)}
+
+.date-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.date-item{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px;border:1px solid var(--n100);border-radius:var(--r-md);
+  background:var(--n50);text-decoration:none;color:inherit;min-height:46px;
+}
+.date-item:active{background:var(--primary-soft)}
+.date-main{flex:1;min-width:0}
+.date-day{font-family:var(--font-serif);font-size:18px;font-weight:800;color:var(--primary-deep);line-height:1.2}
+.date-week{font-size:12px;color:var(--n500);margin-top:2px}
+.date-pick{
+  flex:0 0 auto;padding:8px 14px;border-radius:var(--r-full);
+  background:linear-gradient(135deg,var(--primary),var(--primary-deep));color:#fff;
+  font-size:13px;font-weight:700;
+}
+
+.note{
+  margin:13px 14px;padding:10px;border-radius:var(--r-md);
+  background:var(--accent-soft);border:1px solid #D1E3ED;color:var(--accent-deep);font-size:13px;line-height:1.5;
+  overflow-wrap:anywhere;word-break:break-word;
+}
+
+.action{padding:12px 14px;border-top:1px solid var(--n100)}
+.btn-row{display:flex;gap:10px}
+.btn{
+  flex:1;min-height:46px;border-radius:var(--r-md);border:none;
+  font-size:15px;font-weight:700;letter-spacing:1px;font-family:var(--font-sans);
+  display:flex;align-items:center;justify-content:center;
+}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-deep));color:#fff}
+.btn-ghost{background:#fff;color:var(--primary-deep);border:1.5px solid var(--primary)}
+
+.foot{padding:10px 14px;border-top:1px solid var(--n100);color:var(--n400);font-size:11px;text-align:center}
+
+@media (max-width:360px){
+  body{padding:10px} .hero h1{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="card" data-template="booking_reschedule" data-layout="vertical">
+
+  <div class="hero">
+    <div class="eyebrow">📅 {{cardEyebrow}}</div>
+    <h1>{{serviceName}}</h1>
+    <p class="sub">{{heroSub}}</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🗓 可选日期</div>
+    <ul class="date-list">
+      {{#altDates}}
+      <li>
+        <a class="date-item" href="#">
+          <div class="date-main">
+            <div class="date-day">{{day}}</div>
+            <div class="date-week">{{week}}</div>
+          </div>
+          <span class="date-pick">选这个</span>
+        </a>
+      </li>
+      {{/altDates}}
+      {{^altDates}}
+      <li class="note">暂无可改期日期，请稍后重试或联系客服。</li>
+      {{/altDates}}
+    </ul>
+  </div>
+
+  <div class="note">{{contactNote}}</div>
+
+  <div class="action">
+    <div class="btn-row">
+      <a class="btn btn-ghost" href="#">返回确认</a>
+    </div>
+  </div>
+
+  <div class="foot">来源：{{footSource}}</div>
+</div>
+<script type="application/json">
+{
+  "pageTitle": "修改预约日期",
+  "cardEyebrow": "修改预约",
+  "serviceName": "居家深度清洁",
+  "heroSub": "为您推荐以下可预约日期，点击即可改期",
+  "contactNote": "以上日期均可预约，确认后服务人员将致电与您核对上门时间。",
+  "footSource": "AI预约确认",
+  "id": "booking_reschedule_001",
+  "template": "booking-reschedule",
+  "altDates": [
+    {
+      "day": "8月11日",
+      "week": "周二 · 明天"
+    },
+    {
+      "day": "8月12日",
+      "week": "周三"
+    },
+    {
+      "day": "8月13日",
+      "week": "周四"
+    }
+  ]
+}
+</script>
+</body>
+</html>

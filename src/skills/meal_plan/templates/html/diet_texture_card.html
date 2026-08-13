@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>软烂易咀嚼膳食（由 diet_card 派生，样式一致）</title>
+<style>
+  :root {
+    --bg-page: #FAF8F5;
+    --meal-bg: #FDF6F0;
+    --card-bg: #FFFFFF;
+    --accent-orange: #E8843C;
+    --text-primary: #3D3A36;
+    --text-secondary: #666666;
+    --text-light: #8A8278;
+    --border-dot: #E8D9C8;
+    --border-card: #EFEFEF;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: linear-gradient(180deg, #FDF6F0 0%, #FAF8F5 55%, #E8F0F5 100%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100%;
+    padding: 12px;
+  }
+
+  .diet-card-full {
+    width: 100%;
+    max-width: 400px;
+    background: #FFFFFF;
+    border: 1px solid #E4E0D8;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(62,56,50,.08);
+    overflow: hidden;
+    position: relative;
+    padding: 12px 14px 16px;
+  }
+
+  /* ===== Profile Section ===== */
+  .profile-section {
+    background: #F0F8F0;
+    border-radius: var(--radius-lg);
+    padding: 2px 16px;
+    margin-bottom: 12px;
+  }
+  .info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #E0EDE0;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-left {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+    min-width: 58px;
+  }
+  .info-icon {
+    font-size: 15px;
+    line-height: 1;
+    width: 18px;
+    text-align: center;
+  }
+  .info-label {
+    font-size: 13px;
+    font-weight: 400;
+    color: #8A8A8A;
+    letter-spacing: 0.02em;
+  }
+  .info-value {
+    font-size: 14px;
+    color: #2C2C2C;
+    font-weight: 600;
+    text-align: right;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+  }
+  .info-value.highlight {
+    color: #E8843C;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ===== Meal Section ===== */
+  .meal-section {
+    background: var(--meal-bg);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px 14px;
+    margin-bottom: 12px;
+  }
+  .meal-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .meal-header .emoji { font-size: 18px; line-height: 1; }
+  .meal-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+
+  .food-item {
+    padding: 10px 0;
+    border-bottom: 1px dotted var(--border-dot);
+    cursor: pointer;
+  }
+  .food-item:last-of-type { border-bottom: none; }
+  .food-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .food-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+  .food-right {
+    flex-shrink: 0;
+    text-align: right;
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+  .food-cal {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .food-cal-sub {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-light);
+    margin-left: 2px;
+  }
+  .food-desc {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.45;
+  }
+  .food-desc .food-icon {
+    flex-shrink: 0;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  /* 质地做法：本卡专属，标注该道菜的软化处理方式 */
+  .food-texture {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 5px;
+    background: #F0F8F0;
+    color: #4A7C4A;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    line-height: 1.5;
+  }
+
+  .meal-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    margin-top: 4px;
+  }
+  .total-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .total-cal {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-orange);
+  }
+
+  /* ===== 需避免食材：本卡专属 ===== */
+  .avoid-section {
+    background: #FFF6F4;
+    border: 1px solid #F7DED6;
+    border-radius: var(--radius-lg);
+    padding: 14px 16px 12px;
+    margin-bottom: 12px;
+  }
+  .avoid-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #C4562F;
+    margin-bottom: 8px;
+  }
+  .avoid-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 5px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .avoid-row .avoid-dot { flex-shrink: 0; color: #C4562F; }
+  .avoid-row .avoid-why { color: var(--text-light); font-size: 12px; }
+
+  /* ===== 吞咽安全提示：本卡专属 ===== */
+  .safety-section {
+    background: #F3F7FC;
+    border: 1px solid #DCE7F2;
+    border-radius: var(--radius-lg);
+    padding: 14px 16px 12px;
+    margin-bottom: 12px;
+  }
+  .safety-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #3A6491;
+    margin-bottom: 8px;
+  }
+  .safety-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 5px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .safety-row .safety-dot { flex-shrink: 0; color: #3A6491; }
+
+  /* ===== Nutrition Footer ===== */
+  .nutrition-section {
+    padding: 8px 2px 14px;
+  }
+  .nutrition-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .nutrition-tip .tip-icon {
+    flex-shrink: 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .ratio-text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-light);
+  }
+  .ratio-text strong { color: var(--text-secondary); font-weight: 600; }
+  .ratio-text em { color: var(--text-light); font-style: normal; }
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+    padding-left: 24px;
+  }
+  .tag-row:not(:has(.tag)) { display: none; margin: 0; padding: 0; }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: var(--meal-bg);
+    color: var(--accent-orange);
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 360px) {
+    .diet-card-full { padding-left: 10px; padding-right: 10px; }
+    .meal-section { padding-left: 14px; padding-right: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="diet-card-full">
+
+  <!-- ========== Profile Header ========== -->
+  <div class="profile-section">
+    <div class="info-row">
+      <div class="info-left"><span class="info-icon">📅</span><span class="info-label">方案</span></div>
+      <span class="info-value">{{dateBadge}}</span>
+    </div>
+    <div class="info-row">
+      <div class="info-left"><span class="info-icon">👥</span><span class="info-label">适用</span></div>
+      <span class="info-value">{{suitable}}</span>
+    </div>
+    <div class="info-row">
+      <div class="info-left"><span class="info-icon">🥣</span><span class="info-label">质地</span></div>
+      <span class="info-value highlight">{{textureLevel}}</span>
+    </div>
+    <div class="info-row">
+      <div class="info-left"><span class="info-icon">🔥</span><span class="info-label">合计</span></div>
+      <span class="info-value">{{totalCal}}</span>
+    </div>
+  </div>
+
+  <!-- ========== 餐次（数组：早/午/晚）========== -->
+  {{#meals}}
+  <div class="meal-section">
+    <div class="meal-header">
+      <span class="emoji">{{mealEmoji|map:mealName:早餐=☀️🌅,午餐=⛅☀️,晚餐=🌙🌙,=🍴}}</span>
+      <span class="meal-title">{{mealName}}</span>
+    </div>
+    {{#foods}}
+    <div class="food-item">
+      <div class="food-top">
+        <div class="food-name">{{foodName}}</div>
+        <div class="food-right">
+          <span class="food-cal">{{cal}}</span><span class="food-cal-sub">{{calNote}}</span>
+        </div>
+      </div>
+      <div class="food-desc">
+        <span class="food-icon">{{foodIcon|🥣}}</span>
+        <span>{{foodDesc}}</span>
+      </div>
+      <span class="food-texture">🍲 {{texturePrep}}</span>
+    </div>
+    {{/foods}}
+    <div class="meal-total">
+      <span class="total-label">🔥 小计</span>
+      <span class="total-cal">{{mealTotal}}</span>
+    </div>
+  </div>
+  {{/meals}}
+
+  <!-- ========== 需避免食材 ========== -->
+  <div class="avoid-section">
+    <div class="avoid-title">🚫 需避免的食材</div>
+    {{#avoidItems}}
+    <div class="avoid-row">
+      <span class="avoid-dot">•</span>
+      <span><strong>{{avoidName}}</strong> <span class="avoid-why">{{avoidReason}}</span></span>
+    </div>
+    {{/avoidItems}}
+  </div>
+
+  <!-- ========== 吞咽安全提示 ========== -->
+  <div class="safety-section">
+    <div class="safety-title">🛡️ 进食安全提示</div>
+    {{#safetyTips}}
+    <div class="safety-row">
+      <span class="safety-dot">•</span>
+      <span>{{tipText}}</span>
+    </div>
+    {{/safetyTips}}
+  </div>
+
+  <!-- ========== 营养配比 ========== -->
+  <div class="nutrition-section">
+    <div class="nutrition-tip">
+      <span class="tip-icon">💡</span>
+      <div class="ratio-text">{{{ratioText}}}</div>
+    </div>
+    <div class="tag-row">
+      {{#tags}}
+      <span class="tag">{{tagIcon|💡}} {{tagLabel}}</span>
+      {{/tags}}
+    </div>
+  </div>
+
+</div>
+
+<!-- 原始静态内容已抽成示例数据，缺字段时回退，避免空白 -->
+<script type="application/json">
+{
+  "dateBadge": "今日推荐 · 软烂易咀嚼",
+  "suitable": "牙口不好、咀嚼吞咽力弱的长者",
+  "textureLevel": "软食（可用舌头压碎）",
+  "totalCal": "约560kcal",
+  "meals": [
+    {
+      "mealName": "早餐",
+      "mealEmoji": "☀️🌅",
+      "mealTotal": "168kcal",
+      "foods": [
+        {"foodIcon":"🥣","foodName":"小米南瓜粥","foodDesc":"易消化、B族维生素","cal":"96kcal","calNote":"/碗(220g)","texturePrep":"熬至米粒开花，南瓜压成泥"},
+        {"foodIcon":"🥣","foodName":"鸡蛋羹","foodDesc":"优质蛋白、质地嫩滑","cal":"72kcal","calNote":"/1个","texturePrep":"蛋液加1.5倍温水，蒸10分钟"}
+      ]
+    },
+    {
+      "mealName": "午餐",
+      "mealEmoji": "⛅☀️",
+      "mealTotal": "232kcal",
+      "foods": [
+        {"foodIcon":"🥣","foodName":"清蒸龙利鱼","foodDesc":"无刺、优质蛋白","cal":"98kcal","calNote":"/份(140g)","texturePrep":"蒸透后用勺背压散，剔净筋膜"},
+        {"foodIcon":"🥣","foodName":"胡萝卜土豆泥","foodDesc":"β-胡萝卜素、钾","cal":"62kcal","calNote":"/份(130g)","texturePrep":"煮软后捣成泥，不留块状"},
+        {"foodIcon":"🥣","foodName":"软米饭","foodDesc":"碳水主食、易咀嚼","cal":"72kcal","calNote":"/碗(100g)","texturePrep":"水量增至1.5倍，焖至软糯"}
+      ]
+    },
+    {
+      "mealName": "晚餐",
+      "mealEmoji": "🌙🌙",
+      "mealTotal": "160kcal",
+      "foods": [
+        {"foodIcon":"🥣","foodName":"豆腐嫩菜汤","foodDesc":"植物蛋白、钙","cal":"64kcal","calNote":"/碗(250ml)","texturePrep":"嫩豆腐切小丁，青菜取叶剁碎"},
+        {"foodIcon":"🥣","foodName":"山药泥","foodDesc":"健脾养胃、黏滑易吞","cal":"58kcal","calNote":"/份(120g)","texturePrep":"蒸熟压泥，可加少量米汤调稀"},
+        {"foodIcon":"🥣","foodName":"香蕉泥","foodDesc":"钾、天然甜味","cal":"38kcal","calNote":"/半根","texturePrep":"叉子压成泥，现做现吃"}
+      ]
+    }
+  ],
+  "avoidItems": [
+    {"avoidName":"整颗坚果、花生","avoidReason":"体积小且硬，极易呛入气道"},
+    {"avoidName":"糯米制品（年糕、汤圆）","avoidReason":"黏性大，易黏附咽喉造成堵塞"},
+    {"avoidName":"带刺鱼、带骨肉","avoidReason":"咀嚼力弱难以分辨，有卡刺风险"},
+    {"avoidName":"干硬馒头、锅巴","avoidReason":"需大力咀嚼，易碎成硬渣"},
+    {"avoidName":"果冻、大块水果","avoidReason":"整块滑入咽喉，难以咳出"}
+  ],
+  "safetyTips": [
+    {"tipText":"进食时上身坐直90°，餐后保持坐位20-30分钟再躺下"},
+    {"tipText":"小口慢咽，每口约半勺，咽下后再进下一口"},
+    {"tipText":"稀薄液体易误吸，必要时用增稠剂调成微稠状"},
+    {"tipText":"进食中出现呛咳、湿哑嗓音应立即停止并就医评估"}
+  ],
+  "ratioText": "本方案在<strong>不降低营养密度</strong>的前提下调整食物质地：主食软糯、蛋白质剁碎或做羹、蔬菜煮软压泥。营养配比仍保持碳水50-55% · 蛋白质15-20% · 脂肪25-30%。如长者<em>同时患有慢性病</em>（糖尿病、高血压等），请在对话框说明，系统会叠加相应忌口调整。",
+  "tags": [],
+  "hasRelated": false,
+  "related": []
+}
+</script>
+</body>
+</html>

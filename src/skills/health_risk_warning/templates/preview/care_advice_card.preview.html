@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>个性化调理方案</title>
+  <style>
+
+:root{
+  
+  --primary:#E8843C; --primary-deep:#D06E2A; --primary-soft:#FDF6F0;
+  --accent:#3A6B8C; --accent-soft:#E8F0F5; --accent-deep:#1E4A66;
+  --ok:#6B9B7A; --ok-soft:#E8F2EC; --ok-deep:#3D6B4D;
+  --warn:#D4A537; --warn-soft:#FBF3DD; --warn-deep:#9C7715;
+  --danger:#E5484D; --danger-soft:#FDECEC; --danger-deep:#b91c1c;
+  
+  --n0:#FAF8F5; --n50:#F0EDE7; --n100:#E4E0D8; --n200:#D9D4CC; --n300:#C4BEB4;
+  --n400:#A8A09A; --n500:#8A8278; --n600:#6B6660; --n700:#4A463F; --n800:#3D3A36;
+  
+  --font-serif:'Noto Serif SC','Songti SC','STSong',serif;
+  --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:24px; --r-full:999px;
+  
+  --sh-sm:0 1px 3px rgba(62,56,50,.08); --sh-md:0 4px 12px rgba(62,56,50,.10); --sh-lg:0 8px 24px rgba(62,56,50,.12);
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--font-sans); background:var(--n0); color:var(--n800);
+  font-size:16px; line-height:1.6; padding:12px;
+  overflow-wrap:anywhere; word-break:break-word; -webkit-font-smoothing:antialiased;
+}
+img{ max-width:100%; height:auto; display:block; }
+a{ color:var(--primary); text-decoration:none; }
+
+
+.card{ max-width:430px; margin:0 auto; background:#fff; border:1px solid var(--n100);
+  border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-md); }
+
+
+.hero{ padding:16px; color:#fff; background:linear-gradient(135deg,var(--primary),var(--primary-deep)); }
+.hero.blue{ background:linear-gradient(135deg,var(--accent),var(--accent-deep)); }
+.eyebrow{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--r-full);
+  background:rgba(255,255,255,.18); font-size:12px; font-weight:600; }
+.hero h1{ font-family:var(--font-serif); margin:8px 0 0; font-size:22px; line-height:1.18; letter-spacing:.5px; }
+.hero .sub{ margin-top:6px; color:rgba(255,255,255,.88); font-size:13px; }
+.hero-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.score{ font-size:42px; font-weight:800; line-height:1; }
+.score small{ font-size:14px; font-weight:600; opacity:.82; }
+
+
+.section{ padding:13px 14px; border-top:1px solid var(--n100); }
+.section-title{ margin:0 0 10px; display:flex; align-items:center; gap:7px; color:var(--n800);
+  font-size:15px; font-weight:800; font-family:var(--font-serif); }
+.section-title::before{ content:""; width:4px; height:16px; border-radius:2px; background:var(--primary); }
+.section-title.blue::before{ background:var(--accent); }
+
+
+.pill{ display:inline-flex; align-items:center; justify-content:center; min-height:22px; padding:2px 9px;
+  border-radius:var(--r-full); background:var(--primary-soft); color:var(--primary-deep);
+  font-size:12px; font-weight:700; white-space:nowrap; }
+.pill.blue{ background:var(--accent-soft); color:var(--accent); }
+.pill.ok{ background:var(--ok-soft); color:var(--ok-deep); }
+.pill.warn{ background:var(--warn-soft); color:var(--warn-deep); }
+.pill.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.grid.three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.stat{ min-width:0; padding:10px 9px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.stat .num{ color:var(--primary-deep); font-size:20px; font-weight:800; line-height:1.1; }
+.stat .num.bad{ color:var(--danger); } .stat .num.warn{ color:var(--warn-deep); } .stat .num.ok{ color:var(--ok-deep); }
+.stat .lbl{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.dim{ padding:9px 0; border-bottom:1px dashed var(--n100); }
+.dim:last-child{ border-bottom:0; }
+.dim-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; font-size:13px; }
+.dim-name{ font-weight:700; } .dim-name small{ margin-left:5px; color:var(--n400); font-weight:600; }
+.dim-score{ color:var(--primary-deep); font-weight:800; white-space:nowrap; }
+.bar{ height:7px; margin-top:6px; border-radius:var(--r-full); background:var(--n200); overflow:hidden; }
+.bar > span{ display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+.bar > span.warn{ background:linear-gradient(90deg,var(--warn),#f97316); }
+.bar > span.bad{ background:linear-gradient(90deg,var(--danger),#fb7185); }
+.note{ margin-top:4px; color:var(--n500); font-size:11px; }
+
+
+.row{ display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed var(--n100); }
+.row:last-child{ border-bottom:0; }
+.row .k{ color:var(--n500); flex:0 0 auto; } .row .v{ font-weight:700; text-align:right; min-width:0; }
+
+
+.list{ display:flex; flex-direction:column; gap:8px; }
+.item{ padding:10px; background:var(--n50); border:1px solid var(--n100); border-radius:var(--r-md); }
+.item.warn{ background:var(--warn-soft); border-color:#fde68a; }
+.item.bad{ background:var(--danger-soft); border-color:#fecaca; }
+.item.ok{ background:var(--ok-soft); border-color:#bbf7d0; }
+.item .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; }
+.item .txt{ margin-top:5px; color:var(--n600); font-size:12px; }
+
+
+.tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ padding:4px 8px; border-radius:var(--r-md); background:var(--n200); color:var(--n500); font-size:12px; font-weight:600; }
+.tag.good{ background:var(--ok-soft); color:var(--ok-deep); } .tag.bad{ background:var(--danger-soft); color:var(--danger-deep); }
+
+
+.timeline{ position:relative; padding-left:22px; }
+.timeline::before{ content:""; position:absolute; left:7px; top:7px; bottom:7px; width:2px; background:var(--n100); }
+.step{ position:relative; padding:7px 0 9px; }
+.step::before{ content:""; position:absolute; left:-20px; top:12px; width:10px; height:10px; border-radius:50%;
+  background:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.step.done::before{ background:var(--ok); box-shadow:0 0 0 3px var(--ok-soft); }
+.step.bad::before{ background:var(--danger); box-shadow:0 0 0 3px var(--danger-soft); }
+.step .time{ color:var(--n400); font-size:11px; } .step .node{ font-weight:800; } .step .detail{ color:var(--n600); font-size:12px; }
+
+
+.alert{ padding:10px; border-radius:var(--r-md); background:var(--warn-soft); border:1px solid #fde68a; color:var(--warn-deep); font-size:12px; }
+.alert.bad{ background:var(--danger-soft); border-color:#fecaca; color:var(--danger-deep); }
+
+
+.foot{ padding:10px 14px; border-top:1px solid var(--n100); color:var(--n400); font-size:11px; }
+
+
+.muted{ color:var(--n500); } .faint{ color:var(--n400); }
+.text{ font-size:13px; color:var(--n600); line-height:1.6; }
+
+@media (max-width:360px){
+  body{ padding:10px; } .hero h1{ font-size:20px; } .score{ font-size:36px; }
+  .grid.three{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+  </style>
+</head>
+<body>
+<div class="card" data-template="care_advice_card" data-layout="vertical">
+  <div class="hero">
+    <div class="eyebrow">💡 个性化调理方案</div>
+    <div class="hero-row">
+      <div>
+        <h1>张明华 · 血瘀质</h1>
+        <p class="sub">证候：肝阳上亢兼血瘀</p>
+      </div>
+      <div class="sub" style="text-align:right">2026-07-28</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="alert">🤖 AI 生成 · 基于体质与证候的康养建议，仅供参考，执行前请咨询医师</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🌿 中药调理（2）</div>
+    <div class="list">
+    
+      <div class="item ok">
+        <div class="top"><span>天麻钩藤饮</span><span class="pill ok">平肝潜阳</span></div>
+        <div class="txt">清热安神、平肝熄风，适用于肝阳上亢所致头晕头痛、急躁易怒。每日 1 剂，分两次温服。</div>
+      </div>
+    
+      <div class="item ok">
+        <div class="top"><span>血府逐瘀汤</span><span class="pill ok">活血化瘀</span></div>
+        <div class="txt">活血化瘀、行气止痛，改善面色晦暗与舌质偏暗。建议在医师辨证后使用，连服 2 周复诊。</div>
+      </div>
+    
+    </div>
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">📍 穴位保健（4）</div>
+    <div class="list">
+    
+      <div class="item">
+        <div class="top"><span>太冲穴</span><span class="pill">平肝熄风</span></div>
+        <div class="txt">位于足背第一、二跖骨间，每日按揉 3 分钟，以局部酸胀为度。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>曲池穴</span><span class="pill">降压通络</span></div>
+        <div class="txt">屈肘成直角，肘横纹外侧端，早晚各按揉 2 分钟，有助辅助降压。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>百会穴</span><span class="pill">醒脑开窍</span></div>
+        <div class="txt">头顶正中线与两耳尖连线交点，轻柔点按 2 分钟，缓解头晕昏沉。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>合谷穴</span><span class="pill">通络止痛</span></div>
+        <div class="txt">手背第一、二掌骨间，配合太冲穴同用（开四关），缓解头部胀痛。</div>
+      </div>
+    
+    </div>
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">🍲 膳食调理（4）</div>
+    <div class="list">
+    
+      <div class="item">
+        <div class="top"><span>低盐低脂饮食</span><span class="pill blue">日常</span></div>
+        <div class="txt">每日食盐控制在 5g 以内，减少动物油脂与腌制食品摄入。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>活血降压食材</span><span class="pill blue">宜食</span></div>
+        <div class="txt">多食芹菜、黑木耳、山楂、洋葱，有助活血通脉、辅助控压。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>少食辛辣油腻</span><span class="pill blue">节制</span></div>
+        <div class="txt">减少烧烤、油炸与浓茶咖啡，晚餐七分饱为宜。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>严格忌烟酒</span><span class="pill blue">禁忌</span></div>
+        <div class="txt">烟酒会加重血管痉挛与肝阳上亢，建议完全戒除。</div>
+      </div>
+    
+    </div>
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">🏃 运动建议（3）</div>
+    <div class="list">
+    
+      <div class="item">
+        <div class="top"><span>太极拳</span><span class="pill blue">舒缓</span></div>
+        <div class="txt">每日 20 分钟，动作舒缓不憋气，注重呼吸配合。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>步行锻炼</span><span class="pill blue">有氧</span></div>
+        <div class="txt">每日散步 30 分钟，速度以能正常交谈为宜，心率不超过 110 次/分。</div>
+      </div>
+    
+      <div class="item">
+        <div class="top"><span>运动禁忌</span><span class="pill blue">注意</span></div>
+        <div class="txt">避免剧烈运动、快速转头与屏气用力动作，运动前后监测血压。</div>
+      </div>
+    
+    </div>
+    
+  </div>
+
+  <div class="section">
+    <div class="section-title">⚠️ 禁忌提醒</div>
+    <div class="list">
+    
+      <div class="item bad">
+        <div class="top"><span>饮食</span><span class="pill bad">禁忌</span></div>
+        <div class="txt">忌高盐高脂、忌烟酒、忌暴饮暴食</div>
+      </div>
+    
+      <div class="item bad">
+        <div class="top"><span>生活</span><span class="pill bad">禁忌</span></div>
+        <div class="txt">避免情绪激动、避免熬夜、避免骤然起身与冷水洗浴</div>
+      </div>
+    
+      <div class="item bad">
+        <div class="top"><span>用药</span><span class="pill bad">禁忌</span></div>
+        <div class="txt">降压药不可擅自停用或调整剂量，中西药需间隔 1 小时服用</div>
+      </div>
+    
+    </div>
+    
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">➡️ 随访安排</div>
+    <p class="text">建议 2 周后复诊评估调理效果，期间每日早晚各测量一次血压并记录；若出现持续头痛、视物模糊或肢体麻木，请立即就医。</p>
+  </div>
+  
+
+  <div class="foot">来源：体质辨识 + 中医证候模型 · 调理方案仅作康养参考，用药请遵医嘱</div>
+</div>
+</body>
+</html>

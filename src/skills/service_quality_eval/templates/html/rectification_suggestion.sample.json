@@ -1,0 +1,24 @@
+{
+  "period": "2026-08-01",
+  "targetName": "阳光社区养老服务中心",
+  "targetType": "机构管理员",
+  "weakDimension": "D4 投诉率",
+  "weakScore": 76.3,
+  "confidence": 91,
+  "openIssues": 3,
+  "complaints": 7,
+  "slaHours": 24,
+  "causeCount": 2,
+  "causes": [
+    { "title": "投诉率偏高", "dimension": "D4", "desc": "T-1 投诉率高于区域均值，TOP1 类型为服务时效。", "itemClass": "bad", "pillClass": "bad" },
+    { "title": "流程完成度波动", "dimension": "D2", "desc": "部分上门护理工单缺少签退或服务小结。", "itemClass": "warn", "pillClass": "warn" }
+  ],
+  "suggestionCount": 2,
+  "suggestions": [
+    { "title": "建立迟到提前告知机制", "owner": "机构管理员", "action": "超过预约时间前 10 分钟仍无法到达时，系统提醒护理员电话告知家属。", "acceptance": "服务时效类投诉连续 7 日下降" },
+    { "title": "补齐上门服务闭环节点", "owner": "护理主管", "action": "复训签到、服务小结、签退三节点；缺失节点纳入当日质检。", "acceptance": "流程完成度 D2 回升至 90 分以上" }
+  ],
+  "handoffClass": "bad",
+  "handoffText": "建议生成整改工单并抄送机构管理员；若连续三日 D4 < 70，转监管端重点督导。",
+  "source": "服务质量评估 · 整改建议"
+}

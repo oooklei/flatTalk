@@ -1,0 +1,256 @@
+[
+  {
+    "id": "2080582266197192705",
+    "source": "yunzhen-shezhen",
+    "signals": {
+      "reportId": "2080582266197192705",
+      "userId": "B6CD3DE5953E462D9F93AB62B818E29B",
+      "userName": "AI员工",
+      "elderAge": 56,
+      "elderSex": "男",
+      "detectTime": "2026-07-23 18:57:07",
+      "constitution": "痰湿",
+      "symptomName": "",
+      "healthIndex": 70.9,
+      "tongueFeature": "正常人舌色，舌质淡红润泽。舌苔呈现白色。",
+      "faceFeature": "面色红润。",
+      "pdfUrl": "https://labelsys-images.oss-cn-hangzhou.aliyuncs.com/tongueFile/check/2026/07/ee6ceaae-f7b2-408b-9502-50d33e176ab5.pdf"
+    },
+    "risks": [
+      {
+        "riskName": "精神压力评估",
+        "warningLevel": "一般",
+        "riskIndex": 49.1
+      },
+      {
+        "riskName": "心血管功能评估",
+        "warningLevel": "一般",
+        "riskIndex": 51.5
+      },
+      {
+        "riskName": "中风风险评估",
+        "warningLevel": "一般",
+        "riskIndex": 46.3
+      },
+      {
+        "riskName": "骨质疏松症风险评估",
+        "warningLevel": "一般",
+        "riskIndex": 49.2
+      },
+      {
+        "riskName": "肺结节风险评估",
+        "warningLevel": "关注",
+        "riskIndex": 83.6
+      },
+      {
+        "riskName": "乳腺结节风险评估",
+        "warningLevel": "一般",
+        "riskIndex": 23.1
+      },
+      {
+        "riskName": "甲状腺结节风险评估",
+        "warningLevel": "一般",
+        "riskIndex": 44.1
+      },
+      {
+        "riskName": "脂肪肝风险评估",
+        "warningLevel": "一般",
+        "riskIndex": 59.8
+      },
+      {
+        "riskName": "关节炎、颈椎或腰椎风险评估",
+        "warningLevel": "一般",
+        "riskIndex": 45.4
+      },
+      {
+        "riskName": "肾功能风险评估",
+        "warningLevel": "一般",
+        "riskIndex": 44
+      }
+    ],
+    "warning_level": {
+      "level": "关注",
+      "risks": [
+        {
+          "riskName": "精神压力评估",
+          "warningLevel": "一般",
+          "riskIndex": 49.1
+        },
+        {
+          "riskName": "心血管功能评估",
+          "warningLevel": "一般",
+          "riskIndex": 51.5
+        },
+        {
+          "riskName": "中风风险评估",
+          "warningLevel": "一般",
+          "riskIndex": 46.3
+        },
+        {
+          "riskName": "骨质疏松症风险评估",
+          "warningLevel": "一般",
+          "riskIndex": 49.2
+        },
+        {
+          "riskName": "肺结节风险评估",
+          "warningLevel": "关注",
+          "riskIndex": 83.6
+        },
+        {
+          "riskName": "乳腺结节风险评估",
+          "warningLevel": "一般",
+          "riskIndex": 23.1
+        },
+        {
+          "riskName": "甲状腺结节风险评估",
+          "warningLevel": "一般",
+          "riskIndex": 44.1
+        },
+        {
+          "riskName": "脂肪肝风险评估",
+          "warningLevel": "一般",
+          "riskIndex": 59.8
+        },
+        {
+          "riskName": "关节炎、颈椎或腰椎风险评估",
+          "warningLevel": "一般",
+          "riskIndex": 45.4
+        },
+        {
+          "riskName": "肾功能风险评估",
+          "warningLevel": "一般",
+          "riskIndex": 44
+        }
+      ]
+    },
+    "pdfUrl": "https://labelsys-images.oss-cn-hangzhou.aliyuncs.com/tongueFile/check/2026/07/ee6ceaae-f7b2-408b-9502-50d33e176ab5.pdf",
+    "_captured_at": "2026-08-02T03:25:25.322Z",
+    "_source": "云诊舌诊",
+    "pdf_parsed": {
+      "ok": true,
+      "parser": "pdfplumber",
+      "local_pdf_path": "data/shezhen_reports/2080582266197192705.pdf",
+      "local_text_path": "data/shezhen_reports/2080582266197192705.txt",
+      "local_structured_json_path": "data/shezhen_reports/2080582266197192705.structured.json",
+      "local_knowledge_doc_path": "src/skills/health_risk_warning/knowledge_docs/yunzhen_shezhen_report_2080582266197192705.md",
+      "page_count": 16,
+      "text_pages": 16,
+      "text_chars": 6984,
+      "metadata": {
+        "title": "中医人工智能体质检测报告",
+        "issuer": "安徽中医药大学 AI健康云诊",
+        "name": "AI员工",
+        "age": "56",
+        "sex": "男",
+        "phone": "13878136006",
+        "report_date": "2026-07-23"
+      },
+      "health_analysis": {
+        "health_state": "健康状态 痰湿 兼有（心脾气虚）\n发生机制 气虚则运化无力，水液代谢障碍，停聚体内而形成痰湿。\n70.9 分\n属于中风险状态，建议您一周后再次检测。\n健康指数\n精神压力评估 轻度风险\n心血管功能评估 轻度风险\n中风风险评估 轻度风险\n骨质疏松症风险评估 轻度风险\n肺结节风险评估 中度风险\n风险概览\n乳腺结节风险评估 轻度风险\n甲状腺结节风险评估 轻度风险\n脂肪肝风险评估 轻度风险\n关节炎、颈椎或腰椎风险评估 轻度风险\n肾功能风险评估 轻度风险\n手少阴心经（偏虚） 58.6\n异常经络 足太阴脾经（偏虚） 57.7\n足阳明胃经（偏虚） 52.7\n\n--- page 4 ---",
+        "occurrence_mechanism": "气虚则运化无力，水液代谢障碍，停聚体内而形成痰湿。\n70.9 分\n属于中风险状态，建议您一周后再次检测。\n健康指数\n精神压力评估 轻度风险\n心血管功能评估 轻度风险\n中风风险评估 轻度风险\n骨质疏松症风险评估 轻度风险\n肺结节风险评估 中度风险\n风险概览\n乳腺结节风险评估 轻度风险\n甲状腺结节风险评估 轻度风险\n脂肪肝风险评估 轻度风险\n关节炎、颈椎或腰椎风险评估 轻度风险\n肾功能风险评估 轻度风险\n手少阴心经（偏虚） 58.6\n异常经络 足太阴脾经（偏虚） 57.7\n足阳明胃经（偏虚） 52.7\n\n--- page 4 ---",
+        "health_index": 70.9,
+        "risk_status": "中风险状态，建议您一周后再次检测。",
+        "risk_overview": [
+          {
+            "name": "精神压力评估",
+            "risk_level": "轻度风险"
+          },
+          {
+            "name": "心血管功能评估",
+            "risk_level": "轻度风险"
+          },
+          {
+            "name": "中风风险评估",
+            "risk_level": "轻度风险"
+          },
+          {
+            "name": "骨质疏松症风险评估",
+            "risk_level": "轻度风险"
+          },
+          {
+            "name": "肺结节风险评估",
+            "risk_level": "中度风险"
+          },
+          {
+            "name": "乳腺结节风险评估",
+            "risk_level": "轻度风险"
+          },
+          {
+            "name": "甲状腺结节风险评估",
+            "risk_level": "轻度风险"
+          },
+          {
+            "name": "脂肪肝风险评估",
+            "risk_level": "轻度风险"
+          },
+          {
+            "name": "关节炎、颈椎或腰椎风险评估",
+            "risk_level": "轻度风险"
+          },
+          {
+            "name": "肾功能风险评估",
+            "risk_level": "轻度风险"
+          }
+        ],
+        "abnormal_meridian_overview": [
+          {
+            "name": "手少阴心经（偏虚）",
+            "score": 58.6
+          },
+          {
+            "name": "足太阴脾经（偏虚）",
+            "score": 57.7
+          },
+          {
+            "name": "足阳明胃经（偏虚）",
+            "score": 52.7
+          }
+        ],
+        "pathology_factor": {
+          "level": "湿Ⅱ级",
+          "description": "振、脘腹胀满、面部或头发易出油、大便黏滞等症状。"
+        },
+        "solar_term_risk": {
+          "solar_term": "大暑",
+          "risk": "高",
+          "tips": "高温天气，注意防暑，防止室内外温差过大引发心脑血管不适，注意饮食安全，适当补充盐分，防止代\n谢紊乱\n\n--- page 10 ---\n说明：口中常感甜腻，不耐受湿度较高的环境，警惕水肿、糖尿病、中风等疾病，梅雨季节的患病风险易出现\n增高。"
+        }
+      },
+      "remote_knowledge": {
+        "kb_id": 175,
+        "collection": "health_risk_warning_business_kb",
+        "login_status": 200,
+        "login_success": true,
+        "uploaded": true,
+        "upload_status": 200,
+        "upload_response": {
+          "code": "0000",
+          "displayCode": "0000",
+          "message": "success",
+          "data": 1330,
+          "tid": "4208611785641142117",
+          "success": true
+        },
+        "doc_id": 1330,
+        "embedding_status": 200,
+        "embedding_response": {
+          "code": "0000",
+          "displayCode": "0000",
+          "message": "成功",
+          "data": null,
+          "tid": "1270541785641146882",
+          "success": true
+        },
+        "verify_status": 200,
+        "verify_response": {
+          "code": "4040",
+          "displayCode": "4040",
+          "message": "No static resource api/knowledge/query.",
+          "data": null,
+          "tid": "8221611785641151603",
+          "success": false
+        }
+      }
+    }
+  }
+]

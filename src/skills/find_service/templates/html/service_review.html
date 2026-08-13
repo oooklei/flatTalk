@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>服务口碑卡</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：机构/服务口碑评价卡。展示综合评分、等级、四维评分（进度条）、口碑摘要列表与投诉反馈。
+       来自老人端-服务详情 口碑摘要 + 机构评价详情。按钮已变通为追问。 -->
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <span class="eyebrow">服务口碑</span>
+      <h1>{{orgName}}</h1>
+      <p class="subtitle">{{level}}</p>
+    </header>
+
+    <section class="nb-section">
+      <div class="review-summary"><span class="score">{{totalScore}}</span><span class="level">综合评分 · {{level}}</span></div>
+      <div class="review-dims">
+        {{#dims}}
+        <div class="review-dim"><span class="dn">{{name}}</span><span class="bar"><span style="width:{{pct}}%"></span></span><span class="dv">{{score}}</span></div>
+        {{/dims}}
+      </div>
+    </section>
+
+    <section class="nb-section">
+      <h2>口碑摘要</h2>
+      {{#reviews}}
+      <div class="review-item"><span class="who">{{who}}</span><div class="txt">{{text}}</div></div>
+      {{/reviews}}
+      <span class="review-complaint">近 30 天投诉 {{complaintCount}} 件</span>
+    </section>
+
+    <div class="foot">AI 找服务 · 服务口碑 · 评分基于用户评价与工单满意度</div>
+
+    <script type="application/json">
+    {
+      "orgName": "阳光社区养老服务中心",
+      "level": "B级·良好",
+      "totalScore": 85.2,
+      "complaintCount": 2,
+      "dims": [
+        { "name": "用户评价评分", "score": 92.1, "pct": 92 },
+        { "name": "工单满意度", "score": 88.0, "pct": 88 },
+        { "name": "工单服务质量", "score": 90.5, "pct": 90 },
+        { "name": "投诉率", "score": 76.3, "pct": 76 }
+      ],
+      "reviews": [
+        { "who": "张***", "text": "护理员很耐心，按时上门。" },
+        { "who": "李***", "text": "服务专业，沟通顺畅。" }
+      ]
+    }
+    </script>
+  </article>
+</body>
+</html>

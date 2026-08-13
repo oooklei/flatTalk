@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>接单确认卡</title>
+  <link rel="stylesheet" href="_design_tokens.css" />
+  <link rel="stylesheet" href="_card_components.css" />
+</head>
+<body>
+  <!-- 语义：供应商"接受订单"成功确认卡。展示订单已接信息、执行机构/服务人员、预约人/地址/时间与
+       预计上门时间，提示进入服务。来自原型供应商一票否决权的"接受订单"动作。按钮已变通为追问。 -->
+  <article class="nb-card" data-layout="vertical">
+    <header class="nb-hero">
+      <span class="eyebrow">接单确认</span>
+      <h1>订单已接</h1>
+      <p class="subtitle">{{serviceName}} · {{orderNo}}</p>
+    </header>
+
+    <section class="nb-section">
+      <div class="accept-banner">
+        <span class="ico">✓</span>
+        <div><div class="t">您已接受该订单</div><div class="s">将按约定时间上门服务</div></div>
+      </div>
+    </section>
+
+    <section class="nb-section">
+      <div class="accept-row"><span class="k">预约人</span><span class="v">{{name}}</span></div>
+      <div class="accept-row"><span class="k">服务地址</span><span class="v">{{address}}</span></div>
+      <div class="accept-row"><span class="k">预约时间</span><span class="v">{{date}}</span></div>
+      <div class="accept-row"><span class="k">执行机构</span><span class="v">{{supplier}}</span></div>
+      <div class="accept-row"><span class="k">服务人员</span><span class="v">{{staff}}</span></div>
+      <div class="accept-eta">预计 {{eta}} 上门</div>
+    </section>
+
+    <div class="foot">派单管理 · 接单确认 · 供应商一票否决权已行使（接受）</div>
+  </article>
+
+  <script type="application/json">
+    {
+      "orderNo": "FW-20260707-0183",
+      "serviceName": "居家深度清洁",
+      "name": "王奶奶",
+      "address": "南宁市青秀区长湖路58号",
+      "date": "2026-07-07 09:00",
+      "supplier": "桂林夕阳红养老服务中心",
+      "staff": "张美丽",
+      "eta": "09:32"
+    }
+  </script>
+</body>
+</html>

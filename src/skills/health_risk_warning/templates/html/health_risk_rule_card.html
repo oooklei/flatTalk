@@ -212,5 +212,75 @@ a{ color:var(--primary); text-decoration:none; }
 
   <div class="foot">来源：{{sourceLabel|健康风险预警规则库}} · 规则判定仅供辅助参考，不作为诊断依据</div>
 </div>
+<script type="application/json">
+{
+  "badge": "风险规则",
+  "elderName": "张阿姨",
+  "ruleLibrary": "健康风险预警规则库",
+  "period": "近 7 天",
+  "assessTime": "2026-07-30 18:20",
+  "rules_count": 3,
+  "topLevel": "预警",
+  "scanCount": 18,
+  "ruleVersion": "v2.4.1（2026-07 版）",
+  "dataWindow": "2026-07-24 至 2026-07-30",
+  "judgeMode": "本地规则库自动研判",
+  "sourceLabel": "健康风险预警规则库",
+  "judgement": "本次共扫描 18 条风险规则，命中 3 条，其中「血压持续偏高」为预警级，建议 48 小时内安排家庭医生随访。",
+  "rules": [
+    {
+      "ruleName": "血压持续偏高",
+      "riskLevel": "预警",
+      "levelPill": "bad",
+      "itemClass": "bad",
+      "condition": "收缩压 ≥ 140 mmHg 且持续 ≥ 3 天",
+      "evidence": "近 7 天有 4 天收缩压 ≥ 140 mmHg，最高 152 mmHg"
+    },
+    {
+      "ruleName": "夜间心率异常波动",
+      "riskLevel": "关注",
+      "levelPill": "warn",
+      "itemClass": "warn",
+      "condition": "夜间静息心率 < 60 次/分 且波动幅度 > 15 次/分",
+      "evidence": "近 7 天中 3 晚出现心率低于 60 次/分"
+    },
+    {
+      "ruleName": "服药依从性下降",
+      "riskLevel": "提示",
+      "levelPill": "warn",
+      "itemClass": "",
+      "condition": "近 7 天漏服记录 ≥ 2 次",
+      "evidence": "7 月 26 日、7 月 29 日降压药未打卡"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "2026-07-30 18:05",
+      "node": "数据汇集",
+      "detail": "汇总 4 类设备信号共 86 条采集记录",
+      "stepClass": "done"
+    },
+    {
+      "time": "2026-07-30 18:12",
+      "node": "规则扫描",
+      "detail": "对 18 条风险规则逐条比对，命中 3 条",
+      "stepClass": "done"
+    },
+    {
+      "time": "2026-07-30 18:18",
+      "node": "等级判定",
+      "detail": "取最高命中等级，判定整体风险为「预警」",
+      "stepClass": "bad"
+    },
+    {
+      "time": "2026-07-30 18:20",
+      "node": "生成建议",
+      "detail": "输出处置建议并推送至家属与护理员",
+      "stepClass": ""
+    }
+  ],
+  "nextSteps": "建议 48 小时内联系家庭医生复核血压趋势；每日早晚定时测量并记录，同时提醒老人按时服药。"
+}
+</script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+{
+  "badge": "云诊舌象辨识",
+  "elderName": "张阿姨",
+  "elderAge": "72岁",
+  "device": "云诊365 舌诊仪",
+  "assessTime": "2026-07-30 09:15",
+  "conclusion": "血行不畅 · 兼有热象",
+  "tongue_summary": "舌偏暗，苔薄黄，舌体正常，舌下络脉正常；提示血行不畅、兼有热象，与血瘀质倾向相互印证。",
+  "indicators_count": 6,
+  "tongue_indicators": [
+    { "name": "舌色", "value": "偏暗", "statusLabel": "异常", "valClass": "bad" },
+    { "name": "苔色", "value": "薄黄", "statusLabel": "异常", "valClass": "warn" },
+    { "name": "舌体", "value": "正常", "statusLabel": "正常", "valClass": "ok" },
+    { "name": "舌下络脉", "value": "正常", "statusLabel": "正常", "valClass": "ok" },
+    { "name": "脉象", "value": "弦细", "statusLabel": "异常", "valClass": "warn" },
+    { "name": "面色", "value": "微黄", "statusLabel": "异常", "valClass": "warn" }
+  ],
+  "measures": [
+    { "k": "舌体面积占比", "v": "约 78%（偏胖大）" },
+    { "k": "苔质厚薄", "v": "薄苔" },
+    { "k": "润燥程度", "v": "偏干" },
+    { "k": "采集图像质量", "v": "合格" }
+  ],
+  "abnormal_count": 2,
+  "abnormal_items": [
+    { "name": "舌色偏暗", "levelLabel": "重点关注", "pillClass": "bad", "itemClass": "bad", "desc": "提示血行不畅、瘀血内停，常见于血瘀质，建议结合面象与脉象综合判断。" },
+    { "name": "苔薄黄", "levelLabel": "异常", "pillClass": "warn", "itemClass": "warn", "desc": "提示有热象，多为阴虚内热或湿热蕴结，注意清淡饮食、充足饮水。" }
+  ],
+  "risk_warning": "提示肝郁血虚、阴虚阳亢倾向，关注头晕头痛、急躁易怒等表现，必要时进行中医干预。",
+  "advice": "建议 2 周后复采舌象对比变化；若同期血压持续偏高，请转人工中医复核。",
+  "sourceLabel": "AI 生成 · 云诊舌诊设备结构化数据"
+}

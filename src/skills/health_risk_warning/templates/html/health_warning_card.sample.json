@@ -1,0 +1,26 @@
+{
+  "badge": "健康风险预警",
+  "elderName": "张阿姨",
+  "elderAge": "72岁",
+  "assessTime": "2026-07-30 18:20",
+  "level": "关注",
+  "levelIcon": "⚠️",
+  "summary": "结合老人近 7 天设备信号与风险规则，当前风险等级为“关注”，建议加强居家观察并补充远程指标。",
+  "signals_count": 2,
+  "signals": [
+    { "type": "血压", "value": "148/92 mmHg", "statusLabel": "异常", "statusPill": "bad", "source": "本地设备" },
+    { "type": "心率", "value": "92 次/分", "statusLabel": "正常", "statusPill": "ok", "source": "本地设备" }
+  ],
+  "rules_count": 1,
+  "rules": [
+    { "ruleName": "血压持续偏高", "riskLevel": "关注", "condition": "收缩压≥140 且持续≥3天" }
+  ],
+  "actions_count": 2,
+  "recommendedActions": [
+    { "priority": "高", "priorityPill": "bad", "owner": "家属/护理员", "action": "每日测量血压并记录" },
+    { "priority": "中", "priorityPill": "warn", "owner": "护理员", "action": "减少高盐饮食、保证作息规律" }
+  ],
+  "nextSteps": "建议补充远程体检指标（云诊365）以提升判定置信度；如信号持续异常请转人工复核。",
+  "remoteGap": "",
+  "sourceLabel": "本地设备信号 + 风险规则"
+}
