@@ -1,4 +1,8 @@
 import { fillTemplateSlots as fillTemplateSlotsMock } from '../model-service.js';
+import {
+  buildSessionContextText,
+  splitBusinessDataForPrompt,
+} from '../context-bus/session-prompt-context.js';
 import { LOCAL_FILL_TEMPLATE_IDS } from './extra-template-fills.js';
 import { pickChatModel, publicModelName } from './model-registry.js';
 import { callOpenAiCompatibleModel } from './openai-compatible-client.js';
@@ -96,8 +100,15 @@ export function createTemplateCardModelService(options = {}) {
       const model = options.testModel || pickChatModel({ registryPath: options.registryPath, modelId: options.modelId });
       if (!model) return buildFallbackMockAnswer(input, 'no_available_model');
 
+      const session_context_text = input.session_context_text
+        || buildSessionContextText(input.business_data || {});
       const messages = [
-        { role: 'system', content: loadPrompt('template-card/system.md') },
+        {
+          role: 'system',
+          content: loadPrompt('template-card/system.md', {
+            session_context_text: session_context_text || '（当前会话暂无明确登录身份）',
+          }),
+        },
         { role: 'user', content: input.prompt || '' },
       ];
       const response = await callOpenAiCompatibleModel(model, messages, {
@@ -191,9 +202,25 @@ function buildTemplateFields(library = []) {
   }));
 }
 
+export function buildTemplateCardMessages(input = {}) {
+  return buildMessages(input);
+}
+
 function buildMessages(input) {
   const historyText = formatHistoryText(input.conversation_history);
-  const system = loadPrompt('template-card/system.md');
+  const businessData = input.business_data || {};
+  const session_context_text = input.session_context_text
+    || buildSessionContextText(businessData);
+  const split = input.session_profiles || input.skill_business_data
+    ? {
+        session_profiles: input.session_profiles || {},
+        skill_business_data: input.skill_business_data || {},
+      }
+    : splitBusinessDataForPrompt(businessData);
+
+  const system = loadPrompt('template-card/system.md', {
+    session_context_text: session_context_text || '（当前会话暂无明确登录身份）',
+  });
   const user = loadPrompt('template-card/fill-template.md', {
     user_message: input.message || '',
     intent_context: input.intent_context || {},
@@ -202,13 +229,12 @@ function buildMessages(input) {
     template_library: input.template_library || [],
     template_fields: input.template_fields || [],
     evidence: input.evidence || [],
-    business_data: input.business_data || {},
+    session_profiles: split.session_profiles,
+    skill_business_data: split.skill_business_data,
     conversation_history: historyText,
     skill_instruction: buildSkillInstruction(input.skill_key),
   });
-  const messages = [
-    { role: 'system', content: system },
-  ];
+  const messages = [{ role: 'system', content: system }];
   const history = Array.isArray(input.conversation_history) ? input.conversation_history : [];
   for (const msg of history) {
     if (msg.role && msg.content) messages.push({ role: msg.role, content: msg.content });
