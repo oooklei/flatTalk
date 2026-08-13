@@ -386,7 +386,7 @@ describe('login-binder', () => {
       elderScope: 'elder_E1',
       orgId: '',
       orgName: '',
-    });
+    }, { roleKey: 'elder' });
     assert.equal(login.identity_status, 'provisional');
     assert.equal(login.entity_type, 'ELDER');
     assert.equal(login.elder_binding.elder_id, 'E1');
@@ -1108,7 +1108,7 @@ import { registerDefaultDetectors } from '../src/core/pipeline/detectors/index.j
 
 describe('acceptance mapping', () => {
   it('elder login → meal has_elder', () => {
-    const login = bindFromSso({ userId: 'E1', roleId: 'LAO_REN' });
+    const login = bindFromSso({ userId: 'E1', roleId: 'LAO_REN' }, { roleKey: 'elder' });
     const p = injectProfile(login, emptyTurn(), 'meal_plan');
     assert.equal(p.has_elder, true);
   });
