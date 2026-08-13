@@ -66,3 +66,11 @@ local-kb/
 # 原型文件 - 严禁删除
 proto/
 .worktrees/
+
+# Local scratch / runtime
+.flattalk.pid
+_*.txt
+_proto_cards/
+_proto_extract.mjs
+.deploy-filelist.txt
+.comate/

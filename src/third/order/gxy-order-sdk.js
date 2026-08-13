@@ -118,7 +118,7 @@ async function post(path, payload) {
     timeout: _config.timeout,
   });
 
-  return wrapResult(result);
+  return wrapResult(result, { method: 'POST', url: _config.apiUrl + path });
 }
 
 async function get(path, params) {
@@ -142,15 +142,23 @@ async function get(path, params) {
     timeout: _config.timeout,
   });
 
-  return wrapResult(result);
+  return wrapResult(result, { method: 'GET', url: fullUrl.split('?')[0] });
 }
 
-function wrapResult(result) {
+function wrapResult(result, meta = {}) {
   const isSuccess = result.status === 200
     && result.data
     && (result.data.success === true || result.data.code === 0 || result.data.code === 200);
 
-  return { ok: isSuccess, status: result.status, data: result.data };
+  return {
+    ok: isSuccess,
+    status: result.status,
+    http_status: result.status,
+    data: result.data,
+    method: meta.method || undefined,
+    url: meta.url || undefined,
+    error: isSuccess ? undefined : (result.data?.message || result.error || 'gxy_order_failed'),
+  };
 }
 
 function buildBody(payload) {

@@ -57,10 +57,11 @@ describe('LIS gate env helpers', () => {
     assert.equal(LIS_BASE_URL, 'LIS_BASE_URL');
   });
 
-  it('isLisGateEnabled is false unless exactly 1', () => {
+  it('isLisGateEnabled defaults on; explicit 0/false off', () => {
     assert.equal(isLisGateEnabled({ LIS_GATE_ENABLED: '1' }), true);
     assert.equal(isLisGateEnabled({ LIS_GATE_ENABLED: '0' }), false);
-    assert.equal(isLisGateEnabled({}), false);
+    assert.equal(isLisGateEnabled({ LIS_GATE_ENABLED: 'false' }), false);
+    assert.equal(isLisGateEnabled({}), true);
   });
 
   it('getLisBaseUrl defaults to local LIS', () => {
