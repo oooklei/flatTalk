@@ -9,6 +9,8 @@ node_modules/
 .env.prod
 .env.deploy
 data/api-keys.json
+data/model-registry.json
+*.bak-secret
 # ??????????env
 scripts/deploy/.env.gen
 
