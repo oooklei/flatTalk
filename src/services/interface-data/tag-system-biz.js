@@ -91,41 +91,16 @@ class TagSystemBiz {
   /** 统一查询封装：失败返回 ok:false，不抛异常。 */
   async query(text, params = []) {
     const pool = getPool(this.pgUrl);
-    const sqlPreview = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 240);
     if (!pool) {
-      return {
-        ok: false,
-        error: 'tag-system pg url 未配置',
-        rows: [],
-        rowCount: 0,
-        method: 'SQL',
-        url: 'tag_system(PG)',
-        sql: sqlPreview,
-      };
+      return { ok: false, error: 'tag-system pg url 未配置', rows: [], rowCount: 0 };
     }
     let client;
     try {
       client = await pool.connect();
       const res = await client.query(text, params);
-      return {
-        ok: true,
-        rows: res.rows,
-        rowCount: res.rowCount,
-        fields: res.fields,
-        method: 'SQL',
-        url: 'tag_system(PG)',
-        sql: sqlPreview,
-      };
+      return { ok: true, rows: res.rows, rowCount: res.rowCount, fields: res.fields };
     } catch (err) {
-      return {
-        ok: false,
-        error: err && err.message ? err.message : String(err),
-        rows: [],
-        rowCount: 0,
-        method: 'SQL',
-        url: 'tag_system(PG)',
-        sql: sqlPreview,
-      };
+      return { ok: false, error: err && err.message ? err.message : String(err), rows: [], rowCount: 0 };
     } finally {
       if (client) client.release();
     }
@@ -313,24 +288,8 @@ class TagSystemBiz {
       ORDER BY o.create_time DESC
       LIMIT ${limit}`;
     const res = await this.query(sql, params);
-    if (!res.ok) {
-      return {
-        ok: false,
-        error: res.error,
-        rows: [],
-        method: res.method,
-        url: res.url,
-        sql: res.sql,
-      };
-    }
-    return {
-      ok: true,
-      rows: res.rows,
-      rowCount: res.rowCount,
-      method: res.method,
-      url: res.url,
-      sql: res.sql,
-    };
+    if (!res.ok) return { ok: false, error: res.error, rows: [] };
+    return { ok: true, rows: res.rows, rowCount: res.rowCount };
   }
 
   /** 单订单评价汇总（订单评价 + 其工单评价列表）。 */
@@ -409,15 +368,7 @@ class TagSystemBiz {
       this.query(byStatusSql, params),
       this.query(handlerSql, params),
     ]);
-    if (!m.ok) {
-      return {
-        ok: false,
-        error: m.error,
-        method: m.method,
-        url: m.url,
-        sql: m.sql,
-      };
-    }
+    if (!m.ok) return { ok: false, error: m.error };
     return {
       ok: true,
       data: {
@@ -430,9 +381,6 @@ class TagSystemBiz {
         by_status: s.ok ? s.rows : [],
         by_handler: h.ok ? h.rows : [],
       },
-      method: m.method,
-      url: m.url,
-      sql: m.sql,
     };
   }
 
@@ -455,24 +403,8 @@ class TagSystemBiz {
       ORDER BY f.create_time DESC
       LIMIT ${limit}`;
     const res = await this.query(sql, params);
-    if (!res.ok) {
-      return {
-        ok: false,
-        error: res.error,
-        rows: [],
-        method: res.method,
-        url: res.url,
-        sql: res.sql,
-      };
-    }
-    return {
-      ok: true,
-      rows: res.rows,
-      rowCount: res.rowCount,
-      method: res.method,
-      url: res.url,
-      sql: res.sql,
-    };
+    if (!res.ok) return { ok: false, error: res.error, rows: [] };
+    return { ok: true, rows: res.rows, rowCount: res.rowCount };
   }
 
   async getServiceOrder(orderId) {
@@ -481,95 +413,6 @@ class TagSystemBiz {
 
   async getWorkOrder(workId) {
     return this.query('SELECT * FROM work_order WHERE work_id = $1 AND deleted = 0', [workId]);
-  }
-
-  /**
-   * 读取 Tag-System 服务项目表 mobile_service_item，映射为 find_service 填槽字段。
-   * filter: { orgId?, status?, limit? }
-   */
-  async listMobileServiceItems(filter = {}) {
-    const where = ['COALESCE(deleted, 0) = 0'];
-    const params = [];
-    let i = 1;
-    if (filter.orgId) {
-      where.push(`org_id = $${i}`);
-      params.push(filter.orgId);
-      i += 1;
-    }
-    if (filter.status !== undefined && filter.status !== null && filter.status !== '') {
-      where.push(`status = $${i}`);
-      params.push(Number(filter.status));
-      i += 1;
-    } else {
-      // 默认只要上架/启用；status 语义因源系统而异，非 0 且非禁用名视为可用
-      where.push(`(status IS NULL OR status = 1 OR LOWER(COALESCE(status_name,'')) NOT IN ('停用','禁用','下架','deleted'))`);
-    }
-    const limit = Math.min(Math.max(parseInt(filter.limit, 10) || 200, 1), 1000);
-    const sql = `
-      SELECT service_item_id, item_code, item_name, service_type, service_type_name,
-             org_id, org_name, org_type, org_type_name, price, unit, unit_name,
-             duration, description, icon, category, category_name, sort, status,
-             status_name, service_time, tag_list, sales_count, positive_review_rate
-      FROM mobile_service_item
-      WHERE ${where.join(' AND ')}
-      ORDER BY COALESCE(sort, 9999) ASC, COALESCE(sales_count, 0) DESC, item_name ASC
-      LIMIT ${limit}`;
-    const res = await this.query(sql, params);
-    if (!res.ok) return { ok: false, error: res.error, rows: [], catalog: [], orgs: [] };
-
-    const catalog = [];
-    const orgMap = new Map();
-    for (const r of res.rows) {
-      const tags = Array.isArray(r.tag_list)
-        ? r.tag_list.map((t) => (typeof t === 'string' ? t : t?.name || t?.label)).filter(Boolean)
-        : [];
-      // 分类优先 service_type_name（目录表主展示字段），其次 category_name
-      const category = r.service_type_name || r.category_name || r.category || '其他';
-      catalog.push({
-        service_id: r.service_item_id,
-        id: r.service_item_id,
-        item_code: r.item_code || '',
-        name: r.item_name || r.service_item_id,
-        service_type: r.service_type || '',
-        service_type_name: r.service_type_name || '',
-        category,
-        scene_tags: tags.length ? tags : [category].filter(Boolean),
-        price_from: r.price != null ? Number(r.price) : 0,
-        price: r.price != null ? Number(r.price) : 0,
-        unit: r.unit_name || r.unit || '次',
-        description: r.description || '',
-        full_desc: r.description || '',
-        summary: r.description || '',
-        icon: r.icon || '🏠',
-        time_range: r.service_time || '08:00-18:00',
-        org_id: r.org_id || '',
-        org_name: r.org_name || '',
-        hotline: '',
-        online_booking: true,
-        rating: r.positive_review_rate != null ? Number(r.positive_review_rate) : undefined,
-      });
-      if (r.org_id && !orgMap.has(r.org_id)) {
-        orgMap.set(r.org_id, {
-          org_id: r.org_id,
-          org_name: r.org_name || r.org_id,
-          org_type: r.org_type_name || String(r.org_type || 'homecare'),
-          address: '',
-          service_scope: category,
-          bed_count: 0,
-          price_from: r.price != null ? Number(r.price) : 0,
-          rating: r.positive_review_rate != null ? Number(r.positive_review_rate) : 4.5,
-          certified: true,
-        });
-      }
-    }
-    return {
-      ok: true,
-      rows: res.rows,
-      rowCount: res.rowCount,
-      catalog,
-      orgs: Array.from(orgMap.values()),
-      source: 'tag_system.mobile_service_item',
-    };
   }
 }
 

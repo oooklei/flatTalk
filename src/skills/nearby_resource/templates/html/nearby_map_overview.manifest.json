@@ -1,7 +1,7 @@
 {
   "id": "nearby_map_overview",
   "layout": "map",
-  "match": "【周边总览】周边|附近|生活圈|资源|配套|地图|分布|嘉路",
+  "match": "周边|附近|生活圈|资源|配套|地图|分布|嘉路",
   "required": ["markers_json", "center_json", "centerName", "radiusKm", "map_key"],
   "description": "嘉路康养中心周边15公里康养生活圈综合地图：中心+半径圈+七类分类打点+筛选胶囊+距离清单，覆盖住/吃/游/娱/购/行/养。"
 }

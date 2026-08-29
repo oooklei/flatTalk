@@ -57,7 +57,7 @@ test('jtd client accepts legacy travel product env aliases from old config regis
   assert.equal(client.config.pathPrefix, '/legacy/sojourn');
 });
 
-test('jtd auto mode without credentials does not silent-mock vendor products', async () => {
+test('jtd auto mode without credentials uses mock data without config_missing fallback', async () => {
   const service = createJtdTravelService({
     mode: 'auto',
     clientOptions: { env: {} },
@@ -66,10 +66,10 @@ test('jtd auto mode without credentials does not silent-mock vendor products', a
     message: '我想去百色巴马旅游，请帮规划路线',
   });
 
-  assert.equal(service.mode, 'real');
+  assert.equal(service.mode, 'mock');
   assert.equal(context.configured_mode, 'auto');
-  assert.notEqual(context.source_status, 'mock_vendor_data');
-  assert.notEqual(context.data_source, 'mock');
+  assert.equal(context.source_status, 'mock_vendor_data');
+  assert.equal(context.calls[0].error, null);
 });
 
 test('jtd service normalizes searchProducts records and marks mock vendor data', async () => {

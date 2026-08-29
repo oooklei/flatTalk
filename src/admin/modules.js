@@ -1,16 +1,13 @@
 // 其余 admin 模块处理器：模板工作台 / 资源校验 / 运行日志 / 对话运行 / 注册表 CRUD
 import fs from 'node:fs';
 import path from 'node:path';
-import { json, readJsonSafe } from './util.js';
+import { json } from './util.js';
 import { readReg, handleRegistryApi } from './store.js';
 import { callModelChat } from './models.js';
 import { discoverTemplates, renderTemplate, renderCard, collectNames, collectTopLevelNames } from '../template-card/index.js';
 import { makeTemplateFromHtml, parseMultipart, toTemplateId } from '../template-card/make-template.js';
 import { loadIntegrations } from './integrations.js';
-import { scanBizDependencies } from './biz-deps-scan.js';
 import { getTraceLogger } from '../core/observability/trace-logger.js';
-import { getDegradeSnapshot, resetDegradeCounters, DEGRADE_METRIC_DEFS, KEEP_OK_DEFS } from '../core/observability/degradation-monitor.js';
-import { runDegradeProbe, DEGRADE_PROBE_DEFS } from './degrade-monitor-api.js';
 
 const ROOT = process.cwd();
 const REG_ALLOW = ['permissions', 'knowledge', 'config'];
@@ -76,19 +73,6 @@ function parseEmbeddedJson(html) {
     } catch { /* next */ }
   }
   return {};
-}
-
-/** 支持点路径：weekly_plan.badge 可在 { weekly_plan: { badge } } 中命中 */
-function hasDefaultField(data, name) {
-  if (!data || typeof data !== 'object') return false;
-  if (Object.prototype.hasOwnProperty.call(data, name)) return true;
-  if (!String(name).includes('.')) return false;
-  let cur = data;
-  for (const p of String(name).split('.')) {
-    if (cur == null || typeof cur !== 'object' || !(p in cur)) return false;
-    cur = cur[p];
-  }
-  return true;
 }
 
 /** 旅居走线卡预览：内嵌 static_svg 为空时，注入 sojourn-maps 真实 SVG */
@@ -417,7 +401,7 @@ async function handleTemplates(req, res, method, parts) {
       const id = manifest.id || path.basename(htmlFile, '.html');
       const html = fs.readFileSync(htmlFile, 'utf8');
       const names = collectTopLevelNames(html);
-      const missing = names.filter((n) => !hasDefaultField(parseEmbeddedJson(html) || {}, n));
+      const missing = names.filter((n) => !(n in (parseEmbeddedJson(html) || {})));
       if (missing.length) reports.push({ level: 'warn', module: 'template:' + id, message: `(${skill}) 字段未提供默认值：${missing.join(', ')}` });
       else reports.push({ level: 'ok', module: 'template:' + id, message: `(${skill}) 字段齐全（${names.length} 个）` });
     }
@@ -528,7 +512,7 @@ async function handleTemplates(req, res, method, parts) {
     const html = fs.readFileSync(htmlFile, 'utf8');
     const defaultData = parseEmbeddedJson(html);
     const names = collectTopLevelNames(html);
-    const missing = names.filter((n) => !hasDefaultField(defaultData || {}, n));
+    const missing = names.filter((n) => !(n in (defaultData || {})));
     return {
       id,
       skill,
@@ -562,13 +546,7 @@ async function handleValidate(req, res) {
     else if (defaults.length > 1) push('error', 'model-registry', `存在 ${defaults.length} 个默认模型，应仅 1 个`);
     else push('ok', 'model-registry', `默认模型：${defaults[0].name}`);
     const inactive = models.filter((m) => !m.is_active);
-    const active = models.filter((m) => m.is_active);
-    // 停用为登记保留态（备用接入点），不视为配置错误
-    if (inactive.length) {
-      push('ok', 'model-registry', `启用 ${active.length} / 停用 ${inactive.length}（登记保留）`);
-    } else {
-      push('ok', 'model-registry', `全部 ${active.length} 个模型已启用`);
-    }
+    if (inactive.length) push('warn', 'model-registry', `${inactive.length} 个模型处于停用`);
   }
 
   // 模板（聚合：技能目录 + 公共库）
@@ -584,9 +562,8 @@ async function handleValidate(req, res) {
     for (const { htmlFile, manifestFile, skill } of pairs) {
       const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
       const id = manifest.id || path.basename(htmlFile, '.html');
-      const html = fs.readFileSync(htmlFile, 'utf8');
-      const names = collectTopLevelNames(html);
-      const missing = names.filter((n) => !hasDefaultField(parseEmbeddedJson(html) || {}, n));
+      const names = collectTopLevelNames(fs.readFileSync(htmlFile, 'utf8'));
+      const missing = names.filter((n) => !(n in (parseEmbeddedJson(fs.readFileSync(htmlFile, 'utf8')) || {})));
       if (missing.length) push('warn', 'template:' + id, `(${skill}) 缺省字段：${missing.join(', ')}`);
     }
     push('ok', 'templates', `模板总数 ${pairs.length}`);
@@ -608,17 +585,6 @@ async function handleValidate(req, res) {
       if (!integ.items.length) push('warn', 'integrations', '未登记第三方API');
       else push('ok', 'integrations', `第三方API ${integ.items.length} 个（启用 ${active}）`);
     } catch (e) { push('error', 'integrations', e.message); }
-
-    // 业务流程依赖全扫描：技能→表 / tag-system / integrations
-    try {
-      const deps = scanBizDependencies();
-      for (const r of deps.reports || []) reports.push(r);
-      push(
-        deps.summary.warn || deps.summary.error ? 'warn' : 'ok',
-        'biz-deps',
-        `业务依赖扫描：技能 ${deps.summary.skill_count} / 动作 ${deps.summary.action_count} / 表schema ${deps.summary.table_schema_count}（warn ${deps.summary.warn}）`,
-      );
-    } catch (e) { push('error', 'biz-deps', e.message); }
   }
 
   const levelRank = { error: 0, warn: 1, ok: 2 };
@@ -627,7 +593,7 @@ async function handleValidate(req, res) {
 }
 
 // ---- 运行日志 ----
-function handleLogs(req, res, parts, urlObj) {
+function handleLogs(req, res, parts) {
   const f = path.join(ROOT, 'data', 'runtime.log');
   const lines = fs.existsSync(f) ? fs.readFileSync(f, 'utf8').split('\n').filter(Boolean) : [];
   if (parts[0] === 'clear') {
@@ -638,109 +604,8 @@ function handleLogs(req, res, parts, urlObj) {
   const raw = lines.slice(-200).reverse().map((l) => {
     try { return JSON.parse(l); } catch { return null; }
   }).filter(Boolean);
-  const parsed = (urlObj && typeof urlObj.searchParams?.get === 'function')
-    ? urlObj
-    : new URL(req.url || '/', 'http://local');
-  const dataKind = String(parsed.searchParams.get('data_kind') || '').trim(); // db|tag_system|http|any|error
-  const q = String(parsed.searchParams.get('q') || '').trim().toLowerCase();
-  let traces = getTraceLogger().list({ limit: 300 });
-  if (dataKind || q) {
-    traces = traces.filter((t) => matchTraceDataFilter(t, dataKind, q));
-  }
-  return json(res, 200, {
-    ok: true,
-    lines: raw,
-    total: lines.length,
-    traces,
-    total_traces: traces.length,
-    filter: { data_kind: dataKind || null, q: q || null },
-  });
-}
-
-/** Extract data.* stage details from a trace for filtering / UI. */
-function parseStageDetail(detail) {
-  if (detail == null || detail === '') return {};
-  if (typeof detail === 'object') return detail;
-  if (typeof detail === 'string') {
-    try {
-      const parsed = JSON.parse(detail);
-      return (parsed && typeof parsed === 'object') ? parsed : { raw: detail };
-    } catch {
-      return { raw: detail };
-    }
-  }
-  return {};
-}
-
-function extractDataSpans(trace) {
-  const out = [];
-  for (const s of (trace?.stages || [])) {
-    const stage = String(s.stage || '');
-    if (!stage.startsWith('data.')) continue;
-    const d = parseStageDetail(s.detail);
-    out.push({
-      stage,
-      label: s.label,
-      ms: s.ms,
-      kind: d.kind || stage.replace(/^data\./, ''),
-      name: d.name,
-      status: d.status,
-      method: d.method,
-      url: d.url,
-      sql: d.sql,
-      tables: d.tables,
-      row_count: d.row_count,
-      error: d.error,
-      failure_reason: d.failure_reason,
-      elapsed_ms: d.elapsed_ms,
-      source: d.source,
-      store: d.store,
-    });
-  }
-  // also from business_data.access.spans if stages missed
-  const bd = (trace?.stages || []).find((s) => s.stage === 'business_data');
-  const bdDetail = parseStageDetail(bd?.detail);
-  const accessSpans = bdDetail?.access?.spans;
-  if (Array.isArray(accessSpans) && !out.length) {
-    for (const d of accessSpans) {
-      out.push({
-        stage: `data.${d.kind}`,
-        label: d.name,
-        kind: d.kind,
-        name: d.name,
-        status: d.status,
-        method: d.method,
-        url: d.url,
-        sql: d.sql,
-        tables: d.tables,
-        row_count: d.row_count,
-        error: d.error,
-        failure_reason: d.failure_reason,
-        elapsed_ms: d.elapsed_ms,
-        source: d.source,
-        store: d.store,
-      });
-    }
-  }
-  return out;
-}
-
-function matchTraceDataFilter(trace, dataKind, q) {
-  const spans = extractDataSpans(trace);
-  if (dataKind === 'any') {
-    if (!spans.length) return false;
-  } else if (dataKind === 'error') {
-    if (!spans.some((s) => s.status === 'error' || s.failure_reason)) return false;
-  } else if (dataKind === 'db' || dataKind === 'tag_system' || dataKind === 'http') {
-    if (!spans.some((s) => s.kind === dataKind || s.stage === `data.${dataKind}`)) return false;
-  }
-  if (!q) return true;
-  const hay = JSON.stringify({
-    question: trace.question,
-    route: trace.route,
-    spans,
-  }).toLowerCase();
-  return hay.includes(q);
+  const traces = getTraceLogger().list({ limit: 300 });
+  return json(res, 200, { ok: true, lines: raw, total: lines.length, traces, total_traces: traces.length });
 }
 
 // ---- 对话运行 ----
@@ -874,51 +739,12 @@ async function handlePermissions(req, res, method, parts) {
   return json(res, 405, { ok: false, error: 'method_not_allowed' });
 }
 
-async function handleDegradeMonitor(req, res, method, parts) {
-  const action = parts[0] || '';
-  if (method === 'GET' && (!action || action === 'snapshot')) {
-    const limit = Number(new URL(req.url || '', 'http://local').searchParams.get('limit') || 50);
-    return json(res, 200, {
-      ...getDegradeSnapshot({ includeEvents: true, limit }),
-      probes: DEGRADE_PROBE_DEFS,
-      metric_defs: DEGRADE_METRIC_DEFS,
-      keep_ok_defs: KEEP_OK_DEFS,
-    });
-  }
-  if (method === 'POST' && action === 'reset') {
-    resetDegradeCounters();
-    return json(res, 200, { ok: true, ...getDegradeSnapshot({ includeEvents: false }) });
-  }
-  if (method === 'POST' && action === 'probe') {
-    const body = await readJsonSafe(req, res);
-    if (body === undefined) return;
-    const probeId = parts[1] || body.probe || body.id || 'all';
-    try {
-      const result = await runDegradeProbe(probeId);
-      return json(res, 200, result);
-    } catch (e) {
-      return json(res, 500, { ok: false, error: e.message });
-    }
-  }
-  return json(res, 404, { ok: false, error: 'degrade_monitor_action_not_found', action });
-}
-
 // 分发
-export async function handleModuleApi(req, res, method, parts, urlObj) {
+export async function handleModuleApi(req, res, method, parts) {
   const name = parts[0];
   if (name === 'templates') return handleTemplates(req, res, method, parts.slice(1));
   if (name === 'validate' && method === 'GET') return handleValidate(req, res);
-  if (name === 'biz-deps' && method === 'GET') {
-    try {
-      return json(res, 200, scanBizDependencies());
-    } catch (e) {
-      return json(res, 500, { ok: false, error: e.message });
-    }
-  }
-  if (name === 'degrade-monitor') {
-    return handleDegradeMonitor(req, res, method, parts.slice(1));
-  }
-  if (name === 'logs') return handleLogs(req, res, parts.slice(1), urlObj);
+  if (name === 'logs') return handleLogs(req, res, parts.slice(1));
   if (name === 'dialogue' && method === 'POST') return handleDialogue(req, res);
   if (name === 'permissions') return handlePermissions(req, res, method, parts);
   if (name === 'registries') {

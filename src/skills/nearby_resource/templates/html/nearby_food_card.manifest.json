@@ -1,7 +1,7 @@
 {
   "id": "nearby_food_card",
   "layout": "card",
-  "match": "【周边餐饮】吃|餐饮|餐厅|海鲜|私房菜|大排档|美食",
+  "match": "吃|餐饮|餐厅|海鲜|私房菜|大排档|美食",
   "required": ["markers", "centerName", "radiusKm", "total"],
   "description": "餐饮专题卡：突出招牌菜（service_tags）、营业时间与电话，适合老人清淡/可定制提示。"
 }

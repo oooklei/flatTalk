@@ -8,7 +8,7 @@
     "rules"
   ],
   "optional_fields": [],
-  "match": "【规则命中】展示风险规则命中与判定明细，非信号明细、非综合报告",
+  "match": "展示风险规则命中与判定明细，非信号明细、非综合报告",
   "layout": "vertical",
   "followup_actions": [],
   "version": "1.0"

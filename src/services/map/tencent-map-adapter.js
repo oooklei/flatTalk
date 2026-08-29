@@ -10,7 +10,6 @@
  */
 
 import https from 'node:https';
-import { recordDegrade } from '../../core/observability/degradation-monitor.js';
 import {
   getActiveWsPair,
   getOrderedWsKeyPairs,
@@ -72,7 +71,6 @@ export class TencentMapAdapter {
       ? [{ id: this.keyId || 'fixed', key: this.key, sk: this.sk }]
       : getOrderedWsKeyPairs();
     if (!pairs.length) {
-      recordDegrade('map_unconfigured', 'TENCENT_MAP_KEY missing');
       throw new Error('未配置 TENCENT_MAP_KEY');
     }
 

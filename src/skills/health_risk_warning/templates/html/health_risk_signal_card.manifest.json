@@ -8,7 +8,7 @@
     "signals"
   ],
   "optional_fields": [],
-  "match": "【设备信号】展示设备信号明细（血压/血糖/心率等），非规则命中卡",
+  "match": "展示设备信号明细（血压/血糖/心率等），非规则命中卡",
   "layout": "vertical",
   "followup_actions": [],
   "version": "1.0"

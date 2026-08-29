@@ -1,7 +1,7 @@
 {
   "id": "nearby_radar",
   "layout": "map",
-  "match": "【步行可达】步行|可达|走路|近一点|遛弯|怎么去",
+  "match": "步行|可达|走路|近一点|遛弯|怎么去",
   "required": ["walkItems_json", "center_json", "centerName", "radiusKm", "map_key", "walkCount"],
   "description": "可达性雷达图：以步行1.5km / 车行N km 双等时圈叠加，绿色高亮步行可达配套并列出清单。"
 }

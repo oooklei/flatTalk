@@ -10,7 +10,7 @@
     "recipes"
   ],
   "optional_fields": [],
-  "match": "【膳食调养】展示宜食忌食与食疗配方的膳食调养卡，非综合调理方案卡",
+  "match": "展示宜食忌食与食疗配方的膳食调养卡，非综合调理方案卡",
   "layout": "vertical",
   "followup_actions": [],
   "version": "1.0"

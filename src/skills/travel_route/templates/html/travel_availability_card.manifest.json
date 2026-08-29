@@ -1,6 +1,0 @@
-{
-  "id": "travel_availability_card",
-  "description": "旅居产品可订状态查询结果，展示金跳动可订校验、库存、价格和后续动作",
-  "match": "【旅居可订】可订|预订|余量|库存|入住|下单|可售|checkAvailability",
-  "required": ["availabilityTitle", "availabilityStatus", "productName", "destination"]
-}

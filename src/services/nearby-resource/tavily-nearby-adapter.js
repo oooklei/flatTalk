@@ -3,12 +3,8 @@ import { toSimplified } from '../../core/utils/simplified-chinese.js';
 
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY || process.env.WEB_SEARCH_API_KEY || '';
 const TAVILY_BASE = String(process.env.TAVILY_BASE_URL || 'https://api.tavily.com').replace(/\/+$/, '');
-/** P0：默认不仿真；仅显式允许时返回编造周边文案。 */
-const ALLOW_SIM_FALLBACK = process.env.FLATTALK_ALLOW_SIM_FALLBACK === '1'
-  || process.env.FLATTALK_TAVILY_ALLOW_SIM_FALLBACK === '1';
 const DISABLE_SIM_FALLBACK = process.env.FLATTALK_DISABLE_SIM_FALLBACK === '1'
   || process.env.FLATTALK_TAVILY_DISABLE_SIM_FALLBACK === '1';
-const useSimFallback = ALLOW_SIM_FALLBACK && !DISABLE_SIM_FALLBACK;
 
 const CATEGORY_QUERIES = {
   food: (center) => `${center.name || '嘉路康养中心'} 附近 餐厅 美食 老人友好 推荐`,
@@ -221,7 +217,7 @@ function isQualitySpotResult(item = {}) {
 }
 
 function simulatedOrEmpty(category, center, reason, error, extra = {}) {
-  if (!useSimFallback) return { ...emptyResult(reason), error, ...extra };
+  if (DISABLE_SIM_FALLBACK) return { ...emptyResult(reason), error, ...extra };
   return {
     ...buildSimulatedEnrichment(category, center),
     source_status: 'simulated_fallback',

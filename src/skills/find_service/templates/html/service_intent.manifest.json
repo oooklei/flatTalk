@@ -2,7 +2,7 @@
   "id": "service_intent",
   "description": "AI意图识别可视化，展示置信度/抽取实体/紧急级别",
   "layout": "vertical",
-  "match": "【意图识别】意图识别、AI理解、置信度、识别到的信息、紧急级别、需求类型",
+  "match": "意图识别、AI理解、置信度、识别到的信息、紧急级别、需求类型",
   "required": [
     "badge_type",
     "badge_label",

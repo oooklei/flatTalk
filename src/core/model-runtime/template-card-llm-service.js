@@ -1,15 +1,10 @@
 import { fillTemplateSlots as fillTemplateSlotsMock } from '../model-service.js';
-import {
-  buildSessionContextText,
-  splitBusinessDataForPrompt,
-} from '../context-bus/session-prompt-context.js';
 import { LOCAL_FILL_TEMPLATE_IDS } from './extra-template-fills.js';
 import { pickChatModel, publicModelName } from './model-registry.js';
 import { callOpenAiCompatibleModel } from './openai-compatible-client.js';
 import { loadPrompt } from './prompt-loader.js';
 import { createKnowledgeDataService } from '../../services/knowledge-data/index.js';
 import { createTencentWeatherAdapter } from '../../services/weather/tencent-weather.js';
-import { recordDegrade } from '../observability/degradation-monitor.js';
 
 function shouldForceLocalFill(requestedId, skillKey) {
   // 旧模板已废弃，按新主卡处理
@@ -24,15 +19,7 @@ function shouldForceLocalFill(requestedId, skillKey) {
 }
 
 export function createTemplateCardModelService(options = {}) {
-  let mode = options.modelMode || process.env.FLATTALK_MODEL_MODE || 'admin';
-  const allowModelMock = process.env.FLATTALK_ALLOW_MODEL_MOCK === '1'
-    || options.runtimeMode === 'test'
-    || process.env.FLATTALK_RUNTIME_MODE === 'test';
-  // SHOULD：生产禁止 mock 填槽；未显式允许时强制回落 admin
-  if (mode === 'mock' && !allowModelMock) {
-    console.warn('[template-card-llm] FLATTALK_MODEL_MODE=mock 已忽略（需 FLATTALK_ALLOW_MODEL_MOCK=1）');
-    mode = 'admin';
-  }
+  const mode = options.modelMode || process.env.FLATTALK_MODEL_MODE || 'admin';
   const useMock = mode === 'mock' || options.runtimeMode === 'test';
   const knowledgeService = options.knowledgeService || createKnowledgeDataService();
   const weatherService = options.weatherService || createTencentWeatherAdapter();
@@ -100,15 +87,8 @@ export function createTemplateCardModelService(options = {}) {
       const model = options.testModel || pickChatModel({ registryPath: options.registryPath, modelId: options.modelId });
       if (!model) return buildFallbackMockAnswer(input, 'no_available_model');
 
-      const session_context_text = input.session_context_text
-        || buildSessionContextText(input.business_data || {});
       const messages = [
-        {
-          role: 'system',
-          content: loadPrompt('template-card/system.md', {
-            session_context_text: session_context_text || '（当前会话暂无明确登录身份）',
-          }),
-        },
+        { role: 'system', content: loadPrompt('template-card/system.md') },
         { role: 'user', content: input.prompt || '' },
       ];
       const response = await callOpenAiCompatibleModel(model, messages, {
@@ -169,7 +149,6 @@ function buildFallbackMockAnswer(input = {}, status = 'mock_mode', rawReply = ''
   const templateId = input.template_id || input.templateId || 'answer';
   const label = input.label || '该按钮动作';
   const answerText = `[兜底动作] 已收到动作「${label}」，当前为离线/无模型模式，暂无法调用大模型生成内容。该动作将：${input.endpoint || '依据资源清单处理'}。${rawReply ? `\n（模型原始返回：${String(rawReply).slice(0, 200)}）` : ''}`;
-  recordDegrade('llm_fallback_mock', { detail: status, template_id: templateId });
   return {
     template_id: templateId,
     template_key: templateId,
@@ -202,26 +181,9 @@ function buildTemplateFields(library = []) {
   }));
 }
 
-export function buildTemplateCardMessages(input = {}) {
-  return buildMessages(input);
-}
-
 function buildMessages(input) {
   const historyText = formatHistoryText(input.conversation_history);
-  const businessData = input.business_data || {};
-  const session_context_text = input.session_context_text
-    || buildSessionContextText(businessData);
-  // Only honor explicit split when both halves are provided; otherwise auto-split.
-  const split = input.session_profiles && input.skill_business_data
-    ? {
-        session_profiles: input.session_profiles,
-        skill_business_data: input.skill_business_data,
-      }
-    : splitBusinessDataForPrompt(businessData);
-
-  const system = loadPrompt('template-card/system.md', {
-    session_context_text: session_context_text || '（当前会话暂无明确登录身份）',
-  });
+  const system = loadPrompt('template-card/system.md');
   const user = loadPrompt('template-card/fill-template.md', {
     user_message: input.message || '',
     intent_context: input.intent_context || {},
@@ -230,12 +192,13 @@ function buildMessages(input) {
     template_library: input.template_library || [],
     template_fields: input.template_fields || [],
     evidence: input.evidence || [],
-    session_profiles: split.session_profiles,
-    skill_business_data: split.skill_business_data,
+    business_data: input.business_data || {},
     conversation_history: historyText,
     skill_instruction: buildSkillInstruction(input.skill_key),
   });
-  const messages = [{ role: 'system', content: system }];
+  const messages = [
+    { role: 'system', content: system },
+  ];
   const history = Array.isArray(input.conversation_history) ? input.conversation_history : [];
   for (const msg of history) {
     if (msg.role && msg.content) messages.push({ role: msg.role, content: msg.content });
@@ -273,7 +236,6 @@ function parseModelJson(text) {
 
 async function fallback(input, status, error, modelName = '', rawReply = '') {
   const result = await fillTemplateSlotsMock(input);
-  recordDegrade('llm_fallback_mock', { detail: status || error || 'fallback', template_id: input.template_id || input.templateId });
   return {
     ...result,
     model_status: 'fallback_mock',

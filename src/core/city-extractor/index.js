@@ -6,39 +6,6 @@ import { callOpenAiCompatibleModel } from '../model-runtime/openai-compatible-cl
 
 const LLM_TIMEOUT_MS = 3000;
 
-function historyTextOf(conversation_history = []) {
-  if (!Array.isArray(conversation_history)) return '';
-  return conversation_history
-    .slice(-10)
-    .map((h) => h.content || h.message || h.text || '')
-    .filter(Boolean)
-    .join(' | ');
-}
-
-function lockedDestination(business_data = {}, message = '') {
-  const params = business_data?.action_params || {};
-  const jtd = business_data?.jtd || {};
-  const product = jtd.selected_product || {};
-  const candidates = [
-    business_data.primary_city,
-    business_data.destination,
-    business_data.city,
-    params.city,
-    params.destination,
-    product.destination,
-    product.city,
-    jtd.route?.destination,
-    Array.isArray(business_data.cities) ? business_data.cities[0] : '',
-  ];
-  for (const c of candidates) {
-    const v = String(c || '').trim();
-    if (v) return v.replace(/^广西/, '');
-  }
-  // 消息里能正则命中则直接用
-  const hot = matchHotCity(String(message || ''));
-  return hot[0] || '';
-}
-
 /**
  * 构建 LLM 提取 prompt
  */
@@ -72,6 +39,7 @@ function buildExtractionPrompt(message, jtdDestination, historyText) {
 function parseCityJson(content) {
   if (!content) return null;
   try {
+    // 去除可能的 markdown 代码块标记
     const clean = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     const parsed = JSON.parse(clean);
     if (!Array.isArray(parsed.cities)) return null;
@@ -83,30 +51,25 @@ function parseCityJson(content) {
 
 /**
  * 从上下文中提取城市
+ * @param {object} ctx - 提取上下文
+ * @param {string} ctx.message - 用户消息
+ * @param {object} ctx.business_data - 业务数据（含 jtd 产品/路线）
+ * @param {Array} ctx.conversation_history - 对话历史
+ * @param {object} [deps] - 依赖注入（测试用）
+ * @param {Function} [deps.llmCall] - 自定义 LLM 调用函数
+ * @returns {Promise<{primary: string|null, cities: string[], source: string, confidence: number}>}
  */
 export async function extractCities(ctx = {}, deps = {}) {
   const { message = '', business_data = {}, conversation_history = [] } = ctx;
   const llmCall = deps.llmCall || defaultLlmCall;
 
-  const locked = lockedDestination(business_data, message);
-  const historyText = historyTextOf(conversation_history);
-  const allText = `${message} ${locked} ${historyText}`;
+  // 合并所有文本用于正则匹配
+  const jtdDest = business_data?.jtd?.selected_product?.destination
+    || business_data?.jtd?.route?.destination
+    || '';
+  const allText = `${message} ${jtdDest}`;
 
-  // 0. 业务上下文已锁定目的地：直接返回（追问「测算预算」等无地名句子）
-  if (locked) {
-    const hotFromLock = matchHotCity(locked);
-    const primary = hotFromLock[0] || normalizeCity(locked) || locked;
-    const hotAll = matchHotCity(allText);
-    const cities = Array.from(new Set([primary, ...hotAll].filter(Boolean)));
-    return {
-      primary,
-      cities,
-      source: 'business_context',
-      confidence: 0.99,
-    };
-  }
-
-  // 1. 正则预筛（消息 + 历史）
+  // 1. 正则预筛
   const hotCities = matchHotCity(allText);
   if (hotCities.length > 0) {
     return {
@@ -117,16 +80,15 @@ export async function extractCities(ctx = {}, deps = {}) {
     };
   }
 
-  // 2. 无锁定城市、消息也无明显旅居地名：跳过 LLM 空跑（闲聊/追问误入 travel 时）
-  const msg = String(message || '').trim();
-  if (!locked && !matchHotCity(msg).length && msg.length <= 12 && !/旅|游|天气|目的地|路线|预订|预算/.test(msg)) {
-    return { primary: null, cities: [], source: 'skipped_no_signal', confidence: 0 };
-  }
-
   // 2. LLM 提取
+  const historyText = Array.isArray(conversation_history)
+    ? conversation_history.slice(-3).map((h) => h.message || h.text || '').join(' | ')
+    : '';
+
   try {
-    const result = await llmCall(buildExtractionPrompt(message, locked, historyText));
+    const result = await llmCall(buildExtractionPrompt(message, jtdDest, historyText));
     if (!result || !result.ok) {
+      // LLM 失败，降级
       return { primary: null, cities: [], source: 'none', confidence: 0 };
     }
     const parsed = parseCityJson(result.content);
@@ -134,6 +96,7 @@ export async function extractCities(ctx = {}, deps = {}) {
       return { primary: null, cities: [], source: 'none', confidence: 0 };
     }
 
+    // 归一化 + 去重
     const normalizedCities = (parsed.cities || [])
       .map(normalizeCity)
       .filter((c, i, arr) => c && arr.indexOf(c) === i);
@@ -150,6 +113,9 @@ export async function extractCities(ctx = {}, deps = {}) {
   }
 }
 
+/**
+ * 默认 LLM 调用（复用项目已有的 model-registry + openai-compatible-client）
+ */
 async function defaultLlmCall(messages) {
   const model = pickChatModel({ purpose: '城市提取' });
   if (!model || !model.api_base) {

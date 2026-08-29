@@ -1,8 +1,0 @@
-{
-  "title": "AI正在分析您的需求...",
-  "steps": [
-    { "num": "1", "text": "意图识别", "detail": "识别需求类型", "active": true },
-    { "num": "2", "text": "实体抽取", "detail": "提取服务类型、时间", "active": false },
-    { "num": "3", "text": "知识库匹配", "detail": "匹配最佳服务方案", "active": false }
-  ]
-}

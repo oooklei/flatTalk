@@ -4,7 +4,7 @@
   "product_domain": "find_service",
   "intent_id": "find_service_order_preview",
   "description": "提交前订单确认卡：服务/日期/时段/联系人/地址汇总，可改日期时段信息或改用表单。",
-  "match": "【下单确认】确认下单、订单信息汇总确认；非预约日期确认、非下单成功凭证、非联系人单独确认",
+  "match": "确认下单、订单信息汇总确认；非预约日期确认、非下单成功凭证、非联系人单独确认",
   "required": [
     "serviceName",
     "contactName",

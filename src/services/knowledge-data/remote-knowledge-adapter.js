@@ -38,9 +38,7 @@ export function createRemoteKnowledgeAdapter(options = {}) {
     enabled: Boolean(baseUrl),
 
     async search({ skill_key = 'meal_plan', query = '', limit = 3, filters = {} } = {}) {
-      const remoteOnly = String(process.env.FLATTALK_KB_REMOTE_ONLY || '').trim() === '1';
-      // 已弃用 flatTalk 进程内/旅居本地知识文件；REMOTE_ONLY 时一律走 gxy-local-kb
-      if (!remoteOnly && skill_key === 'travel_route' && localKnowledgeService) {
+      if (skill_key === 'travel_route' && localKnowledgeService) {
         const localResults = localKnowledgeService.searchLocalKnowledge({ query, limit });
         if (localResults.length > 0) {
           return {
@@ -53,7 +51,6 @@ export function createRemoteKnowledgeAdapter(options = {}) {
               text: JSON.stringify(r.item),
               score: r.score,
               category: r.category,
-              origin: 'local',
             })),
           };
         }

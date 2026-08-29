@@ -2,7 +2,7 @@
   "id": "service_recommend",
   "description": "综合服务推荐页，含维度标签+服务卡列表",
   "layout": "vertical",
-  "match": "【养老服务】养老服务推荐、服务匹配、找护工、找养老机构、上门护理、助浴、陪诊、助餐、康复训练、认知症照护",
+  "match": "养老服务推荐、服务匹配、找护工、找养老机构、上门护理、助浴、陪诊、助餐、康复训练、认知症照护",
   "required": [
     "sceneTitle",
     "total",

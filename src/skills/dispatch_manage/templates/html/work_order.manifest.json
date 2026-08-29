@@ -2,7 +2,7 @@
   "id": "work_order",
   "description": "服务工单详情，展示工单关联信息与执行记录",
   "layout": "vertical",
-  "match": "【服务工单】服务工单、工单详情、订单工单、工单",
+  "match": "服务工单、工单详情、订单工单、工单",
   "required": [
     "orderId",
     "elderName",

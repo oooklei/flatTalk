@@ -1,16 +1,5 @@
 const now = "2026-07-14T10:00:00+08:00";
 
-/** SHOULD：生产默认禁用演示老人/演示 SSO；本地/测试默认可开，显式 0 可关 */
-export function isMockEldersAllowed(env = process.env) {
-  const flag = String(env.FLATTALK_ALLOW_MOCK_ELDERS || "").trim().toLowerCase();
-  if (flag === "1" || flag === "true" || flag === "yes") return true;
-  if (flag === "0" || flag === "false" || flag === "no") return false;
-  const runtime = String(env.FLATTALK_RUNTIME_MODE || env.NODE_ENV || "local").toLowerCase();
-  if (runtime === "production" || runtime === "prod") return false;
-  if (runtime === "test") return true;
-  return true;
-}
-
 export const mockOrganizations = [
   { org_id: "org_gx_mca", org_name: "广西壮族自治区民政厅", org_type: "civil_affairs", parent_id: "" },
   { org_id: "org_nanning_mca", org_name: "南宁市民政局", org_type: "civil_affairs", parent_id: "org_gx_mca" },
@@ -539,13 +528,11 @@ function orgById(orgId) {
 }
 
 function elderById(elderId) {
-  if (!isMockEldersAllowed()) return null;
   return mockElders.find((elder) => elder.elder_id === elderId) || null;
 }
 
 /** 按姓名精确匹配可见范围内的老人档案（用于同名确认） */
 export function findEldersByName(name = '', user = null) {
-  if (!isMockEldersAllowed()) return [];
   const target = String(name || '').trim();
   if (!target) return [];
   const pool = user ? getVisibleElders(user) : mockElders;
@@ -553,10 +540,9 @@ export function findEldersByName(name = '', user = null) {
 }
 
 export function getMockUserByToken(token = "", roleKey = "") {
-  if (!isMockEldersAllowed()) return null;
   return mockUsers.find((user) => token && user.token === token)
     || mockUsers.find((user) => roleKey && user.role_key === roleKey)
-    || null;
+    || mockUsers[0];
 }
 
 function canSeeScopedItem(user, item) {
@@ -575,7 +561,6 @@ function canSeeScopedItem(user, item) {
 }
 
 export function getVisibleElders(user) {
-  if (!isMockEldersAllowed()) return [];
   if (!user) return [];
   if (user.auth_level === "admin" || user.elder_scope === "all" || user.elder_scope?.startsWith("district_")) {
     return mockElders;

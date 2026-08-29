@@ -1,7 +1,7 @@
 {
   "id": "nearby_recommend",
   "layout": "recommend",
-  "match": "【周边推荐】推荐|适合|必去|必吃|精选|挑几个|个性化",
+  "match": "推荐|适合|必去|必吃|精选|挑几个|个性化",
   "required": ["picks", "centerName", "categoryLabel"],
   "description": "个性化推荐卡：基于适老/距离/标签精选 Top3，附推荐理由与导航、收藏触点。"
 }

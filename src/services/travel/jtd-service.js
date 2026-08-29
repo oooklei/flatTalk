@@ -417,26 +417,17 @@ export class JtdTravelService extends BaseInterfaceService {
       sourcePath: 'jtd',
       config: options,
     });
-    this.configuredMode = options.mode || process.env.JTD_API_MODE || 'real';
+    this.configuredMode = options.mode || process.env.JTD_API_MODE || 'auto';
     this.client = options.client || createJtdClient(options.clientOptions || options);
     this.configured = this.client.isConfigured();
-    // P0：auto 未配置时不再静默切 mock；仅显式 mode=mock 才用 MOCK_PRODUCTS
-    let effectiveMode = this.configuredMode === 'auto' && !this.configured
-      ? 'real'
-      : this.configuredMode;
-    // 生产禁止 mock 出卡（需 FLATTALK_ALLOW_JTD_MOCK=1 才允许显式 mock）
-    if (effectiveMode === 'mock' && !isJtdMockAllowed()) {
-      console.warn('[jtd] JTD_API_MODE=mock 已忽略（需 FLATTALK_ALLOW_JTD_MOCK=1）');
-      effectiveMode = 'real';
-    }
-    this.mode = effectiveMode;
+    this.mode = this.configuredMode === 'auto' && !this.configured ? 'mock' : this.configuredMode;
   }
 
   async buildRouteProductContext(request = {}) {
     const query = buildSearchQuery(request);
     const userMessage = request.message || request.text || '';
 
-    // ===== 数据源优先级链：本地旅居线路 > 实时接口 > 本地缓存知识库（P0 禁止 mock 出卡）=====
+    // ===== 数据源优先级链：本地旅居线路 > 实时接口 > 本地缓存知识库 > mock =====
     // 0. 优先查防城港本地线路知识库（5条官方认证线路）
     const localRouteCtx = await buildLocalRouteContext(userMessage, query.productDomain);
     if (localRouteCtx) {
@@ -489,11 +480,12 @@ export class JtdTravelService extends BaseInterfaceService {
       }
     }
 
-    // 3. P0：禁止静默落到 MOCK_PRODUCTS（仅 mode=mock 时已在 callSearch 返回 mock）
+    // 3. 本地知识库也没有时，用 mock（标记为 mock_vendor_data）
     if (!products.length) {
-      console.warn('[jtd] 真实接口与本地知识库均无数据，返回空产品（禁止 mock 出卡）');
-      sourceStatus = search?.source_status || 'unavailable';
-      dataSource = 'empty';
+      console.warn('[jtd] 本地知识库也无数据，降级到 mock');
+      products = MOCK_PRODUCTS.map((p) => ({ ...p, product_domain: query.productDomain }));
+      sourceStatus = 'mock_vendor_data';
+      dataSource = 'mock';
     }
 
     const selected = selectProduct(products, userMessage, request);
@@ -666,8 +658,8 @@ export function normalizeAvailability(apiResult = {}) {
 async function callSearch({ mode, client, query }) {
   if (mode === 'mock') return mockResult('searchProducts', { records: MOCK_PRODUCTS });
   const real = client.isConfigured() ? await client.searchProducts(query) : unavailable('searchProducts', 'config_missing');
-  // P0：auto 失败不再回落到 mock 产品
-  return real;
+  if (real.ok || mode === 'real') return real;
+  return { ...mockResult('searchProducts', { records: MOCK_PRODUCTS }), fallback_from: real };
 }
 
 async function callDetail({ mode, client, selected }) {
@@ -675,7 +667,8 @@ async function callDetail({ mode, client, selected }) {
   const real = client.isConfigured()
     ? await client.productDetail(selected.product_id, selected.sku_id)
     : unavailable('productDetail', 'config_missing');
-  return real;
+  if (real.ok || mode === 'real') return real;
+  return { ...mockResult('productDetail', { ...selected, itinerary: mockItinerary(selected) }), fallback_from: real };
 }
 
 async function callAvailability({ mode, client, selected, request }) {
@@ -695,7 +688,13 @@ async function callAvailability({ mode, client, selected, request }) {
   const real = client.isConfigured()
     ? await client.checkAvailability(payload)
     : unavailable('checkAvailability', 'config_missing');
-  return real;
+  if (real.ok || mode === 'real') return real;
+  return { ...mockResult('checkAvailability', {
+    available: false,
+    stock: 0,
+    finalPrice: selected.price_amount,
+    handoff_urls: {},
+  }), fallback_from: real };
 }
 
 function normalizeProduct(record = {}, index = 0) {
@@ -958,25 +957,6 @@ export function selectProduct(products, text, request = {}) {
   }
   // 完全无锁定信号时也不静默 products[0]（首条常为巴马 mock）；由上层走澄清/远程缺口卡
   return null;
-}
-
-/** 参考价目录（与 MOCK_PRODUCTS 一致）。real/auto 下默认空，避免假产品渗入确认卡。 */
-export function listReferenceTravelProducts() {
-  if (!isJtdMockAllowed()) return [];
-  if (String(process.env.FLATTALK_ALLOW_JTD_MOCK || '').trim() === '1') {
-    return MOCK_PRODUCTS.map((p) => ({ ...p }));
-  }
-  if (String(process.env.JTD_API_MODE || '').trim() === 'mock') {
-    return MOCK_PRODUCTS.map((p) => ({ ...p }));
-  }
-  return [];
-}
-
-function isJtdMockAllowed(env = process.env) {
-  if (String(env.FLATTALK_ALLOW_JTD_MOCK || '').trim() === '1') return true;
-  const runtime = String(env.FLATTALK_RUNTIME_MODE || env.NODE_ENV || 'local').toLowerCase();
-  if (runtime === 'production' || runtime === 'prod') return false;
-  return true;
 }
 
 function sourceStatusFrom(result) {

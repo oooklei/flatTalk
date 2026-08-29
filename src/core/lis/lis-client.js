@@ -10,12 +10,10 @@
 const DEFAULT_TIMEOUT_MS = 2000;
 
 export function createLisClient({ baseUrl, fetchImpl = fetch, timeoutMs } = {}) {
-  const root = String(
-    baseUrl
-    || process.env.LIS_BASE_URL
-    || process.env.FLATTALK_LIS_BASE_URL
-    || 'http://127.0.0.1:8100',
-  ).replace(/\/$/, '');
+  const root = String(baseUrl || process.env.LIS_BASE_URL || 'http://127.0.0.1:8100').replace(
+    /\/$/,
+    '',
+  );
 
   const limit = Number(timeoutMs ?? process.env.LIS_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
 

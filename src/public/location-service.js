@@ -1,22 +1,12 @@
 /**
  * 前端定位服务 — 按容器类型探测最优定位方式，逐级降级。
- * 优先级: Flutter JSBridge > 浏览器 GPS > IP 定位
- * SHOULD：全失败不再静默落到嘉路中心坐标。
+ * 优先级: Flutter JSBridge > 浏览器 GPS > IP 定位 > 默认坐标
  */
 (function () {
   const CACHE_KEY = 'flattalk_location';
   const CACHE_TTL = 30 * 60 * 1000; // 30 分钟
-  // 仅开发演示：服务端可注入 window.__FT_ALLOW_DEFAULT_LOCATION=1
-  const ALLOW_DEFAULT = window.__FT_ALLOW_DEFAULT_LOCATION === true
-    || window.__FT_ALLOW_DEFAULT_LOCATION === '1';
-  const DEFAULT_CENTER = {
-    lat: 21.527905,
-    lng: 108.166816,
-    source: 'default',
-    accuracy: null,
-    name: '嘉路康养中心',
-    isDefault: true,
-  };
+  // 定位全失败时的兜底：嘉路康养中心坐标（与数据源一致）
+  const DEFAULT_CENTER = { lat: 21.527905, lng: 108.166816, source: 'default', accuracy: null, name: '嘉路康养中心' };
 
   function detectContainer() {
     if (window.FlatTalkNative?.getLocation) return 'flutter';
@@ -79,19 +69,19 @@
   }
 
   async function detect() {
-    // 1. 读缓存（排除历史默认/失败坐标，避免假定位常驻）
+    // 1. 读缓存
     const cached = getCached();
-    if (cached && cached.source !== 'default' && cached.source !== 'unavailable') {
-      return { ...cached, cached: true };
-    }
+    if (cached) return { ...cached, cached: true };
 
     const container = detectContainer();
 
     // 2. 按容器探测，逐级降级
     const chain = [];
     if (container === 'flutter' || container === 'flutter_inappwebview') chain.push(flutterLocation);
+    // 微信容器: 暂跳过 JS-SDK（无公众号配置），直接走 IP
     if (container === 'wechat') chain.push(ipLocation);
     if (container === 'browser') chain.push(browserLocation);
+    // 兜底
     chain.push(ipLocation);
 
     for (const fn of chain) {
@@ -104,21 +94,9 @@
       } catch (e) { /* try next */ }
     }
 
-    // 3. 全部失败：默认禁止静默嘉路坐标
-    if (ALLOW_DEFAULT) {
-      return { ...DEFAULT_CENTER, degradeNote: 'locate_failed_used_default_center' };
-    }
-    return {
-      lat: null,
-      lng: null,
-      source: 'unavailable',
-      accuracy: null,
-      name: '',
-      error: 'locate_failed',
-      needUserAction: true,
-      message: '无法获取位置，请开启定位权限后重试',
-    };
+    // 3. 全部失败 → 默认坐标
+    return DEFAULT_CENTER;
   }
 
-  window.locationService = { detect, detectContainer, getCached, CACHE_TTL, DEFAULT_CENTER };
+  window.locationService = { detect, detectContainer, getCached, CACHE_TTL };
 })();

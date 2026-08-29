@@ -4,7 +4,6 @@ import { renderCard, renderTemplate } from '../../template-card/index.js';
 import { injectBridge } from './bridge-injector.js';
 import { renderCompactFollowups } from '../compact-followups/renderer.js';
 import { normalizeActionDisplayItem } from '../actions/action-labels.js';
-import { recordKeepOk } from '../observability/degradation-monitor.js';
 
 // common 技能的公共模板（answer / fallback_error 等）。
 // 原路径多套了一层 html/common/，与"模板平铺在 templates/html/ 单层"的
@@ -62,7 +61,6 @@ export function renderTemplateCardResult({
     // 兜底：渲染异常时使用公共 fallback_error 模板
     const tpl = readTpl(ERROR_HTML);
     const message = String((err && err.message) ? err.message : err);
-    recordKeepOk('template_fallback_error', message);
     pageHtml = tpl
       ? renderTemplate(tpl, { code: 'RENDER_ERROR', title: '渲染失败', message, suggestion: '请查看运行日志或联系管理员。' })
       : `<p style="color:#d9534f">渲染失败：${message}</p>`;
@@ -365,8 +363,8 @@ function escapeTextareaContent(html = '') {
 }
 
 export function buildHtmlFallback(pageHtml) {
-  // 注入自适配高度脚本：按卡片内容高度撑开 iframe，避免短答复底部大片留白
-  const autoHeightScript = `<script>(function(){function fit(){try{var card=document.querySelector('.gxy-card,article[data-template-id],body>article,body>.tc-card,body>.nb-card,body>.route-card,body>.ai-result-card');var pad=0;try{var bs=getComputedStyle(document.body);pad=(parseFloat(bs.paddingTop)||0)+(parseFloat(bs.paddingBottom)||0);}catch(_p){}var h=0;if(card){h=Math.ceil(card.getBoundingClientRect().height+pad);}if(!h){h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0);}var f=window.frameElement;if(f&&h){f.style.height=Math.min(Math.max(h,72),1500)+'px';f.style.minHeight='0';}}catch(e){}}fit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit).catch(function(){});setTimeout(fit,40);setTimeout(fit,200);})();<\/script>`;
+  // 注入自适配高度脚本：iframe 加载后按内容高度撑开，避免高卡片（如 7 天膳食）被固定高度裁切
+  const autoHeightScript = `<script>(function(){try{var h=document.documentElement.scrollHeight||document.body.scrollHeight;var f=window.frameElement;if(f&&h){f.style.height=Math.min(h,1500)+'px';}}catch(e){}})();<\/script>`;
   const mapKey = process.env.TENCENT_MAP_JS_KEY || 'KI4BZ-5GGLT-POOXY-LQK77-6XA62-YVFPH';
   const strippedPage = stripRelativeStylesheets(pageHtml);
   // ★ 先判定再 injectBridge，避免 bridge 脚本污染地图信号
@@ -381,7 +379,7 @@ export function buildHtmlFallback(pageHtml) {
       '<article class="gxy-html-fallback" data-renderer="template-card-renderer">',
       '<style>',
       '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:visible;}',
-      '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:72px;max-height:1500px;border:0;border-radius:14px;background:transparent;overflow:hidden;box-shadow:none;}',
+      '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:520px;max-height:1500px;border:0;border-radius:14px;background:#fff;overflow:auto;box-shadow:0 2px 10px rgba(61,58,54,0.06);}',
       '.gxy-card-html-source{display:none !important;}',
       '</style>',
       `<textarea class="gxy-card-html-source" hidden aria-hidden="true">${escapeTextareaContent(finalHtml)}</textarea>`,

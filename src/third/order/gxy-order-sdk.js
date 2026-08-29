@@ -76,6 +76,7 @@ export async function getDetail(orderId) {
 }
 
 export async function page(payload) {
+  if (!payload?.elderId) throw new Error('page() 缺少必填字段: elderId');
   return post('/openapi/order/page', payload);
 }
 
@@ -118,7 +119,7 @@ async function post(path, payload) {
     timeout: _config.timeout,
   });
 
-  return wrapResult(result, { method: 'POST', url: _config.apiUrl + path });
+  return wrapResult(result);
 }
 
 async function get(path, params) {
@@ -142,23 +143,15 @@ async function get(path, params) {
     timeout: _config.timeout,
   });
 
-  return wrapResult(result, { method: 'GET', url: fullUrl.split('?')[0] });
+  return wrapResult(result);
 }
 
-function wrapResult(result, meta = {}) {
+function wrapResult(result) {
   const isSuccess = result.status === 200
     && result.data
     && (result.data.success === true || result.data.code === 0 || result.data.code === 200);
 
-  return {
-    ok: isSuccess,
-    status: result.status,
-    http_status: result.status,
-    data: result.data,
-    method: meta.method || undefined,
-    url: meta.url || undefined,
-    error: isSuccess ? undefined : (result.data?.message || result.error || 'gxy_order_failed'),
-  };
+  return { ok: isSuccess, status: result.status, data: result.data };
 }
 
 function buildBody(payload) {

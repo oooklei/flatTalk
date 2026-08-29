@@ -57,19 +57,17 @@ const VOICE_SUBMIT_COMMANDS = [
   "o了"
 ].sort((a, b) => b.length - a.length);
 function isLocalSecureException(hostname = location.hostname) {
-  // 仅本机放宽；内网 IP 仍需 HTTPS（Chrome 对 getUserMedia 要求安全上下文）
-  return ["localhost", "127.0.0.1", "::1"].includes(hostname);
+  if (["localhost", "127.0.0.1", "::1"].includes(hostname)) return true;
+  const isPrivateIP = /^(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})$/.test(hostname);
+  return Boolean(isPrivateIP);
 }
 
 function voiceSecurityMessage() {
   if (window.isSecureContext || isLocalSecureException()) return "";
-  // HTTP:5301 → HTTPS:5446（compose 映射）
-  const httpsPort = location.port === "5301" || location.port === "5298" || location.port === "5177"
-    ? "5446"
-    : (location.port || "5446");
-  const httpsHost = `${location.hostname}:${httpsPort}`;
+  const httpsPort = location.port === "5177" ? "5444" : location.port;
+  const httpsHost = `${location.hostname}${httpsPort ? `:${httpsPort}` : ""}`;
   const httpsUrl = `https://${httpsHost}${location.pathname}${location.search}`;
-  return `话筒需要 HTTPS。请使用：${httpsUrl}`;
+  return `Microphone requires HTTPS or localhost. Please run npm run start:https and open ${httpsUrl}.`;
 }
 
 function safeJson(value, fallback) {
@@ -197,25 +195,6 @@ function readAuth() {
 
 function saveAuth(auth) {
   localStorage.setItem(STORAGE_AUTH, JSON.stringify(auth));
-}
-
-/** 供 API 请求附带 SSO 会话令牌（生产环境 requireAuth 必需） */
-function getAuthBearerToken(authOverride) {
-  try {
-    const auth = authOverride || (typeof window !== "undefined" && window.FlatTalkMobileApp?.auth) || readAuth();
-    return String(auth?.token || auth?.userToken || "").trim() || null;
-  } catch {
-    return null;
-  }
-}
-
-function withAuthHeaders(headers = {}) {
-  const next = { ...(headers || {}) };
-  const token = getAuthBearerToken();
-  if (token && !next.Authorization && !next.authorization) {
-    next.Authorization = `Bearer ${token}`;
-  }
-  return next;
 }
 
 function escapeHtml(value = "") {
@@ -598,8 +577,6 @@ function materializeTemplateCardFrames(root, rawCardHtml = "") {
       );
       iframe.src = url;
       console.log("[CardBlob] iframe", fi, "blob URL set:", url.substring(0, 50));
-      iframe.addEventListener("load", () => fitTemplateCardFrameHeight(iframe), { once: true });
-      setTimeout(() => fitTemplateCardFrameHeight(iframe), 80);
       setTimeout(() => {
         try { URL.revokeObjectURL(url); } catch { /* ignore */ }
       }, 120000);
@@ -623,41 +600,13 @@ function recoverHtmlCardFromSource(value = "") {
     '<article class="gxy-html-fallback" data-renderer="template-card-renderer">',
     '<style>',
     '.gxy-html-fallback{padding:0;background:transparent;border:0;width:100%;max-width:100%;overflow:hidden;}',
-    '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:auto;min-height:72px;max-height:1500px;border:0;border-radius:10px;background:transparent;overflow:hidden;}',
+    '.gxy-template-card-frame{display:block;width:100%;max-width:100%;height:860px;border:0;border-radius:10px;background:#fff;overflow:hidden;}',
     '.gxy-card-html-source{display:none !important;}',
     '</style>',
     `<textarea class="gxy-card-html-source" hidden aria-hidden="true">${String(pageHtml).replace(/<\/textarea/gi, "&lt;/textarea")}</textarea>`,
     '<iframe class="gxy-template-card-frame" title="template-card" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" scrolling="no"></iframe>',
     '</article>',
   ].join('');
-}
-
-function fitTemplateCardFrameHeight(iframe) {
-  if (!iframe) return;
-  const apply = () => {
-    try {
-      const doc = iframe.contentDocument;
-      if (!doc) return;
-      const card = doc.querySelector(".gxy-card, article[data-template-id], body > article, body > .tc-card");
-      let pad = 0;
-      try {
-        const bs = doc.defaultView.getComputedStyle(doc.body);
-        pad = (parseFloat(bs.paddingTop) || 0) + (parseFloat(bs.paddingBottom) || 0);
-      } catch { /* ignore */ }
-      let h = 0;
-      if (card) h = Math.ceil(card.getBoundingClientRect().height + pad);
-      if (!h) {
-        h = Math.max(doc.body?.scrollHeight || 0, doc.documentElement?.scrollHeight || 0);
-      }
-      if (h > 0) {
-        iframe.style.height = `${Math.min(Math.max(h, 72), 1500)}px`;
-        iframe.style.minHeight = "0";
-      }
-    } catch { /* ignore */ }
-  };
-  apply();
-  setTimeout(apply, 50);
-  setTimeout(apply, 250);
 }
 
 function decodeBasicHtmlEntities(value = "") {
@@ -724,28 +673,6 @@ function debugScoreLabel(score) {
 }
 
 function debugTraceLabel(step = "") {
-  if (step && typeof step === "object") {
-    const label = step.label || step.stage || "";
-    let detail = step.detail;
-    if (typeof detail === "string") {
-      try { detail = JSON.parse(detail); } catch { detail = null; }
-    }
-    const kind = detail && typeof detail === "object" ? detail.kind : "";
-    const name = detail && typeof detail === "object" ? detail.name : "";
-    if (String(step.stage || "").startsWith("data.")) {
-      const d = (detail && typeof detail === "object") ? detail : {};
-      const bits = [
-        label || name,
-        d.method,
-        d.url || d.sql,
-        d.row_count != null ? `行=${d.row_count}` : "",
-        d.status ? `[${d.status}]` : "",
-        d.failure_reason || d.error || "",
-      ].filter(Boolean);
-      return bits.join(" · ");
-    }
-    return label || kind || name || "未知步骤";
-  }
   const labels = {
     login_context: "身份上下文",
     remote_agent: "远端智能体",
@@ -755,10 +682,7 @@ function debugTraceLabel(step = "") {
     tab_focus: "标签聚焦",
     kb_pre_retrieve: "知识预检索",
     yz365_check_detail: "云诊数据查询",
-    health_runtime_injection: "健康数据注入",
-    "data.db": "数据表访问",
-    "data.tag_system": "tag-system 接口",
-    "data.http": "第三方 HTTP",
+    health_runtime_injection: "健康数据注入"
   };
   return labels[step] || step || "未知步骤";
 }
@@ -777,11 +701,9 @@ function parseVoiceSubmitCommand(text = "") {
 }
 
 async function fetchJson(url, options) {
-  const opts = { ...(options || {}) };
-  opts.headers = withAuthHeaders(opts.headers);
   let res;
   try {
-    res = await fetch(url, opts);
+    res = await fetch(url, options);
   } catch (err) {
     const reason = err?.message || "network_error";
     throw new Error(`本地服务接口不可达或请求被中断：${reason}`);
@@ -907,10 +829,10 @@ async function fetchChatMessage(url, options) {
     return fetchJson(url, options);
   }
   const streamUrl = url.includes("?") ? `${url}&stream=1` : `${url}?stream=1`;
-  const headers = withAuthHeaders({
+  const headers = {
     ...(options?.headers || {}),
     Accept: "text/event-stream",
-  });
+  };
   let res;
   try {
     res = await fetch(streamUrl, { ...options, headers });
@@ -1015,127 +937,47 @@ function downsampleBuffer(buffer, sourceRate, targetRate = 16000) {
   return result;
 }
 
-function mergeFloat32Chunks(chunks, total) {
+async function recordWavDataUrl(stream, durationMs = 6000) {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) throw new Error("当前浏览器不支持 WAV 录音采集");
+  const context = new AudioContext();
+  // 移动端 AudioContext 需要 resume 才能采集
+  if (context.state === "suspended") {
+    try { await context.resume(); } catch { /* ignore */ }
+  }
+  const source = context.createMediaStreamSource(stream);
+  const processor = context.createScriptProcessor(4096, 1, 1);
+  const chunks = [];
+  let total = 0;
+  processor.onaudioprocess = (event) => {
+    const input = event.inputBuffer.getChannelData(0);
+    chunks.push(new Float32Array(input));
+    total += input.length;
+  };
+  source.connect(processor);
+  // 移动端 ScriptProcessorNode 必须连接到 destination 才能触发 onaudioprocess
+  // 用零增益 GainNode 避免回授，同时保持回调持续运行
+  const silentGain = context.createGain();
+  silentGain.gain.value = 0;
+  processor.connect(silentGain);
+  silentGain.connect(context.destination);
+  await new Promise((resolve) => window.setTimeout(resolve, durationMs));
+  processor.disconnect();
+  source.disconnect();
+  silentGain.disconnect();
+  await context.close?.();
+  if (!total) throw new Error("未录到有效语音");
   const merged = new Float32Array(total);
   let offset = 0;
   for (const chunk of chunks) {
     merged.set(chunk, offset);
     offset += chunk.length;
   }
-  return merged;
-}
-
-function samplesToWavDataUrl(floatSamples, sourceRate, targetRate = 16000, { requireVoice = true } = {}) {
-  if (!floatSamples?.length) throw new Error("未录到有效语音");
-  const rms = Math.sqrt(floatSamples.reduce((sum, sample) => sum + sample * sample, 0) / floatSamples.length);
-  // 仅在明确要求时拦截静音；准实时分片交给 ASR 判断，避免误杀未出声的首片
-  if (requireVoice && rms < 0.00005) throw new Error("未检测到清晰语音，请靠近麦克风再试");
-  let samples = downsampleBuffer(floatSamples, sourceRate, targetRate);
-  // 软限幅：若峰值接近削波则整体缩小，避免腾讯 ASR 吃失真音频
-  let peak = 0;
-  for (let i = 0; i < samples.length; i += 1) {
-    const a = Math.abs(samples[i]);
-    if (a > peak) peak = a;
-  }
-  if (peak > 0.95) {
-    const scale = 0.85 / peak;
-    const normalized = new Float32Array(samples.length);
-    for (let i = 0; i < samples.length; i += 1) normalized[i] = samples[i] * scale;
-    samples = normalized;
-  }
-  const blob = encodePcm16Wav(samples, targetRate);
+  const rms = Math.sqrt(merged.reduce((sum, sample) => sum + sample * sample, 0) / merged.length);
+  if (rms < 0.001) throw new Error("No clear voice detected. Please move closer to the microphone and try again.");
+  const samples = downsampleBuffer(merged, context.sampleRate, 16000);
+  const blob = encodePcm16Wav(samples, 16000);
   return audioBlobToDataUrl(blob);
-}
-
-/**
- * 与 Care ASR test_page 对齐的采集图：
- * - 优先 16k AudioContext（匹配腾讯 16k_zh）
- * - 输入增益抬高弱麦
- * - ScriptProcessor 必须挂到 destination；用极低增益避免回授（gain=0 在部分浏览器会吞掉回调/静音）
- */
-async function createPcmCaptureGraph(stream) {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) throw new Error("当前浏览器不支持 WAV 录音采集");
-  let context;
-  try {
-    context = new AudioContext({ sampleRate: 16000 });
-  } catch {
-    context = new AudioContext();
-  }
-  if (context.state === "suspended") {
-    try { await context.resume(); } catch { /* ignore */ }
-  }
-  const source = context.createMediaStreamSource(stream);
-  const inputGain = context.createGain();
-  // 禁止额外放大：2.5x 会导致 peak=1 削波，腾讯只能空转写或乱出英文
-  inputGain.gain.value = 1;
-  const processor = context.createScriptProcessor(4096, 1, 1);
-  const monitorGain = context.createGain();
-  // 不可为 0：部分 Chromium/WebView 会把 0 增益子树优化掉，导致 inputBuffer 全 0
-  monitorGain.gain.value = 0.0001;
-  source.connect(inputGain);
-  inputGain.connect(processor);
-  processor.connect(monitorGain);
-  monitorGain.connect(context.destination);
-  return { context, source, inputGain, processor, monitorGain };
-}
-
-async function recordWavDataUrl(stream, durationMs = 6000) {
-  const { context, source, inputGain, processor, monitorGain } = await createPcmCaptureGraph(stream);
-  const chunks = [];
-  let total = 0;
-  processor.onaudioprocess = (event) => {
-    const input = event.inputBuffer.getChannelData(0);
-    chunks.push(new Float32Array(input));
-    total += input.length;
-  };
-  await new Promise((resolve) => window.setTimeout(resolve, durationMs));
-  try { processor.disconnect(); } catch { /* ignore */ }
-  try { inputGain.disconnect(); } catch { /* ignore */ }
-  try { source.disconnect(); } catch { /* ignore */ }
-  try { monitorGain.disconnect(); } catch { /* ignore */ }
-  await context.close?.();
-  if (!total) throw new Error("未录到有效语音");
-  // 整段录音放宽静音门槛，由腾讯 ASR 判断是否有有效内容
-  return samplesToWavDataUrl(mergeFloat32Chunks(chunks, total), context.sampleRate, 16000, { requireVoice: false });
-}
-
-/** 持续录音会话：边录边取累计 WAV，供腾讯 ASR 准实时分片识别 */
-async function openLiveWavRecorder(stream) {
-  const { context, source, inputGain, processor, monitorGain } = await createPcmCaptureGraph(stream);
-  const chunks = [];
-  let total = 0;
-  let peakRms = 0;
-  processor.onaudioprocess = (event) => {
-    const input = event.inputBuffer.getChannelData(0);
-    chunks.push(new Float32Array(input));
-    total += input.length;
-    let sum = 0;
-    for (let i = 0; i < input.length; i += 1) sum += input[i] * input[i];
-    const rms = Math.sqrt(sum / Math.max(1, input.length));
-    if (rms > peakRms) peakRms = rms;
-  };
-  return {
-    sampleRate: () => context.sampleRate,
-    totalSamples: () => total,
-    peakRms: () => peakRms,
-    async snapshotDataUrl({ requireVoice = false, recentSeconds = 0 } = {}) {
-      if (!total) throw new Error("未录到有效语音");
-      let samples = mergeFloat32Chunks(chunks, total);
-      if (recentSeconds > 0) {
-        const keep = Math.min(samples.length, Math.floor(context.sampleRate * recentSeconds));
-        samples = samples.subarray(samples.length - keep);
-      }
-      return samplesToWavDataUrl(samples, context.sampleRate, 16000, { requireVoice });
-    },
-    async close() {
-      try { processor.disconnect(); } catch { /* ignore */ }
-      try { inputGain.disconnect(); } catch { /* ignore */ }
-      try { source.disconnect(); } catch { /* ignore */ }
-      try { monitorGain.disconnect(); } catch { /* ignore */ }
-      try { await context.close?.(); } catch { /* ignore */ }
-    }
-  };
 }
 
 class MobileApp {
@@ -1158,10 +1000,7 @@ class MobileApp {
       activeTemplateKey: "",
       health: null,
       autoSpeech: localStorage.getItem(STORAGE_AUTO_SPEECH) === "true",
-      debugEnabled: localStorage.getItem(STORAGE_DEBUG_MODE) === "true",
-      recordingServerVoice: false,
-      recordingRealtimeVoice: false,
-      stopRealtimeVoice: false
+      debugEnabled: localStorage.getItem(STORAGE_DEBUG_MODE) === "true"
     };
     this.currentSpeechUtterance = null;
     this._syncTimeout = null;
@@ -1194,10 +1033,6 @@ class MobileApp {
   }
 
   async start() {
-    // SSO /assistant 跳转带入的 token 立刻落盘，供后续 API 的 Authorization 使用
-    if (this.auth?.token || this.auth?.userToken) {
-      saveAuth(this.auth);
-    }
     this.state.config = await fetchJson("/api/client-config").catch(() => this.state.config);
     if (localStorage.getItem(STORAGE_DEBUG_MODE) == null) {
       this.state.debugEnabled = this.state.config.production !== true && this.state.config.showTemplatePanel !== false;
@@ -1250,11 +1085,7 @@ class MobileApp {
     try {
       this.state.location = await window.locationService.detect();
       console.log("[Mobile] location:", this.state.location);
-      if (this.state.location?.source === "unavailable" || this.state.location?.needUserAction) {
-        const tip = this.state.location?.message || "无法获取位置，周边服务可能不可用";
-        if (typeof this.showToast === "function") this.showToast(tip);
-        else console.warn("[Mobile]", tip);
-      }
+      // 便于核对：定位是否会随下一句聊天真正上报（payload.location）
       if (this.state.location?.lat != null) {
         console.log("[Mobile] location will be sent on chat as payload.location", {
           lat: this.state.location.lat,
@@ -1264,14 +1095,6 @@ class MobileApp {
       }
     } catch (e) {
       console.warn("[Mobile] location detect failed:", e);
-      this.state.location = {
-        lat: null,
-        lng: null,
-        source: "unavailable",
-        error: "locate_exception",
-        needUserAction: true,
-        message: "定位失败，请检查权限后重试",
-      };
     }
   }
 
@@ -1295,9 +1118,7 @@ class MobileApp {
     }
 
     try {
-      const resp = await fetch(`/api/weather?city=${encodeURIComponent(city)}`, {
-        headers: withAuthHeaders(),
-      });
+      const resp = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
       const data = await resp.json();
       let weatherText = "";
       if (data.ok && data.weather) {
@@ -1331,9 +1152,7 @@ class MobileApp {
         userToken: this.auth?.userToken || "",
         limit: "50",
       });
-      const res = await fetch(`/api/conversation/list?${params}`, {
-        headers: withAuthHeaders(),
-      });
+      const res = await fetch(`/api/conversation/list?${params}`);
       const data = await res.json();
       if (data.ok && data.conversations?.length > 0) {
         const loaded = data.conversations.map((c) => {
@@ -1493,64 +1312,12 @@ class MobileApp {
         this.toggleDevDrawer();
       } else if (e.ctrlKey && (e.key === "x" || e.key === "X")) {
         e.preventDefault();
-        this.closeAndExitAssistant();
+        this.toggleDebugSidePanel();
       } else if (e.ctrlKey && (e.key === "s" || e.key === "S")) {
         e.preventDefault();
         this.toggleHistorySearchPanel();
       }
     });
-  }
-
-  /**
-   * Ctrl+X：关闭并退出 AI 助手。
-   * - 先尽力同步会话
-   * - 清理本地身份
-   * - 通知嵌入宿主（iframe/opener）
-   * - 能关窗则关窗，否则回登录前导页
-   */
-  async closeAndExitAssistant() {
-    try {
-      this.showToast?.("正在退出助手…");
-    } catch { /* ignore */ }
-    try {
-      await this._syncToBackend?.(true);
-    } catch (e) {
-      console.warn("[Mobile] exit sync failed:", e?.message || e);
-    }
-    try {
-      localStorage.removeItem(STORAGE_AUTH);
-    } catch { /* ignore */ }
-    this.auth = {};
-
-    const payload = {
-      type: "gxy_assistant_close",
-      source: "flattalk_mobile",
-      reason: "ctrl_x_exit",
-      ts: Date.now(),
-    };
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage(payload, "*");
-      }
-    } catch { /* ignore */ }
-    try {
-      if (window.opener && !window.opener.closed) {
-        window.opener.postMessage(payload, "*");
-      }
-    } catch { /* ignore */ }
-
-    try {
-      window.close();
-    } catch { /* ignore */ }
-
-    // 多数浏览器不允许脚本关非脚本打开的窗；回登录页作为可靠退出
-    setTimeout(() => {
-      try {
-        window.location.replace("/login.html");
-      } catch {
-        window.location.href = "/login.html";
-      }
-    }, 120);
   }
 
   bindFloatingSpeakButton() {
@@ -1669,6 +1436,204 @@ class MobileApp {
     if (overlay) overlay.classList.add("open");
   }
 
+  // 鈽?Ctrl+X 切换璋冩祴信息娴窗（可拖拽，不覆盖对话区）
+  async toggleDebugSidePanel() {
+    const existing = document.querySelector(".mobile-debug-side-panel");
+    if (existing && existing.classList.contains("open")) {
+      this.closeDebugSidePanel();
+      return;
+    }
+    // 先生'修?health 信息存在（含 baseUrl / model / agentId 等）
+    if (!this.state.health) {
+      await this.checkHealth();
+    }
+    this.renderDebugSidePanel();
+    const panel = document.querySelector(".mobile-debug-side-panel");
+    if (panel) {
+      panel.classList.add("open");
+      this.bindDebugSidePanelDrag(panel);
+    }
+  }
+
+  closeDebugSidePanel() {
+    const panel = document.querySelector(".mobile-debug-side-panel");
+    if (panel) panel.classList.remove("open");
+  }
+
+  // 调试浮窗拖拽逻辑。
+  bindDebugSidePanelDrag(panel) {
+    if (panel.__dragBound) return;
+    panel.__dragBound = true;
+    const STORAGE_POS = "gxy_mobile_debug_panel_pos";
+    const saved = safeJson(localStorage.getItem(STORAGE_POS), null);
+    if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
+      panel.style.left = `${saved.left}px`;
+      panel.style.top = `${saved.top}px`;
+      panel.style.right = "auto";
+    }
+    const head = panel.querySelector(".debug-side-head");
+    if (!head) return;
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let startTop = 0;
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    head.addEventListener("pointerdown", (event) => {
+      // 点击关闭按钮不允Е发拖拽?      if (event.target.closest(".debug-side-close")) return;
+      dragging = true;
+      const rect = panel.getBoundingClientRect();
+      startX = event.clientX;
+      startY = event.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      panel.classList.add("dragging");
+      head.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    });
+    head.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      const rect = panel.getBoundingClientRect();
+      const nextLeft = clamp(startLeft + event.clientX - startX, 4, window.innerWidth - rect.width - 4);
+      const nextTop = clamp(startTop + event.clientY - startY, 4, window.innerHeight - 40);
+      panel.style.left = `${nextLeft}px`;
+      panel.style.top = `${nextTop}px`;
+      panel.style.right = "auto";
+      event.preventDefault();
+    });
+    const finishDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      panel.classList.remove("dragging");
+      const left = Number.parseFloat(panel.style.left);
+      const top = Number.parseFloat(panel.style.top);
+      if (Number.isFinite(left) && Number.isFinite(top)) {
+        localStorage.setItem(STORAGE_POS, JSON.stringify({ left, top }));
+      }
+    };
+    head.addEventListener("pointerup", finishDrag);
+    head.addEventListener("pointercancel", finishDrag);
+  }
+
+  // 渲染右侧调试信息面板。
+  renderDebugSidePanel() {
+    let panel = document.querySelector(".mobile-debug-side-panel");
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.className = "mobile-debug-side-panel";
+      document.body.appendChild(panel);
+    }
+
+    const health = this.state.health || {};
+    const platform = health.platform || {};
+    const result = this.state.latestResult || {};
+    const resultPlatform = result.platform || {};
+    const role = result.role_context || {};
+
+    // TOP 区：本地服务地址 / 远端地址 / 当前模型 / agentId / skill_id
+    const localInfo = health.local_service || {};
+    const localEndpoint = localInfo.endpoint || (localInfo.host && localInfo.port ? `${localInfo.host}:${localInfo.port}` : "-");
+    const baseUrl = platform.baseUrl || resultPlatform.baseUrl || "";
+    const remoteEndpoint = baseUrl ? baseUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "") : "-";
+    const modelInfo = platform.model || {};
+    const modelName = modelInfo.name || modelInfo.model || "-";
+    const modelId = modelInfo.model || "-";
+    const agentId = resultPlatform.agentId || result.target_agent_id || "-";
+    const skillId = result.skill_key || "-";
+
+    const routeItems = [
+      ["最终意图", result.intent || "UNKNOWN"],
+      ["目标技能", result.skill_key || "UNKNOWN"],
+      ["输出模板", result.template_key || "remote_answer"],
+      ["目标智能体", result.target_agent_id || resultPlatform.agentId || "未返回"],
+      ["用户角色", `${role.title || result.role_key || "UNKNOWN"} / ${role.terminal || ""}`],
+      ["置信度", result.confidence == null ? "未返回" : `${Math.round(Number(result.confidence) * 100)}%`],
+      ["风险等级", result.risk_level || "未识别"],
+      ["入口智能体", resultPlatform.agentId ? `space=${resultPlatform.spaceId || "-"} / agent=${resultPlatform.agentId}` : "未返回"]
+    ];
+
+    const trace = result.stages || [];
+    const kbHits = Array.isArray(result.evidence) ? result.evidence : [];
+    const warnings = result.debug?.model_error ? [`模型错误: ${result.debug.model_error}`] : [];
+    if (result.debug?.knowledge_error) warnings.push(`知识库错误: ${result.debug.knowledge_error}`);
+    if (result.debug?.render_status === 'error') warnings.push('渲染降级');
+    const routeReason = result.route?.template_reason || result.route?.knowledge_source ? `场景=${result.route?.scene_key || '-'} / 决策=${result.route?.decision || '-'} / 知识=${result.route?.knowledge_status || '-'}` : '后端根据当前输入和模型响应完成调度。';
+    const requestId = result.request_id || "无请求号";
+
+    panel.innerHTML = `
+      <div class="debug-side-head">
+        <strong>调试信息</strong>
+        <button type="button" class="debug-side-close" title="关闭 Ctrl+X">${mobileIconSvg("close")}</button>
+      </div>
+      <div class="debug-side-body">
+        <div class="debug-side-request">请求号：${escapeHtml(requestId)}</div>
+        <div class="debug-side-top">
+          <div class="debug-side-top-item">
+            <span class="label">本地服务</span>
+            <span class="value" title="${escapeHtml(localEndpoint)}">${escapeHtml(localEndpoint)}</span>
+          </div>
+          <div class="debug-side-top-item">
+            <span class="label">远端地址</span>
+            <span class="value" title="${escapeHtml(remoteEndpoint)}">${escapeHtml(remoteEndpoint)}</span>
+          </div>
+          <div class="debug-side-top-item">
+            <span class="label">当前模型</span>
+            <span class="value" title="${escapeHtml(modelId)}">${escapeHtml(modelName)}</span>
+          </div>
+          <div class="debug-side-top-item">
+            <span class="label">Agent ID</span>
+            <span class="value" title="${escapeHtml(String(agentId))}">${escapeHtml(String(agentId))}</span>
+          </div>
+          <div class="debug-side-top-item full">
+            <span class="label">技能 ID</span>
+            <span class="value" title="${escapeHtml(String(skillId))}">${escapeHtml(String(skillId))}</span>
+          </div>
+        </div>
+        <div class="debug-side-section">
+          <div class="debug-side-section-title">路由信息</div>
+          <dl class="debug-side-route">
+            ${routeItems.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value ?? ""))}</dd></div>`).join("")}
+          </dl>
+        </div>
+        <div class="debug-side-section">
+          <div class="debug-side-section-title">路由原因</div>
+          <p class="debug-side-reason">${escapeHtml(routeReason)}</p>
+        </div>
+        ${trace.length ? `
+          <div class="debug-side-section">
+            <div class="debug-side-section-title">流转链路</div>
+            <ol class="debug-side-trace">${trace.map((step) => `<li>${escapeHtml(debugTraceLabel(step))}</li>`).join("")}</ol>
+          </div>
+        ` : ""}
+        ${kbHits.length ? `
+          <div class="debug-side-section">
+            <div class="debug-side-section-title">知识命中 Top ${Math.min(6, kbHits.length)}</div>
+            <div class="debug-side-list">
+              ${kbHits.slice(0, 6).map((hit, index) => `
+                <article>
+                  <b>${index + 1}</b>
+                  <div><span>${escapeHtml(hit.source || hit.kb_type || "知识库")}</span><p>${escapeHtml(hit.title || hit.text?.slice(0, 60) || "未返回标题")}</p></div>
+                  <em>${escapeHtml(debugScoreLabel(hit.score))}</em>
+                </article>
+              `).join("")}
+            </div>
+          </div>
+        ` : ""}
+        ${warnings.length ? `
+          <div class="debug-side-section">
+            <div class="debug-side-section-title">警告</div>
+            <div class="debug-side-warning">${escapeHtml(warnings.join("；"))}</div>
+          </div>
+        ` : ""}
+        ${!result.intent && !result.skill_key ? `
+          <div class="debug-side-empty">暂无调试数据，发起一次对话后再按 Ctrl+X 查看。</div>
+        ` : ""}
+      </div>
+    `;
+
+    panel.querySelector(".debug-side-close")?.addEventListener("click", () => this.closeDebugSidePanel());
+  }
+
   closeDevDrawer() {
     const drawer = document.querySelector(".dev-drawer");
     const overlay = document.querySelector(".dev-drawer-overlay");
@@ -1697,7 +1662,7 @@ class MobileApp {
     drawer.innerHTML = `
       <div class="dev-drawer-header">
         <h3>开发者面板</h3>
-        <p>点击用户切换身份；Ctrl+Z 开发者面板；Ctrl+X 关闭并退出助手。</p>
+        <p>点击用户切换身份，Ctrl+Z 开关，Ctrl+X 调试信息。</p>
       </div>
       <div class="dev-drawer-body">
         <div class="dev-drawer-section-title">预置用户列表</div>
@@ -1950,23 +1915,14 @@ class MobileApp {
     const chatInput = page.querySelector("#mobileChatInput");
     const sendBtn = page.querySelector(".mobile-send-button");
     const plusBtn = page.querySelector("#mobileImageButton");
-    this._updateChatSendVisibility = () => {
-      const hasText = Boolean(chatInput && chatInput.value.trim().length > 0);
+    const updateSendVisibility = () => {
+      const hasText = chatInput && chatInput.value.trim().length > 0;
       if (sendBtn) sendBtn.style.display = hasText ? "" : "none";
       if (plusBtn) plusBtn.style.display = hasText ? "none" : "";
     };
-    chatInput?.addEventListener("input", () => this._updateChatSendVisibility?.());
-    this._updateChatSendVisibility();
+    chatInput?.addEventListener("input", updateSendVisibility);
+    updateSendVisibility();
     this.updateFavoriteButton();
-  }
-
-  /** 写入聊天输入框并刷新发送按钮显隐（程序赋值不会自动触发 input） */
-  setChatInputValue(text = "") {
-    const input = screen.querySelector("#mobileChatInput");
-    if (!input) return;
-    input.value = String(text || "");
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    this._updateChatSendVisibility?.();
   }
 
   ensureConversation({ initial = false } = {}) {
@@ -2097,7 +2053,7 @@ class MobileApp {
     try {
       const res = await fetch("/api/conversation/sync-batch", {
         method: "POST",
-        headers: withAuthHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: signature,
         keepalive: immediate,
       });
@@ -2201,7 +2157,7 @@ class MobileApp {
       materializeTemplateCardFrames(bubbles[bubbles.length - 1], rawCardHtml);
     }
     scrubVisibleMojibake(log);
-    this.scrollChatToBottom({ force: true });
+    log.scrollTop = log.scrollHeight;
   }
 
   addBubble(kind, text, options = {}) {
@@ -2210,16 +2166,7 @@ class MobileApp {
     if (options.record === false) return;
     const conversation = this.currentConversation();
     if (!conversation) return;
-    conversation.messages.push({
-      role: kind,
-      content: safeText,
-      markdown: Boolean(options.markdown),
-      html: options.html ? sanitizeHtmlCard(options.html) : "",
-      agent_key: options.meta?.agent_key || options.meta?.skill_key || "",
-      skill_key: options.meta?.skill_key || options.skill_key || "",
-      meta: options.meta || null,
-      at: Date.now()
-    });
+    conversation.messages.push({ role: kind, content: safeText, markdown: Boolean(options.markdown), html: options.html ? sanitizeHtmlCard(options.html) : "", agent_key: options.meta?.agent_key || "", at: Date.now() });
     conversation.updatedAt = Date.now();
     if (kind === "user") {
       conversation.latestQuestion = safeText;
@@ -2236,12 +2183,6 @@ class MobileApp {
     const notice = document.createElement("div");
     notice.className = "mobile-system-notice";
     notice.textContent = text;
-    const log = screen.querySelector("#mobileChatLog");
-    if (log) {
-      log.appendChild(notice);
-      this.scrollChatToBottom({ force: true });
-      return;
-    }
     const wrap = screen || document.getElementById("messageList");
     if (wrap) {
       wrap.appendChild(notice);
@@ -2273,30 +2214,12 @@ class MobileApp {
       lastMessage.content = safeText;
       lastMessage.markdown = Boolean(options.markdown);
       lastMessage.html = options.html ? sanitizeHtmlCard(options.html) : "";
-      if (options.meta) {
-        lastMessage.meta = options.meta;
-        lastMessage.skill_key = options.meta.skill_key || lastMessage.skill_key || "";
-        lastMessage.agent_key = options.meta.agent_key || options.meta.skill_key || lastMessage.agent_key || "";
-      }
+      if (options.meta) lastMessage.meta = options.meta;
     }
     conversation.latestAnswer = safeText;
     conversation.status = options.error ? "答复异常" : "已答复";
     conversation.updatedAt = Date.now();
     this.persistHistory();
-    this.scrollChatToBottom({ force: true });
-    // iframe/卡片高度异步撑开后再贴底
-    setTimeout(() => this.scrollChatToBottom({ force: true }), 80);
-    setTimeout(() => this.scrollChatToBottom({ force: true }), 320);
-  }
-
-  /** 对话区贴底：回答替换、卡片撑高、排队提示后都应调用 */
-  scrollChatToBottom({ force = false } = {}) {
-    const log = screen.querySelector("#mobileChatLog");
-    if (!log) return;
-    const distanceFromBottom = log.scrollHeight - log.scrollTop - log.clientHeight;
-    // 用户上翻查看历史时不抢滚动；force 用于新消息/最终答复
-    if (!force && distanceFromBottom > 120) return;
-    log.scrollTop = log.scrollHeight;
   }
 
   _initTabs(container) {
@@ -2326,7 +2249,6 @@ class MobileApp {
       .map((message) => ({
         role: message.role === "user" ? "user" : "assistant",
         content: compactText(message.content, 300),
-        skill_key: message.meta?.skill_key || message.skill_key || "",
         at: message.at || null
       }));
   }
@@ -2395,12 +2317,7 @@ class MobileApp {
     if (this.state.sending) {
       // 排队等待当前请求完成后自动发送
       this.state.pendingQueue.push(queuedItem);
-      const input = screen.querySelector("#mobileChatInput");
-      if (input) input.value = "";
-      this._updateChatSendVisibility?.();
-      this.addSystemNotice(`已排队：${compactText(message, 36)}（当前回复完成后自动发送）`);
       this.showToast("消息已排队，当前处理完成后自动发送");
-      this.scrollChatToBottom({ force: true });
       return;
     }
     this.state.sending = true;
@@ -2616,9 +2533,10 @@ class MobileApp {
     this.appendAmbiguityOptions(normalizedBody);
     this.upsertTemplateTab(normalizedBody);
     this.renderTemplatePanel(normalizedBody);
-    this.scrollChatToBottom({ force: true });
-    setTimeout(() => this.scrollChatToBottom({ force: true }), 120);
-    // ========== 引导按钮渲染 ==========
+    // 右侧调试卡片区域ュ已打开，则自姩刷新
+    const sidePanel = document.querySelector(".mobile-debug-side-panel.open");
+    if (sidePanel) this.renderDebugSidePanel();
+    // ========== 寮曞按钮渲染 ==========
     // 妫€娴?chat.busy_guide.v1 鍜?chat.queue_status.v1 模板
     const templateId = normalizedBody.template_id || normalizedBody.templateId;
     if (templateId === "chat.busy_guide.v1" || templateId === "chat.queue_status.v1") {
@@ -2709,10 +2627,7 @@ class MobileApp {
     if (!action?.action_key) return;
     action = localizeActionItem(action);
     if (isSosPhoneAction(action) && this.handleSosPhoneAction(action)) return;
-    if (this.state.sending) {
-      this.showToast("当前正在处理，请稍候再点按钮");
-      return;
-    }
+    if (this.state.sending) return;
     this.state.sending = true;
     const conversation = this.currentConversation();
     const originalText = button?.textContent || action.label || "\u6267\u884c";
@@ -2872,10 +2787,7 @@ class MobileApp {
   async handleCompactChipClick(e) {
     const chip = e.currentTarget;
     const actionKey = chip.dataset.actionKey;
-    if (!actionKey || this.state.sending) {
-      if (this.state.sending) this.showToast("当前正在处理，请稍候再点");
-      return;
-    }
+    if (!actionKey || this.state.sending) return;
 
     let inputDef = null;
     if (chip.dataset.input) {
@@ -2994,10 +2906,7 @@ class MobileApp {
 
   async handleFollowupSuggestion(suggestion = {}, button = null) {
     const prompt = String(suggestion.user_prompt || suggestion.label || "").trim();
-    if (!prompt || this.state.sending) {
-      if (this.state.sending) this.showToast("当前正在处理，请稍候再点");
-      return;
-    }
+    if (!prompt || this.state.sending) return;
     const conversation = this.currentConversation();
     const originalText = button?.textContent || suggestion.label || prompt;
     const canExecuteAction = Boolean(suggestion.action_key && isSupportedMobileAction(suggestion));
@@ -3101,9 +3010,10 @@ class MobileApp {
       });
     });
     
-    // 添加到消息流
+    // 添加到消息祦
     log.appendChild(buttonContainer);
-    this.scrollChatToBottom({ force: true });
+    
+    // 滚动到底部?    log.scrollTop = log.scrollHeight;
   }
 
   /**
@@ -3556,18 +3466,15 @@ class MobileApp {
     this.persistHistory();
     // 从后端删除。
     try {
-      await fetch(`/api/conversation/delete/${encodeURIComponent(id)}`, {
-        method: "DELETE",
-        headers: withAuthHeaders(),
-      });
+      await fetch(`/api/conversation/delete/${encodeURIComponent(id)}`, { method: "DELETE" });
     } catch (e) {
       console.warn("[Mobile][ConversationHistory] 后端删除失败:", e.message);
     }
-    // 同步录制
+    // 同步录制
     try {
       await fetch("/api/conversation/harvest-sync", {
         method: "POST",
-        headers: withAuthHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversationId: id }),
       });
     } catch (e) {
@@ -3653,22 +3560,6 @@ class MobileApp {
     window.speechSynthesis.speak(utterance);
   }
 
-  voiceAuthPayload() {
-    return {
-      conversationId: this.currentConversation()?.id || "",
-      conversationHistory: this.conversationContext(),
-      roleKey: this.auth.roleKey,
-      channel: "mobile",
-      userToken: this.auth.token,
-      elderScope: this.auth.elderScope,
-      terminal: this.auth.terminal,
-      authLevel: this.auth.authLevel,
-      userName: this.auth.userName,
-      orgName: this.auth.orgName,
-      presetKey: this.auth.presetKey
-    };
-  }
-
   async startVoiceInput() {
     const input = screen.querySelector("#mobileChatInput");
     const button = screen.querySelector("#mobileVoiceButton");
@@ -3678,303 +3569,16 @@ class MobileApp {
       this.addBubble("ai", securityMessage, { error: true });
       return;
     }
+    // 直接使用服务器 ASR（浏览器 SpeechRecognition 在国内网络下依赖 Google 服务，必然失败浪费时间）
     if (!input) return;
     if (this.state.sending) {
       this.showToast("消息处理中，请稍后再使用语音");
       return;
     }
-    // 再次点击：结束浏览器实时识别 / 服务端准实时
-    if (this.state.recognizing) {
-      this.stopVisibleVoiceInput();
+    if (this.state.recordingServerVoice) {
       return;
     }
-    if (this.state.recordingRealtimeVoice) {
-      this.state.stopRealtimeVoice = true;
-      this.showToast("正在结束识别…");
-      return;
-    }
-    if (this.state.recordingServerVoice) return;
-
-    // ★ 与旧版 flatTalk2 / 桂小养一致：优先浏览器 SpeechRecognition（边说边出字）
-    // 腾讯一句话分片不是真实时；国内 Chrome 若 network 失败再降级服务端 ASR
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition && !this.state.speechNetworkUnavailable) {
-      await this.startBrowserSpeechRecognition();
-      return;
-    }
-
-    // 降级：服务端 ASR（修复削波后的腾讯分片 / 整段录音）
-    let preferRealtime = true;
-    try {
-      const health = await fetchJson("/api/input/voice/health");
-      if (health?.realtimePreferred === false) preferRealtime = false;
-      if (health?.provider && !["tencent", "volc"].includes(health.provider)) preferRealtime = false;
-    } catch {
-      preferRealtime = true;
-    }
-
-    if (preferRealtime) {
-      await this.startRealtimeTencentVoice();
-      return;
-    }
-    await this.startServerVoiceInput({ reason: "录音转文本" });
-  }
-
-  /** 旧版同款：浏览器边说边出字（interimResults） */
-  async startBrowserSpeechRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const input = screen.querySelector("#mobileChatInput");
-    const button = screen.querySelector("#mobileVoiceButton");
-    if (!SpeechRecognition || !input) {
-      await this.startServerVoiceInput({ reason: "当前浏览器不支持在线语音识别" });
-      return;
-    }
-    if (this.state.sending || this.state.recognizing || this.state.recordingRealtimeVoice) return;
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "zh-CN";
-    recognition.interimResults = true;
-    recognition.continuous = true;
-    let finalTranscript = String(input.value || "").trim();
-    let submitted = false;
-    this.state.recognizing = true;
-    this.voiceRecognition = recognition;
-    button?.classList.add("listening");
-    this.showToast("实时识别中…请说话（再说完点话筒结束）");
-
-    recognition.onresult = (event) => {
-      let interimTranscript = "";
-      let receivedFinal = false;
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        const transcript = event.results[index][0]?.transcript || "";
-        if (event.results[index].isFinal) {
-          finalTranscript = `${finalTranscript} ${transcript}`.trim();
-          receivedFinal = true;
-        } else {
-          interimTranscript += transcript;
-        }
-      }
-      const shown = `${finalTranscript} ${interimTranscript}`.trim();
-      this.setChatInputValue(shown);
-      if (this.state.sending || !receivedFinal || submitted) return;
-      const parsed = parseVoiceSubmitCommand(shown);
-      if (!parsed.shouldSubmit) return;
-      submitted = true;
-      this.setChatInputValue(parsed.text);
-      try { recognition.stop(); } catch { /* ignore */ }
-      if (parsed.text) {
-        window.setTimeout(() => {
-          if (!this.state.sending && String(screen.querySelector("#mobileChatInput")?.value || "").trim() === parsed.text) {
-            this.sendMessage(parsed.text);
-          }
-        }, 120);
-      }
-    };
-
-    recognition.onerror = (event) => {
-      const error = event?.error || "识别失败";
-      if (error === "network" || error === "service-not-allowed") {
-        this.state.speechNetworkUnavailable = true;
-        this.resetVisibleVoiceInput({ focus: true });
-        this.showToast("浏览器在线语音不可用，改用服务器识别…");
-        this.startRealtimeTencentVoice().catch(() => {
-          this.startServerVoiceInput({ reason: "浏览器语音识别不可用" });
-        });
-        return;
-      }
-      if (error === "aborted" || error === "no-speech") {
-        this.resetVisibleVoiceInput({ focus: true });
-        return;
-      }
-      const message = ["not-allowed"].includes(error)
-        ? "浏览器未授予麦克风权限。请确认当前页面使用 HTTPS，并在地址栏允许麦克风。"
-        : `语音输入未完成：${error}`;
-      this.showToast(message);
-      this.resetVisibleVoiceInput({ focus: true });
-    };
-
-    recognition.onend = () => {
-      this.resetVisibleVoiceInput({ focus: true });
-    };
-
-    try {
-      recognition.start();
-    } catch {
-      this.resetVisibleVoiceInput({ focus: true });
-      this.showToast("语音输入启动失败，改用服务器识别");
-      await this.startRealtimeTencentVoice().catch(() => this.startServerVoiceInput({ reason: "语音启动失败" }));
-    }
-  }
-
-  async startRealtimeTencentVoice() {
-    const input = screen.querySelector("#mobileChatInput");
-    const button = screen.querySelector("#mobileVoiceButton");
-    if (!navigator.mediaDevices?.getUserMedia || !(window.AudioContext || window.webkitAudioContext)) {
-      throw new Error("当前浏览器不支持录音");
-    }
-    if (this.state.sending || this.state.recordingServerVoice || this.state.recordingRealtimeVoice) return;
-
-    this.state.recordingRealtimeVoice = true;
-    this.state.stopRealtimeVoice = false;
-    button?.classList.add("listening");
-    this.showToast("实时识别中…请说话，再说完点话筒结束");
-
-    let stream = null;
-    let recorder = null;
-    let lastText = "";
-    let recognizing = false;
-    let asrReachable = false;
-    const maxMs = 20000;
-    const tickMs = 2000;
-    const startedAt = Date.now();
-    const minSamplesForInterim = () => Math.max(8000, Math.floor((recorder?.sampleRate?.() || 48000) * 0.8));
-
-    const recognizeSnapshot = async ({ final = false } = {}) => {
-      if (recognizing || !recorder) return null;
-      if (!final && recorder.totalSamples() < minSamplesForInterim()) return null;
-      recognizing = true;
-      try {
-        // 中间片用近 5 秒窗口，最终片用完整录音；静音也送 ASR
-        const audioBase64 = await recorder.snapshotDataUrl({
-          requireVoice: false,
-          recentSeconds: final ? 0 : 5
-        });
-        const payload = await fetchJson("/api/input/voice", {
-          method: "POST",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify({
-            ...this.voiceAuthPayload(),
-            audioBase64,
-            audioFormat: "wav",
-            mode: final ? "final" : "interim"
-          })
-        });
-        asrReachable = true;
-        if (payload.input?.text) {
-          const next = String(payload.input.text || "").trim();
-          // 分片识别勿用更短/乱码覆盖已有中文（例如偶发英文 The.）
-          const hasHan = /[\u4e00-\u9fff]/.test(next);
-          const prevHan = /[\u4e00-\u9fff]/.test(lastText);
-          const better = !lastText
-            || (hasHan && !prevHan)
-            || (hasHan && next.length >= lastText.length)
-            || (!prevHan && next.length >= lastText.length);
-          if (better) {
-            lastText = next;
-            this.setChatInputValue(lastText);
-            this.showToast(final ? `已识别：${lastText}` : `识别中：${lastText}`);
-          }
-          if (!final) {
-            const { shouldSubmit, text: submitText } = parseVoiceSubmitCommand(lastText);
-            if (shouldSubmit) {
-              this.state.stopRealtimeVoice = true;
-              if (submitText) this.setChatInputValue(submitText);
-              lastText = submitText || lastText;
-            }
-          }
-        } else if (final && payload.input?.voiceOk === false) {
-          const stats = payload.input?.audioStats;
-          const tip = stats?.ok
-            ? `（能量 rms=${stats.rms} peak=${stats.peak}）`
-            : '';
-          this.showToast((payload.input.warning || "未识别出有效文字，请再试一次") + tip);
-        } else if (!final && payload.input?.voiceOk === false && recorder.peakRms() > 0.01) {
-          this.showToast("正在听…请继续说");
-        }
-        if (payload.result) this.addAssistantResult(payload.result);
-        return payload;
-      } finally {
-        recognizing = false;
-      }
-    };
-
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          // 与 Care test_page 一致：请求 16k；降噪在部分笔记本会把语音抹成静音
-          sampleRate: 16000,
-          channelCount: 1,
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: true
-        }
-      });
-      recorder = await openLiveWavRecorder(stream);
-
-      // 等采集回调真正开始；若完全无采样再降级
-      await new Promise((r) => window.setTimeout(r, 1200));
-      if (!recorder.totalSamples()) {
-        throw new Error("麦克风未采集到音频，请检查权限或设备");
-      }
-      // 便于现场判断：能量过低说明浏览器没采到声，而不是 ASR 挂了
-      console.info(`[voice] sampleRate=${recorder.sampleRate()} peakRms=${recorder.peakRms().toFixed(6)} samples=${recorder.totalSamples()}`);
-      if (recorder.peakRms() < 0.001) {
-        this.showToast("麦克风音量很低，请靠近话筒大声说…");
-      }
-
-      // 首片探测 ASR 是否可达（静音也允许）
-      try {
-        await recognizeSnapshot({ final: false });
-      } catch (err) {
-        const msg = String(err.message || err);
-        if (/连接失败|HTTP\s*\d|unreachable|ECONN|timeout|未配置|服务异常|Failed to fetch|NetworkError/i.test(msg)) {
-          throw new Error(msg);
-        }
-      }
-
-      while (!this.state.stopRealtimeVoice && Date.now() - startedAt < maxMs) {
-        await new Promise((r) => window.setTimeout(r, tickMs));
-        if (this.state.stopRealtimeVoice) break;
-        try {
-          await recognizeSnapshot({ final: false });
-        } catch {
-          // 中间分片失败不中断
-        }
-      }
-
-      try {
-        await recognizeSnapshot({ final: true });
-      } catch (err) {
-        if (!lastText) throw err;
-      }
-
-      if (lastText) {
-        const { shouldSubmit, text: submitText } = parseVoiceSubmitCommand(lastText);
-        if (shouldSubmit) {
-          if (submitText) this.setChatInputValue(submitText);
-          this.showToast(submitText ? `已识别并提交：${submitText}` : "语音命令，正在提交…");
-          await this.sendMessage(submitText || lastText);
-        } else {
-          this.setChatInputValue(lastText);
-          this.showToast(`已识别：${lastText}（说"提交"或"好了"发送）`);
-        }
-      } else if (!asrReachable) {
-        throw new Error("语音识别服务无响应");
-      } else if (recorder.peakRms() < 0.00005) {
-        this.showToast("未检测到语音，请靠近麦克风后重试");
-      }
-    } catch (err) {
-      // 仅服务/采集故障才降级整段录音；静音类提示不二次打扰
-      const msg = String(err.message || err);
-      stream?.getTracks?.().forEach((track) => track.stop());
-      await recorder?.close?.();
-      this.state.recordingRealtimeVoice = false;
-      button?.classList.remove("listening");
-      if (/未检测到|未录到|请靠近/i.test(msg)) {
-        this.showToast(msg);
-        return;
-      }
-      this.showToast(`实时识别失败，改用录音识别：${msg}`);
-      await this.startServerVoiceInput({ reason: "降级为录音转文本" });
-      return;
-    } finally {
-      stream?.getTracks?.().forEach((track) => track.stop());
-      await recorder?.close?.();
-      this.state.recordingRealtimeVoice = false;
-      this.state.stopRealtimeVoice = false;
-      button?.classList.remove("listening");
-      this.resetVisibleVoiceInput({ focus: true });
-    }
+    await this.startServerVoiceInput({ reason: "" });
   }
 
   async startServerVoiceInput({ reason = "正在使用服务器语音识别" } = {}) {
@@ -3984,43 +3588,44 @@ class MobileApp {
       this.addBubble("ai", `${reason}，但当前浏览器不支持录音上传。请直接输入文字。`, { error: true });
       return;
     }
-    if (this.state.sending || this.state.recordingServerVoice || this.state.recordingRealtimeVoice) return;
+    if (this.state.sending || this.state.recordingServerVoice) return;
     this.state.recordingServerVoice = true;
     // 显示录音中状态：按钮变色 + toast 提示
     button?.classList.add("listening");
-    this.showToast(reason ? `${reason}：请说话` : "录音中…请说话");
+    this.showToast("录音中…请说话");
     let stream = null;
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          sampleRate: 16000,
-          channelCount: 1,
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: true
-        }
-      });
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const audioBase64 = await recordWavDataUrl(stream, 6000);
       this.showToast("录音结束，正在识别…");
       const payload = await fetchJson("/api/input/voice", {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          ...this.voiceAuthPayload(),
           audioBase64,
           audioFormat: "wav",
-          mode: "record"
+          conversationId: this.currentConversation()?.id || "",
+          conversationHistory: this.conversationContext(),
+          roleKey: this.auth.roleKey,
+          channel: "mobile",
+          userToken: this.auth.token,
+          elderScope: this.auth.elderScope,
+          terminal: this.auth.terminal,
+          authLevel: this.auth.authLevel,
+          userName: this.auth.userName,
+          orgName: this.auth.orgName,
+          presetKey: this.auth.presetKey
         })
       });
       if (payload.input?.text) {
         const recognized = payload.input.text;
         const { shouldSubmit, text: submitText } = parseVoiceSubmitCommand(recognized);
         if (shouldSubmit) {
-          if (submitText) this.setChatInputValue(submitText);
+          if (submitText && input) input.value = submitText;
           this.showToast(submitText ? `已识别并提交：${submitText}` : "语音命令，正在提交…");
           await this.sendMessage(submitText || recognized);
         } else {
-          this.setChatInputValue(recognized);
+          if (input) input.value = recognized;
           this.showToast(`已识别：${recognized}（说"提交"或"好了"发送）`);
         }
       } else if (payload.input?.voiceOk === false) {
@@ -4071,15 +3676,11 @@ class MobileApp {
         await this.sendMessage(formattedText);
       } else if (normalizedPayload.input) {
         this.updateLastImageStatus("OCR 未识别出有效文字", "error");
-        this.updateLastAiBubble(`图片已上传，但 OCR 未识别出有效文字。请补充说明图片内容，或重新上传更清晰的图片。${normalizedPayload.input.warning ? `（${normalizedPayload.input.warning}）` : ""}`);
-      } else {
-        this.updateLastImageStatus("OCR 识别失败，请重试", "error");
-        this.updateLastAiBubble("图片 OCR 识别失败，请稍后重试或直接用文字描述。");
+        this.updateLastAiBubble(`图片已上传，但 OCR 在多次解析后仍未识别出有效文字。请补充说明图片内容，或重新上传更清晰的图片。已等待约 ${Math.round((normalizedPayload.input.elapsedMs || 0) / 1000)} 秒。`);
       }
     } catch (err) {
       this.updateLastImageStatus("OCR 识别失败，请重试", "error");
-      this.updateLastAiBubble(`图片 OCR 识别失败：${err.message}`, { error: true });
-      this.showToast(`图片识别失败：${err.message}`);
+      this.updateLastAiBubble(`\u5efa\u8bae\u5904\u7406\u5f02\u5e38\uff1a${err.message}`, { error: true });
     } finally {
       event.target.value = "";
     }

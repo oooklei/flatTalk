@@ -1,9 +1,0 @@
-{
-  "skill_key": "service_quality_eval",
-  "name": "服务质量评估",
-  "version": "1.0.0",
-  "runtime": "flatTalk",
-  "default_template": "institution_quality_report",
-  "description": "服务质量评估技能：覆盖服务评估录入、服务过程追溯、质量维度评分、问题归因与整改建议、远程督导缺口提示与督导转交。面向老人/家属/业务人员/督导/系统管理员，支持 C(客户端)/B(业务端)/G(政府端)/Admin(管理端) 多终端。迁移自桂小养 service_quality_eval 技能骨架，已去除原项目私有 schema 与外链依赖，按 flatTalk 技能与智能体规范独立重建。",
-  "source": "migrated-from:guixiaoyang-chat-system/skill-packages/service_quality_eval (rebuilt independently)"
-}
